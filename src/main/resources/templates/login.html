@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{css/login.css}" rel="stylesheet">
+    <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/login},defer=true"></script>
+    <script th:inline="javascript">
+
+    </script>
+</head>
+<body class="text-center">
+
+<!--提示-->
+<div id="hint">
+</div>
+
+<main class="form-signin">
+    <form>
+        <!--        <img class="mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">-->
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+        <div class="form-floating">
+            <input type="text" class="form-control" id="floatingCode" placeholder="name@example.com">
+            <label for="floatingCode">User code</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+            <label for="floatingPassword">Password</label>
+        </div>
+
+        <div class="checkbox mb-3">
+            <input type="radio" id="admin" name="identity" value="admin" checked>
+            <label for="admin">管理员</label>
+            <input type="radio" id="teacher" name="identity" value="teacher">
+            <label for="teacher">教师</label>
+            <input type="radio" id="student" name="identity" value="student">
+            <label for="student">学生</label>
+        </div>
+        <button class="w-100 btn btn-lg btn-primary" type="button">Sign in</button>
+        <p class="mt-5 mb-3 text-muted">&copy; 2022–2023</p>
+    </form>
+</main>
+
+</body>
+</html>

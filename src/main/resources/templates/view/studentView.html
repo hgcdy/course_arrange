@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{css/style.css}" rel="stylesheet">
+    <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/student},defer=true"></script>
+
+</head>
+<body>
+<!--检索查询-->
+<div class="border-bottom" style="height: 7%;">
+    <span>
+        学生名称或账号:
+        <input type="text" id="studentName">
+    </span>&nbsp;&nbsp;
+    <span>
+        <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupCareerClassButton"
+                data-bs-toggle="dropdown" aria-expanded="false" data-code="" data-career="">
+            专业班级
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropupCareerClassButton">
+        </ul>
+    </span>&nbsp;&nbsp;
+    <span>
+        <button type="button" class="btn btn-info" id="query">查询</button>
+        <button type="button" class="btn btn-info" id="reset">重置</button>
+    </span>
+</div>
+
+<!--表格展示-->
+<div class="bd-example" id="form">
+    <table class="table table-sm table-bordered" style="table-layout: fixed">
+        <thead>
+        <tr>
+            <th scope="col">序号</th>
+            <th scope="col">学生名称</th>
+            <th scope="col">学生账号</th>
+            <th scope="col">密码</th>
+            <th scope="col">班级名称</th>
+            <th scope="col">
+                操作&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-info" id="insert">新建</button>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<!--分页-->
+<div id="page-div" class="row">
+    <span id="page-text" class="col-md-3">
+          共&nbsp;&nbsp;条数据,&nbsp;&nbsp;&nbsp;页
+    </span>
+    <span id="page" class="col-md-5">
+        <span><button class="btn btn-secondary dropdown-toggle" type="button" id="dropupMenuButton"
+                      data-bs-toggle="dropdown" aria-expanded="false">
+            X10
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropupMenuButton">
+            <li><a class="dropdown-item" href="javaScript:void(0)">X10</a></li>
+            <li><a class="dropdown-item" href="javaScript:void(0)">X20</a></li>
+            <li><a class="dropdown-item" href="javaScript:void(0)">X30</a></li>
+        </ul>
+        </span>
+        <span>
+            <button type="button" class="btn btn-secondary">«</button>
+            <button type="button" class="btn btn-secondary">1</button>
+            <button type="button" class="btn btn-secondary">2</button>
+            <button type="button" class="btn btn-secondary">3</button>
+            <button type="button" class="btn btn-secondary">4</button>
+            <button type="button" class="btn btn-secondary">5</button>
+            <button type="button" class="btn btn-secondary">»</button>
+        </span>
+        <span>
+            <input type="text">
+            <button type="button" class="btn btn-secondary">跳转</button>
+        </span>
+    </span>
+</div>
+
+</body>
+</html>

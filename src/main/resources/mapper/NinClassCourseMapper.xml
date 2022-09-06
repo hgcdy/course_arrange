@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.netinnet.coursearrange.mapper.NinClassCourseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.netinnet.coursearrange.entity.NinClassCourse">
+        <id column="id" property="id" />
+        <result column="class_id" property="classId" />
+        <result column="course_id" property="courseId" />
+        <result column="del_flag" property="delFlag" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="modify_time" property="modifyTime" />
+        <result column="modify_user_id" property="modifyUserId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, class_id, course_id, del_flag, create_time, create_user_id, modify_time, modify_user_id
+    </sql>
+
+
+    <!--     条件选择查询 -->
+    <select id="getSelectList" resultType="java.util.Map">
+        SELECT nin_class_course.id AS id,
+               class_id AS classId,
+               nin_class_course.course_id AS courseId,
+               nin_course.course_name AS courseName,
+               nin_course.house_type AS houseType,
+               nin_course.must AS must,
+               nin_course.num AS num
+        FROM nin_course, nin_class_course
+        WHERE nin_class_course.del_flag = 0
+        AND nin_course.id = nin_class_course.course_id
+        <if test="classId != null">
+            AND class_id = #{classId}
+        </if>
+    </select>
+
+    <insert id="addBatch" parameterType="cn.netinnet.coursearrange.entity.NinClassCourse">
+        INSERT INTO
+        nin_class_course(id, class_id, course_id, create_user_id, modify_user_id)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.classId}, #{item.courseId}, #{item.createUserId}, #{item.modifyUserId})
+        </foreach>
+    </insert>
+
+    <select id="sameVerify" resultType="java.util.Map">
+        SELECT class_id AS classId, course_id AS courseId
+        FROM nin_class_course
+        WHERE del_flag = 0
+        AND
+        <foreach close=")" collection="courseIdList" index="index" item="courseId" open="(" separator="OR">
+            course_id = #{courseId}
+        </foreach>
+        AND
+        <foreach close=")" collection="classIdList" index="index" item="classId" open="(" separator="OR">
+            class_id = #{classId}
+        </foreach>
+    </select>
+
+</mapper>

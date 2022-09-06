@@ -1,0 +1,54 @@
+body {
+    height: 100vh;
+}
+
+#form {
+    height: 77.5%;
+    overflow: auto;
+}
+
+#page-div {
+    height: 5%;
+    position: fixed;
+    top: 92.5%;
+    width: 100%;
+}
+
+#page-text {
+    line-height: 60px;
+    font-size: 20px;
+}
+
+#page {
+    position: absolute;
+    right: 5%;
+    font-size: 35px;
+}
+
+#page-div input {
+    font-size: 20px;
+    height: 30px;
+    width: 80px;
+}
+
+.dropupButton {
+    width: 150px;
+    height: 40px;
+}
+
+table {
+    font-size: 18px;
+}
+
+td {
+    height: 47px;
+}
+
+#course-form td {
+    height: 100px;
+}
+
+
+
+
+
