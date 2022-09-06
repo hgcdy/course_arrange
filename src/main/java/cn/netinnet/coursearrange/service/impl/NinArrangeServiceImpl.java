@@ -39,6 +39,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Autowired
     private NinStudentMapper ninStudentMapper;
     @Autowired
+    private NinClassesMapper ninClassesMapper;
+    @Autowired
     private NinClassCourseMapper ninClassCourseMapper;
     @Autowired
     private NinTeacherCourseMapper ninTeacherCourseMapper;
@@ -143,7 +145,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 if (ninClassCourses == null) {
                     continue;//没有班级上这门课，结束
                 }
-
 
                 //上该课程的班级id列表
                 List<Long> classIdList = ninClassCourses.stream().map(NinClassCourse::getClassId).collect(Collectors.toList());
@@ -301,42 +302,70 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     break ok;
                 }
             }
-            //time是时间段，返回 time.size()*classIdList.size() 长度的
+
             List<ArrangeBo> separate = separate(bo, time);
             arrangeBos.addAll(separate);
         }
 
+
         ArrayList<NinArrange> ninArrangeList = new ArrayList<>();
 
         for (ArrangeBo bo : arrangeBos) {
-            int count = 8;
-            Integer weekly = bo.getWeekly();
-            //bo转NinArrange
-            if (bo.getNum() == 8) {
-                count = 2;
-                weekly = bo.getWeekly_8();
-            }
-//            因为是数组下标，时间要+1
-            for (int i = 0; i < count; i++) {
-                NinArrange ninArrange = new NinArrange();
-                ninArrange.setId(IDUtil.getID());
-                ninArrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
-                ninArrange.setCreateUserId(UserUtil.getUserInfo().getUserId());
+            NinArrange ninArrange = new NinArrange();
+            ninArrange.setId(IDUtil.getID());
+            ninArrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
+            ninArrange.setCreateUserId(UserUtil.getUserInfo().getUserId());
+
+            //如果是一起上课的，生成classes记录
+            if (bo.getClassIdList() != null && bo.getClassIdList().size() != 0) {
+                ninArrange.setClassId(null);
+                long id = IDUtil.getID();
+                ninArrange.setClassesId(id);
+                List<NinClasses> classesList = new ArrayList<>();
+                for (Long l : bo.getClassIdList()) {
+                    NinClasses ninClasses = new NinClasses();
+                    ninClasses.setClassesId(id);
+                    ninClasses.setClassId(l);
+                    ninClasses.setModifyUserId(UserUtil.getUserInfo().getUserId());
+                    ninClasses.setCreateUserId(UserUtil.getUserInfo().getUserId());
+                    ninClassesMapper.insert(ninClasses);
+                    //todo 之后改（不在循环里操作数据库）
+                    classesList.add(ninClasses);
+                }
+            } else {
+                ninArrange.setClassesId(null);
                 ninArrange.setClassId(bo.getClassId());
-                ninArrange.setCourseId(bo.getCourseId());
-                ninArrange.setTeacherId(bo.getTeacherId());
-                ninArrange.setHouseId(bo.getHouseId());
-                ninArrange.setMust(bo.getMust());
-                if (weekly != null) {
-                    ninArrange.setWeekly(weekly + 1 + 2 * i);
-                    ninArrange.setWeek(bo.getWeek() + 1);
-                    ninArrange.setPitchNum(bo.getPitchNum() + 1);
-                }
-                ninArrangeList.add(ninArrange);
-                if (weekly == null) {
-                    break;
-                }
             }
+
+            ninArrange.setCourseId(bo.getCourseId());
+            ninArrange.setTeacherId(bo.getTeacherId());
+            ninArrange.setHouseId(bo.getHouseId());
+            ninArrange.setMust(bo.getMust());
+            ninArrange.setWeek(bo.getWeek() + 1);
+            ninArrange.setPitchNum(bo.getPitchNum() + 1);
+            Integer weekly = bo.getWeekly();
+            ninArrange.setWeekly(weekly);
+            if (weekly == null) {
+                break;
+            }
+            if (bo.getNum() != 8) {
+                if (weekly == 0) {
+                    ninArrange.setStartWeekly(1);
+                    ninArrange.setEndWeekly(16);
+                } else if (weekly == 1) {
+                    ninArrange.setStartWeekly(1);
+                    ninArrange.setEndWeekly(15);
+                } else if (weekly == 2) {
+                    ninArrange.setStartWeekly(2);
+                    ninArrange.setEndWeekly(16);
+                }
+            } else {
+                int i = (int) (Math.random() * 12);
+                ninArrange.setStartWeekly(i + 1);
+                ninArrange.setEndWeekly(i + 4);
+            }
+
+            ninArrangeList.add(ninArrange);
         }
 
         int len = ninArrangeList.size();
@@ -354,97 +383,86 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Override
     public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer weekly) {
+        //班级id列表
+        List<Long> classIdList = new ArrayList<>();
+        //存放结果列表
         List<Map<String, Object>> info = new ArrayList<>();
-        if (studentId != null) {
-            List<Long> classIdList = new ArrayList<>();
-            //学生-课程，获取学生的选修教学班有哪些
-            List<NinStudentCourse> ninStudentCourses = ninStudentCourseMapper.selectList(new QueryWrapper<>(new NinStudentCourse() {{
-                setStudentId(studentId);
-            }}));
-            if (ninStudentCourses != null && ninStudentCourses.size() != 0) {
-                for (NinStudentCourse nsc : ninStudentCourses) {
-                    classIdList.add(nsc.getTakeClassId());
-                }
-            }
-            //获取学生的班级记录
-            NinStudent ninStudent = ninStudentMapper.selectById(studentId);
-            classIdList.add(ninStudent.getClassId());
-            //多个班级查询
-            info = ninArrangeMapper.getInfo(classIdList, null, null, weekly);
+        if (teacherId != null){
+            info = ninArrangeMapper.getInfo(null, null, teacherId);
         } else {
-            info = ninArrangeMapper.getInfo(null, classId, teacherId, weekly);
+            if (classId != null) {
+                classIdList.add(classId);
+            } else if (studentId != null) {
+                //学生-课程，获取学生的选修教学班有哪些
+                List<NinStudentCourse> ninStudentCourses = ninStudentCourseMapper.selectList(new QueryWrapper<>(new NinStudentCourse() {{
+                    setStudentId(studentId);
+                }}));
+                //有选修的话吧，把选修班级放进去
+                if (ninStudentCourses != null && ninStudentCourses.size() != 0) {
+                    for (NinStudentCourse nsc : ninStudentCourses) {
+                        classIdList.add(nsc.getTakeClassId());
+                    }
+                }
+                //获取学生的行政班级记录
+                NinStudent ninStudent = ninStudentMapper.selectById(studentId);
+                classIdList.add(ninStudent.getClassId());
+            }
+
+            List<Long> classesIdList = ninClassesMapper.getClassesIdList(classIdList);
+            info = ninArrangeMapper.getInfo(classIdList, classesIdList, null);
         }
 
-        HashMap<String, String> hashMap = new HashMap<>();
-        if (weekly == null) {
-            Map<Integer, Map<Integer, List<Map<String, Object>>>> collect = info.stream().sorted(Comparator.comparing((Map<String, Object> map) -> (Integer) map.get("weekly"))).collect(Collectors.groupingBy(i -> (Integer) i.get("week"), Collectors.groupingBy(i -> (Integer) i.get("pitchNum"))));
-            for (Map.Entry<Integer, Map<Integer, List<Map<String, Object>>>> e : collect.entrySet()) {
-                for (Map.Entry<Integer, List<Map<String, Object>>> e1 : e.getValue().entrySet()) {
-                    List<Map<String, Object>> value = e1.getValue();
-                    int startWeekly = (int) value.get(0).get("weekly");
-                    int size = value.size();
-                    String str = "";
-                    //todo 教师课程表会有问题
+        //所有的classes Map
+        List<Map<String, Object>> classesList = ninClassesMapper.getInfo();
+        Map<Long, List<Map<String, Object>>> classesIdMap = classesList.stream().collect(Collectors.groupingBy(i -> (Long) i.get("classesId")));
 
-                    if (size == 16) {
-                        str = "1-16周";
-                    } else if (size == 8) {
-                        str = startWeekly + "-" + (startWeekly + 14) + "周（" + (startWeekly == 1 ? "单周" : "双周") + "）";
-                    } else if (size == 4) {
-                        str = startWeekly + "-" + (startWeekly + 3) + "周";
-                    }
-
-                    Map<String, Object> m = value.get(0);
-                    String key = ""+e.getKey()+e1.getKey();
-                    if (hashMap.get(key) != null){
-                        hashMap.put(key, hashMap.get(key) + "/" + m.get("className") + "/" + m.get("teacherName") + "/" + m.get("courseName") + "/" + m.get("houseName") + "/" + str + "/" + ((int) m.get("must") == 0 ? "选修" : "必修"));
+        for (Map<String, Object> map: info) {
+            if (map.get("classId") == null){ //即班级名称为空
+                //获取classesId组的信息
+                List<Map<String, Object>> maps = classesIdMap.get(map.get("classesId"));
+                for (Map<String, Object> m: maps) {
+                    //增加班级名称
+                    if (map.get("className") != null){
+                        map.put("className", map.get("className") + ";" + m.get("className"));
                     } else {
-                        hashMap.put(key, m.get("className") + "/" + m.get("teacherName") + "/" + m.get("courseName") + "/" + m.get("houseName") + "/" + str + "/" + ((int) m.get("must") == 0 ? "选修" : "必修"));
+                        map.put("className", m.get("className"));
                     }
                 }
             }
-        } else {
-            for (Map<String, Object> m : info) {
-                hashMap.put("" + m.get("week") + m.get("pitchNum"), m.get("className") + "/" + m.get("teacherName") + "/" + m.get("courseName") + "/" + m.get("houseName") + "/" + ((int) m.get("must") == 0 ? "选修" : "必修"));
-            }
         }
-        return hashMap;
+
+        //学生，班级
+        //学生->所属班级+选修班级-》班级id列表
+        //班级id -》传成只有一个元素的班级id列表
+        //  班级id列表-》classes，获取classesId列表
+        //  班级id列表和classesId列表一起放进去查
+
+        //教师
+        //直接查
+        //  根据classId和classesId到两个表里面查班级名称
+
+        //最后得到List<Map>（多个班级时，className=“班级1;班级2”）
+        //对于weekly
+        //不存在跳过
+        //若存在，对List筛选，单双周和开始结束时间
+
+        //生成Map<两位数字（星期和节数），信息>
+
+
+        return null;
     }
 
 
-
-
-
-
-    //时间*班级拆开(时间只有前两周)
+    //时间
     public List<ArrangeBo> separate(ArrangeBo bo, List<int[]> time) {
-        List<Long> classIdList = bo.getClassIdList();
         ArrayList<ArrangeBo> arrangeBos = new ArrayList<>();
-        Integer weekly_8 = 0;
-        if (bo.getNum() == 8) {
-            weekly_8 = (int) (Math.random() * 12);
-        }
         for (int[] t : time) {
             if (t != null) {
                 bo.setWeekly(t[0]);
                 bo.setWeek(t[1]);
                 bo.setPitchNum(t[2]);
-                bo.setWeekly_8(weekly_8++);
             }
-
-            if (classIdList != null && classIdList.size() != 0) {
-                for (Long classId : classIdList) {
-                    ArrangeBo bo1 = new ArrangeBo();
-                    BeanUtils.copyProperties(bo, bo1);
-                    bo1.setClassId(classId);
-                    arrangeBos.add(bo1);
-                }
-            } else {
-                ArrangeBo bo1 = new ArrangeBo();
-                BeanUtils.copyProperties(bo, bo1);
-                bo1.setClassId(bo.getClassId());
-                arrangeBos.add(bo1);
-            }
+            arrangeBos.add(bo);
         }
         return arrangeBos;
     }
@@ -502,15 +520,22 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //三维数组，周次（单双周，记2），星期（7），节数（5）
         //1不能排，0可以排
         for (ArrangeBo arrange : arranges) {
-            if (arrange.getWeekly() != null) {
-                time[arrange.getWeekly()][arrange.getWeek()][arrange.getPitchNum()] = 1;
+            Integer weekly = arrange.getWeekly();
+            if (weekly != null) {
+                if (weekly == 0) {
+                    time[0][arrange.getWeek()][arrange.getPitchNum()] = 1;
+                    time[1][arrange.getWeek()][arrange.getPitchNum()] = 1;
+                } else {
+                    time[arrange.getWeekly() - 1][arrange.getWeek()][arrange.getPitchNum()] = 1;
+                }
             }
         }
 
 
-        int week_ = 8;
+        int week_ = -1;//赋初值，随意一个不在0-7之间的数
+        //目的：一门课在一天内不上两次
         //按课时，生成时间段
-        if (num == 64) {
+        if (num == 64) {//
             for (int i = 0; i < 2; i++) {
                 List<int[]> two = two(time, week_);
                 if (two.get(0) != null) {
@@ -546,12 +571,12 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         ok:
         while (true) {
             if (count++ < 50) {
-                weekly = (int) (Math.random() * 2);
+                weekly = (int) (Math.random() * 2);//随机数0,1
                 week = (int) (Math.random() * 5);
                 pitchNum = (int) (Math.random() * 5);
                 if (time[weekly][week][pitchNum] == 0) {
                     time[weekly][week][pitchNum] = 1;
-                    int[] l1 = {weekly, week, pitchNum};
+                    int[] l1 = {weekly + 1, week, pitchNum};
                     list.add(l1);
                     break;
                 }
@@ -561,7 +586,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         for (int k = 0; k < 5; k++) {
                             if (time[i][j][k] == 0) {
                                 time[i][j][k] = 1;
-                                int[] l1 = {i, j, k};
+                                int[] l1 = {i + 1, j, k};
                                 list.add(l1);
                                 break ok;
                             }
@@ -592,10 +617,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 if (time[0][week][pitchNum] == 0 && time[1][week][pitchNum] == 0) {
                     time[0][week][pitchNum] = 1;
                     time[1][week][pitchNum] = 1;
-                    int[] l1 = {0, week, pitchNum};
-                    int[] l2 = {1, week, pitchNum};
-                    list.add(l1);
-                    list.add(l2);
+                    int[] l = {0, week, pitchNum};
+                    list.add(l);
                     break;
                 }
             } else {
@@ -607,20 +630,77 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         if (time[0][i][j] == 0 && time[1][i][j] == 0) {
                             time[0][i][j] = 1;
                             time[1][i][j] = 1;
-                            int[] l1 = {0, i, j};
-                            int[] l2 = {1, i, j};
-                            list.add(l1);
-                            list.add(l2);
+                            int[] l = {0, i, j};
+                            list.add(l);
                             break ok;
                         }
                     }
                 }
-                list.add(null);
                 list.add(null);
                 break;
             }
         }
         return list;
     }
+
+
+//    @Override
+//    public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer weekly) {
+//        List<Map<String, Object>> info = new ArrayList<>();
+//        if (studentId != null) {
+//            List<Long> classIdList = new ArrayList<>();
+//            //学生-课程，获取学生的选修教学班有哪些
+//            List<NinStudentCourse> ninStudentCourses = ninStudentCourseMapper.selectList(new QueryWrapper<>(new NinStudentCourse() {{
+//                setStudentId(studentId);
+//            }}));
+//            if (ninStudentCourses != null && ninStudentCourses.size() != 0) {
+//                for (NinStudentCourse nsc : ninStudentCourses) {
+//                    classIdList.add(nsc.getTakeClassId());
+//                }
+//            }
+//            //获取学生的班级记录
+//            NinStudent ninStudent = ninStudentMapper.selectById(studentId);
+//            classIdList.add(ninStudent.getClassId());
+//            //多个班级查询
+//            info = ninArrangeMapper.getInfo(classIdList, null, null, weekly);
+//        } else {
+//            info = ninArrangeMapper.getInfo(null, classId, teacherId, weekly);
+//        }
+//
+//        HashMap<String, String> hashMap = new HashMap<>();
+//        if (weekly == null) {
+//            Map<Integer, Map<Integer, List<Map<String, Object>>>> collect = info.stream().sorted(Comparator.comparing((Map<String, Object> map) -> (Integer) map.get("weekly"))).collect(Collectors.groupingBy(i -> (Integer) i.get("week"), Collectors.groupingBy(i -> (Integer) i.get("pitchNum"))));
+//            for (Map.Entry<Integer, Map<Integer, List<Map<String, Object>>>> e : collect.entrySet()) {
+//                for (Map.Entry<Integer, List<Map<String, Object>>> e1 : e.getValue().entrySet()) {
+//                    List<Map<String, Object>> value = e1.getValue();
+//                    int startWeekly = (int) value.get(0).get("weekly");
+//                    int size = value.size();
+//                    String str = "";
+//                    //todo 教师课程表会有问题
+//
+//                    if (size == 16) {
+//                        str = "1-16周";
+//                    } else if (size == 8) {
+//                        str = startWeekly + "-" + (startWeekly + 14) + "周（" + (startWeekly == 1 ? "单周" : "双周") + "）";
+//                    } else if (size == 4) {
+//                        str = startWeekly + "-" + (startWeekly + 3) + "周";
+//                    }
+//
+//                    Map<String, Object> m = value.get(0);
+//                    String key = ""+e.getKey()+e1.getKey();
+//                    if (hashMap.get(key) != null){
+//                        hashMap.put(key, hashMap.get(key) + "/" + m.get("className") + "/" + m.get("teacherName") + "/" + m.get("courseName") + "/" + m.get("houseName") + "/" + str + "/" + ((int) m.get("must") == 0 ? "选修" : "必修"));
+//                    } else {
+//                        hashMap.put(key, m.get("className") + "/" + m.get("teacherName") + "/" + m.get("courseName") + "/" + m.get("houseName") + "/" + str + "/" + ((int) m.get("must") == 0 ? "选修" : "必修"));
+//                    }
+//                }
+//            }
+//        } else {
+//            for (Map<String, Object> m : info) {
+//                hashMap.put("" + m.get("week") + m.get("pitchNum"), m.get("className") + "/" + m.get("teacherName") + "/" + m.get("courseName") + "/" + m.get("houseName") + "/" + ((int) m.get("must") == 0 ? "选修" : "必修"));
+//            }
+//        }
+//        return hashMap;
+//    }
 
 }

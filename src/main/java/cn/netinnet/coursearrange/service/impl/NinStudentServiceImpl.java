@@ -55,7 +55,7 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size, String career, Long classId, String studentName) {
         List<Long> classIds = null;
-        if (career != null){
+        if (career != null && !career.equals("")){
             if (classId != null){
                 classIds = new ArrayList<>();
                 classIds.add(classId);

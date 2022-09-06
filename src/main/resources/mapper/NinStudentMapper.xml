@@ -44,7 +44,7 @@
             </foreach>
             )
         </if>
-        ORDER BY student_name
+
 
     </select>
 </mapper>

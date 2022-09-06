@@ -21,6 +21,6 @@ public interface NinArrangeMapper extends BaseMapper<NinArrange> {
 
     void addBatch(@Param("list") List<NinArrange> ninArrangeList);
 
-    List<Map<String, Object>> getInfo(@Param("classIdList") List<Long> classIdList, @Param("classId") Long classId, @Param("teacherId") Long teacherId, @Param("weekly") Integer weekly);
+    List<Map<String, Object>> getInfo(@Param("classIdList") List<Long> classIdList, @Param("classesIdList") List<Long> classesIdList, @Param("teacherId") Long teacherId);
 
 }

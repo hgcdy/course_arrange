@@ -60,12 +60,12 @@ public class CodeGenerator {
         mpg.setDataSource(dsc);
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("cn.netinnet.coursearrange")
-                .setEntity("entity")
-                .setMapper("mapper")
-                .setService("service")
-                .setServiceImpl("service.impl")
-                .setController("controller");
+        pc.setParent("cn.netinnet.coursearrange");
+//                .setEntity("entity")
+//                .setMapper("mapper")
+//                .setService("service")
+//                .setServiceImpl("service.impl")
+//                .setController("controller");
         mpg.setPackageInfo(pc);
         // 自定义配置
         InjectionConfig cfg = new InjectionConfig() {

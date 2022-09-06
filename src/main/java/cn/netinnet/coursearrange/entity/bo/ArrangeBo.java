@@ -1,13 +1,9 @@
 package cn.netinnet.coursearrange.entity.bo;
 
-import cn.netinnet.coursearrange.entity.NinArrange;
-import cn.netinnet.coursearrange.util.IDUtil;
-import cn.netinnet.coursearrange.util.UserUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
