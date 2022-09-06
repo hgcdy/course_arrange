@@ -32,8 +32,13 @@ public class NinArrangeController {
     }
 
     @GetMapping("/courseForm")
-    public ModelAndView gotoFormView() {
-        return new ModelAndView("view/courseFormView");
+    public ModelAndView gotoFormView(Long classId, Long studentId, Long teacherId, String path) {
+        ModelAndView modelAndView = new ModelAndView("view/courseFormView");
+        modelAndView.addObject("classId", String.valueOf(classId));
+        modelAndView.addObject("studentId", String.valueOf(studentId));
+        modelAndView.addObject("teacherId", String.valueOf(teacherId));
+        modelAndView.addObject("path", path);
+        return modelAndView;
     }
 
     @GetMapping("/arrange")

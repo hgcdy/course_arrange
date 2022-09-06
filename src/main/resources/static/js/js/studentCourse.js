@@ -105,6 +105,12 @@ require(['../config'], function () {
             window.location.href = "nin-student";
         })
 
+        //课程表
+        $("#course-form").click(function (){
+            var str = "nin-arrange/courseForm?studentId=" + studentId + "&path=nin-student-course?studentId=" + studentId;
+            window.location.href = str;
+        })
+
 
     })
 })

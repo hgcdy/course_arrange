@@ -38,6 +38,7 @@
         <if test="num != null">
             AND num = #{num}
         </if>
+        ORDER BY must, course_name
     </select>
 
     <select id="getAllList" resultType="cn.netinnet.coursearrange.entity.NinCourse">

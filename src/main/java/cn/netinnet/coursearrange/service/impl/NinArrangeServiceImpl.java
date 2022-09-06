@@ -48,6 +48,12 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Override
     public void arrange() {
+        //todo 修改数据库arrange
+        // classes表（存储一起上课的班级）
+        // arrange 新增classes_id,(当classId为空时，查找classes表)
+        // weekly去除，新增开始周次和结束周次、单双周属性
+        // 排课8课时最后，先选修后必修
+
         System.out.println("----开始排课----");
         long oldData = System.currentTimeMillis();
 
@@ -62,7 +68,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         List<NinClassCourse> ninClassCourseList = ninClassCourseMapper.selectList(new QueryWrapper<>());
         List<NinTeacherCourse> ninTeacherCourseList = ninTeacherCourseMapper.selectList(new QueryWrapper<>());
 
-        //todo 看课程类型拆分选修班级
 
         //todo 不同教室的最大人数
         HashMap<Integer, Integer> hashMap = new HashMap<>();
@@ -379,6 +384,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     int startWeekly = (int) value.get(0).get("weekly");
                     int size = value.size();
                     String str = "";
+                    //todo 教师课程表会有问题
+
                     if (size == 16) {
                         str = "1-16周";
                     } else if (size == 8) {
@@ -386,6 +393,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     } else if (size == 4) {
                         str = startWeekly + "-" + (startWeekly + 3) + "周";
                     }
+
                     Map<String, Object> m = value.get(0);
                     String key = ""+e.getKey()+e1.getKey();
                     if (hashMap.get(key) != null){
@@ -402,6 +410,10 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
         return hashMap;
     }
+
+
+
+
 
 
     //时间*班级拆开(时间只有前两周)

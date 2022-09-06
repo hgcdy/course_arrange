@@ -28,6 +28,7 @@
         <if test="teacherName != null and teacherName != ''">
             AND (teacher_name LIKE CONCAT('%',#{teacherName},'%') OR teacher_code LIKE CONCAT('%',#{teacherName},'%'))
         </if>
+        ORDER BY teacher_name
     </select>
 
 </mapper>

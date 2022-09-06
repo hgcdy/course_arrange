@@ -1,28 +1,49 @@
 require(['../config'], function () {
     require(['jquery', 'util', 'bootstrapBundle'], function ($, util) {
 
+        if (classId == "null") {
+            classId = null;
+        }
+        if (studentId == "null") {
+            studentId = null;
+        }
+        if (teacherId == "null") {
+            teacherId = null;
+        }
+
+
         $.ajax({
             url: "/nin-arrange/getInfo",
             dataType: "json",
             type: "post",
             data: {
                 weekly: null,
-                classId: "365938667349718407",
-                studentId: null,
-                teacherId: null
+                classId: classId,
+                studentId: studentId,
+                teacherId: teacherId
             },
             success: function (data) {
-                if (data.code == 200){
+                if (data.code == 200) {
                     var map = data.data;
-                    for (const mapKey in map) {
-                        var strings = mapKey.split("");
-                        var i = strings[0];
-                        var j = strings[1];
-                        $($($("tr")[j]).find("*")[i]).text(map[mapKey]);
+                    if ($.isEmptyObject(map)){
+                        $("td").text("暂无安排");
+                    } else {
+                        for (const mapKey in map) {
+                            var strings = mapKey.split("");
+                            var i = strings[0];
+                            var j = strings[1];
+                            $($($("tr")[j]).find("*")[i]).text(map[mapKey]);
+                        }
                     }
                 }
 
             }
+        })
+
+
+        //返回详情
+        $("#back").click(function () {
+            window.location.href = "http://localhost:8080/" + path;
         })
 
 

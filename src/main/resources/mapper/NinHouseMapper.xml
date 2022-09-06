@@ -37,6 +37,7 @@
         <if test="tailSeat != null">
             AND seat <![CDATA[ <= ]]> #{tailSeat}
         </if>
+        ORDER BY house_name
     </select>
 
 </mapper>

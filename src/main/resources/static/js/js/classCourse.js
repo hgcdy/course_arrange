@@ -1,6 +1,7 @@
 require(['../config'], function () {
     require(['jquery', 'util', 'bootstrapBundle'], function ($, util) {
         const STR = ["courseName", "houseType", "must", "num"];
+
         query();
 
 
@@ -96,6 +97,12 @@ require(['../config'], function () {
         //返回
         $("#back").click(function (){
             window.location.href = "nin-class";
+        })
+
+        //课程表
+        $("#course-form").click(function (){
+            var str = "nin-arrange/courseForm?classId=" + classId + "&path=nin-class-course?classId=" + classId;
+            window.location.href = str;
         })
 
     })

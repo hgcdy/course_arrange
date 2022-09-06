@@ -32,7 +32,7 @@
         <if test="className != null and className != ''">
             AND class_name LIKE CONCAT('%',#{className},'%')
         </if>
-        ORDER BY career
+        ORDER BY career, class_name
     </select>
 
 <!-- 专业列表 -->

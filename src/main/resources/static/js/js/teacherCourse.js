@@ -96,6 +96,11 @@ require(['../config'], function () {
             window.location.href = "nin-teacher";
         })
 
+        //课程表
+        $("#course-form").click(function (){
+            var str = "nin-arrange/courseForm?teacherId=" + teacherId + "&path=nin-teacher-course?teacherId=" + teacherId;
+            window.location.href = str;
+        })
 
     })
 })
