@@ -424,7 +424,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         Map<Long, List<Map<String, Object>>> classesIdMap = classesList.stream().collect(Collectors.groupingBy(i -> (Long) i.get("classesId")));
 
         for (Map<String, Object> map : info) {
-            if (map.get("classId") == null) { //即班级名称为空
+            if (map.get("classId") == null) {
                 //获取classesId组的信息
                 List<Map<String, Object>> maps = classesIdMap.get(map.get("classesId"));
                 for (Map<String, Object> m : maps) {
@@ -435,6 +435,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         map.put("className", m.get("className"));
                     }
                 }
+            } else {
+
             }
         }
 
