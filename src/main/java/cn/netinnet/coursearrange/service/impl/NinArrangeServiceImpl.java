@@ -334,8 +334,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     classesList.add(ninClasses);
                 }
             } else {
-                ninArrange.setClassesId(null);
                 ninArrange.setClassId(bo.getClassId());
+                ninArrange.setClassesId(null);
             }
 
             ninArrange.setCourseId(bo.getCourseId());
@@ -423,6 +423,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         List<Map<String, Object>> classesList = ninClassesMapper.getInfo();
         Map<Long, List<Map<String, Object>>> classesIdMap = classesList.stream().collect(Collectors.groupingBy(i -> (Long) i.get("classesId")));
 
+        //
+//        ninClassMapper.selectList(new QueryWrapper<>())
+
         for (Map<String, Object> map : info) {
             if (map.get("classId") == null) {
                 //获取classesId组的信息
@@ -436,6 +439,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     }
                 }
             } else {
+                //todo 单个班级
 
             }
         }
@@ -491,12 +495,14 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     public List<ArrangeBo> separate(ArrangeBo bo, List<int[]> time) {
         ArrayList<ArrangeBo> arrangeBos = new ArrayList<>();
         for (int[] t : time) {
+            ArrangeBo bo1 = new ArrangeBo();
+            BeanUtils.copyProperties(bo, bo1);
             if (t != null) {
-                bo.setWeekly(t[0]);
-                bo.setWeek(t[1]);
-                bo.setPitchNum(t[2]);
+                bo1.setWeekly(t[0]);
+                bo1.setWeek(t[1]);
+                bo1.setPitchNum(t[2]);
             }
-            arrangeBos.add(bo);
+            arrangeBos.add(bo1);
         }
         return arrangeBos;
     }
@@ -571,38 +577,36 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //按课时，生成时间段
         if (num == 64) {//
             for (int i = 0; i < 2; i++) {
-                List<int[]> two = two(time, week_);
-                if (two.get(0) != null) {
-                    week_ = two.get(0)[1];
+                int[] two = two(time, week_);
+                if (two != null) {
+                    week_ = two[1];
                 }
-                list.addAll(two);
+                list.add(two);
             }
         } else if (num == 32 || num == 8) {
-            List<int[]> two = two(time, week_);
-            list.addAll(two);
+            int[] two = two(time, week_);
+            list.add(two);
         } else if (num == 16) {
-            List<int[]> one = one(time);
-            list.addAll(one);
+            int[] one = one(time);
+            list.add(one);
         } else if (num == 48) {
-            List<int[]> one = one(time);
-            if (one.get(0) != null) {
-                week_ = one.get(0)[1];
+            int[] one = one(time);
+            if (one != null) {
+                week_ = one[1];
             }
-            List<int[]> two = two(time, week_);
-            list.addAll(one);
-            list.addAll(two);
+            int[] two = two(time, week_);
+            list.add(one);
+            list.add(two);
         }
         return list;
     }
 
     //单双周
-    public List<int[]> one(int[][][] time) {
-        List<int[]> list = new ArrayList();
+    public int[] one(int[][][] time) {
         int weekly;
         int week;
         int pitchNum;
         int count = 0;
-        ok:
         while (true) {
             if (count++ < 50) {
                 weekly = (int) (Math.random() * 2);//随机数0,1
@@ -610,9 +614,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 pitchNum = (int) (Math.random() * 5);
                 if (time[weekly][week][pitchNum] == 0) {
                     time[weekly][week][pitchNum] = 1;
-                    int[] l1 = {weekly + 1, week, pitchNum};
-                    list.add(l1);
-                    break;
+                    int[] l = {weekly + 1, week, pitchNum};
+                    return l;
                 }
             } else {
                 for (int i = 0; i < 2; i++) {
@@ -620,27 +623,22 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         for (int k = 0; k < 5; k++) {
                             if (time[i][j][k] == 0) {
                                 time[i][j][k] = 1;
-                                int[] l1 = {i + 1, j, k};
-                                list.add(l1);
-                                break ok;
+                                int[] l = {i + 1, j, k};
+                                return l;
                             }
                         }
                     }
                 }
-                list.add(null);
-                break;
+                return null;
             }
         }
-        return list;
     }
 
     //每周
-    public List<int[]> two(int[][][] time, int week_) {
-        List<int[]> list = new ArrayList();
+    public int[] two(int[][][] time, int week_) {
         int week;
         int pitchNum;
         int count = 0;
-        ok:
         while (true) {
             if (count++ < 25) {
                 week = (int) (Math.random() * 5);
@@ -652,8 +650,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     time[0][week][pitchNum] = 1;
                     time[1][week][pitchNum] = 1;
                     int[] l = {0, week, pitchNum};
-                    list.add(l);
-                    break;
+                    return l;
                 }
             } else {
                 for (int i = 6; i >= 0; i--) {
@@ -665,16 +662,13 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                             time[0][i][j] = 1;
                             time[1][i][j] = 1;
                             int[] l = {0, i, j};
-                            list.add(l);
-                            break ok;
+                            return l;
                         }
                     }
                 }
-                list.add(null);
-                break;
+                return null;
             }
         }
-        return list;
     }
 
 
