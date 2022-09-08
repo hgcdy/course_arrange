@@ -8,7 +8,11 @@
         <result column="course_name" property="courseName" />
         <result column="house_type" property="houseType" />
         <result column="must" property="must" />
-        <result column="num" property="num" />
+        <result column="course_time" property="courseTime" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+        <result column="week_time" property="weekTime" />
+        <result column="max_class_num" property="maxClassNum" />
         <result column="del_flag" property="delFlag" />
         <result column="create_time" property="createTime" />
         <result column="create_user_id" property="createUserId" />
@@ -18,32 +22,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, course_name, house_type, must, num, del_flag, create_time, create_user_id, modify_time, modify_user_id
+        id, course_name, house_type, must, course_time, start_time, end_time, week_time, max_class_num, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
-
-<!--     条件选择查询 -->
-    <select id="getSelectList" resultType="cn.netinnet.coursearrange.entity.NinCourse">
-        SELECT id, course_name, house_type, must, num
-        FROM nin_course
-        WHERE del_flag = 0
-        <if test="courseName != null">
-            AND course_name LIKE CONCAT('%',#{courseName},'%')
-        </if>
-        <if test="houseType != null">
-            AND house_type = #{houseType}
-        </if>
-        <if test="must != null">
-            AND must = #{must}
-        </if>
-        <if test="num != null">
-            AND num = #{num}
-        </if>
-        ORDER BY must, course_name
-    </select>
-
-    <select id="getAllList" resultType="cn.netinnet.coursearrange.entity.NinCourse">
-        SELECT id, course_name, house_type, must, num
-        FROM nin_course
-    </select>
 
 </mapper>

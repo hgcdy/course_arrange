@@ -21,4 +21,30 @@
         id, student_name, student_code, student_password, class_id, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
+    <select id="getSelectList" resultType="java.util.Map">
+        SElECT nin_student.id AS id,
+                student_name AS studentName,
+                student_code AS studentCode,
+                student_password AS studentPassword,
+                class_id AS classId,
+                class_name AS className
+        FROM nin_student, nin_class
+        WHERE nin_student.del_flag = 0
+        AND nin_student.class_id = nin_class.id
+        <if test="studentName != null and studentName != ''">
+            AND student_name LIKE CONCAT('%',#{studentName},'%')
+        </if>
+        <if test="studentName != null and studentName != ''">
+            AND student_code LIKE CONCAT('%',#{studentName},'%')
+        </if>
+        <if test="list != null">
+            AND (
+            <foreach collection="list" index="index" item="item" separator="OR">
+                nin_student.class_id = #{item}
+            </foreach>
+            )
+        </if>
+
+
+    </select>
 </mapper>

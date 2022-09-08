@@ -5,17 +5,19 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.netinnet.coursearrange.entity.NinArrange">
         <id column="id" property="id" />
+        <result column="career_id" property="careerId" />
         <result column="class_id" property="classId" />
-        <result column="classes_id" property="classesId" />
         <result column="teacher_id" property="teacherId" />
+        <result column="teach_class_id" property="teachClassId" />
         <result column="course_id" property="courseId" />
         <result column="house_id" property="houseId" />
         <result column="must" property="must" />
         <result column="weekly" property="weekly" />
-        <result column="start_weekly" property="startWeekly" />
-        <result column="end_weekly" property="endWeekly" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
         <result column="week" property="week" />
         <result column="pitch_num" property="pitchNum" />
+        <result column="people_num" property="peopleNum" />
         <result column="del_flag" property="delFlag" />
         <result column="create_time" property="createTime" />
         <result column="create_user_id" property="createUserId" />
@@ -25,55 +27,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, class_id, classes_id, teacher_id, course_id, house_id, must, weekly, start_weekly, end_weekly, week, pitch_num, del_flag, create_time, create_user_id, modify_time, modify_user_id
+        id, career_id, class_id, teacher_id, teach_class_id, course_id, house_id, must, weekly, start_time, end_time, week, pitch_num, people_num, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
-
-    <insert id="addBatch" parameterType="cn.netinnet.coursearrange.entity.NinArrange">
-        INSERT INTO
-        nin_arrange(id, class_id, classes_id, teacher_id, course_id, house_id, must, weekly, start_weekly, end_weekly, week, pitch_num, create_user_id, modify_user_id)
-        VALUES
-        <foreach collection="list" index="index" item="item" separator=",">
-            (#{item.id}, #{item.classId}, #{item.classesId}, #{item.teacherId}, #{item.courseId}, #{item.houseId}, #{item.must}, #{item.weekly}, #{item.startWeekly}, #{item.endWeekly}, #{item.week}, #{item.pitchNum}, #{item.createUserId}, #{item.modifyUserId})
-        </foreach>
-    </insert>
-
-    <select id="getInfo" resultType="java.util.Map">
-        SELECT class_id AS classId,
-               classes_id AS classesId,
-               teacher_name AS teacherName,
-               course_name AS courseName,
-               house_name AS houseName,
-               nin_arrange.must AS must,
-               weekly,
-               start_weekly AS startWeekly,
-               end_weekly AS endWeekly,
-               week,
-               pitch_num AS pitchNum
-        FROM nin_teacher,
-             nin_course,
-             nin_house,
-             nin_arrange
-        <where>
-        nin_arrange.del_flag = 0
-        AND nin_teacher.id = nin_arrange.teacher_id
-        AND nin_course.id = nin_arrange.course_id
-        AND nin_house.id = nin_arrange.house_id
-        <if test="teacherId != null">
-            AND nin_arrange.teacher_id = #{teacherId}
-        </if>
-       AND(
-       <if test="classesIdList != null">
-            <foreach collection="classesIdList" index="index" item="item1" separator="OR"  close="OR">
-                nin_arrange.classes_id = #{item1}
-            </foreach>
-        </if>
-        <if test="classIdList != null">
-            <foreach collection="classIdList" index="index" item="item2" separator="OR">
-                nin_arrange.class_id = #{item2}
-            </foreach>
-        </if>
-        )
-        </where>
-    </select>
 
 </mapper>

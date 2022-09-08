@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.netinnet.coursearrange.mapper.NinTeacherMapper">
+<mapper namespace="cn.netinnet.coursearrange.mapper.NinCareerMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="cn.netinnet.coursearrange.entity.NinTeacher">
+    <resultMap id="BaseResultMap" type="cn.netinnet.coursearrange.entity.NinCareer">
         <id column="id" property="id" />
-        <result column="teacher_name" property="teacherName" />
-        <result column="teacher_code" property="teacherCode" />
-        <result column="teacher_password" property="teacherPassword" />
+        <result column="college" property="college" />
+        <result column="career_name" property="careerName" />
+        <result column="class_num" property="classNum" />
         <result column="del_flag" property="delFlag" />
         <result column="create_time" property="createTime" />
         <result column="create_user_id" property="createUserId" />
@@ -17,7 +17,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, teacher_name, teacher_code, teacher_password, del_flag, create_time, create_user_id, modify_time, modify_user_id
+        id, college, career_name, class_num, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
 </mapper>

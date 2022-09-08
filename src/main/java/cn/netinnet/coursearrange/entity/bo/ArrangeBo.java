@@ -77,9 +77,6 @@ public class ArrangeBo {
      */
     private Integer pitchNum;
 
-    /**
-     * 课时8的周次
-     */
-    private Integer weekly_8;
+
 
 }

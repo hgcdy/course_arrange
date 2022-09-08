@@ -138,11 +138,16 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
     }
 
     @Override
-    public Map<String, List<NinClass>> getCareerClassList(){
-        List<NinClass> classList = ninClassMapper.getSelectList(null, null);
-        Map<String, List<NinClass>> collect = classList.stream().collect(Collectors.groupingBy(NinClass::getCareer));
-        return collect;
+    public Map<String, List<NinClass>> getCareerClassList() {
+        return null;
     }
+
+//    @Override
+//    public Map<String, List<NinClass>> getCareerClassList(){
+//        List<NinClass> classList = ninClassMapper.getSelectList(null, null);
+//        Map<String, List<NinClass>> collect = classList.stream().collect(Collectors.groupingBy(NinClass::getCareer));
+//        return collect;
+//    }
 
     @Override
     public NinStudent getStudentById(Long id) {

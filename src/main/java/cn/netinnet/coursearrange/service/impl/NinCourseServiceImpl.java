@@ -172,25 +172,30 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
 
     @Override
     public List<NinCourse> getSelectCourseList(Long classId) {
-        List<NinCourse> courseAllList = ninCourseMapper.getAllList();
-        List<NinCourse> courseList = new ArrayList<>();
-        if (classId != null){
-            //todo 选修必修课程未按要求出现
-            if (classId == 0){
-                //全选
-                courseList = courseAllList;
-            } else if (classId == 2){
-                //必修
-                courseList = courseAllList.stream().filter(i ->
-                        i.getMust() == 1
-                ).collect(Collectors.toList());
-            } else if(classId == 1 || ninClassMapper.selectById(classId).getCareer().equals("#")){
-                //选修
-                courseList = courseAllList.stream().filter(i ->
-                        i.getMust() == 0
-                ).collect(Collectors.toList());
-            }
-        }
-        return courseList;
+        return null;
     }
+
+//    @Override
+//    public List<NinCourse> getSelectCourseList(Long classId) {
+//        List<NinCourse> courseAllList = ninCourseMapper.getAllList();
+//        List<NinCourse> courseList = new ArrayList<>();
+//        if (classId != null){
+//            //todo 选修必修课程未按要求出现
+//            if (classId == 0){
+//                //全选
+//                courseList = courseAllList;
+//            } else if (classId == 2){
+//                //必修
+//                courseList = courseAllList.stream().filter(i ->
+//                        i.getMust() == 1
+//                ).collect(Collectors.toList());
+//            } else if(classId == 1 || ninClassMapper.selectById(classId).getCareer().equals("#")){
+//                //选修
+//                courseList = courseAllList.stream().filter(i ->
+//                        i.getMust() == 0
+//                ).collect(Collectors.toList());
+//            }
+//        }
+//        return courseList;
+//    }
 }

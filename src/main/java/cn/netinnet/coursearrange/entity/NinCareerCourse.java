@@ -4,9 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -17,38 +14,23 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author wangjs
- * @since 2022-08-18
+ * @since 2022-09-08
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("nin_class")
-public class NinClass implements Serializable {
+@TableName("nin_career_course")
+public class NinCareerCourse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
-    /**
-     * 专业
-     */
+    @TableField("career_id")
     private Long careerId;
 
-    @TableField("class_name")
-    private String className;
-
-    /**
-     * 班级人数
-     */
-    @TableField("people_num")
-    private Integer peopleNum;
-
-    /**
-     * 已有课程数
-     */
-    @TableField("course_num")
-    private Integer courseNum;
+    @TableField("course_id")
+    private Long courseId;
 
     @TableField("del_flag")
     private Integer delFlag;

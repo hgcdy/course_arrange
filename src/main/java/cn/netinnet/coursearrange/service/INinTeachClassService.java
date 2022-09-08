@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.service;
 
-import cn.netinnet.coursearrange.entity.NinClasses;
+import cn.netinnet.coursearrange.entity.NinTeachClass;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author wangjs
- * @since 2022-09-06
+ * @since 2022-09-08
  */
-public interface INinClassesService extends IService<NinClasses> {
+public interface INinTeachClassService extends IService<NinTeachClass> {
 
 }

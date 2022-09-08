@@ -63,13 +63,18 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
 
     @Override
     public Map<String, List<NinClass>> careerClassList() {
-        List<NinClass> classList = ninClassMapper.getSelectList(null, null);
-        Map<String, List<NinClass>> map = classList.stream().collect(Collectors.groupingBy(NinClass::getCareer));
-//        if (map.get("#") != null){
-//            map.remove("#");
-//        }
-        return map;
+        return null;
     }
+
+//    @Override
+//    public Map<String, List<NinClass>> careerClassList() {
+//        List<NinClass> classList = ninClassMapper.getSelectList(null, null);
+//        Map<String, List<NinClass>> map = classList.stream().collect(Collectors.groupingBy(NinClass::getCareer));
+////        if (map.get("#") != null){
+////            map.remove("#");
+////        }
+//        return map;
+//    }
 
     @Override
     public int addSingle(NinClass ninClass) {
@@ -87,35 +92,40 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public int delBatchStudent(Long classId) {
-        NinClass ninClass = ninClassMapper.selectById(classId);
-        if (ninClass.getCareer().equals("0")) {
-            //选修找学生-课程表，对应的记录删除
-            return ninStudentCourseMapper.delete(
-                    new QueryWrapper<>(new NinStudentCourse() {{
-                        setTakeClassId(classId);
-                    }}));
-        } else {
-            //必修,删除学生->删除学生对应的其他学生-课程表记录
-            List<NinStudent> ninStudents = ninStudentMapper.selectList(
-                    new QueryWrapper<>(new NinStudent() {{
-                        setClassId(classId);
-                    }}));
-            List<Long> studentIds = ninStudents.stream().map(i -> i.getId()).collect(Collectors.toList());
-
-            if (studentIds != null && studentIds.size() != 0) {
-                //根据学生ids删除学生-课程表记录
-                ninStudentCourseMapper.delBatchStudentId(studentIds);
-            }
-
-            //删除学生表
-            return ninStudentMapper.delete(new QueryWrapper<>(new NinStudent() {{
-                setClassId(classId);
-            }}));
-        }
-
+        return 0;
     }
+
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public int delBatchStudent(Long classId) {
+//        NinClass ninClass = ninClassMapper.selectById(classId);
+//        if (ninClass.getCareer().equals("0")) {
+//            //选修找学生-课程表，对应的记录删除
+//            return ninStudentCourseMapper.delete(
+//                    new QueryWrapper<>(new NinStudentCourse() {{
+//                        setTakeClassId(classId);
+//                    }}));
+//        } else {
+//            //必修,删除学生->删除学生对应的其他学生-课程表记录
+//            List<NinStudent> ninStudents = ninStudentMapper.selectList(
+//                    new QueryWrapper<>(new NinStudent() {{
+//                        setClassId(classId);
+//                    }}));
+//            List<Long> studentIds = ninStudents.stream().map(i -> i.getId()).collect(Collectors.toList());
+//
+//            if (studentIds != null && studentIds.size() != 0) {
+//                //根据学生ids删除学生-课程表记录
+//                ninStudentCourseMapper.delBatchStudentId(studentIds);
+//            }
+//
+//            //删除学生表
+//            return ninStudentMapper.delete(new QueryWrapper<>(new NinStudent() {{
+//                setClassId(classId);
+//            }}));
+//        }
+//
+//    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)

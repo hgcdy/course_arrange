@@ -5,7 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.netinnet.coursearrange.entity.NinClass">
         <id column="id" property="id" />
-        <result column="career" property="career" />
+        <result column="career_id" property="careerId" />
         <result column="class_name" property="className" />
         <result column="people_num" property="peopleNum" />
         <result column="course_num" property="courseNum" />
@@ -18,62 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, career, class_name, people_num, course_num, del_flag, create_time, create_user_id, modify_time, modify_user_id
+        id, career_id, class_name, people_num, course_num, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
-    <!--     条件选择查询 -->
-    <select id="getSelectList" resultType="cn.netinnet.coursearrange.entity.NinClass">
-        SELECT id, career, class_name, people_num, course_num
-        FROM nin_class
-        WHERE del_flag = 0
-        <if test="career != null and career != ''">
-            AND career = #{career}
-        </if>
-        <if test="className != null and className != ''">
-            AND class_name LIKE CONCAT('%',#{className},'%')
-        </if>
-        ORDER BY career, class_name
-    </select>
-
-<!-- 专业列表 -->
-    <select id="careerList" resultType="java.lang.String">
-        SELECT DISTINCT career
-        FROM nin_class
-        WHERE del_flag = 0
-        ORDER BY career
-    </select>
-
-<!-- 班级课程数量+1 -->
-    <update id="addBatchCourseNum">
-        UPDATE nin_class
-        SET course_num = course_num + 1
-        WHERE
-        <foreach  collection="list" index="index" item="item"  separator="OR">
-            id = #{item}
-        </foreach>
-    </update>
-
-    <!-- 班级课程数量+1 -->
-    <update id="subBatchCourseNum">
-        UPDATE nin_class
-        SET course_num = course_num - 1
-        WHERE
-        <foreach  collection="list" index="index" item="item"  separator="OR">
-            id = #{item}
-        </foreach>
-    </update>
-
-<!--     班级人数+1 -->
-    <update id="addPeopleNum">
-        UPDATE nin_class
-        SET people_num = people_num + 1
-        WHERE id = #{id}
-    </update>
-
-<!-- 班级人数-1 -->
-    <update id="subPeopleNum">
-        UPDATE nin_class
-        SET people_num = people_num - 1
-        WHERE id = #{id}
-    </update>
 </mapper>

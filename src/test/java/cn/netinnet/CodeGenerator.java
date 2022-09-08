@@ -53,19 +53,19 @@ public class CodeGenerator {
         mpg.setGlobalConfig(gc);
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/course_arrange_v2");
+        dsc.setUrl("jdbc:mysql://127.0.0.1:3306/course_arrange_v3");
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
         dsc.setPassword("1234");
         mpg.setDataSource(dsc);
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("cn.netinnet.coursearrange");
-//                .setEntity("entity")
-//                .setMapper("mapper")
-//                .setService("service")
-//                .setServiceImpl("service.impl")
-//                .setController("controller");
+        pc.setParent("cn.netinnet.coursearrange")
+                .setEntity("entity")
+                .setMapper("mapper")
+                .setService("service")
+                .setServiceImpl("service.impl")
+                .setController("controller");
         mpg.setPackageInfo(pc);
         // 自定义配置
         InjectionConfig cfg = new InjectionConfig() {

@@ -41,11 +41,11 @@ public class NinArrangeController {
         return modelAndView;
     }
 
-    @GetMapping("/arrange")
-    public ResultModel arrange() {
-        ninArrangeService.arrange();
-        return ResultModel.ok();
-    }
+//    @GetMapping("/arrange")
+//    public ResultModel arrange() {
+//        ninArrangeService.arrange();
+//        return ResultModel.ok();
+//    }
 
     @PostMapping("/getInfo")
     public ResultModel getInfo(Long classId, Long teacherId, Long studentId, Integer weekly) {

@@ -45,9 +45,29 @@ public class NinCourse implements Serializable {
     private Integer must;
 
     /**
-     * 一学期要上的节数，尽量为8的倍数
+     * 课时
      */
-    private Integer num;
+    private Integer courseTime;
+
+    /**
+     * 最早开课时间
+     */
+    private Integer startTime;
+
+    /**
+     * 最晚结课时间
+     */
+    private Integer endTime;
+
+    /**
+     * 几周内结课
+     */
+    private Integer weekTime;
+
+    /**
+     * 最多上课班级
+     */
+    private Integer maxClassNum;
 
     @TableField("del_flag")
     private Integer delFlag;

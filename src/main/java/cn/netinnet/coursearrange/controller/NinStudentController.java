@@ -39,7 +39,6 @@ public class NinStudentController {
      * 分页条件查询
      * @param page
      * @param size
-     * @param classIds 班级id
      * @param studentName 名字或账号模糊查询
      * @return
      */

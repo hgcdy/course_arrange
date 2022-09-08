@@ -32,12 +32,16 @@ public class NinArrange implements Serializable {
     private Long id;
 
     @JsonSerialize(using = ToStringSerializer.class)
+    @TableField("career_id")
+    private Long careerId;
+
+    @JsonSerialize(using = ToStringSerializer.class)
     @TableField("class_id")
     private Long classId;
 
     @JsonSerialize(using = ToStringSerializer.class)
-    @TableField("classes_id")
-    private Long classesId;
+    @TableField("teach_class_id")
+    private Long teachClassId;
 
     @JsonSerialize(using = ToStringSerializer.class)
     @TableField("teacher_id")
@@ -64,12 +68,12 @@ public class NinArrange implements Serializable {
     /**
      * 开始周次
      */
-    private Integer startWeekly;
+    private Integer startTime;
 
     /**
      * 结束周次
      */
-    private Integer endWeekly;
+    private Integer endTime;
 
     /**
      * 星期
@@ -81,6 +85,11 @@ public class NinArrange implements Serializable {
      */
     @TableField("pitch_num")
     private Integer pitchNum;
+
+    /**
+     * 人数
+     */
+    private Integer peopleNum;
 
     @TableField("del_flag")
     private Integer delFlag;
