@@ -50,16 +50,16 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Override
     public void arrange() {
-        //todo 修改数据库arrange
+        //todo  v2
+        // 修改数据库arrange
         // classes表（存储一起上课的班级）
         // arrange 新增classes_id,(当classId为空时，查找classes表)
         // weekly去除，新增开始周次和结束周次、单双周属性
-        // 排课8课时最后，先选修后必修
 
         System.out.println("----开始排课----");
         long oldData = System.currentTimeMillis();
 
-        //todo 生成前清空
+        //生成前清空
         ninArrangeMapper.delete(new QueryWrapper<>());
         ninClassesMapper.delete(new QueryWrapper<>());
 
@@ -410,10 +410,10 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             }
 
             List<Long> classesIdList = ninClassesMapper.getClassesIdList(classIdList);
-            if (classIdList.size() == 0){
+            if (classIdList.size() == 0) {
                 classesIdList = null;
             }
-            if (classesIdList.size() == 0){
+            if (classesIdList.size() == 0) {
                 classesIdList = null;
             }
             info = ninArrangeMapper.getInfo(classIdList, classesIdList, null);
@@ -424,7 +424,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         Map<Long, List<Map<String, Object>>> classesIdMap = classesList.stream().collect(Collectors.groupingBy(i -> (Long) i.get("classesId")));
 
         //
-//        ninClassMapper.selectList(new QueryWrapper<>())
+        Map<Long, String> classNameMap = ninClassMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
+
 
         for (Map<String, Object> map : info) {
             if (map.get("classId") == null) {
@@ -439,8 +440,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     }
                 }
             } else {
-                //todo 单个班级
-
+                map.put("className", classNameMap.get(classId));
             }
         }
 
@@ -450,19 +450,19 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
 
         HashMap<String, String> hashMap = new HashMap<>();
-        for (Map<String, Object> map: info) {
+        for (Map<String, Object> map : info) {
             String str = "";
-            int weekly1 = (int)map.get("weekly");
-            if (weekly1 == 1){
+            int weekly1 = (int) map.get("weekly");
+            if (weekly1 == 1) {
                 str = "(单周)";
-            } else if (weekly1 == 2){
+            } else if (weekly1 == 2) {
                 str = "(双周)";
             }
-            String value = map.get("className") + "/" + map.get("teacherName") + "/" + map.get("courseName") + "/" + map.get("houseName") + "/" + map.get("startWeekly") + "-" + map.get("endWeekly") + str + "/" + ((int)map.get("must") == 0?"选修":"必修");
+            String value = map.get("className") + "/" + map.get("teacherName") + "/" + map.get("courseName") + "/" + map.get("houseName") + "/" + map.get("startWeekly") + "-" + map.get("endWeekly") + str + "/" + ((int) map.get("must") == 0 ? "选修" : "必修");
 
             String key = "" + map.get("week") + map.get("pitchNum");
 
-            if (hashMap.get(key) == null){
+            if (hashMap.get(key) == null) {
                 hashMap.put(key, value);
             } else {
                 hashMap.put(key, hashMap.get(key) + value);
@@ -523,7 +523,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         Long houseId = bo.getHouseId();
         Long classId = bo.getClassId();
 
-        List<ArrangeBo> arranges = null;
+        List<ArrangeBo> arranges = new ArrayList<>();
 
         //必修选修限制（选修只在周四上）
         if (must == 0) {
@@ -542,19 +542,75 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //不空闲的时间，教师（可能为空）和教室
         Stream<ArrangeBo> ninArrangeStream = arrangeBoList.stream();
 
+
+//        if (arrangeBoList != null && arrangeBoList.size() != 0){
+//            ok:
+//            for (ArrangeBo bo2 : arrangeBoList) {
+//                Long teacherId1 = bo2.getTeacherId();
+//                Long houseId1 = bo2.getHouseId();
+//                if (teacherId1 != null && teacherId != null) {
+//                    if (teacherId1 == teacherId) {
+//                        arranges.add(bo2);
+//                        break;
+//                    }
+//                }
+//                if (houseId == houseId1) {
+//                    arranges.add(bo2);
+//                    break;
+//                }
+//                //判断班级，双重for
+//                if (classId == null) {
+//                    if (bo2.getClassId() == null) {
+//                        for (Long l1 : classIdList) {
+//                            for (Long l2 : bo2.getClassIdList()) {
+//                                if (l1 == l2) {
+//                                    arranges.add(bo2);
+//                                    break ok;
+//                                }
+//                            }
+//                        }
+//                    } else {
+//                        for (Long l : classIdList) {
+//                            if (bo2.getClassId() == l) {
+//                                arranges.add(bo2);
+//                                break ok;
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    if (bo2.getClassId() == null) {
+//                        for (Long l : bo2.getClassIdList()) {
+//                            if (classId == l) {
+//                                arranges.add(bo2);
+//                                break ok;
+//                            }
+//                        }
+//                    } else {
+//                        if (classId == bo2.getClassId()) {
+//                            arranges.add(bo2);
+//                            break ok;
+//                        }
+//                    }
+//                }
+//            }
+//
+//        }
+
+
         if (classIdList != null && classIdList.size() != 0) {
             //多班级
+            //todo 问题：比较的是多班级，被比较的也是多班级（此时classId=0）
             int size = classIdList.size();
             if (size == 2) {
                 //两个
-                arranges = ninArrangeStream.filter(i -> (i.getTeacherId() != null && teacherId != null ? i.getTeacherId() == teacherId : true) || i.getHouseId() != houseId || i.getClassId() == classIdList.get(0) || i.getClassId() == classIdList.get(1)).collect(Collectors.toList());
+                arranges = ninArrangeStream.filter(i -> (i.getTeacherId() != null && teacherId != null ? i.getTeacherId() == teacherId : true) || i.getHouseId() == houseId || i.getClassId() == classIdList.get(0) || i.getClassId() == classIdList.get(1)).collect(Collectors.toList());
             } else if (size == 3) {
                 //三个
-                arranges = ninArrangeStream.filter(i -> (i.getTeacherId() != null && teacherId != null ? i.getTeacherId() == teacherId : true) || i.getHouseId() != houseId || i.getClassId() == classIdList.get(0) || i.getClassId() == classIdList.get(1) || i.getClassId() == classIdList.get(2)).collect(Collectors.toList());
+                arranges = ninArrangeStream.filter(i -> (i.getTeacherId() != null && teacherId != null ? i.getTeacherId() == teacherId : true) || i.getHouseId() == houseId || i.getClassId() == classIdList.get(0) || i.getClassId() == classIdList.get(1) || i.getClassId() == classIdList.get(2)).collect(Collectors.toList());
             }
         } else {
             //一个班级
-            arranges = ninArrangeStream.filter(i -> (i.getTeacherId() != null && teacherId != null ? i.getTeacherId() == teacherId : true) || i.getHouseId() != houseId || i.getClassId() == classId).collect(Collectors.toList());
+            arranges = ninArrangeStream.filter(i -> (i.getTeacherId() != null && teacherId != null ? i.getTeacherId() == teacherId : true) || i.getHouseId() == houseId || i.getClassId() == classId).collect(Collectors.toList());
         }
 
         //三维数组，周次（单双周，记2），星期（7），节数（5）
@@ -566,7 +622,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     time[0][arrange.getWeek()][arrange.getPitchNum()] = 1;
                     time[1][arrange.getWeek()][arrange.getPitchNum()] = 1;
                 } else {
-                    time[arrange.getWeekly() - 1][arrange.getWeek()][arrange.getPitchNum()] = 1;
+                    time[weekly - 1][arrange.getWeek()][arrange.getPitchNum()] = 1;
                 }
             }
         }
@@ -619,7 +675,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 }
             } else {
                 for (int i = 0; i < 2; i++) {
-                    for (int j = 6; j >= 0; j--) {
+                    for (int j = 0; j < 7; j++) {
                         for (int k = 0; k < 5; k++) {
                             if (time[i][j][k] == 0) {
                                 time[i][j][k] = 1;
@@ -653,7 +709,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     return l;
                 }
             } else {
-                for (int i = 6; i >= 0; i--) {
+                for (int i = 0; i < 7; i++) {
                     if (i == week_) {
                         continue;
                     }
@@ -672,63 +728,5 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
 
-//    @Override
-//    public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer weekly) {
-//        List<Map<String, Object>> info = new ArrayList<>();
-//        if (studentId != null) {
-//            List<Long> classIdList = new ArrayList<>();
-//            //学生-课程，获取学生的选修教学班有哪些
-//            List<NinStudentCourse> ninStudentCourses = ninStudentCourseMapper.selectList(new QueryWrapper<>(new NinStudentCourse() {{
-//                setStudentId(studentId);
-//            }}));
-//            if (ninStudentCourses != null && ninStudentCourses.size() != 0) {
-//                for (NinStudentCourse nsc : ninStudentCourses) {
-//                    classIdList.add(nsc.getTakeClassId());
-//                }
-//            }
-//            //获取学生的班级记录
-//            NinStudent ninStudent = ninStudentMapper.selectById(studentId);
-//            classIdList.add(ninStudent.getClassId());
-//            //多个班级查询
-//            info = ninArrangeMapper.getInfo(classIdList, null, null, weekly);
-//        } else {
-//            info = ninArrangeMapper.getInfo(null, classId, teacherId, weekly);
-//        }
-//
-//        HashMap<String, String> hashMap = new HashMap<>();
-//        if (weekly == null) {
-//            Map<Integer, Map<Integer, List<Map<String, Object>>>> collect = info.stream().sorted(Comparator.comparing((Map<String, Object> map) -> (Integer) map.get("weekly"))).collect(Collectors.groupingBy(i -> (Integer) i.get("week"), Collectors.groupingBy(i -> (Integer) i.get("pitchNum"))));
-//            for (Map.Entry<Integer, Map<Integer, List<Map<String, Object>>>> e : collect.entrySet()) {
-//                for (Map.Entry<Integer, List<Map<String, Object>>> e1 : e.getValue().entrySet()) {
-//                    List<Map<String, Object>> value = e1.getValue();
-//                    int startWeekly = (int) value.get(0).get("weekly");
-//                    int size = value.size();
-//                    String str = "";
-//                    //todo 教师课程表会有问题
-//
-//                    if (size == 16) {
-//                        str = "1-16周";
-//                    } else if (size == 8) {
-//                        str = startWeekly + "-" + (startWeekly + 14) + "周（" + (startWeekly == 1 ? "单周" : "双周") + "）";
-//                    } else if (size == 4) {
-//                        str = startWeekly + "-" + (startWeekly + 3) + "周";
-//                    }
-//
-//                    Map<String, Object> m = value.get(0);
-//                    String key = ""+e.getKey()+e1.getKey();
-//                    if (hashMap.get(key) != null){
-//                        hashMap.put(key, hashMap.get(key) + "/" + m.get("className") + "/" + m.get("teacherName") + "/" + m.get("courseName") + "/" + m.get("houseName") + "/" + str + "/" + ((int) m.get("must") == 0 ? "选修" : "必修"));
-//                    } else {
-//                        hashMap.put(key, m.get("className") + "/" + m.get("teacherName") + "/" + m.get("courseName") + "/" + m.get("houseName") + "/" + str + "/" + ((int) m.get("must") == 0 ? "选修" : "必修"));
-//                    }
-//                }
-//            }
-//        } else {
-//            for (Map<String, Object> m : info) {
-//                hashMap.put("" + m.get("week") + m.get("pitchNum"), m.get("className") + "/" + m.get("teacherName") + "/" + m.get("courseName") + "/" + m.get("houseName") + "/" + ((int) m.get("must") == 0 ? "选修" : "必修"));
-//            }
-//        }
-//        return hashMap;
-//    }
-
 }
+
