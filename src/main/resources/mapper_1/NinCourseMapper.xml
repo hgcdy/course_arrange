@@ -1,0 +1,49 @@
+<!-- <?xml version="1.0" encoding="UTF-8"?> -->
+<!-- <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> -->
+<!-- <mapper namespace="cn.netinnet.coursearrange.mapper.NinCourseMapper"> -->
+
+<!--      --><!-- 通用查询映射结果 -->
+<!--     <resultMap id="BaseResultMap" type="cn.netinnet.coursearrange.entity.NinCourse"> -->
+<!--         <id column="id" property="id" /> -->
+<!--         <result column="course_name" property="courseName" /> -->
+<!--         <result column="house_type" property="houseType" /> -->
+<!--         <result column="must" property="must" /> -->
+<!--         <result column="num" property="num" /> -->
+<!--         <result column="del_flag" property="delFlag" /> -->
+<!--         <result column="create_time" property="createTime" /> -->
+<!--         <result column="create_user_id" property="createUserId" /> -->
+<!--         <result column="modify_time" property="modifyTime" /> -->
+<!--         <result column="modify_user_id" property="modifyUserId" /> -->
+<!--     </resultMap> -->
+
+<!--      --><!-- 通用查询结果列 -->
+<!--     <sql id="Base_Column_List"> -->
+<!--         id, course_name, house_type, must, num, del_flag, create_time, create_user_id, modify_time, modify_user_id -->
+<!--     </sql> -->
+
+<!--     条件选择查询 -->
+<!--     <select id="getSelectList" resultType="cn.netinnet.coursearrange.entity.NinCourse"> -->
+<!--         SELECT id, course_name, house_type, must, num -->
+<!--         FROM nin_course -->
+<!--         WHERE del_flag = 0 -->
+<!--         <if test="courseName != null"> -->
+<!--             AND course_name LIKE CONCAT('%',#{courseName},'%') -->
+<!--         </if> -->
+<!--         <if test="houseType != null"> -->
+<!--             AND house_type = #{houseType} -->
+<!--         </if> -->
+<!--         <if test="must != null"> -->
+<!--             AND must = #{must} -->
+<!--         </if> -->
+<!--         <if test="num != null"> -->
+<!--             AND num = #{num} -->
+<!--         </if> -->
+<!--         ORDER BY must, course_name -->
+<!--     </select> -->
+
+<!--     <select id="getAllList" resultType="cn.netinnet.coursearrange.entity.NinCourse"> -->
+<!--         SELECT id, course_name, house_type, must, num -->
+<!--         FROM nin_course -->
+<!--     </select> -->
+
+<!-- </mapper> -->

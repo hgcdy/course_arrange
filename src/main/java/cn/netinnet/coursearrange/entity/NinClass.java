@@ -33,6 +33,7 @@ public class NinClass implements Serializable {
     /**
      * 专业
      */
+    @TableField("career_id")
     private Long careerId;
 
     @TableField("class_name")

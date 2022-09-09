@@ -1,0 +1,46 @@
+<!-- <?xml version="1.0" encoding="UTF-8"?> -->
+<!-- <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> -->
+<!-- <mapper namespace="cn.netinnet.coursearrange.mapper.NinStudentCourseMapper"> -->
+
+<!--      --><!-- 通用查询映射结果 -->
+<!--     <resultMap id="BaseResultMap" type="cn.netinnet.coursearrange.entity.NinStudentCourse"> -->
+<!--         <id column="id" property="id" /> -->
+<!--         <result column="student_id" property="studentId" /> -->
+<!--         <result column="course_id" property="courseId" /> -->
+<!--         <result column="take_class_id" property="takeClassId" /> -->
+<!--         <result column="del_flag" property="delFlag" /> -->
+<!--         <result column="create_time" property="createTime" /> -->
+<!--         <result column="create_user_id" property="createUserId" /> -->
+<!--         <result column="modify_time" property="modifyTime" /> -->
+<!--         <result column="modify_user_id" property="modifyUserId" /> -->
+<!--     </resultMap> -->
+
+<!--      --><!-- 通用查询结果列 -->
+<!--     <sql id="Base_Column_List"> -->
+<!--         id, student_id, course_id, take_class_id, del_flag, create_time, create_user_id, modify_time, modify_user_id -->
+<!--     </sql> -->
+
+<!--     <delete id="delBatchStudentId"> -->
+<!--         DELETE FROM nin_student_course -->
+<!--         WHERE -->
+<!--         <foreach collection="list" index="index" item="item" separator="OR"> -->
+<!--             student_id = #{item} -->
+<!--         </foreach> -->
+<!--     </delete> -->
+
+
+<!--     <select id="getSelectList" resultType="java.util.Map"> -->
+<!--         SELECT nin_student_course.id AS id, -->
+<!--                student_id AS studentId, -->
+<!--                nin_student_course.course_id AS courseId, -->
+<!--                nin_course.course_name AS courseName, -->
+<!--                nin_course.house_type AS houseType, -->
+<!--                nin_course.must AS must, -->
+<!--                nin_course.num AS num -->
+<!--         FROM nin_student_course, nin_course -->
+<!--         WHERE nin_student_course.del_flag = 0 -->
+<!--         AND nin_student_course.course_id = nin_course.id -->
+<!--         AND nin_student_course.student_id = #{studentId} -->
+<!--     </select> -->
+
+<!-- </mapper> -->

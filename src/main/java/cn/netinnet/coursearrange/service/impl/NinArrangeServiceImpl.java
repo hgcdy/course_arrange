@@ -4,16 +4,15 @@ import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.entity.bo.ArrangeBo;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinArrangeService;
+import cn.netinnet.coursearrange.util.IDUtil;
+import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -68,7 +67,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         List<Long> careerIdList = ninCareers.stream().map(NinCareer::getId).collect(Collectors.toList());
 
         //课程表
-        Map<Long, NinCourse> longNinCourseMap = ninCourseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.toMap(NinCourse::getId, Function.identity()));
+        List<NinCourse> courseList = ninCourseMapper.selectList(new QueryWrapper<>());
+        Map<Long, NinCourse> longNinCourseMap = courseList.stream().collect(Collectors.toMap(NinCourse::getId, Function.identity()));
 
         //<专业id，班级列表>//有顺序的
         Map<Long, List<NinClass>> longListNinClassMap = ninClassMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.groupingBy(NinClass::getCareerId));
@@ -78,8 +78,14 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         Map<Long, List<NinCareerCourse>> longListNinCareerCourseMap = ninCareerCourseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId));
 
 
+        //教室表
+        Map<Integer, List<NinHouse>> integerListNinHouseMap = ninHouseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.groupingBy(NinHouse::getHouseType));
+
+        //教师选课表
+        Map<Long, List<NinTeacherCourse>> longListNinTeacherCourseMap = ninTeacherCourseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.groupingBy(NinTeacherCourse::getCourseId));
 
 
+        // todo 最后存进去
         //存放教学班
         List<NinTeachClass> ninTeachClasses = new ArrayList<>();
 
@@ -91,63 +97,170 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         *           生成arrangeList
         * */
 
-        //遍历专业列表
+
+        //必修的排课列表
+        ArrayList<NinArrange> ninArrangeArrayList = new ArrayList<>();
+
+        //遍历专业列表 确定教学班和课程
         for (Long careerId: careerIdList) {
             //获得该专业的专业-课程表
             List<NinCareerCourse> ninCareerCourses1 = longListNinCareerCourseMap.get(careerId);
+            //todo 排查该专业下没有班级的情况
             //该专业的班级列表（有序的）
             List<NinClass> ninClasses = longListNinClassMap.get(careerId);
+            //该专业的班级数量
+            Integer classNum = ninClasses.size();
+            //<课程上课数量，Long{该专业分成的教学班id}>
+            Map<Integer, Long[]> teachClassMap = new HashMap<>();
+
             //循环该专业的专业选课表
             for (NinCareerCourse ncc : ninCareerCourses1) {
-                //该专业-课程记录对应的
+                //该专业-课程记录对应的课程
                 NinCourse ninCourse = longNinCourseMap.get(ncc.getCourseId());
-
 
                 //最多几个班一起上课
                 Integer maxClassNum = ninCourse.getMaxClassNum();
-                //该专业的班级数量
-                Integer classNum = ninClasses.size();
 
-                int i = classNum / maxClassNum;
-                int i1 = classNum % maxClassNum;
+                //如果为空，生成
+                if (teachClassMap.get(maxClassNum) == null){
 
-                int[] ints = null;
-                if (i1 == 0){
-                    //表示刚好
-                    ints = new int[i];
-                } else {
-                    ints = new int[i + 1];
+                    int i = classNum / maxClassNum;
+                    int i1 = classNum % maxClassNum;
+
+                    int[] ints = null;
+                    if (i == 0){
+                        ints = new int[]{i1};
+                    } else {
+                        if (i1 == 0){
+                            //表示刚好
+                            ints = grouping(classNum, i);
+                        } else {
+                            ints = grouping(classNum, i + 1);
+                        }
+                    }
+
+                    Long[] teachClasses = new Long[3];
+                    for (int j = 0; j < ints.length; j++) {
+                        long id = IDUtil.getID();
+                        for (int k = 0; k < ints[j]; k++) {
+                            NinTeachClass ninTeachClass = new NinTeachClass();
+                            ninTeachClass.setTeachClassId(id);
+                            ninTeachClass.setClassId(ninClasses.get(j + k).getId());
+                            ninTeachClass.setCreateUserId(UserUtil.getUserInfo().getUserId());
+                            ninTeachClass.setModifyUserId(UserUtil.getUserInfo().getUserId());
+                            ninTeachClasses.add(ninTeachClass);
+                        }
+                        teachClasses[j] = id;
+                    }
+                    teachClassMap.put(maxClassNum, teachClasses);
                 }
-                for (int j = 0; j < classNum; j++) {
-                    ints[j % ints.length]++;
+
+                Long[] longs = teachClassMap.get(maxClassNum);
+
+                for (int i = 0; i < longs.length; i++) {
+                    NinArrange ninArrange = new NinArrange();
+                    //id
+                    ninArrange.setId(IDUtil.getID());
+                    //专业id
+                    ninArrange.setCareerId(careerId);
+                    //教学班id
+                    ninArrange.setTeachClassId(longs[i]);
+                    //课程id
+                    ninArrange.setCourseId(ninCourse.getId());
+                    //必修
+                    ninArrange.setMust(1);
+                    //人数
+                    Map<Long, List<NinTeachClass>> longListNinTeachClassMap = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
+                    ninArrange.setPeopleNum(longListNinTeachClassMap.size() * 50);
+                    //创建修改者id
+                    ninArrange.setCreateUserId(UserUtil.getUserInfo().getUserId());
+                    ninArrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
+
+                    ninArrangeArrayList.add(ninArrange);
                 }
-                //得到的ints放的是每个教学班的数量(专业有7个班，课程最多三个班，即有ints = {3,2,2})
+            }
+        }
 
+        //按专业排序、课程分组
+        //Map<课程id，List<排课记录>>
+        List<NinArrange> ninArranges = ninArrangeArrayList.stream().sorted(Comparator.comparing(NinArrange::getCareerId)).collect(Collectors.toList());
+        Map<Long, List<NinArrange>> courseListArrangeMap = ninArranges.stream().collect(Collectors.groupingBy(NinArrange::getCourseId));
 
-
-
-
-
+        //确定教师
+        for (Map.Entry<Long, List<NinArrange>> map : courseListArrangeMap.entrySet()) {
+            //课程
+            NinCourse ninCourse = longNinCourseMap.get(map.getKey());
+            //选择该课程的教师(教师-课程表记录)
+            List<NinTeacherCourse> ninTeacherCourses = longListNinTeacherCourseMap.get(map.getKey());
+            if (ninTeacherCourses == null){
+                //没有教师授课
+                break;
             }
 
+            //教师id列表
+            List<Long> teacherIdList = ninTeacherCourses.stream().map(NinTeacherCourse::getTeacherId).collect(Collectors.toList());
 
+            //有选择该课程的教学班(排课记录)数量
+            int size = map.getValue().size();
 
-            //
-            // ,由此获得课程id列表
-            List<Long> courseIdList = longListNinCareerCourseMap.get(careerId).stream().map(NinCareerCourse::getCourseId).collect(Collectors.toList());
-            //取到课程列表
-            //按上课班级数排序
-            //分配教学班后
-            //生成arrangeList
-
+            //确定教师
+            if (teacherIdList.size() >= size) {
+                //如果教师数量比较多，大于大于教学班数量
+                for (int i = 0; i < size; i++) {
+                    map.getValue().get(i).setTeacherId(teacherIdList.get(i));
+                }
+            } else {
+                //如果教师数量少
+                int[] grouping = grouping(size, teacherIdList.size());
+                for (int i = 0; i < grouping.length; i++) {
+                    for (int j = 0; j < grouping[i]; j++) {
+                        map.getValue().get(i + j).setTeacherId(teacherIdList.get(i));
+                    }
+                }
+            }
 
         }
 
+        //确定教室
+        for (NinArrange arrange : ninArranges) {
+            Long courseId = arrange.getCourseId();
+            NinCourse ninCourse = longNinCourseMap.get(courseId);
+            Integer houseType = ninCourse.getHouseType();
+            if (houseType == 3 || houseType == 4){
+                //3-课外，4-网课，对应id也是3和4
+                arrange.setHouseId((long) houseType);
+            } else {
+                //符合教室类型，大于班级人数的教室,排序
+                //todo 教室最多可容纳的人数小于该教学班的人数，添加课程时提醒
+                Stream<NinHouse> ninHouseStream = integerListNinHouseMap.get(houseType).stream().filter(i -> i.getSeat() >= arrange.getPeopleNum());
+                Integer seat = ninHouseStream.min(Comparator.comparing(NinHouse::getSeat)).get().getSeat();
+                List<NinHouse> ninHouses = ninHouseStream.collect(Collectors.groupingBy(NinHouse::getSeat)).get(seat);
+                int i = (int) (Math.random() * ninHouses.size());
+                arrange.setHouseId(ninHouses.get(i).getId());
+            }
+        }
+
+        Map<Long, List<NinArrange>> longListNinArrangeMap = ninArranges.stream().sorted(Comparator.comparing(NinArrange::getCareerId)).collect(Collectors.groupingBy(NinArrange::getCourseId));
+//        courseList.stream()
+
+
+
+    }
 
 
 
 
 
+    //放入两个数
+    //返回平均分配的数组
+    //8,3->{3,3,2}
+    public int[] grouping(int maxNum, int minNum){
+        int[] ints = new int[minNum];
+        for (int i = 0; i < maxNum; i++) {
+            ints[i % ints.length]++;
+        }
+
+        return ints;
     }
 
 
