@@ -3,6 +3,9 @@ package cn.netinnet.coursearrange.mapper;
 import cn.netinnet.coursearrange.entity.NinTeachClass;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -14,5 +17,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface NinTeachClassMapper extends BaseMapper<NinTeachClass> {
+
+    void addBatch(@Param("list") List<NinTeachClass> ninTeachClassList);
 
 }

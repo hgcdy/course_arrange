@@ -1,7 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.entity.*;
-import cn.netinnet.coursearrange.entity.bo.ArrangeBo;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.util.IDUtil;
@@ -11,11 +10,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * <p>
@@ -37,35 +36,25 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Autowired
     private NinHouseMapper ninHouseMapper;
     @Autowired
-    private NinStudentMapper ninStudentMapper;
-//    @Autowired
-//    private NinClassesMapper ninClassesMapper;
-    @Autowired
-    private NinClassCourseMapper ninClassCourseMapper;
-    @Autowired
     private NinTeacherCourseMapper ninTeacherCourseMapper;
-    @Autowired
-    private NinStudentCourseMapper ninStudentCourseMapper;
     @Autowired
     private NinCareerMapper ninCareerMapper;
     @Autowired
     private NinCareerCourseMapper ninCareerCourseMapper;
     @Autowired
     private NinTeachClassMapper ninTeachClassMapper;
+    @Autowired
+    private NinStudentCourseMapper ninStudentCourseMapper;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void arrange() {
+        long oldData = System.currentTimeMillis();
         //获取选修的排课记录//todo 获得选修的排课记录
         List<NinArrange> ninArrangeList = ninArrangeMapper.selectList(new QueryWrapper<NinArrange>().eq("must", 0));
-        //删除排课记录
-        ninArrangeMapper.delete(new QueryWrapper<>());
-        //删除教学班表
-        ninTeachClassMapper.delete(new QueryWrapper<>());
-
 
         //专业表
         List<NinCareer> ninCareers = ninCareerMapper.selectList(new QueryWrapper<>());
-        Map<Long, NinCareer> longNinCareerMap = ninCareers.stream().collect(Collectors.toMap(NinCareer::getId, Function.identity()));
         List<Long> careerIdList = ninCareers.stream().map(NinCareer::getId).collect(Collectors.toList());
 
         //课程表
@@ -80,13 +69,11 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper.selectList(new QueryWrapper<>());
         Map<Long, List<NinCareerCourse>> longListNinCareerCourseMap = ninCareerCourses.stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId));
 
-
         //教室表
         Map<Integer, List<NinHouse>> integerListNinHouseMap = ninHouseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.groupingBy(NinHouse::getHouseType));
 
         //教师选课表
         Map<Long, List<NinTeacherCourse>> longListNinTeacherCourseMap = ninTeacherCourseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.groupingBy(NinTeacherCourse::getCourseId));
-
 
         // todo 最后存进去
         //存放教学班
@@ -111,7 +98,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
             //该专业的班级列表（有序的）
             List<NinClass> ninClasses = longListNinClassMap.get(careerId);
-            if (ninClasses == null){
+            if (ninClasses == null) {
                 break;
             }
             //该专业的班级数量
@@ -145,7 +132,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         }
                     }
 
-                    Long[] teachClasses = new Long[3];
+                    Long[] teachClasses = new Long[ints.length];
                     for (int j = 0; j < ints.length; j++) {
                         long id = IDUtil.getID();
                         for (int k = 0; k < ints[j]; k++) {
@@ -155,7 +142,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                             ninTeachClass.setCreateUserId(UserUtil.getUserInfo().getUserId());
                             ninTeachClass.setModifyUserId(UserUtil.getUserInfo().getUserId());
                             ninTeachClasses.add(ninTeachClass);
-                            ninTeachClassMapper.insert(ninTeachClass);//todo 不在循环操作
                         }
                         teachClasses[j] = id;
                     }
@@ -255,6 +241,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         Map<Long, List<NinArrange>> longListNinArrangeMap = ninArranges.stream().sorted(Comparator.comparing(NinArrange::getCareerId)).collect(Collectors.groupingBy(NinArrange::getCourseId));
 
         Map<Long, List<NinTeachClass>> longListNinTeachClassMap = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
+        //确定时间
         for (NinCourse course : collect) {
             //每周要上的课程
             double v = (double) course.getCourseTime() / 2 / course.getWeekTime();
@@ -276,6 +263,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             List<NinArrange> ninArranges1 = longListNinArrangeMap.get(course.getId());
 
             for (NinArrange arrange : ninArranges1) {
+                //一周要上复数课程的，先随机插入，一定次数后按顺序排
                 if (Math.ceil(v) >= 2) {
                     Integer weekTime = course.getWeekTime();
                     Integer startTime = course.getStartTime();
@@ -308,6 +296,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                                 }
                             }
                         }
+                        //todo 如果遍历完了，还是没有-->报错
                         //id
                         arrange1.setId(IDUtil.getID());
                         ninArrangeList.add(arrange1);
@@ -337,7 +326,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                             }
                         }
                     } else if (v == 0.5) {
-                        arrange1.setEndTime(arrange1.getStartTime() + 2 * weekTime - 1);
+                        arrange1.setEndTime(arrange1.getStartTime() + course.getCourseTime() - 1);
                         ok:
                         for (int j = 0; j < 7; j++) {
                             for (int k = 0; k < 5; k++) {
@@ -352,30 +341,154 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                             }
                         }
 
-                        ninArrangeList.add(arrange1);
                     }
+                    ninArrangeList.add(arrange1);
                 }
 
             }
 
         }
 
+        //删除教学班表
+        ninTeachClassMapper.delete(new QueryWrapper<>());
+        //生成教学班级表
+        ninTeachClassMapper.addBatch(ninTeachClasses);
+        //删除排课记录表
         ninArrangeMapper.delete(new QueryWrapper<>());
-        ninArrangeMapper.addBatch(ninArrangeList);
-
-
+        //生成排课记录表
+        int len = ninArrangeList.size();
+        for (int i = 0; i < len; i += 500) {
+            if (i + 500 > len) {
+                ninArrangeMapper.addBatch(ninArrangeList.subList(i, len));
+            } else {
+                ninArrangeMapper.addBatch(ninArrangeList.subList(i, i + 500));
+            }
+        }
+        long newData = System.currentTimeMillis();
+        System.out.println("----排课结束,用时" + (newData - oldData) + "毫秒----");
 
     }
+
 
     @Override
     public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer weekly) {
         return null;
     }
 
+//    public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer weekly) {
+//        //班级id列表
+//        List<Long> classIdList = new ArrayList<>();
+//        //存放结果列表
+//        List<Map<String, Object>> info = new ArrayList<>();
+//        if (teacherId != null) {
+//            info = ninArrangeMapper.getInfo(null, null, teacherId);
+//        } else {
+//            if (classId != null) {
+//                classIdList.add(classId);
+//            } else if (studentId != null) {
+//                //学生-课程，获取学生的选修教学班有哪些
+//                List<NinStudentCourse> ninStudentCourses = ninStudentCourseMapper.selectList(new QueryWrapper<>(new NinStudentCourse() {{
+//                    setStudentId(studentId);
+//                }}));
+//                //有选修的话吧，把选修班级放进去
+//                if (ninStudentCourses != null && ninStudentCourses.size() != 0) {
+//                    for (NinStudentCourse nsc : ninStudentCourses) {
+//                        classIdList.add(nsc.getTakeClassId());
+//                    }
+//                }
+//                //获取学生的行政班级记录
+//                NinStudent ninStudent = ninStudentMapper.selectById(studentId);
+//                classIdList.add(ninStudent.getClassId());
+//            }
+//
+//            List<Long> classesIdList = ninClassesMapper.getClassesIdList(classIdList);
+//            if (classIdList.size() == 0) {
+//                classesIdList = null;
+//            }
+//            if (classesIdList.size() == 0) {
+//                classesIdList = null;
+//            }
+//            info = ninArrangeMapper.getInfo(classIdList, classesIdList, null);
+//        }
+//
+//        //所有的classes Map
+//        List<Map<String, Object>> classesList = ninClassesMapper.getInfo();
+//        Map<Long, List<Map<String, Object>>> classesIdMap = classesList.stream().collect(Collectors.groupingBy(i -> (Long) i.get("classesId")));
+//
+//        //
+//        Map<Long, String> classNameMap = ninClassMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
+//
+//
+//        for (Map<String, Object> map : info) {
+//            if (map.get("classId") == null) {
+//                //获取classesId组的信息
+//                List<Map<String, Object>> maps = classesIdMap.get(map.get("classesId"));
+//                for (Map<String, Object> m : maps) {
+//                    //增加班级名称
+//                    if (map.get("className") != null) {
+//                        map.put("className", map.get("className") + ";" + m.get("className"));
+//                    } else {
+//                        map.put("className", m.get("className"));
+//                    }
+//                }
+//            } else {
+//                map.put("className", classNameMap.get(classId));
+//            }
+//        }
+//
+//        if (weekly != null) {//输入的weekly指的是第几周，arrange的weekly是单双周的意思
+//            int i = weekly % 2 == 0 ? 2 : 1;
+//            info = info.stream().filter(map -> (int) map.get("weekly") == 0 || (int) map.get("weekly") == i).filter(map -> (int) map.get("startWeekly") <= weekly && (int) map.get("endWeekly") >= weekly).collect(Collectors.toList());
+//        }
+//
+//        HashMap<String, String> hashMap = new HashMap<>();
+//        for (Map<String, Object> map : info) {
+//            String str = "";
+//            int weekly1 = (int) map.get("weekly");
+//            if (weekly1 == 1) {
+//                str = "(单周)";
+//            } else if (weekly1 == 2) {
+//                str = "(双周)";
+//            }
+//            String value = map.get("className") + "/" + map.get("teacherName") + "/" + map.get("courseName") + "/" + map.get("houseName") + "/" + map.get("startWeekly") + "-" + map.get("endWeekly") + str + "/" + ((int) map.get("must") == 0 ? "选修" : "必修");
+//
+//            String key = "" + map.get("week") + map.get("pitchNum");
+//
+//            if (hashMap.get(key) == null) {
+//                hashMap.put(key, value);
+//            } else {
+//                hashMap.put(key, hashMap.get(key) + value);
+//            }
+//        }
+//
+//        //学生，班级
+//        //学生->所属班级+选修班级-》班级id列表
+//        //班级id -》传成只有一个元素的班级id列表
+//        //  班级id列表-》classes，获取classesId列表
+//        //  班级id列表和classesId列表一起放进去查
+//
+//        //教师
+//        //直接查
+//        //  根据classId和classesId到两个表里面查班级名称
+//
+//        //最后得到List<Map>（多个班级时，className=“班级1;班级2”）
+//        //对于weekly
+//        //不存在跳过
+//        //若存在，对List筛选，单双周和开始结束时间
+//
+//        //生成Map<两位数字（星期和节数），信息>
+//
+//
+//        return hashMap;
+//    }
 
-    //放入两个数
-    //返回平均分配的数组
-    //8,3->{3,3,2}
+
+    /**
+     * maxNum分成minNum份，使每份之间的差最小
+     * @param maxNum 例：8
+     * @param minNum 例：3
+     * @return 数组，存放每份的数 例：{3,3,2}
+     */
     public int[] grouping(int maxNum, int minNum) {
         int[] ints = new int[minNum];
         for (int i = 0; i < maxNum; i++) {
@@ -385,12 +498,22 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
     /**
-     * @param ninArrangeList 选修的排课列表
-     * @param ninArrange     要排的记录
-     * @return
+     * 判断准备放进去的排课是否可以放入
+     * @param ninArrangeList 存放最终排课记录的列表
+     * @param ninArrange 准备放进去的排课记录
+     * @param longListNinTeachClassMap Map<教学班id,List<教学班列表>>
+     * @return 可以返回true,不行则返回false
      */
     public Boolean compare(List<NinArrange> ninArrangeList, NinArrange ninArrange, Map<Long, List<NinTeachClass>> longListNinTeachClassMap) {
+        NinArrange arrange1 = ninArrangeList.get(ninArrangeList.size() - 1);
+        //和上一条记录相比，同教学班，同课程时，且在同一天，直接跳出
+        if (arrange1.getCourseId() == ninArrange.getCourseId() && arrange1.getTeachClassId() == ninArrange.getTeachClassId()){
+            if (arrange1.getWeek() == ninArrange.getWeek()){
+                return false;
+            }
+        }
         for (NinArrange arrange : ninArrangeList) {
+            //为空，表示该记录没有排
             if (arrange.getWeekly() == null) {
                 continue;
             }
@@ -400,11 +523,13 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 if (!(ninArrange.getStartTime() > arrange.getEndTime() || ninArrange.getEndTime() < arrange.getStartTime())) {
                     //单双周重叠
                     if (ninArrange.getWeekly() == arrange.getWeekly()) {
+                        //当时间一样时，开始对比其他条件
+
                         //教师相同
                         if (ninArrange.getTeacherId() == arrange.getTeacherId()) {
                             return false;
                         }
-                        //不是网课或课外
+                        //不是网课或课外(网课id和类型编号均为3，课外id和类型编号为4)
                         if (ninArrange.getHouseId() != 3 && ninArrange.getHouseId() != 4) {
                             //教室相同
                             if (ninArrange.getHouseId() == arrange.getHouseId()) {
@@ -414,12 +539,14 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         //班级重叠
                         List<Long> A = new ArrayList<>();
                         List<Long> B = new ArrayList<>();
+                        //班级id为空，即是教学班，生成存放该教学班包含班级的列表
                         if (arrange.getClassId() == null) {
                             List<NinTeachClass> ninTeachClasses = longListNinTeachClassMap.get(arrange.getTeachClassId());
                             for (NinTeachClass ninTeachClass : ninTeachClasses) {
                                 A.add(ninTeachClass.getClassId());
                             }
                         } else {
+                            //表示教学班，也将班级单独放进列表
                             A.add(arrange.getClassId());
                         }
                         if (ninArrange.getClassId() == null) {
@@ -431,6 +558,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                             B.add(ninArrange.getClassId());
                         }
 
+                        //遍历两个列表，只要有一个相同，即表示发生了冲突
                         for (Long l1 : A) {
                             for (Long l2 : B) {
                                 if (l1 == l2) {
@@ -440,7 +568,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         }
                     }
                 }
-
             }
         }
         return true;
@@ -780,352 +907,238 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 //        long newData = System.currentTimeMillis();
 //        System.out.println("----排课结束,用时" + (newData - oldData) + "毫秒----");
 //    }
-
-
-//    @Override
-//    public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer weekly) {
-//        //班级id列表
-//        List<Long> classIdList = new ArrayList<>();
-//        //存放结果列表
-//        List<Map<String, Object>> info = new ArrayList<>();
-//        if (teacherId != null) {
-//            info = ninArrangeMapper.getInfo(null, null, teacherId);
-//        } else {
-//            if (classId != null) {
-//                classIdList.add(classId);
-//            } else if (studentId != null) {
-//                //学生-课程，获取学生的选修教学班有哪些
-//                List<NinStudentCourse> ninStudentCourses = ninStudentCourseMapper.selectList(new QueryWrapper<>(new NinStudentCourse() {{
-//                    setStudentId(studentId);
-//                }}));
-//                //有选修的话吧，把选修班级放进去
-//                if (ninStudentCourses != null && ninStudentCourses.size() != 0) {
-//                    for (NinStudentCourse nsc : ninStudentCourses) {
-//                        classIdList.add(nsc.getTakeClassId());
-//                    }
-//                }
-//                //获取学生的行政班级记录
-//                NinStudent ninStudent = ninStudentMapper.selectById(studentId);
-//                classIdList.add(ninStudent.getClassId());
+//时间
+//    public List<ArrangeBo> separate(ArrangeBo bo, List<int[]> time) {
+//        ArrayList<ArrangeBo> arrangeBos = new ArrayList<>();
+//        for (int[] t : time) {
+//            ArrangeBo bo1 = new ArrangeBo();
+//            BeanUtils.copyProperties(bo, bo1);
+//            if (t != null) {
+//                bo1.setWeekly(t[0]);
+//                bo1.setWeek(t[1]);
+//                bo1.setPitchNum(t[2]);
 //            }
-//
-//            List<Long> classesIdList = ninClassesMapper.getClassesIdList(classIdList);
-//            if (classIdList.size() == 0) {
-//                classesIdList = null;
-//            }
-//            if (classesIdList.size() == 0) {
-//                classesIdList = null;
-//            }
-//            info = ninArrangeMapper.getInfo(classIdList, classesIdList, null);
+//            arrangeBos.add(bo1);
 //        }
-//
-//        //所有的classes Map
-//        List<Map<String, Object>> classesList = ninClassesMapper.getInfo();
-//        Map<Long, List<Map<String, Object>>> classesIdMap = classesList.stream().collect(Collectors.groupingBy(i -> (Long) i.get("classesId")));
-//
-//        //
-//        Map<Long, String> classNameMap = ninClassMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
-//
-//
-//        for (Map<String, Object> map : info) {
-//            if (map.get("classId") == null) {
-//                //获取classesId组的信息
-//                List<Map<String, Object>> maps = classesIdMap.get(map.get("classesId"));
-//                for (Map<String, Object> m : maps) {
-//                    //增加班级名称
-//                    if (map.get("className") != null) {
-//                        map.put("className", map.get("className") + ";" + m.get("className"));
-//                    } else {
-//                        map.put("className", m.get("className"));
-//                    }
-//                }
-//            } else {
-//                map.put("className", classNameMap.get(classId));
-//            }
-//        }
-//
-//        if (weekly != null) {//输入的weekly指的是第几周，arrange的weekly是单双周的意思
-//            int i = weekly % 2 == 0 ? 2 : 1;
-//            info = info.stream().filter(map -> (int) map.get("weekly") == 0 || (int) map.get("weekly") == i).filter(map -> (int) map.get("startWeekly") <= weekly && (int) map.get("endWeekly") >= weekly).collect(Collectors.toList());
-//        }
-//
-//        HashMap<String, String> hashMap = new HashMap<>();
-//        for (Map<String, Object> map : info) {
-//            String str = "";
-//            int weekly1 = (int) map.get("weekly");
-//            if (weekly1 == 1) {
-//                str = "(单周)";
-//            } else if (weekly1 == 2) {
-//                str = "(双周)";
-//            }
-//            String value = map.get("className") + "/" + map.get("teacherName") + "/" + map.get("courseName") + "/" + map.get("houseName") + "/" + map.get("startWeekly") + "-" + map.get("endWeekly") + str + "/" + ((int) map.get("must") == 0 ? "选修" : "必修");
-//
-//            String key = "" + map.get("week") + map.get("pitchNum");
-//
-//            if (hashMap.get(key) == null) {
-//                hashMap.put(key, value);
-//            } else {
-//                hashMap.put(key, hashMap.get(key) + value);
-//            }
-//        }
-//
-//        //学生，班级
-//        //学生->所属班级+选修班级-》班级id列表
-//        //班级id -》传成只有一个元素的班级id列表
-//        //  班级id列表-》classes，获取classesId列表
-//        //  班级id列表和classesId列表一起放进去查
-//
-//        //教师
-//        //直接查
-//        //  根据classId和classesId到两个表里面查班级名称
-//
-//        //最后得到List<Map>（多个班级时，className=“班级1;班级2”）
-//        //对于weekly
-//        //不存在跳过
-//        //若存在，对List筛选，单双周和开始结束时间
-//
-//        //生成Map<两位数字（星期和节数），信息>
-//
-//
-//        return hashMap;
+//        return arrangeBos;
 //    }
-
-
-    //时间
-    public List<ArrangeBo> separate(ArrangeBo bo, List<int[]> time) {
-        ArrayList<ArrangeBo> arrangeBos = new ArrayList<>();
-        for (int[] t : time) {
-            ArrangeBo bo1 = new ArrangeBo();
-            BeanUtils.copyProperties(bo, bo1);
-            if (t != null) {
-                bo1.setWeekly(t[0]);
-                bo1.setWeek(t[1]);
-                bo1.setPitchNum(t[2]);
-            }
-            arrangeBos.add(bo1);
-        }
-        return arrangeBos;
-    }
-
     //生成时间表对应
-    public List<int[]> time(List<ArrangeBo> arrangeBoList, ArrangeBo bo) {
-        //课时
-        int num = bo.getNum();
-        //选修
-        int must = bo.getMust();
-
-        List<int[]> list = new ArrayList<>(4);
-
-        int[][][] time = new int[2][7][5];
-
-        List<Long> classIdList = bo.getClassIdList();
-        Long teacherId = bo.getTeacherId();
-        Long houseId = bo.getHouseId();
-        Long classId = bo.getClassId();
-
-        List<ArrangeBo> arranges = new ArrayList<>();
-
-        //必修选修限制（选修只在周四上）
-        if (must == 0) {
-            for (int i = 0; i < 2; i++) {
-                for (int j = 0; j < 5; j++) {
-                    if (j == 3) {
-                        continue;
-                    }
-                    for (int k = 0; k < 5; k++) {
-                        time[i][j][k] = 1;
-                    }
-                }
-            }
-        }
-
-        //不空闲的时间，教师（可能为空）和教室
-        Stream<ArrangeBo> ninArrangeStream = arrangeBoList.stream();
-
-
-//        if (arrangeBoList != null && arrangeBoList.size() != 0){
-//            ok:
-//            for (ArrangeBo bo2 : arrangeBoList) {
-//                Long teacherId1 = bo2.getTeacherId();
-//                Long houseId1 = bo2.getHouseId();
-//                if (teacherId1 != null && teacherId != null) {
-//                    if (teacherId1 == teacherId) {
-//                        arranges.add(bo2);
-//                        break;
+//    public List<int[]> time(List<ArrangeBo> arrangeBoList, ArrangeBo bo) {
+//        //课时
+//        int num = bo.getNum();
+//        //选修
+//        int must = bo.getMust();
+//
+//        List<int[]> list = new ArrayList<>(4);
+//
+//        int[][][] time = new int[2][7][5];
+//
+//        List<Long> classIdList = bo.getClassIdList();
+//        Long teacherId = bo.getTeacherId();
+//        Long houseId = bo.getHouseId();
+//        Long classId = bo.getClassId();
+//
+//        List<ArrangeBo> arranges = new ArrayList<>();
+//
+//        //必修选修限制（选修只在周四上）
+//        if (must == 0) {
+//            for (int i = 0; i < 2; i++) {
+//                for (int j = 0; j < 5; j++) {
+//                    if (j == 3) {
+//                        continue;
 //                    }
-//                }
-//                if (houseId == houseId1) {
-//                    arranges.add(bo2);
-//                    break;
-//                }
-//                //判断班级，双重for
-//                if (classId == null) {
-//                    if (bo2.getClassId() == null) {
-//                        for (Long l1 : classIdList) {
-//                            for (Long l2 : bo2.getClassIdList()) {
-//                                if (l1 == l2) {
-//                                    arranges.add(bo2);
-//                                    break ok;
-//                                }
-//                            }
-//                        }
-//                    } else {
-//                        for (Long l : classIdList) {
-//                            if (bo2.getClassId() == l) {
-//                                arranges.add(bo2);
-//                                break ok;
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    if (bo2.getClassId() == null) {
-//                        for (Long l : bo2.getClassIdList()) {
-//                            if (classId == l) {
-//                                arranges.add(bo2);
-//                                break ok;
-//                            }
-//                        }
-//                    } else {
-//                        if (classId == bo2.getClassId()) {
-//                            arranges.add(bo2);
-//                            break ok;
-//                        }
+//                    for (int k = 0; k < 5; k++) {
+//                        time[i][j][k] = 1;
 //                    }
 //                }
 //            }
-//
 //        }
-
-
-        if (classIdList != null && classIdList.size() != 0) {
-            //多班级
-            //todo 问题：比较的是多班级，被比较的也是多班级（此时classId=0）
-            int size = classIdList.size();
-            if (size == 2) {
-                //两个
-                arranges = ninArrangeStream.filter(i -> (i.getTeacherId() != null && teacherId != null ? i.getTeacherId() == teacherId : true) || i.getHouseId() == houseId || i.getClassId() == classIdList.get(0) || i.getClassId() == classIdList.get(1)).collect(Collectors.toList());
-            } else if (size == 3) {
-                //三个
-                arranges = ninArrangeStream.filter(i -> (i.getTeacherId() != null && teacherId != null ? i.getTeacherId() == teacherId : true) || i.getHouseId() == houseId || i.getClassId() == classIdList.get(0) || i.getClassId() == classIdList.get(1) || i.getClassId() == classIdList.get(2)).collect(Collectors.toList());
-            }
-        } else {
-            //一个班级
-            arranges = ninArrangeStream.filter(i -> (i.getTeacherId() != null && teacherId != null ? i.getTeacherId() == teacherId : true) || i.getHouseId() == houseId || i.getClassId() == classId).collect(Collectors.toList());
-        }
-
-        //三维数组，周次（单双周，记2），星期（7），节数（5）
-        //1不能排，0可以排
-        for (ArrangeBo arrange : arranges) {
-            Integer weekly = arrange.getWeekly();
-            if (weekly != null) {
-                if (weekly == 0) {
-                    time[0][arrange.getWeek()][arrange.getPitchNum()] = 1;
-                    time[1][arrange.getWeek()][arrange.getPitchNum()] = 1;
-                } else {
-                    time[weekly - 1][arrange.getWeek()][arrange.getPitchNum()] = 1;
-                }
-            }
-        }
-
-
-        int week_ = -1;//赋初值，随意一个不在0-7之间的数
-        //目的：一门课在一天内不上两次
-        //按课时，生成时间段
-        if (num == 64) {//
-            for (int i = 0; i < 2; i++) {
-                int[] two = two(time, week_);
-                if (two != null) {
-                    week_ = two[1];
-                }
-                list.add(two);
-            }
-        } else if (num == 32 || num == 8) {
-            int[] two = two(time, week_);
-            list.add(two);
-        } else if (num == 16) {
-            int[] one = one(time);
-            list.add(one);
-        } else if (num == 48) {
-            int[] one = one(time);
-            if (one != null) {
-                week_ = one[1];
-            }
-            int[] two = two(time, week_);
-            list.add(one);
-            list.add(two);
-        }
-        return list;
-    }
-
+//
+//        //不空闲的时间，教师（可能为空）和教室
+//        Stream<ArrangeBo> ninArrangeStream = arrangeBoList.stream();
+//
+//
+////        if (arrangeBoList != null && arrangeBoList.size() != 0){
+////            ok:
+////            for (ArrangeBo bo2 : arrangeBoList) {
+////                Long teacherId1 = bo2.getTeacherId();
+////                Long houseId1 = bo2.getHouseId();
+////                if (teacherId1 != null && teacherId != null) {
+////                    if (teacherId1 == teacherId) {
+////                        arranges.add(bo2);
+////                        break;
+////                    }
+////                }
+////                if (houseId == houseId1) {
+////                    arranges.add(bo2);
+////                    break;
+////                }
+////                //判断班级，双重for
+////                if (classId == null) {
+////                    if (bo2.getClassId() == null) {
+////                        for (Long l1 : classIdList) {
+////                            for (Long l2 : bo2.getClassIdList()) {
+////                                if (l1 == l2) {
+////                                    arranges.add(bo2);
+////                                    break ok;
+////                                }
+////                            }
+////                        }
+////                    } else {
+////                        for (Long l : classIdList) {
+////                            if (bo2.getClassId() == l) {
+////                                arranges.add(bo2);
+////                                break ok;
+////                            }
+////                        }
+////                    }
+////                } else {
+////                    if (bo2.getClassId() == null) {
+////                        for (Long l : bo2.getClassIdList()) {
+////                            if (classId == l) {
+////                                arranges.add(bo2);
+////                                break ok;
+////                            }
+////                        }
+////                    } else {
+////                        if (classId == bo2.getClassId()) {
+////                            arranges.add(bo2);
+////                            break ok;
+////                        }
+////                    }
+////                }
+////            }
+////
+////        }
+//
+//
+//        if (classIdList != null && classIdList.size() != 0) {
+//            //多班级
+//            //todo 问题：比较的是多班级，被比较的也是多班级（此时classId=0）
+//            int size = classIdList.size();
+//            if (size == 2) {
+//                //两个
+//                arranges = ninArrangeStream.filter(i -> (i.getTeacherId() != null && teacherId != null ? i.getTeacherId() == teacherId : true) || i.getHouseId() == houseId || i.getClassId() == classIdList.get(0) || i.getClassId() == classIdList.get(1)).collect(Collectors.toList());
+//            } else if (size == 3) {
+//                //三个
+//                arranges = ninArrangeStream.filter(i -> (i.getTeacherId() != null && teacherId != null ? i.getTeacherId() == teacherId : true) || i.getHouseId() == houseId || i.getClassId() == classIdList.get(0) || i.getClassId() == classIdList.get(1) || i.getClassId() == classIdList.get(2)).collect(Collectors.toList());
+//            }
+//        } else {
+//            //一个班级
+//            arranges = ninArrangeStream.filter(i -> (i.getTeacherId() != null && teacherId != null ? i.getTeacherId() == teacherId : true) || i.getHouseId() == houseId || i.getClassId() == classId).collect(Collectors.toList());
+//        }
+//
+//        //三维数组，周次（单双周，记2），星期（7），节数（5）
+//        //1不能排，0可以排
+//        for (ArrangeBo arrange : arranges) {
+//            Integer weekly = arrange.getWeekly();
+//            if (weekly != null) {
+//                if (weekly == 0) {
+//                    time[0][arrange.getWeek()][arrange.getPitchNum()] = 1;
+//                    time[1][arrange.getWeek()][arrange.getPitchNum()] = 1;
+//                } else {
+//                    time[weekly - 1][arrange.getWeek()][arrange.getPitchNum()] = 1;
+//                }
+//            }
+//        }
+//
+//
+//        int week_ = -1;//赋初值，随意一个不在0-7之间的数
+//        //目的：一门课在一天内不上两次
+//        //按课时，生成时间段
+//        if (num == 64) {//
+//            for (int i = 0; i < 2; i++) {
+//                int[] two = two(time, week_);
+//                if (two != null) {
+//                    week_ = two[1];
+//                }
+//                list.add(two);
+//            }
+//        } else if (num == 32 || num == 8) {
+//            int[] two = two(time, week_);
+//            list.add(two);
+//        } else if (num == 16) {
+//            int[] one = one(time);
+//            list.add(one);
+//        } else if (num == 48) {
+//            int[] one = one(time);
+//            if (one != null) {
+//                week_ = one[1];
+//            }
+//            int[] two = two(time, week_);
+//            list.add(one);
+//            list.add(two);
+//        }
+//        return list;
+//    }
     //单双周
-    public int[] one(int[][][] time) {
-        int weekly;
-        int week;
-        int pitchNum;
-        int count = 0;
-        while (true) {
-            if (count++ < 50) {
-                weekly = (int) (Math.random() * 2);//随机数0,1
-                week = (int) (Math.random() * 5);
-                pitchNum = (int) (Math.random() * 5);
-                if (time[weekly][week][pitchNum] == 0) {
-                    time[weekly][week][pitchNum] = 1;
-                    int[] l = {weekly + 1, week, pitchNum};
-                    return l;
-                }
-            } else {
-                for (int i = 0; i < 2; i++) {
-                    for (int j = 0; j < 7; j++) {
-                        for (int k = 0; k < 5; k++) {
-                            if (time[i][j][k] == 0) {
-                                time[i][j][k] = 1;
-                                int[] l = {i + 1, j, k};
-                                return l;
-                            }
-                        }
-                    }
-                }
-                return null;
-            }
-        }
-    }
-
+//    public int[] one(int[][][] time) {
+//        int weekly;
+//        int week;
+//        int pitchNum;
+//        int count = 0;
+//        while (true) {
+//            if (count++ < 50) {
+//                weekly = (int) (Math.random() * 2);//随机数0,1
+//                week = (int) (Math.random() * 5);
+//                pitchNum = (int) (Math.random() * 5);
+//                if (time[weekly][week][pitchNum] == 0) {
+//                    time[weekly][week][pitchNum] = 1;
+//                    int[] l = {weekly + 1, week, pitchNum};
+//                    return l;
+//                }
+//            } else {
+//                for (int i = 0; i < 2; i++) {
+//                    for (int j = 0; j < 7; j++) {
+//                        for (int k = 0; k < 5; k++) {
+//                            if (time[i][j][k] == 0) {
+//                                time[i][j][k] = 1;
+//                                int[] l = {i + 1, j, k};
+//                                return l;
+//                            }
+//                        }
+//                    }
+//                }
+//                return null;
+//            }
+//        }
+//    }
     //每周
-    public int[] two(int[][][] time, int week_) {
-        int week;
-        int pitchNum;
-        int count = 0;
-        while (true) {
-            if (count++ < 25) {
-                week = (int) (Math.random() * 5);
-                if (week == week_) {
-                    continue;
-                }
-                pitchNum = (int) (Math.random() * 5);
-                if (time[0][week][pitchNum] == 0 && time[1][week][pitchNum] == 0) {
-                    time[0][week][pitchNum] = 1;
-                    time[1][week][pitchNum] = 1;
-                    int[] l = {0, week, pitchNum};
-                    return l;
-                }
-            } else {
-                for (int i = 0; i < 7; i++) {
-                    if (i == week_) {
-                        continue;
-                    }
-                    for (int j = 0; j < 5; j++) {
-                        if (time[0][i][j] == 0 && time[1][i][j] == 0) {
-                            time[0][i][j] = 1;
-                            time[1][i][j] = 1;
-                            int[] l = {0, i, j};
-                            return l;
-                        }
-                    }
-                }
-                return null;
-            }
-        }
-    }
+//    public int[] two(int[][][] time, int week_) {
+//        int week;
+//        int pitchNum;
+//        int count = 0;
+//        while (true) {
+//            if (count++ < 25) {
+//                week = (int) (Math.random() * 5);
+//                if (week == week_) {
+//                    continue;
+//                }
+//                pitchNum = (int) (Math.random() * 5);
+//                if (time[0][week][pitchNum] == 0 && time[1][week][pitchNum] == 0) {
+//                    time[0][week][pitchNum] = 1;
+//                    time[1][week][pitchNum] = 1;
+//                    int[] l = {0, week, pitchNum};
+//                    return l;
+//                }
+//            } else {
+//                for (int i = 0; i < 7; i++) {
+//                    if (i == week_) {
+//                        continue;
+//                    }
+//                    for (int j = 0; j < 5; j++) {
+//                        if (time[0][i][j] == 0 && time[1][i][j] == 0) {
+//                            time[0][i][j] = 1;
+//                            time[1][i][j] = 1;
+//                            int[] l = {0, i, j};
+//                            return l;
+//                        }
+//                    }
+//                }
+//                return null;
+//            }
+//        }
+//    }
 
 
 }

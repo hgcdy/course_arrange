@@ -31,13 +31,54 @@
     </sql>
 
 
-        <insert id="addBatch" parameterType="cn.netinnet.coursearrange.entity.NinArrange">
-            INSERT INTO
-            nin_arrange(id, career_id, class_id, teacher_id, teach_class_id, course_id, house_id, must, weekly, start_time, end_time, week, pitch_num, people_num, create_user_id, modify_user_id)
-            VALUES
-            <foreach collection="list" index="index" item="item" separator=",">
-                (#{item.id}, #{item.careerId}, #{item.classId}, #{item.teacherId}, #{item.teachClassId}, #{item.courseId}, #{item.houseId}, #{item.must}, #{item.weekly}, #{item.startTime}, #{item.endTime}, #{item.week}, #{item.pitchNum}, #{item.peopleNum}, #{item.createUserId}, #{item.modifyUserId})
+    <insert id="addBatch" parameterType="cn.netinnet.coursearrange.entity.NinArrange">
+        INSERT INTO
+        nin_arrange(id, career_id, class_id, teacher_id, teach_class_id, course_id, house_id, must, weekly, start_time, end_time, week, pitch_num, people_num, create_user_id, modify_user_id)
+        VALUES
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.careerId}, #{item.classId}, #{item.teacherId}, #{item.teachClassId}, #{item.courseId}, #{item.houseId}, #{item.must}, #{item.weekly}, #{item.startTime}, #{item.endTime}, #{item.week}, #{item.pitchNum}, #{item.peopleNum}, #{item.createUserId}, #{item.modifyUserId})
+        </foreach>
+    </insert>
+
+    <select id="getInfo" resultType="java.util.Map">
+        SELECT career_id AS careerId,
+               class_id AS classId,
+               teach_class_id AS teachClassId,
+               teacher_name AS teacherName,
+               course_name AS courseName,
+               house_name AS houseName,
+               nin_arrange.must AS must,
+               weekly,
+               nin_arrange.start_time AS startTime,
+               nin_arrange.end_time AS endTime,
+               week,
+               pitch_num AS pitchNum,
+               people_num AS peopleNum
+        FROM nin_teacher,
+             nin_course,
+             nin_house,
+             nin_arrange
+        <where>
+        nin_arrange.del_flag = 0
+        AND nin_teacher.id = nin_arrange.teacher_id
+        AND nin_course.id = nin_arrange.course_id
+        AND nin_house.id = nin_arrange.house_id
+        <if test="teacherId != null">
+            AND nin_arrange.teacher_id = #{teacherId}
+        </if>
+       AND(
+       <if test="teachClassIdList != null">
+            <foreach collection="teachClassIdList" index="index" item="item1" separator="OR"  close="OR">
+                nin_arrange.teach_class_id = #{item1}
             </foreach>
-        </insert>
+        </if>
+        <if test="classIdList != null">
+            <foreach collection="classIdList" index="index" item="item2" separator="OR">
+                nin_arrange.class_id = #{item2}
+            </foreach>
+        </if>
+        )
+        </where>
+    </select>
 
 </mapper>

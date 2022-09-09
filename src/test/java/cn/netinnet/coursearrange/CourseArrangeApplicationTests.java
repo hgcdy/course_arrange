@@ -1,22 +1,15 @@
 package cn.netinnet.coursearrange;
 
-import cn.netinnet.coursearrange.entity.NinClass;
 import cn.netinnet.coursearrange.mapper.NinClassCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinClassMapper;
-//import cn.netinnet.coursearrange.mapper.NinClassesMapper;
 import cn.netinnet.coursearrange.mapper.NinCourseMapper;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.service.INinClassCourseService;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @SpringBootTest
 class CourseArrangeApplicationTests {
