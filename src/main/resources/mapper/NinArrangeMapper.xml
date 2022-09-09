@@ -30,4 +30,14 @@
         id, career_id, class_id, teacher_id, teach_class_id, course_id, house_id, must, weekly, start_time, end_time, week, pitch_num, people_num, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
+
+        <insert id="addBatch" parameterType="cn.netinnet.coursearrange.entity.NinArrange">
+            INSERT INTO
+            nin_arrange(id, career_id, class_id, teacher_id, teach_class_id, course_id, house_id, must, weekly, start_time, end_time, week, pitch_num, people_num, create_user_id, modify_user_id)
+            VALUES
+            <foreach collection="list" index="index" item="item" separator=",">
+                (#{item.id}, #{item.careerId}, #{item.classId}, #{item.teacherId}, #{item.teachClassId}, #{item.courseId}, #{item.houseId}, #{item.must}, #{item.weekly}, #{item.startTime}, #{item.endTime}, #{item.week}, #{item.pitchNum}, #{item.peopleNum}, #{item.createUserId}, #{item.modifyUserId})
+            </foreach>
+        </insert>
+
 </mapper>

@@ -3,7 +3,7 @@ package cn.netinnet.coursearrange;
 import cn.netinnet.coursearrange.entity.NinClass;
 import cn.netinnet.coursearrange.mapper.NinClassCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinClassMapper;
-import cn.netinnet.coursearrange.mapper.NinClassesMapper;
+//import cn.netinnet.coursearrange.mapper.NinClassesMapper;
 import cn.netinnet.coursearrange.mapper.NinCourseMapper;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.service.INinClassCourseService;
@@ -36,14 +36,7 @@ class CourseArrangeApplicationTests {
 
     @Test
     void contextLoads() {
-        List<NinClass> ninClasses = ninClassMapper.selectList(new QueryWrapper<NinClass>());
-        System.out.println(ninClasses);
-        Map<Long, List<NinClass>> collect = ninClasses.stream().collect(Collectors.groupingBy(NinClass::getCareerId));
-        for (Map.Entry<Long, List<NinClass>> m :
-                collect.entrySet()) {
-            m.getValue().get(0).setId(1L);
-        }
-        System.out.println(ninClasses);
+     ninArrangeService.arrange();
 
 
     }

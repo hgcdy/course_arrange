@@ -16,11 +16,11 @@ import java.util.Map;
  * @author wangjs
  * @since 2022-09-06
  */
-@Mapper
-public interface NinClassesMapper extends BaseMapper<NinClasses> {
-
-    List<Long> getClassesIdList(@Param("classIdList") List<Long> classIdList);
-
-    List<Map<String, Object>> getInfo();
-
-}
+//@Mapper
+//public interface NinClassesMapper extends BaseMapper<NinClasses> {
+//
+//    List<Long> getClassesIdList(@Param("classIdList") List<Long> classIdList);
+//
+//    List<Map<String, Object>> getInfo();
+//
+//}
