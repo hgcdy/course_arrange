@@ -1,6 +1,9 @@
 package cn.netinnet.coursearrange.authentication;
 
 import lombok.SneakyThrows;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.stereotype.Component;
@@ -30,26 +33,44 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                 System.out.println("3");
                 //todo
                 // 在该位置抛出异常
-                //return false;
+                return false;
             }
         }
         return true;
     }
 
+
+
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String token = httpServletRequest.getHeader("token");
-        if (token == null) {
-            token = request.getParameter("token");
-        }
+        HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
+        String token = JWTUtil.getToken(httpServletRequest);
         JWTToken jwtToken = new JWTToken(token);
+//        String token = httpServletRequest.getHeader("token");
+//        if (token == null) {
+//            token = request.getParameter("token");
+//        }
+//        JWTToken jwtToken = new JWTToken(token);
         // 提交给realm进行登入，如果错误他会抛出异常并被捕获
-        getSubject(request, response).login(jwtToken);
+//        getSubject(request, response).login(jwtToken);
         // 如果没有抛出异常则代表登入成功，返回true
-        return true;
+//        return true;
 
+        try {
+            Subject subject = getSubject(request, response);
+            subject.login(jwtToken);
+            return onLoginSuccess(jwtToken, subject, request, response);
+        } catch (AuthenticationException e) {
+            return onLoginFailure(jwtToken, e, request, response);
+        }
     }
+
+
+    @Override
+    protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
+        return super.onLoginSuccess(token, subject, request, response);
+    }
+
 
     //跨域支持
     @Override

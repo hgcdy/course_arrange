@@ -7,8 +7,10 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import org.apache.shiro.authc.ExpiredCredentialsException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 public class JWTUtil {
@@ -20,7 +22,7 @@ public class JWTUtil {
      * @param userInfo
      * @return
      */
-    public static String getToken(UserInfo userInfo) {
+    public static String sign(UserInfo userInfo) {
         Date date = new Date(System.currentTimeMillis() + 30 * 60 * 1000);
         Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
         return JWT.create()
@@ -58,5 +60,17 @@ public class JWTUtil {
             System.out.println("token校验失败");
             return false;
         }
+    }
+
+    public static String getToken(HttpServletRequest request) {
+        String token = request.getHeader("token");
+        //增加token从url中获取途径
+        if (token == null) {
+            token = request.getParameter("token");
+        }
+        if (StringUtils.isBlank(token)) {
+            token = null;
+        }
+        return token;
     }
 }

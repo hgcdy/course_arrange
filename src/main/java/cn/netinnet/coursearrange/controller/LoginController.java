@@ -46,7 +46,7 @@ public class LoginController {
         userInfo.setUserName("admin");
         userInfo.setUserPassword("123456");
         userInfo.setUserType("admin");
-        String token = JWTUtil.getToken(userInfo);
+        String token = JWTUtil.sign(userInfo);
         return ResultModel.ok(token);
     }
 
@@ -60,7 +60,7 @@ public class LoginController {
         userInfo.setUserName(ninStudent.getStudentName());
         userInfo.setUserPassword(ninStudent.getStudentPassword());
         userInfo.setUserType("student");
-        String token = JWTUtil.getToken(userInfo);
+        String token = JWTUtil.sign(userInfo);
         return ResultModel.ok(token);
     }
 
@@ -74,7 +74,7 @@ public class LoginController {
         userInfo.setUserName(ninTeacher.getTeacherName());
         userInfo.setUserPassword(ninTeacher.getTeacherPassword());
         userInfo.setUserType("teacher");
-        String token = JWTUtil.getToken(userInfo);
+        String token = JWTUtil.sign(userInfo);
         return ResultModel.ok(token);
     }
 
