@@ -28,10 +28,13 @@ public class ShiroRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         System.out.println("权限验证");
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+        //todo principalCollection.getPrimaryPrincipal()没有得到userInfo
+        Object primaryPrincipal = principalCollection.getPrimaryPrincipal();
         UserInfo userInfo = (UserInfo) principalCollection.getPrimaryPrincipal();
-
-
         String userType = userInfo.getUserType();
+
+//        String userType = (String) principalCollection.getPrimaryPrincipal();
+
 
         Set<String> roleSet = new HashSet<>();
         roleSet.add(userType);
@@ -44,6 +47,8 @@ public class ShiroRealm extends AuthorizingRealm {
                 // 过滤空字符的权限
                 .filter(StringUtils::isNotBlank).collect(Collectors.toSet());
         simpleAuthorizationInfo.setStringPermissions(permissionSet);
+
+        System.out.println("权限校验成功");
 
         return simpleAuthorizationInfo;
     }
@@ -68,6 +73,7 @@ public class ShiroRealm extends AuthorizingRealm {
             throw new IncorrectCredentialsException("获取认证的用户信息为null");
         }
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(userInfo, token, getName());
+
         System.out.println("身份验证成功");
         return info;
     }

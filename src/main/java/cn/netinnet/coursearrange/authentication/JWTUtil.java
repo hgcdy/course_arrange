@@ -49,10 +49,12 @@ public class JWTUtil {
      * @return
      */
     public static boolean verify(String token) {
+        System.out.println("token verify");
         try {
             Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
             JWTVerifier verifier = JWT.require(algorithm).build();
             verifier.verify(token);
+            System.out.println("token校验成功");
             return true;
         } catch (TokenExpiredException e) {
             throw new ExpiredCredentialsException(e.getMessage());

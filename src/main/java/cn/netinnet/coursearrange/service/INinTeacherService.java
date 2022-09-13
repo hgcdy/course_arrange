@@ -48,4 +48,12 @@ public interface INinTeacherService extends IService<NinTeacher> {
     int alterSingle(NinTeacher ninTeacher);
 
     NinTeacher getTeacherById(Long id);
+
+    /**
+     * 教师登录验证
+     * @param code
+     * @param password
+     * @return
+     */
+    NinTeacher verify(String code, String password);
 }

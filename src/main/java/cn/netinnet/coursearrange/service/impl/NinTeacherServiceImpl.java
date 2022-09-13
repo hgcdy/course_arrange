@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import cn.netinnet.coursearrange.exception.ServiceException;
@@ -90,5 +91,22 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
     @Override
     public NinTeacher getTeacherById(Long id) {
         return ninTeacherMapper.selectById(id);
+    }
+
+
+    @Override
+    public NinTeacher verify(String code, String password) {
+        List<NinTeacher> ninTeachers = ninTeacherMapper.selectList(new QueryWrapper<>(new NinTeacher() {{
+            setTeacherCode(code);
+        }}));
+        if (ninTeachers != null && ninTeachers.size() != 0) {
+            if (ninTeachers.get(0).getTeacherPassword().equals(password)) {
+                return ninTeachers.get(0);
+            } else {
+                throw new ServiceException(412, "密码错误");
+            }
+        } else {
+            throw new ServiceException(412, "账号不存在");
+        }
     }
 }

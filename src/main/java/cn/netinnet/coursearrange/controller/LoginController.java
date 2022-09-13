@@ -5,7 +5,10 @@ import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.UserInfo;
 import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.service.INinStudentService;
+import cn.netinnet.coursearrange.service.INinTeacherService;
 import com.sun.istack.internal.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +18,11 @@ import org.springframework.web.servlet.ModelAndView;
 @RestController
 @RequestMapping("")
 public class LoginController {
+
+    @Autowired
+    private INinStudentService ninStudentService;
+    @Autowired
+    private INinTeacherService ninTeacherService;
 
     @GetMapping("/login")
     public ModelAndView gotoLogin(){
@@ -52,8 +60,8 @@ public class LoginController {
 
     @PostMapping("/login/student")
     public ResultModel studentLogin(@NotNull String code, @NotNull String password){
-        //数据库验证
-        NinStudent ninStudent = new NinStudent();
+        NinStudent ninStudent = ninStudentService.verify(code, password);
+
         UserInfo userInfo = new UserInfo();
         userInfo.setUserId(ninStudent.getId());
         userInfo.setUserCode(ninStudent.getStudentCode());
@@ -66,8 +74,8 @@ public class LoginController {
 
     @PostMapping("/login/teacher")
     public ResultModel teacherLogin(@NotNull String code, @NotNull String password){
-        //数据库验证
-        NinTeacher ninTeacher = new NinTeacher();
+
+        NinTeacher ninTeacher = ninTeacherService.verify(code, password);
         UserInfo userInfo = new UserInfo();
         userInfo.setUserId(ninTeacher.getId());
         userInfo.setUserCode(ninTeacher.getTeacherCode());

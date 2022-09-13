@@ -63,4 +63,12 @@ public interface INinStudentService extends IService<NinStudent> {
     Map<String, List<NinClass>> getCareerClassList();
 
     NinStudent getStudentById(Long id);
+
+    /**
+     * 学生用户登录
+     * @param code
+     * @param password
+     * @return
+     */
+    NinStudent verify(String code, String password);
 }

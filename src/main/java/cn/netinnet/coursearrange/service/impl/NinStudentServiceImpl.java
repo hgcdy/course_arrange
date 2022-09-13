@@ -154,5 +154,21 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
         return ninStudentMapper.selectById(id);
     }
 
+    @Override
+    public NinStudent verify(String code, String password) {
+        List<NinStudent> ninStudents = ninStudentMapper.selectList(new QueryWrapper<>(new NinStudent() {{
+            setStudentCode(code);
+        }}));
+        if (ninStudents != null && ninStudents.size() != 0) {
+            if (ninStudents.get(0).getStudentPassword().equals(password)) {
+                return ninStudents.get(0);
+            } else {
+                throw new ServiceException(412, "密码错误");
+            }
+        } else {
+            throw new ServiceException(412, "账号不存在");
+        }
+    }
+
 
 }

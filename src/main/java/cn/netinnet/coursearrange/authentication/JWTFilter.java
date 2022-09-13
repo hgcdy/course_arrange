@@ -1,8 +1,10 @@
 package cn.netinnet.coursearrange.authentication;
 
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import lombok.SneakyThrows;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.ShiroException;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
@@ -13,6 +15,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 
 @Component
 public class JWTFilter extends BasicHttpAuthenticationFilter {
@@ -31,8 +34,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                 return true;
             } catch (Exception e) {
                 System.out.println("3");
-                //todo
-                // 在该位置抛出异常
                 return false;
             }
         }
@@ -46,16 +47,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
         String token = JWTUtil.getToken(httpServletRequest);
         JWTToken jwtToken = new JWTToken(token);
-//        String token = httpServletRequest.getHeader("token");
-//        if (token == null) {
-//            token = request.getParameter("token");
-//        }
-//        JWTToken jwtToken = new JWTToken(token);
-        // 提交给realm进行登入，如果错误他会抛出异常并被捕获
-//        getSubject(request, response).login(jwtToken);
-        // 如果没有抛出异常则代表登入成功，返回true
-//        return true;
-
         try {
             Subject subject = getSubject(request, response);
             subject.login(jwtToken);
@@ -63,12 +54,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         } catch (AuthenticationException e) {
             return onLoginFailure(jwtToken, e, request, response);
         }
-    }
-
-
-    @Override
-    protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
-        return super.onLoginSuccess(token, subject, request, response);
     }
 
 
