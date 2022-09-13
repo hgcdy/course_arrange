@@ -17,6 +17,6 @@ public interface INinArrangeService extends IService<NinArrange> {
 
     void arrange();
 
-    Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer weekly);
+    Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer count);
 
 }

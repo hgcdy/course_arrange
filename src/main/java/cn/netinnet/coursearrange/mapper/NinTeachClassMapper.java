@@ -20,4 +20,6 @@ public interface NinTeachClassMapper extends BaseMapper<NinTeachClass> {
 
     void addBatch(@Param("list") List<NinTeachClass> ninTeachClassList);
 
+    List<Long> getTeachClassIdList(@Param("classId") Long classId);
+
 }

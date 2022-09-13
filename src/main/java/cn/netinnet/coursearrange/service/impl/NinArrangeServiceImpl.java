@@ -32,6 +32,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Autowired
     private NinClassMapper ninClassMapper;
     @Autowired
+    private NinStudentMapper ninStudentMapper;
+    @Autowired
     private NinCourseMapper ninCourseMapper;
     @Autowired
     private NinHouseMapper ninHouseMapper;
@@ -371,8 +373,109 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
 
     @Override
-    public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer weekly) {
-        return null;
+    public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
+        List<Map<String, Object>> info = new ArrayList<>();
+        if (teacherId != null) {
+            //教师
+            info = ninArrangeMapper.getInfo(null, null, teacherId);
+        } else if (classId != null) {
+            //班级(选修)
+            List<Long> longs = new ArrayList<>();
+            longs.add(classId);
+            info = ninArrangeMapper.getInfo(longs, null, null);
+            if (info == null) {
+                //如果为空，则为必修班级
+                longs.remove(0);
+                longs = ninTeachClassMapper.getTeachClassIdList(classId);
+                info = ninArrangeMapper.getInfo(null, longs, null);
+            }
+        } else if (studentId != null) {
+            //学生
+            //学生的选修班级
+            List<Long> classIdList = new ArrayList<>();
+            List<NinStudentCourse> ninStudentCourses = ninStudentCourseMapper.selectList(new QueryWrapper<>(new NinStudentCourse() {{
+                setStudentId(getStudentId());
+            }}));
+            if (ninStudentCourses != null && ninStudentCourses.size() != 0) {
+                for (NinStudentCourse nsc : ninStudentCourses) {
+                    classIdList.add(nsc.getTakeClassId());
+                }
+            }
+            //学生的行政班级-》教学班级列表
+            NinStudent ninStudent = ninStudentMapper.selectById(studentId);
+            List<Long> teachClassIdList = ninTeachClassMapper.getTeachClassIdList(ninStudent.getClassId());
+            info = ninArrangeMapper.getInfo(classIdList, teachClassIdList, null);
+        }
+
+        //Map<教学班id, List<NinTeachClass>>
+        List<NinTeachClass> ninTeachClasses = ninTeachClassMapper.selectList(new QueryWrapper<>());
+        Map<Long, List<NinTeachClass>> collect = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
+        //Map<班级id, 班级名称>
+        List<NinClass> ninClasses = ninClassMapper.selectList(new QueryWrapper<>());
+        Map<Long, String> collect1 = ninClasses.stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
+        //存放最终结果
+        HashMap<String, String> hashMap = new HashMap<>();
+        for (Map<String, Object> map : info) {
+            if (map.get("classId") == null) {
+                List<NinTeachClass> teachClassList = collect.get(map.get("teachClassId"));
+                for (NinTeachClass ntc : teachClassList) {
+                    if (map.get("className") == null) {
+                        map.put("className", collect1.get(ntc.getClassId()));
+                    } else {
+                        map.put("className", map.get("className") + ";" + collect1.get(ntc.getClassId()));
+                    }
+                }
+            } else {
+                map.put("className", collect1.get(map.get("classId")));
+            }
+        }
+
+
+        if (count != null) {
+            for (Map<String, Object> map : info) {
+                //单双周
+                if (count % 2 == 0 && (Integer) map.get("weekly") == 1) {
+                    continue;
+                }
+                if (count % 2 == 1 && (Integer) map.get("weekly") == 2) {
+                    continue;
+                }
+                //开始结束范围
+                if ((Integer) map.get("endTime") < count) {
+                    continue;
+                }
+                if ((Integer) map.get("startTime") > count) {
+                    continue;
+                }
+
+                String key = "" + map.get("week") + map.get("pitchNum");
+
+                String value = "" + map.get("courseName") + "/" + map.get("houseName") + "/" + map.get("teacherName") + "/" + map.get("className");
+
+                hashMap.put(key, value);
+            }
+        } else {
+            for (Map<String, Object> map : info) {
+
+                String key = "" + map.get("week") + map.get("pitchNum");
+
+                String str = map.get("startTime") + "-" + map.get("endTime") + "周";
+                if ((Integer) map.get("weekly") == 1) {
+                    str = str + "(单)";
+                } else if ((Integer) map.get("weekly") == 2) {
+                    str = str + "(双)";
+                }
+
+                String value = "" + map.get("courseName") + "/" + str + "/" + map.get("houseName") + "/" + map.get("teacherName") + "/" + map.get("className") + "/" + ((int) map.get("must") == 1 ? "必修" : "选修");
+
+                if (hashMap.get(key) == null){
+                    hashMap.put(key, value);
+                } else {
+                    hashMap.put(key, hashMap.get(key) + "//" + value);
+                }
+            }
+        }
+        return hashMap;
     }
 
 //    public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer weekly) {
@@ -485,6 +588,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     /**
      * maxNum分成minNum份，使每份之间的差最小
+     *
      * @param maxNum 例：8
      * @param minNum 例：3
      * @return 数组，存放每份的数 例：{3,3,2}
@@ -499,16 +603,17 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     /**
      * 判断准备放进去的排课是否可以放入
-     * @param ninArrangeList 存放最终排课记录的列表
-     * @param ninArrange 准备放进去的排课记录
+     *
+     * @param ninArrangeList           存放最终排课记录的列表
+     * @param ninArrange               准备放进去的排课记录
      * @param longListNinTeachClassMap Map<教学班id,List<教学班列表>>
-     * @return 可以返回true,不行则返回false
+     * @return 可以返回true, 不行则返回false
      */
     public Boolean compare(List<NinArrange> ninArrangeList, NinArrange ninArrange, Map<Long, List<NinTeachClass>> longListNinTeachClassMap) {
         NinArrange arrange1 = ninArrangeList.get(ninArrangeList.size() - 1);
         //和上一条记录相比，同教学班，同课程时，且在同一天，直接跳出
-        if (arrange1.getCourseId() == ninArrange.getCourseId() && arrange1.getTeachClassId() == ninArrange.getTeachClassId()){
-            if (arrange1.getWeek() == ninArrange.getWeek()){
+        if (arrange1.getCourseId() == ninArrange.getCourseId() && arrange1.getTeachClassId() == ninArrange.getTeachClassId()) {
+            if (arrange1.getWeek() == ninArrange.getWeek()) {
                 return false;
             }
         }

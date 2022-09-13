@@ -48,8 +48,8 @@ public class NinArrangeController {
 //    }
 
     @PostMapping("/getInfo")
-    public ResultModel getInfo(Long classId, Long teacherId, Long studentId, Integer weekly) {
-        Map<String, String> info = ninArrangeService.getInfo(classId, teacherId, studentId, weekly);
+    public ResultModel getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
+        Map<String, String> info = ninArrangeService.getInfo(classId, teacherId, studentId, count);
         return ResultModel.ok(info);
     }
 

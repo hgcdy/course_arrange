@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Map;
+
 
 @SpringBootTest
 class CourseArrangeApplicationTests {
@@ -29,7 +31,9 @@ class CourseArrangeApplicationTests {
 
     @Test
     void contextLoads() {
-     ninArrangeService.arrange();
+//     ninArrangeService.arrange();
+        Map<String, String> info = ninArrangeService.getInfo(null, null, 1L, null);
+        System.out.println(info);
 
 
     }

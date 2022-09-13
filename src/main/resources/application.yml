@@ -4,11 +4,24 @@ spring:
     username: root
     password: 1234
     url: jdbc:mysql://127.0.0.1:3306/course_arrange_v3
+
   thymeleaf:
     cache: false
     prefix: classpath:/templates/
     suffix: .html
 
+  redis:
+    host: localhost
+    port: 6379
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1
+    timeout: 0
+
 mybatis:
   config-location: classpath:mybatis-config.xml
   mapper-locations: classpath:mapper/*.xml
+
