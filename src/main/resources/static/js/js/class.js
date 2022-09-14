@@ -3,10 +3,15 @@ require(['../config'], function () {
         var page = 1;
         var size = 10;
         var total = 0;
-        var career = null;
+        var college = null;
+        var careerId = null;
         var className = null;
-        const STR = ["career", "className", "peopleNum", "courseNum"];
+        const STR = ["careerName", "className", "peopleNum", "courseNum"];
         query();
+
+        // todo 选择学院后选择专业
+
+
 
         //专业选择下拉框
         $("#dropupCareerButton").click(function (){

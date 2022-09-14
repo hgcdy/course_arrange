@@ -60,7 +60,7 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
                 classIds = new ArrayList<>();
                 classIds.add(classId);
             } else {
-                List<NinClass> selectList = ninClassMapper.getSelectList(careerId, null);
+                List<NinClass> selectList = ninClassMapper.getSelectList(null, careerId, null);
                 classIds = selectList.stream().map(NinClass::getId).collect(Collectors.toList());
             }
         }

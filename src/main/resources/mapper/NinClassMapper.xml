@@ -28,7 +28,10 @@
         FROM nin_class, nin_career
         WHERE nin_class.del_flag = 0
         AND nin_class.career_id = nin_career.id
-        <if test="career != null and career != ''">
+        <if test="college != null and college != ''">
+            AND college = #{college}
+        </if>
+        <if test="careerId != null">
             AND career_id = #{careerId}
         </if>
         <if test="className != null and className != ''">
@@ -78,11 +81,6 @@
         SET people_num = people_num - 1
         WHERE id = #{id}
     </update>
-
-
-
-
-
 
 
 </mapper>

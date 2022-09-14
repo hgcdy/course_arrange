@@ -17,9 +17,9 @@ require(['../config'], function () {
                         },
                         success: function (data) {
                             if (data.code == 200) {
-                                window.location.href = "index";
+                                window.location.href = "index?token=" + data.data;
                             } else {
-                                util.hint("登录失败，请重试！");
+                                util.hint(data.msg);
                             }
                         }
                     })

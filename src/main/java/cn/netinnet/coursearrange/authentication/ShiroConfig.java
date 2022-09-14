@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.authentication;
 
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
+import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -10,7 +11,6 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.apache.shiro.mgt.SecurityManager;
 
 import javax.servlet.Filter;
 import java.util.LinkedHashMap;
@@ -20,6 +20,7 @@ import java.util.Map;
 public class ShiroConfig {
     /**
      * 创建自定义的验证规则
+     *
      * @return
      */
     @Bean
@@ -31,6 +32,7 @@ public class ShiroConfig {
     /**
      * 创建安全管理
      * 注意创建实现了web的对象
+     *
      * @return
      */
     @Bean
@@ -49,6 +51,7 @@ public class ShiroConfig {
 
     /**
      * 创建shiro的过滤器,定义过滤规则
+     *
      * @return
      */
     @Bean
@@ -69,17 +72,19 @@ public class ShiroConfig {
         authMap.put("/login", "anon");
         authMap.put("/login/**", "anon");
         authMap.put("/logout", "logout");
-        //静态资源不拦截
-        authMap.put("/static/**", "anon");
-        authMap.put("/**", "authc");
+        authMap.put("/bootstrap/**", "anon");
+        authMap.put("/css/**", "anon");
+        authMap.put("/js/**", "anon");
+        authMap.put("/img/**", "anon");
 
+//        authMap.put("/index", "authc");
         // 在 Shiro过滤器链上加入 JWTFilter
         LinkedHashMap<String, Filter> filterMap = new LinkedHashMap<>();
         filterMap.put("jwt", new JWTFilter());
 
         shiroFilterFactoryBean.setFilters(filterMap);
-        authMap.put("/**", "jwt");
 
+        authMap.put("/**", "jwt,authc");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(authMap);
         System.out.println("---------------shirofactory创建成功");

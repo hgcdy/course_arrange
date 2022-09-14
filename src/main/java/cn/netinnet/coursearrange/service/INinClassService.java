@@ -23,7 +23,7 @@ public interface INinClassService extends IService<NinClass> {
      * @param careerId
      * @return
      */
-    Map<String, Object> getPageSelectList(Integer page, Integer size, Long careerId, String className);
+    Map<String, Object> getPageSelectList(Integer page, Integer size, String college, Long careerId, String className);
 
     /**
      * 专业查询

@@ -23,7 +23,7 @@ public interface NinClassMapper extends BaseMapper<NinClass> {
      * @param careerId
      * @return
      */
-    List<NinClass> getSelectList(@Param("career") Long careerId, @Param("className") String className);
+    List<NinClass> getSelectList(@Param("college") String college, @Param("career") Long careerId, @Param("className") String className);
 
     /**
      * 专业列表
