@@ -12,6 +12,14 @@
 <!--检索查询-->
 <div class="border-bottom" style="height: 7%;">
     <span>
+        <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupCollegeButton"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            学院
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropupCollegeButton">
+        </ul>
+    </span>&nbsp;&nbsp;
+    <span>
         <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupCareerButton"
                 data-bs-toggle="dropdown" aria-expanded="false">
             专业
@@ -26,6 +34,8 @@
     <span>
         <button type="button" class="btn btn-info" id="query">查询</button>
         <button type="button" class="btn btn-info" id="reset">重置</button>
+        <button type="button" class="btn btn-info" id="addCourse">选课</button>
+        <button type="button" class="btn btn-info" id="collegeCareer">学院专业管理</button>
         <button type="button" class="btn btn-info" id="addBatchCourse">专业批量新增课程</button>
     </span>
 </div>
