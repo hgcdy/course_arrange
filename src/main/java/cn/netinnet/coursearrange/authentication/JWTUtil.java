@@ -56,6 +56,7 @@ public class JWTUtil {
             System.out.println("token校验成功");
             return true;
         } catch (TokenExpiredException e) {
+            System.out.println("token已过期");
             throw new ExpiredCredentialsException(e.getMessage());
         } catch (Exception e) {
             System.out.println("token校验失败");

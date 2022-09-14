@@ -15,4 +15,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface NinCareerMapper extends BaseMapper<NinCareer> {
 
+    
+
+
 }

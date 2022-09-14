@@ -26,7 +26,7 @@ public interface INinStudentService extends IService<NinStudent> {
      * @param studentName 名字或账号
      * @return
      */
-    Map<String, Object> getPageSelectList(Integer page, Integer size, String career, Long classId, String studentName);
+    Map<String, Object> getPageSelectList(Integer page, Integer size, Long careerId, Long classId, String studentName);
 
     /**
      * 单个新增

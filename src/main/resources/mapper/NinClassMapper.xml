@@ -21,4 +21,68 @@
         id, career_id, class_name, people_num, course_num, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
+
+<!-- 条件选择查询 -->
+    <select id="getSelectList" resultType="cn.netinnet.coursearrange.entity.NinClass">
+        SELECT nin_class.id, nin_career.career_name, class_name, people_num, course_num
+        FROM nin_class, nin_career
+        WHERE nin_class.del_flag = 0
+        AND nin_class.career_id = nin_career.id
+        <if test="career != null and career != ''">
+            AND career_id = #{careerId}
+        </if>
+        <if test="className != null and className != ''">
+            AND class_name LIKE CONCAT('%',#{className},'%')
+        </if>
+        ORDER BY career_id, class_name
+    </select>
+
+<!-- 专业列表 -->
+<!--     <select id="careerList" resultType="java.lang.String"> -->
+<!--         SELECT DISTINCT career -->
+<!--         FROM nin_class -->
+<!--         WHERE del_flag = 0 -->
+<!--         ORDER BY career -->
+<!--     </select> -->
+
+<!-- 班级课程数量+1 -->
+    <update id="addBatchCourseNum">
+        UPDATE nin_class
+        SET course_num = course_num + 1
+        WHERE
+        <foreach  collection="list" index="index" item="item"  separator="OR">
+            id = #{item}
+        </foreach>
+    </update>
+
+<!--     班级课程数量-1 -->
+    <update id="subBatchCourseNum">
+        UPDATE nin_class
+        SET course_num = course_num - 1
+        WHERE
+        <foreach collection="list" index="index" item="item"  separator="OR">
+            id = #{item}
+        </foreach>
+    </update>
+
+<!--     班级人数+1 -->
+    <update id="addPeopleNum">
+        UPDATE nin_class
+        SET people_num = people_num + 1
+        WHERE id = #{id}
+    </update>
+
+<!-- 班级人数-1 -->
+    <update id="subPeopleNum">
+        UPDATE nin_class
+        SET people_num = people_num - 1
+        WHERE id = #{id}
+    </update>
+
+
+
+
+
+
+
 </mapper>

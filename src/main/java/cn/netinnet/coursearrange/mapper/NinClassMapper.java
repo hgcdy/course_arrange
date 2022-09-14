@@ -20,10 +20,10 @@ public interface NinClassMapper extends BaseMapper<NinClass> {
 
     /**
      * 条件查询列表
-     * @param career
+     * @param careerId
      * @return
      */
-    List<NinClass> getSelectList(@Param("career") String career, @Param("className") String className);
+    List<NinClass> getSelectList(@Param("career") Long careerId, @Param("className") String className);
 
     /**
      * 专业列表
@@ -45,8 +45,18 @@ public interface NinClassMapper extends BaseMapper<NinClass> {
      */
     int subBatchCourseNum(@Param("list") List<Long> classIdList);
 
+    /**
+     * 班级人数+1
+     * @param id
+     * @return
+     */
     int addPeopleNum(Long id);
 
+    /**
+     * 班级人数-1
+     * @param id
+     * @return
+     */
     int subPeopleNum(Long id);
 
 }

@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/nin-house")
-@RequiresRoles(value = {"admin"}, logical = Logical.OR)
+@RequiresRoles(value = {"admin","teacher"}, logical = Logical.OR)
 public class NinHouseController {
 
     @Autowired

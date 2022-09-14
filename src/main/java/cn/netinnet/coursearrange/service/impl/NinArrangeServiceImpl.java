@@ -87,13 +87,16 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
         //遍历专业列表 确定教学班和课程
         for (Long careerId : careerIdList) {
+            if (careerId == 0) {
+                continue;
+            }
             //获得该专业的专业-课程表
             List<NinCareerCourse> ninCareerCourses1 = longListNinCareerCourseMap.get(careerId);
 
             //该专业的班级列表（有序的）
             List<NinClass> ninClasses = longListNinClassMap.get(careerId);
             if (ninClasses == null) {
-                break;
+                continue;
             }
             //该专业的班级数量
             Integer classNum = ninClasses.size();
@@ -156,7 +159,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     //课程id
                     ninArrange.setCourseId(ninCourse.getId());
                     //必修
-                    NinArrange arrange = ninArrange.setMust(1);
+                    ninArrange.setMust(1);
                     //人数
                     Map<Long, List<NinTeachClass>> longListNinTeachClassMap = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
                     ninArrange.setPeopleNum(longListNinTeachClassMap.get(longs[i]).size() * 50);

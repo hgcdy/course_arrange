@@ -9,11 +9,15 @@ public class Utils {
             if (i.get("houseType") != null){
                 int houseType = (int) i.get("houseType");
                 if (houseType == 0) {
-                    i.put("houseType", "普通教室");
+                    i.put("houseType", "教室");
                 } else if (houseType == 1) {
                     i.put("houseType", "机房");
                 } else if (houseType == 2) {
                     i.put("houseType", "实验室");
+                } else if (houseType == 3) {
+                    i.put("houseType", "课外");
+                } else if (houseType == 4) {
+                    i.put("houseType", "网课");
                 }
             }
             if (i.get("must") != null){
@@ -26,6 +30,9 @@ public class Utils {
             }
             if (i.get("id") != null){
                 i.put("id", String.valueOf(i.get("id")));
+            }
+            if (i.get("careerId") != null){
+                i.put("careerId", String.valueOf(i.get("careerId")));
             }
             if (i.get("classId") != null){
                 i.put("classId", String.valueOf(i.get("classId")));

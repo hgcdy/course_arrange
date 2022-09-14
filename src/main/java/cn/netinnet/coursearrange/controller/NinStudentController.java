@@ -45,8 +45,8 @@ public class NinStudentController {
     @PostMapping("/getPageSelectList")
     public ResultModel getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                         String career, Long classId, String studentName){
-        Map<String, Object> map = ninStudentService.getPageSelectList(page, size, career, classId, studentName);
+                                         Long careerId, Long classId, String studentName){
+        Map<String, Object> map = ninStudentService.getPageSelectList(page, size, careerId, classId, studentName);
         return ResultModel.ok(map);
     }
 

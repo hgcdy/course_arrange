@@ -53,14 +53,14 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
     private NinStudentCourseMapper ninStudentCourseMapper;
 
     @Override
-    public Map<String, Object> getPageSelectList(Integer page, Integer size, String career, Long classId, String studentName) {
+    public Map<String, Object> getPageSelectList(Integer page, Integer size, Long careerId, Long classId, String studentName) {
         List<Long> classIds = null;
-        if (career != null && !career.equals("")){
+        if (careerId != null){
             if (classId != null){
                 classIds = new ArrayList<>();
                 classIds.add(classId);
             } else {
-                List<NinClass> selectList = ninClassMapper.getSelectList(career, null);
+                List<NinClass> selectList = ninClassMapper.getSelectList(careerId, null);
                 classIds = selectList.stream().map(NinClass::getId).collect(Collectors.toList());
             }
         }

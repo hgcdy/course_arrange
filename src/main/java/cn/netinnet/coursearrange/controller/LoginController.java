@@ -86,6 +86,4 @@ public class LoginController {
         return ResultModel.ok(token);
     }
 
-
-
 }

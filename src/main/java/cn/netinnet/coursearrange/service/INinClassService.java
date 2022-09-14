@@ -20,10 +20,10 @@ public interface INinClassService extends IService<NinClass> {
      * 分页条件查询
      * @param page
      * @param size
-     * @param career
+     * @param careerId
      * @return
      */
-    Map<String, Object> getPageSelectList(Integer page, Integer size, String career, String className);
+    Map<String, Object> getPageSelectList(Integer page, Integer size, Long careerId, String className);
 
     /**
      * 专业查询

@@ -17,9 +17,13 @@ import java.util.List;
 @Mapper
 public interface NinCourseMapper extends BaseMapper<NinCourse> {
 
+    /**
+     * 课程查询
+     * @param ninCourse
+     * @return
+     */
     List<NinCourse> getSelectList(NinCourse ninCourse);
 
-    List<NinCourse> getAllList();
 
 
 }

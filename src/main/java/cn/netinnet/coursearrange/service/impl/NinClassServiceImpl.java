@@ -46,9 +46,9 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     private NinStudentCourseMapper ninStudentCourseMapper;
 
     @Override
-    public Map<String, Object> getPageSelectList(Integer page, Integer size, String career, String className) {
+    public Map<String, Object> getPageSelectList(Integer page, Integer size, Long careerId, String className) {
         PageHelper.startPage(page, size);
-        List<NinClass> list = ninClassMapper.getSelectList(career, className);
+        List<NinClass> list = ninClassMapper.getSelectList(careerId, className);
         PageInfo<NinClass> pageInfo = new PageInfo<>(list);
         HashMap<String, Object> map = new HashMap<>();
         map.put("list", pageInfo.getList());

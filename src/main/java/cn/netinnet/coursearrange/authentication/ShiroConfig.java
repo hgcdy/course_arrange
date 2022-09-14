@@ -65,11 +65,12 @@ public class ShiroConfig {
 
         Map<String, String> authMap = new LinkedHashMap<>();
 
-        //登录页面不可以拦截,
-
+        //登录退出页面不拦截,其他全部拦截并进入jwt过滤器
         authMap.put("/login", "anon");
         authMap.put("/login/**", "anon");
         authMap.put("/logout", "logout");
+        //静态资源不拦截
+        authMap.put("/static/**", "anon");
         authMap.put("/**", "authc");
 
         // 在 Shiro过滤器链上加入 JWTFilter
@@ -79,22 +80,23 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setFilters(filterMap);
         authMap.put("/**", "jwt");
 
+
         shiroFilterFactoryBean.setFilterChainDefinitionMap(authMap);
         System.out.println("---------------shirofactory创建成功");
         return shiroFilterFactoryBean;
     }
 
 
-//    /**
-//     * 添加注解支持
-//     */
-//    @Bean
-//    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
-//        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
-//        // 强制使用cglib，防止重复代理和可能引起代理出错的问题
-//        defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
-//        return defaultAdvisorAutoProxyCreator;
-//    }
+    /**
+     * 添加注解支持
+     */
+    @Bean
+    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+        // 强制使用cglib，防止重复代理和可能引起代理出错的问题
+        defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
+        return defaultAdvisorAutoProxyCreator;
+    }
 
     // 加入注解的使用，不加入这个注解不生效
     @Bean

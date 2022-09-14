@@ -19,8 +19,21 @@ import java.util.Map;
 @Mapper
 public interface NinArrangeMapper extends BaseMapper<NinArrange> {
 
+    /**
+     * 排课记录批量插入
+     * @param ninArrangeList
+     */
     void addBatch(@Param("list") List<NinArrange> ninArrangeList);
 
-    List<Map<String, Object>> getInfo(@Param("classIdList") List<Long> classIdList, @Param("teachClassIdList") List<Long> teachClassIdList, @Param("teacherId") Long teacherId);
+    /**
+     * 符合条件的课程表信息
+     * @param classIdList
+     * @param teachClassIdList
+     * @param teacherId
+     * @return
+     */
+    List<Map<String, Object>> getInfo(@Param("classIdList") List<Long> classIdList,
+                                      @Param("teachClassIdList") List<Long> teachClassIdList,
+                                      @Param("teacherId") Long teacherId);
 
 }
