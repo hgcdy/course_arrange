@@ -1,10 +1,7 @@
 package cn.netinnet.coursearrange.authentication;
 
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import lombok.SneakyThrows;
-import org.apache.shiro.ShiroException;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
@@ -15,7 +12,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
 
 @Component
 public class JWTFilter extends BasicHttpAuthenticationFilter {
@@ -24,22 +20,21 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     @SneakyThrows
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        //判断请求的请求头是否带上 "Token"
-        String jwtToken = ((HttpServletRequest) request).getHeader("token");
+
+        //获取token
+        HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
+        String jwtToken = JWTUtil.getToken(httpServletRequest);
+
         if (jwtToken != null) {
             try {
-                System.out.println("1");
                 executeLogin(request, response);
-                System.out.println("2");
                 return true;
             } catch (Exception e) {
-                System.out.println("3");
                 return false;
             }
         }
         return true;
     }
-
 
 
     @Override

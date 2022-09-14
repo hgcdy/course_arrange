@@ -4,7 +4,6 @@ package cn.netinnet.coursearrange.controller;
 import cn.netinnet.coursearrange.entity.NinHouse;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinHouseService;
-import cn.netinnet.coursearrange.util.UserUtil;
 import com.sun.istack.internal.NotNull;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -24,7 +23,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/nin-house")
-@RequiresRoles(value = {"student","teacher","admin"}, logical = Logical.OR)
+@RequiresRoles(value = {"admin"}, logical = Logical.OR)
 public class NinHouseController {
 
     @Autowired
@@ -35,13 +34,13 @@ public class NinHouseController {
         return new ModelAndView("view/houseView");
     }
 
+
     @PostMapping("/getPageSelectList")
     public ResultModel getSelectPageList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          String houseName, Integer houseType, Integer firstSeat, Integer tailSeat){
         Map<String, Object> map = ninHouseService.getPageSelectList(page, size, houseName, houseType, firstSeat, tailSeat);
         return ResultModel.ok(map);
-//        return ResultModel.ok(UserUtil.getUserInfo().getUserId());
     }
 
     @PostMapping("/addHouse")

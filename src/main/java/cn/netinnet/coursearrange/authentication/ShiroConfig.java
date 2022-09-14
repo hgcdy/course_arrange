@@ -27,6 +27,7 @@ public class ShiroConfig {
         return new ShiroRealm();
     }
 
+
     /**
      * 创建安全管理
      * 注意创建实现了web的对象

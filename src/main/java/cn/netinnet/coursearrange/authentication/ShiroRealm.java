@@ -28,13 +28,8 @@ public class ShiroRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         System.out.println("权限验证");
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
-        //todo principalCollection.getPrimaryPrincipal()没有得到userInfo
-        Object primaryPrincipal = principalCollection.getPrimaryPrincipal();
         UserInfo userInfo = (UserInfo) principalCollection.getPrimaryPrincipal();
         String userType = userInfo.getUserType();
-
-//        String userType = (String) principalCollection.getPrimaryPrincipal();
-
 
         Set<String> roleSet = new HashSet<>();
         roleSet.add(userType);
@@ -56,11 +51,10 @@ public class ShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
 
-
         System.out.println("身份验证");
         //从token中获取信息
         String token = ((JWTToken) authenticationToken).getToken();
-//        String token = String.valueOf(authenticationToken.getCredentials());
+
         if (StringUtils.isBlank(token)) {
             throw new IncorrectCredentialsException("token为空，未通过认证");
         }

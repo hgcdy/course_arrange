@@ -49,7 +49,6 @@ public class JWTUtil {
      * @return
      */
     public static boolean verify(String token) {
-        System.out.println("token verify");
         try {
             Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
             JWTVerifier verifier = JWT.require(algorithm).build();
