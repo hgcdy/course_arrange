@@ -6,6 +6,7 @@ import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinCareerService;
 import cn.netinnet.coursearrange.service.INinCourseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,6 +48,12 @@ public class NinCareerController {
         return ResultModel.ok(ninCareerService.getNinCareerList(college));
     }
 
+    @GetMapping("/getCareerTreeList")
+    public ResultModel getCareerTreeList() {
+        return null;
+    }
+
+
     /**
      * 增加专业
      * @param ninCareer
@@ -54,7 +61,7 @@ public class NinCareerController {
      */
     @PostMapping("addCareer")
     public ResultModel addCareer(NinCareer ninCareer) {
-        return null;
+        return ResultModel.ok(ninCareerService.addSingle(ninCareer));
     }
 
     /**
@@ -64,7 +71,7 @@ public class NinCareerController {
      */
     @PostMapping("delCareer")
     public ResultModel delCareer(Long id) {
-        return null;
+        return ResultModel.ok(ninCareerService.delById(id));
     }
 
     /**
@@ -74,7 +81,7 @@ public class NinCareerController {
      */
     @PostMapping("alterCareer")
     public ResultModel alterCareer(NinCareer ninCareer) {
-        return null;
+        return ResultModel.ok(ninCareerService.alterSingle(ninCareer));
     }
 
 

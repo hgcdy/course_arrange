@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -31,6 +32,12 @@ public interface INinCareerService extends IService<NinCareer> {
      * @return
      */
     List<NinCareer> getNinCareerList(String college);
+
+    /**
+     * 树形专业列表
+     * @return
+     */
+    List<Map<String, Object>> getCareerTreeList();
 
     /**
      * 单个新增

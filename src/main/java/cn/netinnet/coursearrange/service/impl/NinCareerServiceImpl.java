@@ -15,10 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author wangjs
@@ -41,6 +43,19 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
     public List<NinCareer> getNinCareerList(String college) {
         List<NinCareer> ninCareerList = ninCareerMapper.getNinCareerList(college);
         return ninCareerList;
+    }
+
+    @Override
+    public List<Map<String, Object>> getCareerTreeList() {
+        //todo 未写完，
+        List<NinCareer> ninCareers = ninCareerMapper.selectList(new QueryWrapper<>());
+        Map<String, List<NinCareer>> collect = ninCareers.stream().collect(Collectors.groupingBy(NinCareer::getCollege));
+//        for (Map.Entry<String, List<NinCareer>> map : collect.entrySet()) {
+//            HashMap<String, Object> hashMap = new HashMap<>();
+//            hashMap.put("college", map.getKey());
+//            hashMap.put("career", map.getValue());
+//        }
+        return null;
     }
 
     @Override
@@ -67,7 +82,7 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
         }
 
         //删除专业-课程表
-        ninCareerCourseMapper.delete(new QueryWrapper<>(new NinCareerCourse(){{
+        ninCareerCourseMapper.delete(new QueryWrapper<>(new NinCareerCourse() {{
             setCareerId(id);
         }}));
         return ninCareerMapper.deleteById(id);

@@ -35,9 +35,18 @@
         <button type="button" class="btn btn-info" id="query">查询</button>
         <button type="button" class="btn btn-info" id="reset">重置</button>
         <button type="button" class="btn btn-info" id="addCourse">选课</button>
-        <button type="button" class="btn btn-info" id="collegeCareer">学院专业管理</button>
+        <button type="button" class="btn btn-info" id="collegeCareerButton">学院专业管理</button>
         <button type="button" class="btn btn-info" id="addBatchCourse">专业批量新增课程</button>
     </span>
+
+<!--    <span>-->
+<!--        <label for='houseType'>教室类型:</label>-->
+<!--        <select id='houseType'>-->
+<!--            <option value=0>普通教室</option>-->
+<!--            <option value=1>机房</option>-->
+<!--            <option value=2>新建</option>-->
+<!--        </select>-->
+<!--    </span>-->
 </div>
 
 <!--表格展示-->
@@ -92,6 +101,24 @@
             <button type="button" class="btn btn-secondary">跳转</button>
         </span>
     </span>
+</div>
+
+<div id="collegeCareer">
+
+
+    <h4>
+        &nbsp;
+        <img id="mark" th:src="@{img/mark.jpg}" style="position:absolute;right: 20%;" height="25" width="25">
+    </h4>
+    <h4>xxxxx
+        <span>&nbsp;<img class="del" th:src="@{img/mark.jpg}" height="25" width="25">&nbsp;<img class="altar" th:src="@{img/mark.jpg}" height="25" width="25"></span>
+    </h4>
+    <h4><input type="text" style="width: 100px">
+        <span>&nbsp;<img class="del" th:src="@{img/mark.jpg}" height="25" width="25">&nbsp;<img class="altar" th:src="@{img/mark.jpg}" height="25" width="25"></span>
+    </h4>
+
+
+
 </div>
 
 

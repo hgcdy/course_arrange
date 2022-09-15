@@ -14,8 +14,9 @@ require(['../config'], function () {
 
         //学院选择下拉框
         $("#dropupCollegeButton").click(function (){
-            //todo 重置专业选择
-
+            //重置专业选择
+            careerId = null;
+            $("#dropupCareerButton").text("专业");
             $.ajax({
                 url: "nin-career/getCollegeList",
                 dataType: "json",
@@ -54,10 +55,9 @@ require(['../config'], function () {
                     if (data.code == 200){
                         var list = data.data;
                         $("#dropupCareerButton").next("ul").empty();
-                        //todo 有问题，还没看
                         for (let i = 0; i < list.length; i++) {
-                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i]).click(function (){
-                                $("#dropupCareerButton").text($(this).text());
+                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].careerName).attr("career-id", list[i].id).click(function (){
+                                $("#dropupCareerButton").text($(this).text()).attr("career-id", $(this).attr("career-id"));
                             });
                             var $li = $("<li></li>").append($a);
                             $("#dropupCareerButton").next("ul").append($li);
@@ -71,16 +71,20 @@ require(['../config'], function () {
         //查询按钮
         $("#query").click(function (){
             college = $("#dropupCollegeButton").text();
-            if ($.trim(college) == "专业"){
+            if ($.trim(college) == "学院"){
                 college = null;
             }
+            careerId = $("#dropupCareerButton").attr("career-id");//todo
             className = $("#className").val();
             query();
         })
         //重置按钮
         $("#reset").click(function (){
             college = null;
-            $("#dropupCareerButton").text("专业");
+            $("#dropupCollegeButton").text("学院");
+            careerId = null;
+            $("#dropupCareerButton").text("专业").removeAttr("career-id");
+
             className = null;
             $("#className").val(null);
             query();
@@ -132,7 +136,7 @@ require(['../config'], function () {
         }
 
 
-        //批量新增课程
+        //todo 批量新增课程
         $("#addBatchCourse").click(function (){
             $.ajax({
                 url: "nin-course/getSelectCourseList",
@@ -196,7 +200,6 @@ require(['../config'], function () {
             }
 
         })
-
         function box($select) {
             $.ajax({
                 url: "nin-class/careerList",
