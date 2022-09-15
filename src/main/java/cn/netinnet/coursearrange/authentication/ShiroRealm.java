@@ -26,6 +26,7 @@ public class ShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         System.out.println("权限验证");
+        //todo 执行多次，不知道为啥
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
         //获取用户信息及用户角色类型

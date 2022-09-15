@@ -18,12 +18,10 @@ public interface INinTeacherCourseService extends IService<NinTeacherCourse> {
 
     /**
      *
-     * @param page
-     * @param size
      * @param teacherId
      * @return
      */
-    List<Map<String, Object>> getPageSelectList(Long teacherId);
+    List<Map<String, Object>> getSelectList(Long teacherId);
 
     /**
      * 单个新增

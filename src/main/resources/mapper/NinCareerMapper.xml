@@ -29,4 +29,24 @@
         </if>
     </select>
 
+    <select id="getCollegeList" resultType="java.lang.String">
+        SELECT DISTINCT college
+        FROM nin_career
+    </select>
+
+    <!-- 班级数量+1 -->
+    <update id="addClassNum">
+         UPDATE nin_career
+         SET class_num = class_num + 1
+         WHERE
+         id = #{id}
+    </update>
+
+    <!-- 班级数量-1 -->
+    <update id="subClassNum">
+        UPDATE nin_career
+        SET class_num = class_num - 1
+        WHERE id = #{id}
+    </update>
+
 </mapper>

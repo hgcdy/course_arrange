@@ -52,26 +52,33 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
     @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
 
+
+
+//    @Override
+//    public Map<String, Object> getPageSelectList(Integer page, Integer size, Long careerId, Long classId, String studentName) {
+//        List<Long> classIds = null;
+//        if (careerId != null){
+//            if (classId != null){
+//                classIds = new ArrayList<>();
+//                classIds.add(classId);
+//            } else {
+//                List<NinClass> selectList = ninClassMapper.getSelectList(null, careerId, null);
+//                classIds = selectList.stream().map(NinClass::getId).collect(Collectors.toList());
+//            }
+//        }
+//        PageHelper.startPage(page, size);
+//        List<Map<String, Object>> list = ninStudentMapper.getSelectList(classIds, studentName);
+//        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+//        Utils.conversion(pageInfo.getList());
+//        HashMap<String, Object> map = new HashMap<>();
+//        map.put("list", pageInfo.getList());
+//        map.put("total", pageInfo.getTotal());
+//        return map;
+//    }
+
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size, Long careerId, Long classId, String studentName) {
-        List<Long> classIds = null;
-        if (careerId != null){
-            if (classId != null){
-                classIds = new ArrayList<>();
-                classIds.add(classId);
-            } else {
-                List<NinClass> selectList = ninClassMapper.getSelectList(null, careerId, null);
-                classIds = selectList.stream().map(NinClass::getId).collect(Collectors.toList());
-            }
-        }
-        PageHelper.startPage(page, size);
-        List<Map<String, Object>> list = ninStudentMapper.getSelectList(classIds, studentName);
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
-        Utils.conversion(pageInfo.getList());
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("list", pageInfo.getList());
-        map.put("total", pageInfo.getTotal());
-        return map;
+        return null;
     }
 
     @Override

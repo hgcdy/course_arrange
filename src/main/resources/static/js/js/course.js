@@ -6,7 +6,7 @@ require(['../config'], function () {
         var courseName = null;
         var houseType = null;
         var must = null;
-        const STR = ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime"];
+        const STR = ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime", "maxClassNum"];
         query();
 
         //下拉框
@@ -153,6 +153,8 @@ require(['../config'], function () {
 
                         var $weekTime = $("<tr><td><label for='weekTime'>上课周数:</label></td><td><input type='text' id='weekTime' value=" + obj.weekTime + "></td></tr>");
 
+                        var $maxClassNum = $("<tr><td><label for='maxClassNum'>上课班级数量:</label></td><td><input type='text' id='maxClassNum' value=" + obj.maxClassNum + "></td></tr>");
+
                         $must.click(function (){
                             if ($must.find("select").val() == 0){
                                 $courseTime.find("select").val(32);
@@ -160,7 +162,7 @@ require(['../config'], function () {
                                 $courseTime.find("select").val(obj.courseTime);
                             }
                         })
-                        util.popup([$courseName, $houseType, $must, $courseTime, $startTime, $endTime, $weekTime], ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime"], $update);
+                        util.popup([$courseName, $houseType, $must, $courseTime, $startTime, $endTime, $weekTime, $maxClassNum], ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime", "maxClassNum"], $update);
                     }
                 }
             })
@@ -180,7 +182,8 @@ require(['../config'], function () {
                             courseTime: record.courseTime,
                             startTime: record.startTime,
                             endTime: record.endTime,
-                            weekTime: record.weekTime
+                            weekTime: record.weekTime,
+                            maxClassNum: record.maxClassNum
                         },
                         success: function (data) {
                             if (data.code == 200) {
@@ -207,6 +210,8 @@ require(['../config'], function () {
 
             var $weekTime = $("<tr><td><label for='weekTime'>上课周数:</label></td><td><input type='text' id='weekTime'></td></tr>");
 
+            var $maxClassNum = $("<tr><td><label for='maxClassNum'>上课班级数量:</label></td><td><input type='text' id='maxClassNum'></td></tr>");
+
             $must.click(function (){
                 if ($must.find("select").val() == 0){
                     $courseTime.find("select").val(32);
@@ -216,7 +221,7 @@ require(['../config'], function () {
                 }
             })
 
-            util.popup([$courseName, $houseType, $must, $courseTime, $startTime, $endTime, $weekTime], ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime"], $insert);
+            util.popup([$courseName, $houseType, $must, $courseTime, $startTime, $endTime, $weekTime, $maxClassNum], ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime", "maxClassNum"], $insert);
 
             function $insert(record) {
                 if (record.must == 0 && record.num > 32){
@@ -233,7 +238,8 @@ require(['../config'], function () {
                             courseTime: record.courseTime,
                             startTime: record.startTime,
                             endTime: record.endTime,
-                            weekTime: record.weekTime
+                            weekTime: record.weekTime,
+                            maxClassNum: record.maxClassNum
                         },
                         success: function (data) {
                             if (data.code == 200) {
@@ -250,6 +256,20 @@ require(['../config'], function () {
 
             }
         })
+
+
+        $("#mark").mouseout(function (){
+            $("#markDiv").css("display", "none");
+        })
+        $("#mark").mouseover(function (){
+            $("#markDiv").css("display", "block");
+        })
+
+
+
+
+
+
 
         //切换每页记录条数
         $("#page a:eq(0)").click(function () {

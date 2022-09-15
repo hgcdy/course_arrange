@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -23,7 +24,7 @@ public interface NinClassMapper extends BaseMapper<NinClass> {
      * @param careerId
      * @return
      */
-    List<NinClass> getSelectList(@Param("college") String college, @Param("career") Long careerId, @Param("className") String className);
+    List<Map<String, Object>> getSelectList(@Param("college") String college, @Param("careerId") Long careerId, @Param("className") String className);
 
     /**
      * 专业列表

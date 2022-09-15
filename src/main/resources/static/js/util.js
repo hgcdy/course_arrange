@@ -34,7 +34,9 @@ define(function () {
             } else if (count == 0){
                 $td.text("不可操作");
             }
-            $tr.append($td);
+            if (count != -1) {
+                $tr.append($td);
+            }
             $tbody.append($tr);
         }
     }

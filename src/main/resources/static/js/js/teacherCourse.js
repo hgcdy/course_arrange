@@ -1,8 +1,7 @@
 require(['../config'], function () {
     require(['jquery', 'util', 'bootstrapBundle'], function ($, util) {
-        const STR = ["courseName", "houseType", "must", "courseTime"];
+        const STR = ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime"];
         query();
-
 
         //新增
         $("#insert").click(function () {

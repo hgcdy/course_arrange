@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.service;
 import cn.netinnet.coursearrange.entity.NinClass;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -25,17 +26,13 @@ public interface INinClassService extends IService<NinClass> {
      */
     Map<String, Object> getPageSelectList(Integer page, Integer size, String college, Long careerId, String className);
 
-    /**
-     * 专业查询
-     * @return
-     */
-    List<String> careerList();
 
     /**
-     * 专业班级列表
+     * 班级选的课程
+     * @param classId
      * @return
      */
-    Map<String, List<NinClass>> careerClassList();
+    List<Map<String, Object>> getSelectList(Long classId);
 
     /**
      * 单个新增

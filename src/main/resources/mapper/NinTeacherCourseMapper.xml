@@ -27,7 +27,10 @@
                nin_course.course_name AS courseName,
                nin_course.house_type AS houseType,
                nin_course.must AS must,
-               nin_course.course_time AS courseTime
+               nin_course.course_time AS courseTime,
+               nin_course.start_time AS startTime,
+               nin_course.end_time AS endTime,
+               nin_course.week_time AS weekTime
         FROM nin_teacher_course, nin_course
         WHERE nin_teacher_course.del_flag = 0
         AND nin_teacher_course.course_id = nin_course.id

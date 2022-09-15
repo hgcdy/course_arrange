@@ -34,7 +34,7 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
     private NinTeacherCourseMapper ninTeacherCourseMapper;
 
     @Override
-    public List<Map<String, Object>> getPageSelectList(Long teacherId) {
+    public List<Map<String, Object>> getSelectList(Long teacherId) {
         List<Map<String, Object>> list = ninTeacherCourseMapper.getSelectList(teacherId);
         Utils.conversion(list);
         return list;

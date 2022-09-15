@@ -43,7 +43,15 @@ require(['../config'], function () {
 
         //选课
         $("#details").click(function () {
-            window.location.href = "http://localhost:8080/nin-" + type +"-course?" + type + "Id=" + teacherId;
+            var typeId = null;
+            if (type == "teacher") {
+                typeId = teacherId;
+            } else if (type == "class") {
+                typeId = classId;
+            } else if (type == "student") {
+                typeId = studentId;
+            }
+            window.location.href = "http://localhost:8080/nin-" + type +"-course?" + type + "Id=" + typeId;
         })
         $("#formButton").click(function (){
             window.location.href = window.location.href;

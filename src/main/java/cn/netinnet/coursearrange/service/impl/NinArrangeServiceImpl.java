@@ -386,7 +386,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             List<Long> longs = new ArrayList<>();
             longs.add(classId);
             info = ninArrangeMapper.getInfo(longs, null, null);
-            if (info == null) {
+            if (info.size() == 0) {
                 //如果为空，则为必修班级
                 longs.remove(0);
                 longs = ninTeachClassMapper.getTeachClassIdList(classId);

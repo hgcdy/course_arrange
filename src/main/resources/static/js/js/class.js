@@ -5,24 +5,56 @@ require(['../config'], function () {
         var total = 0;
         var college = null;
         var careerId = null;
+        var careerName = null;
         var className = null;
-        const STR = ["careerName", "className", "peopleNum", "courseNum"];
+        const STR = ["college", "careerName", "className", "peopleNum", "courseNum"];
         query();
 
         // todo 选择学院后选择专业
 
+        //学院选择下拉框
+        $("#dropupCollegeButton").click(function (){
+            //todo 重置专业选择
 
+            $.ajax({
+                url: "nin-career/getCollegeList",
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    if (data.code == 200){
+                        var list = data.data;
+                        $("#dropupCollegeButton").next("ul").empty();
+                        for (let i = 0; i < list.length; i++) {
+                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i]).click(function (){
+                                $("#dropupCollegeButton").text($(this).text());
+                            });
+                            var $li = $("<li></li>").append($a);
+                            $("#dropupCollegeButton").next("ul").append($li);
+                        }
+                    }
+                }
+            })
+        })
 
         //专业选择下拉框
         $("#dropupCareerButton").click(function (){
+            college = $("#dropupCollegeButton").text();
+            if ($.trim(college) == "学院"){
+                college = null;
+            }
+
             $.ajax({
-                url: "nin-class/careerList",
+                url: "nin-career/getCareerList",
                 dataType: "json",
-                type: "get",
+                type: "post",
+                data: {
+                    college: college
+                },
                 success: function (data) {
                     if (data.code == 200){
                         var list = data.data;
                         $("#dropupCareerButton").next("ul").empty();
+                        //todo 有问题，还没看
                         for (let i = 0; i < list.length; i++) {
                             var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i]).click(function (){
                                 $("#dropupCareerButton").text($(this).text());
@@ -34,18 +66,20 @@ require(['../config'], function () {
                 }
             })
         })
+
+
         //查询按钮
         $("#query").click(function (){
-            career = $("#dropupCareerButton").text();
-            if ($.trim(career) == "专业"){
-                career = null;
+            college = $("#dropupCollegeButton").text();
+            if ($.trim(college) == "专业"){
+                college = null;
             }
             className = $("#className").val();
             query();
         })
         //重置按钮
         $("#reset").click(function (){
-            career = null;
+            college = null;
             $("#dropupCareerButton").text("专业");
             className = null;
             $("#className").val(null);
@@ -59,7 +93,8 @@ require(['../config'], function () {
                 dataType: "json",
                 type: "post",
                 data: {
-                    career: career,
+                    college: college,
+                    careerId: careerId,
                     className: className,
                     size: size,
                     page: page

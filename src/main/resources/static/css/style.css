@@ -48,6 +48,19 @@ td {
     height: 100px;
 }
 
+#markDiv {
+    background-color: #ffffff;
+    position: relative;
+    top: -10px;
+    right: 110px;
+    width: 200px;
+    height: 170px;
+    margin: 0 auto;
+    text-align:center;
+    display: none;
+    border: 1px solid #000000;
+}
+
 
 
 

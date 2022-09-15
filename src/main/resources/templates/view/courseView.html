@@ -40,7 +40,16 @@
     <span>
         <button type="button" class="btn btn-info" id="query">查询</button>
         <button type="button" class="btn btn-info" id="reset">重置</button>
-        <img th:src="@{img/mark.jpg}" height="15" width="15">
+        <img id="mark" th:src="@{img/mark.jpg}" height="15" width="15">
+        <div id="markDiv">
+            一节大课即为两个课时
+            <br>
+            开课结课时间指的是该课程开课和结课的时间范围
+            <br>
+            上课周次指的是该课程必须在几周内完成授课
+            <br>
+            上课班级数量是建议最多在一起上课的班级数量
+        </div>
     </span>
 </div>
 
@@ -57,6 +66,7 @@
             <th scope="col">开课时间</th>
             <th scope="col">结课时间</th>
             <th scope="col">上课周数</th>
+            <th scope="col">上课班级数量</th>
             <th scope="col">
                 操作&nbsp;&nbsp;&nbsp;&nbsp;
                 <button type="button" class="btn btn-info" id="insert">新建</button>

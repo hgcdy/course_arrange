@@ -37,7 +37,7 @@ public class NinTeacherCourseController {
 
     @PostMapping("/getSelectList")
     public ResultModel getSelectList(Long teacherId){
-        List<Map<String, Object>> list = ninTeacherCourseService.getPageSelectList(teacherId);
+        List<Map<String, Object>> list = ninTeacherCourseService.getSelectList(teacherId);
         return ResultModel.ok(list);
     }
 
