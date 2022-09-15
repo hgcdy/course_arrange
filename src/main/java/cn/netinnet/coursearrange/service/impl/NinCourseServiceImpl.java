@@ -72,7 +72,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         ninCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
         int i = ninCourseMapper.insert(ninCourse);
         //如果是选修课程
-        if (ninCourse.getMust() == 0){
+        if (ninCourse.getMust() == 0) {
             //生成选修教学班
             NinClass ninClass = new NinClass();
             ninClass.setId(IDUtil.getID());
@@ -101,22 +101,22 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         int i = ninCourseMapper.deleteById(id);
         //删除其他表有关该课程的记录
 
-        QueryWrapper<NinClassCourse> queryWrapper = new QueryWrapper<>(new NinClassCourse() {{
-            setCourseId(id);
-        }});
-
-        //班级的课程数-1
-        //获取班级id列表
-        List<Long> classIdList = ninClassCourseMapper.selectList(queryWrapper).stream().map(ninClassCourse -> {
-            Long classId = ninClassCourse.getClassId();
-            return classId;
-        }).collect(Collectors.toList());
-
-        //班级课程数num-1
-        ninClassMapper.subBatchCourseNum(classIdList);
-
-        //删除班级-课程
-        ninClassCourseMapper.delete(queryWrapper);
+//        QueryWrapper<NinClassCourse> queryWrapper = new QueryWrapper<>(new NinClassCourse() {{
+//            setCourseId(id);
+//        }});
+//
+//        //班级的课程数-1
+//        //获取班级id列表
+//        List<Long> classIdList = ninClassCourseMapper.selectList(queryWrapper).stream().map(ninClassCourse -> {
+//            Long classId = ninClassCourse.getClassId();
+//            return classId;
+//        }).collect(Collectors.toList());
+//
+//        //班级课程数num-1
+//        ninClassMapper.subBatchCourseNum(classIdList);
+//
+//        //删除班级-课程
+//        ninClassCourseMapper.delete(queryWrapper);
 
         //删除学生-课程
         ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
@@ -171,31 +171,15 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     }
 
     @Override
-    public List<NinCourse> getSelectCourseList(Long classId) {
-        return null;
+    public List<NinCourse> getSelectCourseList(Integer sign) {
+        List<NinCourse> courseList = ninCourseMapper.selectList(new QueryWrapper<>());
+        if (sign != null && (sign == 0 || sign == 1)) {
+            courseList = courseList.stream().filter(i ->
+                    i.getMust() == sign
+            ).collect(Collectors.toList());
+        }
+        return courseList;
     }
 
-//    @Override
-//    public List<NinCourse> getSelectCourseList(Long classId) {
-//        List<NinCourse> courseAllList = ninCourseMapper.getAllList();
-//        List<NinCourse> courseList = new ArrayList<>();
-//        if (classId != null){
-//            //todo 选修必修课程未按要求出现
-//            if (classId == 0){
-//                //全选
-//                courseList = courseAllList;
-//            } else if (classId == 2){
-//                //必修
-//                courseList = courseAllList.stream().filter(i ->
-//                        i.getMust() == 1
-//                ).collect(Collectors.toList());
-//            } else if(classId == 1 || ninClassMapper.selectById(classId).getCareer().equals("#")){
-//                //选修
-//                courseList = courseAllList.stream().filter(i ->
-//                        i.getMust() == 0
-//                ).collect(Collectors.toList());
-//            }
-//        }
-//        return courseList;
-//    }
+
 }

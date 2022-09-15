@@ -41,9 +41,16 @@ require(['../config'], function () {
         })
 
 
-        //返回详情
-        $("#back").click(function () {
-            window.location.href = "http://localhost:8080/" + path;
+        //选课
+        $("#details").click(function () {
+            window.location.href = "http://localhost:8080/nin-" + type +"-course?" + type + "Id=" + teacherId;
+        })
+        $("#formButton").click(function (){
+            window.location.href = window.location.href;
+        })
+        //返回
+        $("#back").click(function (){
+            window.location.href = "http://localhost:8080/nin-" + type;
         })
 
 

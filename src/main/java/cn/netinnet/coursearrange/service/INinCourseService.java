@@ -59,5 +59,5 @@ public interface INinCourseService extends IService<NinCourse> {
      * @param classId
      * @return
      */
-    List<NinCourse> getSelectCourseList(Long classId);
+    List<NinCourse> getSelectCourseList(Integer sign);
 }

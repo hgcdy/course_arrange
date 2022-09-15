@@ -6,7 +6,7 @@ require(['../config'], function () {
         var courseName = null;
         var houseType = null;
         var must = null;
-        const STR = ["courseName", "houseType", "must", "num"];
+        const STR = ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime"];
         query();
 
         //下拉框
@@ -72,6 +72,10 @@ require(['../config'], function () {
                                     list[i].houseType = "机房";
                                 } else if (h == 2) {
                                     list[i].houseType = "实验室";
+                                } else if (h == 3) {
+                                    list[i].houseType = "课外";
+                                } else if (h == 4) {
+                                    list[i].houseType = "网课";
                                 }
                                 if (m == 0) {
                                     list[i].must = "选修";
@@ -134,23 +138,29 @@ require(['../config'], function () {
                         var obj = data.data;
                         var $courseName = $("<tr><td><label for='courseName'>课程名称:</label></td><td><input type='text' id='courseName' value=" + obj.courseName + "></td></tr>");
 
-                        var $houseType = $("<tr><td><label for='houseType'>教室类型:</label></td><td><select id='houseType'><option value=0>普通教室</option><option value=1>机房</option><option value=2>实验室</option></select></td></tr>");
+                        var $houseType = $("<tr><td><label for='houseType'>教室类型:</label></td><td><select id='houseType'><option value=0>普通教室</option><option value=1>机房</option><option value=2>实验室</option><option value=3>课外</option><option value=4>网课</option></select></td></tr>");
                         $houseType.find("select").val(obj.houseType);
 
                         var $must = $("<tr><td><label for='must'>是否必修:</label></td><td><select id='must'><option value=0>选修</option><option value=1>必修</option></select></td></tr>");
                         $must.find("select").val(obj.must);
 
-                        var $num = $("<tr><td><label for='num'>课时:</label></td><td><select id='num'><option value=8>8</option><option value=16>16</option><option value=32>32</option><option value=48>48</option><option value=64>64</option></select></td></tr>");
-                        $num.find("select").val(obj.num);
+                        var $courseTime = $("<tr><td><label for='courseTime'>课时:</label></td><td><select id='courseTime'><option value=8>8</option><option value=16>16</option><option value=32>32</option><option value=48>48</option><option value=64>64</option></select></td></tr>");
+                        $courseTime.find("select").val(obj.courseTime);
+
+                        var $startTime = $("<tr><td><label for='startTime'>开始时间:</label></td><td><input type='text' id='startTime' value=" + obj.startTime + "></td></tr>");
+
+                        var $endTime = $("<tr><td><label for='endTime'>结束时间:</label></td><td><input type='text' id='endTime' value=" + obj.startTime + "></td></tr>");
+
+                        var $weekTime = $("<tr><td><label for='weekTime'>上课周数:</label></td><td><input type='text' id='weekTime' value=" + obj.weekTime + "></td></tr>");
 
                         $must.click(function (){
                             if ($must.find("select").val() == 0){
-                                $num.find("select").val(32);
+                                $courseTime.find("select").val(32);
                             } else {
-                                $num.find("select").val(obj.num);
+                                $courseTime.find("select").val(obj.courseTime);
                             }
                         })
-                        util.popup([$courseName, $houseType, $must, $num], ["courseName", "houseType", "must", "num"], $update);
+                        util.popup([$courseName, $houseType, $must, $courseTime, $startTime, $endTime, $weekTime], ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime"], $update);
                     }
                 }
             })
@@ -167,7 +177,10 @@ require(['../config'], function () {
                             courseName: record.courseName,
                             houseType: record.houseType,
                             must: record.must,
-                            num: record.num
+                            courseTime: record.courseTime,
+                            startTime: record.startTime,
+                            endTime: record.endTime,
+                            weekTime: record.weekTime
                         },
                         success: function (data) {
                             if (data.code == 200) {
@@ -184,19 +197,26 @@ require(['../config'], function () {
         //新增
         $("#insert").click(function () {
             var $courseName = $("<tr><td><label for='courseName'>课程名称:</label></td><td><input type='text' id='courseName'></td></tr>");
-            var $houseType = $("<tr><td><label for='houseType'>教室类型:</label></td><td><select id='houseType'><option disabled='disabled' selected='selected'></option><option value=0>普通教室</option><option value=1>机房</option><option value=2>实验室</option></select></td></tr>");
+            var $houseType = $("<tr><td><label for='houseType'>教室类型:</label></td><td><select id='houseType'><option disabled='disabled' selected='selected'></option><option value=0>普通教室</option><option value=1>机房</option><option value=2>实验室</option><option value=3>课外</option><option value=4>网课</option></select></td></tr>");
             var $must = $("<tr><td><label for='must'>是否必修:</label></td><td><select id='must'><option value=0>选修</option><option value=1>必修</option></select></td></tr>");
             $must.find("select").val(1);
-            var $num = $("<tr><td><label for='num'>课时:</label></td><td><select id='num'><option value=8>8</option><option value=16>16</option><option value=32>32</option><option value=48>48</option><option value=64>64</option></select></td></tr>");
+            var $courseTime = $("<tr><td><label for='courseTime'>课时:</label></td><td><select id='courseTime'><option value=8>8</option><option value=16>16</option><option value=32>32</option><option value=48>48</option><option value=64>64</option></select></td></tr>");
+            var $startTime = $("<tr><td><label for='startTime'>开始时间:</label></td><td><input type='text' id='startTime'></td></tr>");
+
+            var $endTime = $("<tr><td><label for='endTime'>结束时间:</label></td><td><input type='text' id='endTime'></td></tr>");
+
+            var $weekTime = $("<tr><td><label for='weekTime'>上课周数:</label></td><td><input type='text' id='weekTime'></td></tr>");
+
             $must.click(function (){
                 if ($must.find("select").val() == 0){
-                    $num.find("select").val(32);
+                    $courseTime.find("select").val(32);
+
                 } else {
-                    $num.find("select").val(8);
+                    $courseTime.find("select").val(8);
                 }
             })
 
-            util.popup([$courseName, $houseType, $must, $num], ["courseName", "houseType", "must", "num"], $insert);
+            util.popup([$courseName, $houseType, $must, $courseTime, $startTime, $endTime, $weekTime], ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime"], $insert);
 
             function $insert(record) {
                 if (record.must == 0 && record.num > 32){
@@ -210,7 +230,10 @@ require(['../config'], function () {
                             courseName: record.courseName,
                             houseType: record.houseType,
                             must: record.must,
-                            num: record.num
+                            courseTime: record.courseTime,
+                            startTime: record.startTime,
+                            endTime: record.endTime,
+                            weekTime: record.weekTime
                         },
                         success: function (data) {
                             if (data.code == 200) {

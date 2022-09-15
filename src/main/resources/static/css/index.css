@@ -18,7 +18,7 @@ body {
     height: 100%;
 }
 #popup {
-    background-color: #f2e7c3;
+    background-color: #ffffff;
     position: absolute;
     top: 10%;
     left: 0;
@@ -27,6 +27,7 @@ body {
     margin: 0 auto;
     text-align:center;
     display: none;
+    border: 1px solid #000000;
     /*block*/
 }
 

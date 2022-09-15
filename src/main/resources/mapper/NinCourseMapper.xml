@@ -25,4 +25,21 @@
         id, course_name, house_type, must, course_time, start_time, end_time, week_time, max_class_num, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
+<!--         条件选择查询 -->
+    <select id="getSelectList" resultType="cn.netinnet.coursearrange.entity.NinCourse">
+        SELECT id, course_name, house_type, must, course_time, start_time, end_time, week_time, max_class_num
+        FROM nin_course
+        WHERE del_flag = 0
+        <if test="courseName != null">
+            AND course_name LIKE CONCAT('%',#{courseName},'%')
+        </if>
+        <if test="houseType != null">
+            AND house_type = #{houseType}
+        </if>
+        <if test="must != null">
+            AND must = #{must}
+        </if>
+        ORDER BY must, course_name
+    </select>
+
 </mapper>

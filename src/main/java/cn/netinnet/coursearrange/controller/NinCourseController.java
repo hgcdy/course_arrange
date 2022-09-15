@@ -100,8 +100,8 @@ public class NinCourseController {
      * @return
      */
     @PostMapping("/getSelectCourseList")
-    public ResultModel getSelectCourseList(Long classId){
-        List<NinCourse> courseList = ninCourseService.getSelectCourseList(classId);
+    public ResultModel getSelectCourseList(Integer sign){
+        List<NinCourse> courseList = ninCourseService.getSelectCourseList(sign);
         return ResultModel.ok(courseList);
     }
 

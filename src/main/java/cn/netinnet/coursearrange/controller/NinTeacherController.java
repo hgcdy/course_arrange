@@ -1,9 +1,7 @@
 package cn.netinnet.coursearrange.controller;
 
 
-import cn.netinnet.coursearrange.entity.NinCourse;
 import cn.netinnet.coursearrange.entity.NinTeacher;
-import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinTeacherService;
 import org.springframework.beans.factory.annotation.Autowired;

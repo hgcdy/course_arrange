@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -26,6 +27,6 @@ public interface NinHouseMapper extends BaseMapper<NinHouse> {
      * @param tailSeat 座位（max）
      * @return
      */
-    List<NinHouse> getSelectList(@Param("houseName") String houseName, @Param("houseType")Integer houseType, @Param("firstSeat")Integer firstSeat, @Param("tailSeat")Integer tailSeat);
+    List<Map<String, Object>> getSelectList(@Param("houseName") String houseName, @Param("houseType")Integer houseType, @Param("firstSeat")Integer firstSeat, @Param("tailSeat")Integer tailSeat);
 
 }

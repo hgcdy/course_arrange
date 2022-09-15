@@ -67,19 +67,24 @@
         <if test="teacherId != null">
             AND nin_arrange.teacher_id = #{teacherId}
         </if>
-       AND(
-       <if test="teachClassIdList != null">
-            <foreach collection="teachClassIdList" index="index" item="item1" separator="OR"  close="OR">
-                nin_arrange.teach_class_id = #{item1}
-            </foreach>
+        <if test="teachClassIdList != null or classIdList != null">
+            AND (
+            <if test="teachClassIdList != null">
+                <foreach collection="teachClassIdList" index="index" item="item1" separator="OR" >
+                    nin_arrange.teach_class_id = #{item1}
+                </foreach>
+            </if>
+            <if test="teachClassIdList != null and classIdList != null">
+                OR
+            </if>
+            <if test="classIdList != null">
+                <foreach collection="classIdList" index="index" item="item2" separator="OR">
+                    nin_arrange.class_id = #{item2}
+                </foreach>
+            </if>
+            )
         </if>
-        <if test="classIdList != null">
-            <foreach collection="classIdList" index="index" item="item2" separator="OR">
-                nin_arrange.class_id = #{item2}
-            </foreach>
-        </if>
-        )
-        </where>
+       </where>
     </select>
 
 </mapper>

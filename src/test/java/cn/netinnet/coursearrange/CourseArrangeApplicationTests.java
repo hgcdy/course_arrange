@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange;
 
+import cn.netinnet.coursearrange.mapper.NinArrangeMapper;
 import cn.netinnet.coursearrange.mapper.NinClassCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinClassMapper;
 import cn.netinnet.coursearrange.mapper.NinCourseMapper;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -27,14 +30,26 @@ class CourseArrangeApplicationTests {
     private INinArrangeService ninArrangeService;
     @Autowired
     private NinClassMapper ninClassMapper;
+    @Autowired
+    private NinArrangeMapper ninArrangeMapper;
 
 
     @Test
     void contextLoads() {
 //     ninArrangeService.arrange();
-        Map<String, String> info = ninArrangeService.getInfo(null, null, 1L, null);
-        System.out.println(info);
+//        Map<String, String> info = ninArrangeService.getInfo(null, null, 1L, null);
+//        System.out.println(info);
+        List<Map<String, Object>> info = ninArrangeMapper.getInfo(null, null, 3L);
+        ArrayList<Long> classIdList = new ArrayList<>();
+        classIdList.add(100L);
+        ArrayList<Long> teachClassIdList = new ArrayList<>();
+        teachClassIdList.add(812322783474005866L);
 
+        List<Map<String, Object>> info1 = ninArrangeMapper.getInfo(classIdList, null, null);
+        List<Map<String, Object>> info2 = ninArrangeMapper.getInfo(null, teachClassIdList, null);
+        List<Map<String, Object>> info3 = ninArrangeMapper.getInfo(classIdList, teachClassIdList, null);
+
+        System.out.println("");
 
     }
 

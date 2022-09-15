@@ -1,6 +1,6 @@
 require(['../config'], function () {
     require(['jquery', 'util', 'bootstrapBundle'], function ($, util) {
-        const STR = ["courseName", "houseType", "must", "num"];
+        const STR = ["courseName", "houseType", "must", "courseTime"];
         query();
 
 
@@ -10,9 +10,6 @@ require(['../config'], function () {
                 url: "nin-course/getSelectCourseList",
                 dataType: "json",
                 type: "post",
-                data: {
-                    classId: 0
-                },
                 //获取课程列表
                 success: function (data) {
                     if (data.code == 200) {
@@ -23,7 +20,11 @@ require(['../config'], function () {
                         var $op = $("<option disabled='disabled' selected='selected'></option>");
                         $($select).append($op);
                         for (let i = 0; i < courseList.length; i++) {
-                            var $option = $("<option></option>").text(courseList[i].courseName).val(courseList[i].id);
+                            var str = "(必修)";
+                            if (courseList[i].must == 0) {
+                                str = "(选修)"
+                            }
+                            var $option = $("<option></option>").text(courseList[i].courseName + str).val(courseList[i].id);
                             $select.append($option);
                         }
                         $td.append($select);
@@ -96,9 +97,14 @@ require(['../config'], function () {
             window.location.href = "nin-teacher";
         })
 
+        $("#details").click(function (){
+            window.location.href = window.location.href;
+        })
+
         //课程表
-        $("#course-form").click(function (){
-            var str = "nin-arrange/courseForm?teacherId=" + teacherId + "&path=nin-teacher-course?teacherId=" + teacherId;
+        $("#formButton").click(function (){
+            // var str = "nin-arrange/courseForm?teacherId=" + teacherId + "&path=nin-teacher-course?teacherId=" + teacherId;
+            var str = "nin-arrange/courseForm?teacherId=" + teacherId + "&type=teacher";
             window.location.href = str;
         })
 
