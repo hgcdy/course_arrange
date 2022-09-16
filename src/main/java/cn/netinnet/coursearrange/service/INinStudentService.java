@@ -26,7 +26,7 @@ public interface INinStudentService extends IService<NinStudent> {
      * @param studentName 名字或账号
      * @return
      */
-    Map<String, Object> getPageSelectList(Integer page, Integer size, Long careerId, Long classId, String studentName);
+    Map<String, Object> getPageSelectList(Integer page, Integer size, String college, Long careerId, Long classId, String studentName);
 
     /**
      * 单个新增
@@ -56,11 +56,7 @@ public interface INinStudentService extends IService<NinStudent> {
      */
     int alterSingle(NinStudent ninStudent);
 
-    /**
-     * 专业班级列表
-     * @return
-     */
-    Map<String, List<NinClass>> getCareerClassList();
+
 
     NinStudent getStudentById(Long id);
 

@@ -1,6 +1,6 @@
 require(['../config'], function () {
     require(['jquery', 'util', 'bootstrapBundle'], function ($, util) {
-        const STR = ["courseName", "houseType", "must", "num"];
+        const STR = ["courseName", "houseType", "must","courseTime", "startTime", "endTime", "weekTime"];
         query();
 
 
@@ -105,12 +105,15 @@ require(['../config'], function () {
             window.location.href = "nin-student";
         })
 
-        //课程表
-        $("#course-form").click(function (){
-            var str = "nin-arrange/courseForm?studentId=" + studentId + "&path=nin-student-course?studentId=" + studentId;
-            window.location.href = str;
+        $("#details").click(function (){
+            window.location.href = window.location.href;
         })
 
+        //课程表
+        $("#formButton").click(function (){
+            var str = "nin-arrange/courseForm?studentId=" + studentId + "&type=student";
+            window.location.href = str;
+        })
 
     })
 })

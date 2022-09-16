@@ -19,6 +19,6 @@ import java.util.Map;
 @Mapper
 public interface NinStudentMapper extends BaseMapper<NinStudent> {
 
-    List<Map<String, Object>> getSelectList(@Param("list") List<Long> classIds, @Param("studentName") String studentName);
+    List<Map<String, Object>> getSelectList(@Param("careerIds") List<Long> careerIds, @Param("classId") Long classId, @Param("studentName") String studentName);
 
 }

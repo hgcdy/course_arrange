@@ -45,20 +45,20 @@ public class NinStudentController {
     @PostMapping("/getPageSelectList")
     public ResultModel getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
-                                         Long careerId, Long classId, String studentName){
-        Map<String, Object> map = ninStudentService.getPageSelectList(page, size, careerId, classId, studentName);
+                                         String college, Long careerId, Long classId, String studentName){
+        Map<String, Object> map = ninStudentService.getPageSelectList(page, size, college, careerId, classId, studentName);
         return ResultModel.ok(map);
     }
 
-    /**
-     * 专业班级列表
-     * @return
-     */
-    @PostMapping("/getCareerClassList")
-    public ResultModel getCareerClassList(){
-        Map<String, List<NinClass>> map = ninStudentService.getCareerClassList();
-        return ResultModel.ok(map);
-    }
+//    /**
+//     * 专业班级列表
+//     * @return
+//     */
+//    @PostMapping("/getCareerClassList")
+//    public ResultModel getCareerClassList(){
+//        Map<String, List<NinClass>> map = ninStudentService.getCareerClassList();
+//        return ResultModel.ok(map);
+//    }
 
     /**
      * 新增

@@ -1,13 +1,11 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.entity.NinClass;
 import cn.netinnet.coursearrange.entity.NinClassCourse;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinStudentCourse;
 import cn.netinnet.coursearrange.exception.ServiceException;
-import cn.netinnet.coursearrange.mapper.NinClassCourseMapper;
-import cn.netinnet.coursearrange.mapper.NinClassMapper;
-import cn.netinnet.coursearrange.mapper.NinStudentCourseMapper;
-import cn.netinnet.coursearrange.mapper.NinStudentMapper;
+import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
@@ -42,12 +40,15 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
     private NinClassCourseMapper ninClassCourseMapper;
     @Autowired
     private NinClassMapper ninClassMapper;
+    @Autowired
+    private NinCareerCourseMapper ninCareerCourseMapper;
 
     @Override
     public List<List<Map<String, Object>>> getSelectList(Long studentId) {
         Long classId = ninStudentMapper.selectById(studentId).getClassId();
         List<Map<String, Object>> list1 = ninStudentCourseMapper.getSelectList(studentId);
-        List<Map<String, Object>> list2 = ninClassCourseMapper.getSelectList(classId);
+        Long careerId = ninClassMapper.selectById(classId).getCareerId();
+        List<Map<String, Object>> list2 = ninCareerCourseMapper.getSelectList(careerId);
         Utils.conversion(list1);
         Utils.conversion(list2);
         return new ArrayList<List<Map<String, Object>>>(){{

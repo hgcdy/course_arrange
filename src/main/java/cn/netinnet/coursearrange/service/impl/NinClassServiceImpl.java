@@ -71,14 +71,27 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
                 setClassId(classId);
             }}));
             NinCourse course = ninCourseMapper.selectById(ninArranges.get(0).getCourseId());
-
-            //todo 转Map，addList
-
-
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("courseName", course.getCourseName());
+            hashMap.put("houseType", course.getHouseType());
+            hashMap.put("must", course.getMust());
+            hashMap.put("courseTime", course.getCourseTime());
+            hashMap.put("startTime", course.getStartTime());
+            hashMap.put("endTime", course.getEndTime());
+            hashMap.put("weekTime", course.getWeekTime());
+            list.add(hashMap);
         } else {
             list = ninCareerCourseMapper.getSelectList(ninClass.getCareerId());
         }
         return list;
+    }
+
+    //todo 学院专业班级列表
+    @Override
+    public Map<String, Map<String, List<Map<String, Object>>>> collegeCareerClassList() {
+        List<Map<String, Object>> list = ninClassMapper.collegeCareerClassList();
+        Map<String, Map<String, List<Map<String, Object>>>> map = list.stream().collect(Collectors.groupingBy(i -> (String) (i.get("college")), Collectors.groupingBy(i -> (String) i.get("careerName"))));
+        return map;
     }
 
     @Override

@@ -3,61 +3,15 @@ require(['../config'], function () {
         var page = 1;
         var size = 10;
         var total = 0;
+        var college = null;
         var studentName = null;
-        var career = null;
+        var careerId = null;
         var classId = null;
-        const STR = ["studentName", "studentCode", "studentPassword", "className"];
+        const STR = ["college", "careerName", "className", "studentName", "studentCode", "studentPassword"];
         query();
 
-        //班级选择下拉框
-        $("#dropupCareerClassButton").click(function () {
-            $.ajax({
-                url: "nin-class/careerClassList",
-                dataType: "json",
-                type: "get",
-                success: function (data) {
-                    if (data.code == 200) {
-                        // var map = data.data;
-                        $("#dropupCareerClassButton").next("ul").empty();
-                        var count = 0
-                        for (let key in data.data) {
-                            var value = data.data[key];
-                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(key).attr("data-career", key).click(function () {
-                                $("#dropupCareerClassButton").text($(this).text()).attr("data-career", $(this).attr("data-career"));
-                            });
-                            var $li = $("<li></li>").append($a);
-
-                            var $ul = $("<ul class='dropdown-menu' style='left: 100%;'></ul>").css("top", (-1 + 32 * count++) + "px").attr("data-career", key);
-                            for (let i = 0; i < value.length; i++) {
-                                var $a1 = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").attr("data-code", value[i].id).text(value[i].className).click(function () {
-                                    var prev = $(this).parent().parent().prev();
-                                    $("#dropupCareerClassButton").text(prev.text() + "/" + $(this).text()).attr("data-career", prev.text()).attr("data-code", $(this).attr("data-code"));
-                                })
-                                var $li1 = $("<li></li>").append($a1);
-                                $ul.append($li1);
-                            }
-
-                            $li.mouseover(function () {
-                                $(this).next("ul").css("display", "block");
-                            })
-                            $li.mouseout(function () {
-                                $(this).next("ul").css("display", "none");
-                            })
-                            $ul.mouseover(function () {
-                                $(this).css("display", "block");
-                            })
-                            $ul.mouseout(function () {
-                                $(this).css("display", "none");
-                            })
-
-                            $("#dropupCareerClassButton").next("ul").append($li, $ul);
-                        }
 
 
-                    }
-                }
-            })
-        })
         //查询按钮
         $("#query").click(function () {
             studentName = $("#studentName").val();
@@ -86,8 +40,9 @@ require(['../config'], function () {
                 dataType: "json",
                 type: "post",
                 data: {
+                    college: college,
                     studentName: studentName,
-                    career: career,
+                    careerId: careerId,
                     classId: classId,
                     size: size,
                     page: page
@@ -233,22 +188,25 @@ require(['../config'], function () {
 
         function box($select) {
             $.ajax({
-                url: "nin-class/careerClassList",
+                url: "nin-class/collegeCareerClassList",
                 dataType: "json",
                 type: "get",
                 success: function (data) {
                     if (data.code == 200) {
                         for (let key in data.data) {
-                            if (key == "#"){
-                                continue;
-                            }
                             var value = data.data[key];
                             var $op2 = $("<option disabled='disabled'></option>").html("&nbsp;" + key);
                             $($select).append($op2);
-                            for (let i = 0; i < value.length; i++) {
-                                var $op3 = $("<option></option>").html("&nbsp;&nbsp;" + value[i].className).val(value[i].id);
+                            for (let key1 in value) {
+                                var value1 = value[key1];
+                                var $op3 = $("<option disabled='disabled'></option>").html("&nbsp;&nbsp;&nbsp;" + key1);
                                 $($select).append($op3);
+                                for (let i = 0; i < value1.length; i++) {
+                                    var $op4 = $("<option></option>").html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + value1[i].className).val(value1[i].classId);
+                                    $($select).append($op4);
+                                }
                             }
+
                         }
                     }
                 }

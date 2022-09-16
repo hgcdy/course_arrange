@@ -60,4 +60,10 @@ public interface NinClassMapper extends BaseMapper<NinClass> {
      */
     int subPeopleNum(Long id);
 
+    /**
+     * 学院专业班级列表
+     * @return
+     */
+    List<Map<String, Object>> collegeCareerClassList();
+
 }

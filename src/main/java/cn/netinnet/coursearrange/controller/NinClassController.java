@@ -51,11 +51,25 @@ public class NinClassController {
         return ResultModel.ok(map);
     }
 
+    /**
+     * 课程列表
+     * @param classId
+     * @return
+     */
     @PostMapping("/getCourseList")
     public ResultModel getCourseList(Long classId){
         List<Map<String, Object>> list = ninClassService.getSelectList(classId);
         return ResultModel.ok(list);
     }
+
+
+    @GetMapping("collegeCareerClassList")
+    public ResultModel collegeCareerClassList(){
+        Map<String, Map<String, List<Map<String, Object>>>> stringMapMap = ninClassService.collegeCareerClassList();
+        return ResultModel.ok(stringMapMap);
+    }
+
+
 
 
     /**

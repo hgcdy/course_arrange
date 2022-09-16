@@ -15,7 +15,7 @@ define(function () {
         }
         for (let i = 0; i < size; i++) {
             var $tr = $("<tr></tr>");
-            var $th = $("<th></th>").text(num++).attr("scope", "row").attr("data-id", data[i]["id"])
+            var $th = $("<th></th>").text(num++).attr("scope", "row").attr("data-id", data[i]["id"]);
             $tr.append($th)
             for (let j = 0; j < strList.length; j++) {
                 var $td = $("<td></td>").text(data[i][strList[j]]);
@@ -24,7 +24,7 @@ define(function () {
             var bu1 = "<button type='button' class='btn btn-info delete'>删除</button>&nbsp;";
             var bu2 = "<button type='button' class='btn btn-info update'>编辑</button>&nbsp;";
             var bu3 = "<button type='button' class='btn btn-info details'>详情</button>&nbsp;";
-            var $td = $("<td></td>").css("width", "200px");
+            var $td = $("<td></td>");
             if (count == 1) {
                 $td.append(bu1);
             } else if (count == 2) {

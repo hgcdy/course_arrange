@@ -46,13 +46,15 @@
         ORDER BY career_id, class_name
     </select>
 
-<!-- 专业列表 -->
-<!--     <select id="careerList" resultType="java.lang.String"> -->
-<!--         SELECT DISTINCT career -->
-<!--         FROM nin_class -->
-<!--         WHERE del_flag = 0 -->
-<!--         ORDER BY career -->
-<!--     </select> -->
+<!-- 学院专业班级列表 -->
+    <select id="collegeCareerClassList" resultType="java.util.Map">
+        SELECT college, career_name AS careerName, nin_class.id AS classId, class_name AS className
+        FROM nin_class, nin_career
+        WHERE nin_class.del_flag = 0
+        AND nin_class.career_id = nin_career.id
+        AND nin_class.career_id != 0
+        ORDER BY college, career_id, class_name
+    </select>
 
 <!-- 班级课程数量+1 -->
     <update id="addBatchCourseNum">

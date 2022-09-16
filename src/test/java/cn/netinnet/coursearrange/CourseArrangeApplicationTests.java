@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @SpringBootTest
@@ -51,6 +52,10 @@ class CourseArrangeApplicationTests {
 //        List<Map<String, Object>> info3 = ninArrangeMapper.getInfo(classIdList, teachClassIdList, null);
 
 //        List<NinClass> cds = ninClassMapper.getSelectList("新工科产业学院", null, null);
+
+        List<Map<String, Object>> maps = ninClassMapper.collegeCareerClassList();
+        Map<String, Map<String, List<Map<String, Object>>>> collect = maps.stream().collect(Collectors.groupingBy(i -> (String) (i.get("college")), Collectors.groupingBy(i -> (String) i.get("careerName"))));
+
         System.out.println("");
 
     }
