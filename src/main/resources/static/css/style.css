@@ -76,6 +76,16 @@ td {
     border: 1px solid #000000;
 }
 
+#left #right{
+    position: absolute;
+    width: 49%;
+    height: 100%;
+    border: 1px solid #000000;
+
+}
+
+
+
 
 
 

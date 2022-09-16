@@ -36,6 +36,7 @@ public class LoginController {
         return gotoLogin();
     }
 
+    //todo 暂时修改
     @GetMapping("/index")
     public ModelAndView index(){
         return new ModelAndView("index");

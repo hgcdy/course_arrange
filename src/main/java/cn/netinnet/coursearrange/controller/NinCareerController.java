@@ -5,6 +5,8 @@ import cn.netinnet.coursearrange.entity.NinCareer;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinCareerService;
 import cn.netinnet.coursearrange.service.INinCourseService;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +25,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/nin-career")
+@RequiresRoles(value = {"admin"}, logical = Logical.OR)
 public class NinCareerController {
 
     @Autowired

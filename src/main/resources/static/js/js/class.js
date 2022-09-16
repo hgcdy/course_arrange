@@ -133,97 +133,12 @@ require(['../config'], function () {
         }
 
 
-        //todo 批量新增课程
-        $("#addBatchCourse").click(function (){
-            $.ajax({
-                url: "nin-course/getSelectCourseList",
-                dataType: "json",
-                type: "post",
-                data: {
-                    classId: 2
-                },
-                //获取课程列表
-                success: function (data) {
-                    if (data.code == 200) {
-                        var courseList = data.data;
-                        var $career = $("<tr><td><label for='career'>专业:</label></td></tr>");
-                        var $td = $("<td></td>")
-                        var $select = $("<select id='career'></select>");
-                        var $op = $("<option disabled='disabled' selected='selected'></option>");
-                        $($select).append($op);
-                        box($select);
-                        $td.append($select);
-                        $career.append($td);
-
-                        var $courseId = $("<tr><td><label for='courseId'>课程:</label></td></tr>");
-                        var $td1 = $("<td></td>")
-                        var $select1 = $("<select id='courseId'></select>");
-                        var $op1 = $("<option disabled='disabled' selected='selected'></option>");
-                        $($select1).append($op1);
-                        for (let i = 0; i < courseList.length; i++) {
-                            var $option = $("<option></option>").text(courseList[i].courseName).val(courseList[i].id);
-                            $select1.append($option);
-                        }
-                        $td1.append($select1);
-                        $courseId.append($td1);
-                        // var $tr = $("<tr><td colspan='2'>为选择的班级添加该课程(不包含选修教学班)</td>></tr>");
-                        // $("#module", parent.document).find("table").append($tr);
-                        util.popup([$career, $courseId], ["career", "courseId"], $insert);
-                    }
-                }
-            })
-            function $insert(record){
-                // var text = $("#dropupCareerButton").text();
-                // if ($.trim(text) == "专业"){
-                //     text = null;
-                // }
-
-
-                $.ajax({
-                    url: "nin-class-course/addBatchClassCourse",
-                    dataType: "json",
-                    type: "post",
-                    data: {
-                        career: record.career,
-                        courseId: record.courseId
-                    },
-                    success: function (data){
-                        if (data.code == 200){
-                            query();
-                        }
-                    }
-                })
-
-            }
-
-        })
-        function box($select) {
-            $.ajax({
-                url: "nin-class/careerList",
-                dataType: "json",
-                type: "get",
-                success: function (data) {
-                    if (data.code == 200) {
-                        var list = data.data;
-                        for (let i = 0; i < list.length; i++) {
-                            if (list[i] == "#"){
-                                continue;
-                            }
-                            var $op = $("<option></option>").text(list[i]).val(list[i]);
-                            $($select).append($op);
-                        }
-                    }
-                }
-            })
-        }
-
         //新增
         $("#insert").click(function (){
             var $career = $("<tr><td><label for='career'>专业:</label></td><td><input type='text' id='career'></td></tr>");
             var $className = $("<tr><td><label for='className'>班级名称:</label></td><td><input type='text' id='className'></td></tr>");
             // var $label = $("<tr><td><label for='sex'>性别:</label></td><td><select id='sex'><option value='男'>男</option><option value='女'>女</option></select></td></tr>");
             util.popup([$career, $className], ["career", "className"], $insert);
-
             function $insert(record){
                 $.ajax({
                     url: "nin-class/addClass",

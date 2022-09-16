@@ -5,6 +5,8 @@ import cn.netinnet.coursearrange.entity.NinCourse;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinCourseService;
 import com.sun.istack.internal.NotNull;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,7 +24,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/nin-course")
-//@RequiresRoles(value = {"admin"}, logical = Logical.OR)
+@RequiresRoles(value = {"admin"}, logical = Logical.OR)
 public class NinCourseController {
 
     @Autowired

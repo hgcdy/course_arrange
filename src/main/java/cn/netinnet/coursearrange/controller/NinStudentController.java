@@ -7,6 +7,8 @@ import cn.netinnet.coursearrange.mapper.NinStudentMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinStudentService;
 import com.alibaba.fastjson.JSON;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +27,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/nin-student")
+@RequiresRoles(value = {"admin"}, logical = Logical.OR)
 public class NinStudentController {
 
     @Autowired
