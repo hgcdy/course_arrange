@@ -10,16 +10,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -86,7 +85,12 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
         return list;
     }
 
-    //todo 学院专业班级列表
+    @Override
+    public List<Map<String, Object>> getClassList(String college, Long careerId) {
+        return ninClassMapper.getClassList(college, careerId);
+    }
+
+
     @Override
     public Map<String, Map<String, List<Map<String, Object>>>> collegeCareerClassList() {
         List<Map<String, Object>> list = ninClassMapper.collegeCareerClassList();
@@ -136,7 +140,7 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
             }
 
             //删除学生
-            return ninStudentMapper.delete(new QueryWrapper<>(new NinStudent(){{
+            return ninStudentMapper.delete(new QueryWrapper<>(new NinStudent() {{
                 setClassId(classId);
             }}));
 
@@ -147,14 +151,49 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delById(Long id) {
-        //todo 选修班级
-        //查询该班级是否还存在学生
+        //todo 未测试
         NinClass ninClass = ninClassMapper.selectById(id);
-        if (ninClass.getPeopleNum() != 0) {
-            throw new ServiceException(412, "该班级还有学生存在，删除失败");
+        if (ninClass.getCareerId() == 0) {
+            //选修班级
+            //删除学生选课信息
+            ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
+                setTakeClassId(ninClass.getId());
+            }}));
+        } else {
+            //删除班级下的所有学生及学生选课信息，同时学生选课对应的选修班级人数-1
+            //根据班级id获取该班级的学生列表
+            List<NinStudent> ninStudents = ninStudentMapper.selectList(new QueryWrapper<>(new NinStudent() {{
+                setClassId(id);
+            }}));
+            if (ninStudents != null && ninStudents.size() != 0) {
+                //该班级有学生
+                //1.批量删除学生
+                List<Long> studentIds = ninStudents.stream().map(NinStudent::getId).collect(Collectors.toList());
+                ninStudentMapper.delBatchStudent(studentIds);
+                //2.学生列表得到选课列表---》  Map<选修班id, 人数>
+                List<NinStudentCourse> ninStudentCourseList = ninStudentCourseMapper.getStudentIds(studentIds);
+                if (ninStudentCourseList != null && ninStudentCourseList.size() != 0) {
+                    Map<Long, Long> map = ninStudentCourseList.stream().map(NinStudentCourse::getTakeClassId).collect(Collectors.groupingBy(i -> i, Collectors.counting()));
+                    //获取选修班级id列表
+                    ArrayList<Long> takeClassIds = new ArrayList<>(map.size());
+                    for (Map.Entry<Long, Long> m : map.entrySet()) {
+                        takeClassIds.add(m.getKey());
+                    }
+                    //获取班级列表
+                    List<NinClass> ninClasses = ninClassMapper.selectBatchIds(takeClassIds);
+                    for (NinClass clazz : ninClasses) {
+                        clazz.setPeopleNum(clazz.getPeopleNum() - map.get(clazz.getId()).intValue());
+                    }
+                    //3.批量选修班人数减掉
+                    ninClassMapper.subBatchPeopleNum(ninClasses);
+                    //4.批量删除学生选课表
+                    ninStudentCourseMapper.delBatchStudentId(studentIds);
+                }
+            }
         }
-        //专业的班级数量-1
+        //删除班级
         int i = ninClassMapper.deleteById(id);
+        //专业的班级数量-1
         ninCareerMapper.subClassNum(ninClass.getCareerId());
         return i;
     }

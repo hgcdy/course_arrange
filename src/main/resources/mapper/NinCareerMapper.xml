@@ -23,9 +23,9 @@
     <select id="getNinCareerList" resultType="cn.netinnet.coursearrange.entity.NinCareer">
         SELECT id, college, career_name, class_num
         FROM nin_career
-        WHERE
+        WHERE del_flag = 0
         <if test="college != null and college != ''">
-            college = #{college}
+             AND college = #{college}
         </if>
     </select>
 

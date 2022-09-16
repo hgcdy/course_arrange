@@ -80,8 +80,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //存放教学班
         List<NinTeachClass> ninTeachClasses = new ArrayList<>();
 
-
-
         //必修的排课列表
         ArrayList<NinArrange> ninArrangeArrayList = new ArrayList<>();
 

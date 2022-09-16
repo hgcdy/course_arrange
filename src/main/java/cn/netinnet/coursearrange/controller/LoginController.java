@@ -29,6 +29,8 @@ public class LoginController {
         return new ModelAndView("login");
     }
 
+
+
     @GetMapping("/logout")
     public ModelAndView logout(){
         return gotoLogin();

@@ -11,25 +11,130 @@ require(['../config'], function () {
         query();
 
 
+        //学院选择下拉框
+        $("#dropupCollegeButton").click(function () {
+            //重置专业选择
+            careerId = null;
+            $("#dropupCareerIdButton").text("专业").removeAttr("career-id");
+            //重置班级选择
+            classId = null;
+            $("#dropupClassIdButton").text("班级").removeAttr("class-id");
+
+            $.ajax({
+                url: "nin-career/getCollegeList",
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    if (data.code == 200) {
+                        var list = data.data;
+                        $("#dropupCollegeButton").next("ul").empty();
+                        for (let i = 0; i < list.length; i++) {
+                            if (list[i] == "选修") {
+                                continue;
+                            }
+                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i]).click(function () {
+                                $("#dropupCollegeButton").text($(this).text());
+                            });
+                            var $li = $("<li></li>").append($a);
+                            $("#dropupCollegeButton").next("ul").append($li);
+                        }
+                    }
+                }
+            })
+        })
+
+        //专业选择下拉框
+        $("#dropupCareerIdButton").click(function () {
+            college = $("#dropupCollegeButton").text();
+            if ($.trim(college) == "学院") {
+                college = null;
+            }
+            //重置班级选择
+            classId = null;
+            $("#dropupClassIdButton").text("班级").removeAttr("class-id");
+
+            $.ajax({
+                url: "nin-career/getCareerList",
+                dataType: "json",
+                type: "post",
+                data: {
+                    college: college
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        var list = data.data;
+                        $("#dropupCareerIdButton").next("ul").empty();
+                        for (let i = 0; i < list.length; i++) {
+                            if (list[i].id == 0) {
+                                continue;
+                            }
+                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].careerName).attr("career-id", list[i].id).click(function () {
+                                $("#dropupCareerIdButton").text($(this).text()).attr("career-id", $(this).attr("career-id"));
+                            });
+                            var $li = $("<li></li>").append($a);
+                            $("#dropupCareerIdButton").next("ul").append($li);
+                        }
+                    }
+                }
+            })
+        })
+
+        //班级选择下拉框
+        $("#dropupClassIdButton").click(function () {
+
+            college = $("#dropupCollegeButton").text();
+            if ($.trim(college) == "学院") {
+                college = null;
+            }
+            careerId = $("#dropupCareerIdButton").attr("career-id");
+
+            $.ajax({
+                url: "nin-class/getClassList",
+                dataType: "json",
+                type: "post",
+                data: {
+                    college: college,
+                    careerId: careerId
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        var list = data.data;
+                        $("#dropupClassIdButton").next("ul").empty();
+                        for (let i = 0; i < list.length; i++) {
+                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].className).attr("class-id", list[i].classId).click(function () {
+                                $("#dropupClassIdButton").text($(this).text()).attr("class-id", $(this).attr("class-id"));
+                            });
+                            var $li = $("<li></li>").append($a);
+                            $("#dropupClassIdButton").next("ul").append($li);
+                        }
+                    }
+                }
+            })
+        })
+
 
         //查询按钮
         $("#query").click(function () {
             studentName = $("#studentName").val();
-            career = $("#dropupCareerClassButton").attr("data-career");
-            classId = $("#dropupCareerClassButton").attr("data-code");
-            if ($.trim($("#dropupCareerClassButton").text()) == "专业班级") {
-                career = null;
-                classId = null;
+            college = $("#dropupCollegeButton").text();
+            if ($.trim(college) == "学院") {
+                college = null;
             }
+            careerId = $("#dropupCareerIdButton").attr("career-id");
+            classId = $("#dropupClassIdButton").attr("class-id");
             query();
         })
         //重置按钮
         $("#reset").click(function () {
+            college = null;
+            $("#dropupCollegeButton").text("学院");
+            careerId = null;
+            $("#dropupCareerIdButton").text("专业").removeAttr("career-id");
+            classId = null;
+            $("#dropupClassIdButton").text("班级").removeAttr("class-id");
+
             studentName = null;
             $("#studentName").val(null);
-            career = null;
-            classId = null;
-            $("#dropupCareerClassButton").text("专业班级").attr("data-career", "").attr("data-code", "");
             query();
         })
 
@@ -101,7 +206,7 @@ require(['../config'], function () {
         function alter($id) {
             var id = $($id).attr("data-id");
             $.ajax({
-                url: "nin-student/getStudentById",//todo
+                url: "nin-student/getStudentById",
                 dataType: "json",
                 type: "post",
                 data: {
@@ -116,11 +221,14 @@ require(['../config'], function () {
                         var $classId = $("<tr><td><label for='classId'>班级:</label></td></tr>");
                         var $td = $("<td></td>")
                         var $select = $("<select id='classId'></select>");
+                        // var $op1 = $("<option disabled='disabled' selected='selected'></option>");
+                        // $($select).append($op1);
                         box($select);
                         $td.append($select);
                         $classId.append($td);
-
+                        //todo 编辑时默认值
                         util.popup([$studentName, $studentCode, $studentPassword, $classId], ["studentName", "studentCode", "studentPassword", "classId"], $update);
+
                     }
                 }
             })
@@ -163,6 +271,7 @@ require(['../config'], function () {
             $classId.append($td);
 
             util.popup([$studentName, $studentCode, $studentPassword, $classId], ["studentName", "studentCode", "studentPassword", "classId"], $insert);
+
             function $insert(record) {
 
                 $.ajax({

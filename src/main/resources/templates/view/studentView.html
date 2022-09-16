@@ -12,16 +12,32 @@
 <!--检索查询-->
 <div class="border-bottom" style="height: 7%;">
     <span>
-        学生名称或账号:
-        <input type="text" id="studentName">
+        <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupCollegeButton"
+                data-bs-toggle="dropdown" aria-expanded="false" >
+            学院
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropupCollegeButton">
+        </ul>
     </span>&nbsp;&nbsp;
     <span>
-        <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupCareerClassButton"
-                data-bs-toggle="dropdown" aria-expanded="false" data-code="" data-career="">
-            专业班级
+        <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupCareerIdButton"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            专业
         </button>
-        <ul class="dropdown-menu" aria-labelledby="dropupCareerClassButton">
+        <ul class="dropdown-menu" aria-labelledby="dropupCareerIdButton">
         </ul>
+    </span>&nbsp;&nbsp;
+    <span>
+        <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupClassIdButton"
+                data-bs-toggle="dropdown" aria-expanded="false" >
+            班级
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropupClassIdButton">
+        </ul>
+    </span>&nbsp;&nbsp;
+    <span>
+        学生名称或账号:
+        <input type="text" id="studentName">
     </span>&nbsp;&nbsp;
     <span>
         <button type="button" class="btn btn-info" id="query">查询</button>

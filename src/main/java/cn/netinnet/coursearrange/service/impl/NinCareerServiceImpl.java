@@ -9,6 +9,7 @@ import cn.netinnet.coursearrange.service.INinCareerService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,9 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
 
     @Override
     public List<NinCareer> getNinCareerList(String college) {
+        if (StringUtils.isBlank(college)) {
+            college = null;
+        }
         List<NinCareer> ninCareerList = ninCareerMapper.getNinCareerList(college);
         return ninCareerList;
     }

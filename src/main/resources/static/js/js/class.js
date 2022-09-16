@@ -10,13 +10,11 @@ require(['../config'], function () {
         const STR = ["college", "careerName", "className", "peopleNum", "courseNum"];
         query();
 
-        // todo 选择学院后选择专业
-
         //学院选择下拉框
         $("#dropupCollegeButton").click(function (){
             //重置专业选择
             careerId = null;
-            $("#dropupCareerButton").text("专业");
+            $("#dropupCareerButton").text("专业").removeAttr("career-id");
             $.ajax({
                 url: "nin-career/getCollegeList",
                 dataType: "json",
@@ -74,7 +72,7 @@ require(['../config'], function () {
             if ($.trim(college) == "学院"){
                 college = null;
             }
-            careerId = $("#dropupCareerButton").attr("career-id");//todo
+            careerId = $("#dropupCareerButton").attr("career-id");
             className = $("#className").val();
             query();
         })
@@ -84,7 +82,6 @@ require(['../config'], function () {
             $("#dropupCollegeButton").text("学院");
             careerId = null;
             $("#dropupCareerButton").text("专业").removeAttr("career-id");
-
             className = null;
             $("#className").val(null);
             query();
@@ -251,9 +248,9 @@ require(['../config'], function () {
         function alter($id){
             var id = $($id).attr("data-id");
             var nextAll = $($id).nextAll();
+            //todo 学院专业下拉
             var $career = $("<tr><td><label for='career'>专业:</label></td><td><input type='text' id='career' value="+ $(nextAll[0]).text() +"></td></tr>");
             var $className = $("<tr><td><label for='className'>班级名称:</label></td><td><input type='text' id='className' value="+$(nextAll[1]).text()+"></td></tr>");
-            // var $label = $("<tr><td><label for='sex'>性别:</label></td><td><select id='sex'><option value='男'>男</option><option value='女'>女</option></select></td></tr>");
             util.popup([$career, $className], ["career", "className"], $update);
 
             function $update(record){

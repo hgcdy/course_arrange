@@ -27,6 +27,13 @@ public interface NinStudentCourseMapper extends BaseMapper<NinStudentCourse> {
      */
     int delBatchStudentId(@Param("list") List<Long> studentIdList);
 
+    /**
+     * 根据学生id批量获取
+     * @param studentIdList
+     * @return
+     */
+    List<NinStudentCourse> getStudentIds(@Param("list") List<Long> studentIdList);
+
     List<Map<String, Object>> getSelectList(Long Student);
 
 }

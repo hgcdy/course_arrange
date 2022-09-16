@@ -84,7 +84,7 @@ require(['../config'], function () {
         function alter($id) {
             var id = $($id).attr("data-id");
             $.ajax({
-                url: "nin-teacher/getTeacherById",//todo
+                url: "nin-teacher/getTeacherById",
                 dataType: "json",
                 type: "post",
                 data: {

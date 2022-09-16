@@ -37,4 +37,22 @@
         AND nin_student_course.student_id = #{studentId}
     </select>
 
+<!-- 根据学生id列表获取 -->
+    <select id="getStudentIds" resultType="cn.netinnet.coursearrange.entity.NinStudentCourse">
+        SELECT *
+        FROM nin_student_course
+        WHERE
+        <foreach collection="list" index="index" item="item" separator="OR">
+            student_id = #{item}
+        </foreach>
+    </select>
+
+    <delete id="delBatchStudentId">
+        DELETE FROM nin_student_course
+        WHERE
+        <foreach collection="list" index="index" item="item" separator="OR">
+            student_id = #{item}
+        </foreach>
+    </delete>
+
 </mapper>

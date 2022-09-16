@@ -48,10 +48,11 @@ public class NinCareerController {
         return ResultModel.ok(ninCareerService.getNinCareerList(college));
     }
 
-    @GetMapping("/getCareerTreeList")
-    public ResultModel getCareerTreeList() {
-        return null;
-    }
+
+//    @GetMapping("/getCareerTreeList")
+//    public ResultModel getCareerTreeList() {
+//        return null;
+//    }
 
 
     /**

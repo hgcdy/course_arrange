@@ -53,23 +53,32 @@ public class NinClassController {
 
     /**
      * 课程列表
+     *
      * @param classId
      * @return
      */
     @PostMapping("/getCourseList")
-    public ResultModel getCourseList(Long classId){
+    public ResultModel getCourseList(Long classId) {
         List<Map<String, Object>> list = ninClassService.getSelectList(classId);
         return ResultModel.ok(list);
     }
 
-
-    @GetMapping("collegeCareerClassList")
-    public ResultModel collegeCareerClassList(){
-        Map<String, Map<String, List<Map<String, Object>>>> stringMapMap = ninClassService.collegeCareerClassList();
-        return ResultModel.ok(stringMapMap);
+    @PostMapping("/getClassList")
+    public ResultModel getClassList(String college, Long careerId) {
+        return ResultModel.ok(ninClassService.getClassList(college, careerId));
     }
 
 
+    /**
+     * 全部的学院专业班级列表
+     *
+     * @return
+     */
+    @GetMapping("collegeCareerClassList")
+    public ResultModel collegeCareerClassList() {
+        Map<String, Map<String, List<Map<String, Object>>>> stringMapMap = ninClassService.collegeCareerClassList();
+        return ResultModel.ok(stringMapMap);
+    }
 
 
     /**

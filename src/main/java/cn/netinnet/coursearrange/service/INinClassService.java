@@ -34,6 +34,18 @@ public interface INinClassService extends IService<NinClass> {
      */
     List<Map<String, Object>> getSelectList(Long classId);
 
+    /**
+     * 根据条件获取班级列表
+     * @param college
+     * @param careerId
+     * @return
+     */
+    List<Map<String, Object>> getClassList(String college, Long careerId);
+
+    /**
+     * 全部的学院专业班级列表
+     * @return
+     */
     Map<String, Map<String, List<Map<String, Object>>>> collegeCareerClassList();
 
     /**
