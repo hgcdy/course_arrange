@@ -11,11 +11,6 @@ require(['../config'], function () {
         }
 
 
-
-
-
-
-
         //获取专业列表
         $.ajax({
             url: "nin-career/getCareerClassList",
@@ -24,14 +19,12 @@ require(['../config'], function () {
             success: function (data) {
                 if (data.code == 200) {
 
-                    //生成专业管理列表
-                    for (let key in data.data) {
-                        var value = data.data[key1];
-                        $("<span></span>")
-
-
-
-                    }
+                    //todo
+                    // //生成专业管理列表
+                    // for (let key in data.data) {
+                    //     var value = data.data[key];
+                    //     $("<span></span>")
+                    // }
 
                     //生成专业复选框
                     for (let key1 in data.data) {
@@ -113,13 +106,13 @@ require(['../config'], function () {
             for (let i = 0; i < $course.length; i++) {
                 if ($($course[i]).is(':checked')) {
                     if (!isNaN($($course[i]).attr("id"))) {
-                        course = course + "," +$($course[i]).attr("id");
+                        course = course + "," + $($course[i]).attr("id");
                     }
                 }
             }
             course += "]";
             $.ajax({
-                url:"/nin-career-course/addBatchCourse",
+                url: "/nin-career-course/addBatchCourse",
                 type: "post",
                 dataType: "json",
                 data: {
@@ -127,13 +120,11 @@ require(['../config'], function () {
                     courseIds: course
                 },
                 success: function (data) {
-                    if (data.code != 200) {
-                        util.hint(data.msg);
-                    }
+                    util.hint(data.msg);
+
                 }
             })
         })
-
 
 
     })
