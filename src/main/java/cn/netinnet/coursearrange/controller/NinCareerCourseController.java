@@ -49,4 +49,15 @@ public class NinCareerCourseController {
         return ResultModel.ok();
     }
 
+    /**
+     * 根据专业id获取该专业的课程列表
+     * @param careerId
+     * @return
+     */
+    @PostMapping("/getCareerCourse")
+    public ResultModel getCareerCourse(Long careerId) {
+
+        return null;
+    }
+
 }
