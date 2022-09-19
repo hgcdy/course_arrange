@@ -56,7 +56,7 @@ public interface INinCourseService extends IService<NinCourse> {
 
     /**
      * 返回可选的课程
-     * @param sign 0-必修，1-选修，null或其他全选
+     * @param sign 0-选修，1-必修，null或其他全选
      * @return
      */
     List<NinCourse> getSelectCourseList(Integer sign);

@@ -34,10 +34,10 @@ public interface INinCareerService extends IService<NinCareer> {
     List<NinCareer> getNinCareerList(String college);
 
     /**
-     * 树形专业列表
+     * 获取学院专业列表
      * @return
      */
-    List<Map<String, Object>> getCareerTreeList();
+    Map<String, List<NinCareer>> getCareerClassList();
 
     /**
      * 单个新增

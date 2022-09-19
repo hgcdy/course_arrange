@@ -50,17 +50,13 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
     }
 
     @Override
-    public List<Map<String, Object>> getCareerTreeList() {
-        //todo 未写完，
+    public Map<String, List<NinCareer>> getCareerClassList() {
         List<NinCareer> ninCareers = ninCareerMapper.selectList(new QueryWrapper<>());
-        Map<String, List<NinCareer>> collect = ninCareers.stream().collect(Collectors.groupingBy(NinCareer::getCollege));
-//        for (Map.Entry<String, List<NinCareer>> map : collect.entrySet()) {
-//            HashMap<String, Object> hashMap = new HashMap<>();
-//            hashMap.put("college", map.getKey());
-//            hashMap.put("career", map.getValue());
-//        }
-        return null;
+        Map<String, List<NinCareer>> collect = ninCareers.stream().filter(ninCareer -> !ninCareer.getCollege().equals("选修")).collect(Collectors.groupingBy(NinCareer::getCollege));
+        return collect;
     }
+
+
 
     @Override
     public int addSingle(NinCareer ninCareer) {

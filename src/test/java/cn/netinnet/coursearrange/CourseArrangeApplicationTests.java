@@ -8,6 +8,7 @@ import cn.netinnet.coursearrange.mapper.NinCourseMapper;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.service.INinClassCourseService;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
+import com.alibaba.fastjson.JSON;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,10 +54,12 @@ class CourseArrangeApplicationTests {
 
 //        List<NinClass> cds = ninClassMapper.getSelectList("新工科产业学院", null, null);
 
-        List<Map<String, Object>> maps = ninClassMapper.collegeCareerClassList();
-        Map<String, Map<String, List<Map<String, Object>>>> collect = maps.stream().collect(Collectors.groupingBy(i -> (String) (i.get("college")), Collectors.groupingBy(i -> (String) i.get("careerName"))));
+//        List<Map<String, Object>> maps = ninClassMapper.collegeCareerClassList();
+//        Map<String, Map<String, List<Map<String, Object>>>> collect = maps.stream().collect(Collectors.groupingBy(i -> (String) (i.get("college")), Collectors.groupingBy(i -> (String) i.get("careerName"))));
 
-        System.out.println("");
+        String str = "[]";
+        List<Long> longs = JSON.parseArray(str, Long.class);
+        System.out.println(longs);
 
     }
 

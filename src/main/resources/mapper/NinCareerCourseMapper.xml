@@ -36,4 +36,13 @@
         AND nin_career_course.career_id = #{careerId}
     </select>
 
+    <insert id="addBatchCourse">
+        INSERT INTO nin_career_course
+        (id, career_id, course_id, create_user_id, modify_user_id)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.id}, #{item.careerId}, #{item.courseId}, #{item.createUserId}, #{item.modifyUserId})
+        </foreach>
+    </insert>
+
 </mapper>

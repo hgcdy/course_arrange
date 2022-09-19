@@ -76,16 +76,24 @@ td {
     border: 1px solid #000000;
 }
 
-#left #right{
+#head{
+    background-color: #ffffff;
     position: absolute;
-    width: 49%;
-    height: 100%;
-    border: 1px solid #000000;
-
+    width: 50%;
+    height: 5%;
+    top: 0;
+    margin: 0 auto;
+    border: 1px solid #dee2e6;
 }
 
-
-
-
+#admin, #choice, #careerCheckbox, #courseCheckbox {
+    background-color: #ffffff;
+    position: absolute;
+    width: 25%;
+    height: 95%;
+    top: 5%;
+    margin: 0 auto;
+    border: 1px solid #dee2e6;
+}
 
 

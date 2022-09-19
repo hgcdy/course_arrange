@@ -18,4 +18,11 @@ public interface INinCareerCourseService extends IService<NinCareerCourse> {
 
     List<Map<String, Object>> getSelectList(Long careerId);
 
+    /**
+     * 批量添加课程
+     * @param careerIdList
+     * @param courseIdList
+     */
+    void addBatchCourse(List<Long> careerIdList, List<Long> courseIdList);
+
 }

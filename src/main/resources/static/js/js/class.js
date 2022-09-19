@@ -189,6 +189,11 @@ require(['../config'], function () {
             }
         }
 
+        $("#CareerAdminButton").click(function (){
+            window.location.href = "/nin-career-course";
+        })
+
+
         //删除
         function del(id) {
             var $tr = $("<tr><td colspan='2'>删除班级会将与该班级有关的所有信息一起删除</td>></tr>");
