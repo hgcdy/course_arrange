@@ -34,15 +34,6 @@ public class NinArrangeController {
         return new ModelAndView("view/arrangeView");
     }
 
-//    @GetMapping("/courseForm")
-//    public ModelAndView gotoFormView(Long classId, Long studentId, Long teacherId, String path) {
-//        ModelAndView modelAndView = new ModelAndView("view/courseFormView");
-//        modelAndView.addObject("classId", String.valueOf(classId));
-//        modelAndView.addObject("studentId", String.valueOf(studentId));
-//        modelAndView.addObject("teacherId", String.valueOf(teacherId));
-//        modelAndView.addObject("path", path);
-//        return modelAndView;
-//    }
 
     @GetMapping("/courseForm")
     public ModelAndView gotoFormView(Long classId, Long studentId, Long teacherId, String type) {
@@ -65,6 +56,24 @@ public class NinArrangeController {
         Map<String, String> info = ninArrangeService.getInfo(classId, teacherId, studentId, count);
         return ResultModel.ok(info);
     }
+
+    /**
+     * 获取空闲资源（教室申请）
+     * @param teacherId 教师id
+     * @param classIds 班级id列表
+     * @param houseId 教室id
+     * @param houseType 教室类型
+     * @param seat 座位
+     * @param weekly 周次
+     * @param week 星期
+     * @param pitchNum 节数
+     * @return
+     */
+    @PostMapping("/getLeisure")
+    public ResultModel getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, String seat, Integer weekly, Integer week, Integer pitchNum) {
+        return null;
+    }
+
 
 
 }

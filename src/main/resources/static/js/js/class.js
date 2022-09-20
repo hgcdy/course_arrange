@@ -14,10 +14,8 @@ require(['../config'], function () {
         careerCheckbox();
 
 
-
-
         //学院选择下拉框
-        $("#dropupCollegeButton").click(function (){
+        $("#dropupCollegeButton").click(function () {
             //重置专业选择
             careerId = null;
             $("#dropupCareerButton").text("专业").removeAttr("career-id");
@@ -26,11 +24,11 @@ require(['../config'], function () {
                 dataType: "json",
                 type: "post",
                 success: function (data) {
-                    if (data.code == 200){
+                    if (data.code == 200) {
                         var list = data.data;
                         $("#dropupCollegeButton").next("ul").empty();
                         for (let i = 0; i < list.length; i++) {
-                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i]).click(function (){
+                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i]).click(function () {
                                 $("#dropupCollegeButton").text($(this).text());
                             });
                             var $li = $("<li></li>").append($a);
@@ -42,9 +40,9 @@ require(['../config'], function () {
         })
 
         //专业选择下拉框
-        $("#dropupCareerButton").click(function (){
+        $("#dropupCareerButton").click(function () {
             college = $("#dropupCollegeButton").text();
-            if ($.trim(college) == "学院"){
+            if ($.trim(college) == "学院") {
                 college = null;
             }
 
@@ -56,11 +54,11 @@ require(['../config'], function () {
                     college: college
                 },
                 success: function (data) {
-                    if (data.code == 200){
+                    if (data.code == 200) {
                         var list = data.data;
                         $("#dropupCareerButton").next("ul").empty();
                         for (let i = 0; i < list.length; i++) {
-                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].careerName).attr("career-id", list[i].id).click(function (){
+                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].careerName).attr("career-id", list[i].id).click(function () {
                                 $("#dropupCareerButton").text($(this).text()).attr("career-id", $(this).attr("career-id"));
                             });
                             var $li = $("<li></li>").append($a);
@@ -73,9 +71,9 @@ require(['../config'], function () {
 
 
         //查询按钮
-        $("#query").click(function (){
+        $("#query").click(function () {
             college = $("#dropupCollegeButton").text();
-            if ($.trim(college) == "学院"){
+            if ($.trim(college) == "学院") {
                 college = null;
             }
             careerId = $("#dropupCareerButton").attr("career-id");
@@ -83,7 +81,7 @@ require(['../config'], function () {
             query();
         })
         //重置按钮
-        $("#reset").click(function (){
+        $("#reset").click(function () {
             college = null;
             $("#dropupCollegeButton").text("学院");
             careerId = null;
@@ -109,27 +107,27 @@ require(['../config'], function () {
                 success: function (data) {
                     if (data.code == 200) {
                         total = data.data.total;
-                        if ((data.data.list).length != 0){
+                        if ((data.data.list).length != 0) {
                             $("#page span:eq(2) input").val(page);
                             util.createForm((page - 1) * size + 1, data.data.list, STR, 3);
-                            $("#page-text").text("共" + total + "条数据, " + Math.ceil(total / size) +"页");
-                            $(".delete").click(function (){
+                            $("#page-text").text("共" + total + "条数据, " + Math.ceil(total / size) + "页");
+                            $(".delete").click(function () {
                                 var id = $(this).parent().parent().children("th").attr("data-id");
                                 del(id);
                             })
-                            $(".update").click(function (){
+                            $(".update").click(function () {
                                 alter($(this).parent().parent().children("th"));
                             })
                             //详情
-                            $(".details").click(function (){
+                            $(".details").click(function () {
                                 var id = $(this).parent().parent().children("th").attr("data-id");
                                 window.location.href = "nin-class-course?classId=" + id;
                             })
-                        }else{
-                            if (page > 1){
+                        } else {
+                            if (page > 1) {
                                 page = page - 1;
                                 query();
-                            }else {
+                            } else {
                                 $("tbody").empty();
                             }
                         }
@@ -140,12 +138,13 @@ require(['../config'], function () {
 
 
         //新增
-        $("#insert").click(function (){
+        $("#insert").click(function () {
             var $career = $("<tr><td><label for='career'>专业:</label></td><td><input type='text' id='career'></td></tr>");
             var $className = $("<tr><td><label for='className'>班级名称:</label></td><td><input type='text' id='className'></td></tr>");
             // var $label = $("<tr><td><label for='sex'>性别:</label></td><td><select id='sex'><option value='男'>男</option><option value='女'>女</option></select></td></tr>");
             util.popup([$career, $className], ["career", "className"], $insert);
-            function $insert(record){
+
+            function $insert(record) {
                 $.ajax({
                     url: "nin-class/addClass",
                     dataType: "json",
@@ -154,10 +153,10 @@ require(['../config'], function () {
                         career: record.career,
                         className: record.className
                     },
-                    success: function (data){
-                        if (data.code == 200){
+                    success: function (data) {
+                        if (data.code == 200) {
                             query();
-                        }else{
+                        } else {
                             alert(data.msg);
                         }
                     }
@@ -166,15 +165,15 @@ require(['../config'], function () {
         })
 
         //编辑
-        function alter($id){
+        function alter($id) {
             var id = $($id).attr("data-id");
             var nextAll = $($id).nextAll();
             //todo 学院专业下拉
-            var $career = $("<tr><td><label for='career'>专业:</label></td><td><input type='text' id='career' value="+ $(nextAll[0]).text() +"></td></tr>");
-            var $className = $("<tr><td><label for='className'>班级名称:</label></td><td><input type='text' id='className' value="+$(nextAll[1]).text()+"></td></tr>");
+            var $career = $("<tr><td><label for='career'>专业:</label></td><td><input type='text' id='career' value=" + $(nextAll[0]).text() + "></td></tr>");
+            var $className = $("<tr><td><label for='className'>班级名称:</label></td><td><input type='text' id='className' value=" + $(nextAll[1]).text() + "></td></tr>");
             util.popup([$career, $className], ["career", "className"], $update);
 
-            function $update(record){
+            function $update(record) {
                 $.ajax({
                     url: "nin-class/alterClass",
                     dataType: "json",
@@ -184,10 +183,10 @@ require(['../config'], function () {
                         career: record.career,
                         className: record.className
                     },
-                    success: function (data){
-                        if (data.code == 200){
+                    success: function (data) {
+                        if (data.code == 200) {
                             query();
-                        }else{
+                        } else {
                             alert(data.msg);
                         }
                     }
@@ -195,7 +194,7 @@ require(['../config'], function () {
             }
         }
 
-        $("#CareerAdminButton").click(function (){
+        $("#CareerAdminButton").click(function () {
             window.location.href = "/nin-career-course";
         })
 
@@ -203,7 +202,7 @@ require(['../config'], function () {
         function del(id) {
             var $tr = $("<tr><td colspan='2'>删除班级会将与该班级有关的所有信息一起删除</td>></tr>");
             $("#module", parent.document).find("table").append($tr);
-            util.popup([], [], function (){
+            util.popup([], [], function () {
                 $.ajax({
                     url: "nin-class/delClass",
                     dataType: "json",
@@ -212,7 +211,7 @@ require(['../config'], function () {
                         id: id
                     },
                     success: function (data) {
-                        if (data.code == 200){
+                        if (data.code == 200) {
                             query();
                         }
                     }
@@ -221,7 +220,7 @@ require(['../config'], function () {
         }
 
 
-/*-------careerCourse----------*/
+        /*-------careerCourse----------*/
 
         function careerCheckbox() {
             //获取专业列表
@@ -231,23 +230,29 @@ require(['../config'], function () {
                 dataType: "json",
                 success: function (data) {
                     if (data.code == 200) {
+                        var img1 = "<img src='../../img/add.jpg' class='add' width='25px' height='25px'>"
+                        var img2 = "<img src='../../img/del.png' class='del' width='25px' height='25px'>"
+                        var img3 = "<img src='../../img/alter.jpg' class='alter' width='25px' height='25px'>"
+                        var img4 = "<img src='../../img/query.jpg' class='query' width='25px' height='25px'>"
+
                         //生成专业复选框
                         $("#careerCheckbox").empty();
-                        var $text = "<input type='checkbox' id='career'><label for='career'><h5>全选</h5></label><br>";
+                        var $text = "<input type='checkbox' id='career'><label for='career'><h5>全选</h5></label>";
+
                         $("#careerCheckbox").append($text);
                         for (let key1 in data.data) {
                             var value1 = data.data[key1];
                             var input1 = $("<input type='checkbox' class='career'>").attr("id", key1);
-                            var label1 = $("<label for=" + key1 + "><h5>" + key1 + "</h5></label><br>");
-                            var img1 = "<img src='../../img/add.jpg' width='25px' height='25px'>"
-                            var img2 = "<img src='../../img/del.png' width='25px' height='25px'>"
-                            // var span = $("<label></label>").append(img1, img2);
-                            $("#careerCheckbox").append(input1, label1, img1, img2);
+                            var label1 = $("<label for=" + key1 + "><h5>" + key1 + "</h5></label>");
+                            var div1 = $("<div></div>").append("<br>", input1, label1, img1, img3)
+                            $("#careerCheckbox").append(div1);
                             for (let i = 0; i < value1.length; i++) {
                                 var input2 = $("<input type='checkbox' class='career'>").attr("name", key1).attr("id", value1[i].id);
-                                var label2 = $("<label for=" + value1[i].id + ">" + value1[i].careerName + "</label><br>");
-                                $("#careerCheckbox").append(input2, label2);
+                                var label2 = $("<label for=" + value1[i].id + ">" + value1[i].careerName + "</label>");
+                                var div2 = $("<div></div>").append(input2, label2, img2, img3, img4)
+                                $("#careerCheckbox").append(div2);
                             }
+                            //二级的全选
                             $("#" + key1).click(function () {
                                 if ($("#" + key1).is(':checked')) {
                                     $("input[name=" + key1 + "]").prop('checked', true);
@@ -261,6 +266,7 @@ require(['../config'], function () {
                                 }
                             })
                         }
+                        //一级的全选
                         $("#career").click(function () {
                             if ($("#career").is(':checked')) {
                                 $("input[class='career']").prop('checked', true);
@@ -273,6 +279,43 @@ require(['../config'], function () {
                                 $("#career").prop('checked', false);
                             }
                         })
+
+                        //todo 回去写
+
+                        //学院添加课程
+                        $(".add").click(function () {
+                            var id = $($(this).prevAll()[0]).attr("id");
+                            // 跳出弹窗，添加
+
+                        })
+
+                        //新学院添加
+                        $("#add").click(function () {
+                            //添加新学院及专业
+                        })
+
+                        //专业删除
+                        $(".del").click(function () {
+                            var id = $($(this).prevAll()[0]).attr("id");
+                            //根据id删除
+
+                        })
+
+                        //专业学院修改
+                        $(".alter").click(function () {
+                            var id = $($(this).prevAll()[0]).attr("id");
+                            //如果id是数字，那么是修改专业
+                            //如果不是，那么修改学院
+
+                        })
+
+                        //查看
+                        $(".query").click(function () {
+                            var id = $($(this).prevAll()[0]).attr("id");
+                            //根据专业id查询已选课程，并将右侧跳转
+
+                        })
+
                     }
                 }
             })
@@ -359,10 +402,7 @@ require(['../config'], function () {
         }
 
 
-
-
-
-/**/
+        /**/
 
         //切换每页记录条数
         $("#page a:eq(0)").click(function () {
@@ -438,12 +478,13 @@ require(['../config'], function () {
             if (page > Math.ceil(total / size)) {
                 page = Math.ceil(total / size);
             }
-            if (page < 1){
+            if (page < 1) {
                 page = 1;
             }
             query();
             page_skip();
         })
+
         // 页面跳转下面的数字
         function page_skip() {
             var lask = Math.ceil(total / size);

@@ -1,11 +1,15 @@
 package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -482,6 +486,96 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
         return hashMap;
     }
+
+    @Override
+    public List<Map<String, Object>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly, Integer week, Integer pitchNum) {
+        //todo 逻辑有点没想好
+
+        //返回教室id，名称，类型，座位，时间
+
+        //教师班级都是为了削减时间
+        //教室
+        List<Map<String, Object>> ninHouseArrayList = new ArrayList<>();
+
+        //查询教室
+        if (houseId != null) {
+            NinHouse ninHouse = ninHouseMapper.selectById(houseId);
+            if (seatMin != null) {
+                if (ninHouse.getSeat() < seatMin) {
+                    throw new ServiceException(412, "该教室不符合所需要的座位数量");
+                }
+            }
+            if (seatMax != null) {
+                if (ninHouse.getSeat() > seatMax) {
+                    throw new ServiceException(412, "该教室不符合所需要的座位数量");
+                }
+            }
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("id", ninHouse.getId());
+            hashMap.put("houseName", ninHouse.getHouseName());
+            hashMap.put("houseType", ninHouse.getHouseType());
+            hashMap.put("seat", ninHouse.getSeat());
+            ninHouseArrayList.add(hashMap);
+        } else {
+            //如果没有座位要求，按班级人数进行选择，
+            if (seatMax == null && seatMin == null) {
+                if (!StringUtils.isBlank(classIds)) {
+                    List<Long> classIdList = JSON.parseArray(classIds, Long.class);
+                    seatMin = classIdList.size() * 50;
+                }
+            }
+            //座位，类型查询教室
+            ninHouseArrayList = ninHouseMapper.getSelectList(null, houseType, seatMin, seatMax);
+            if (ninHouseArrayList != null && ninHouseArrayList.size() != 0) {
+            } else {
+                throw new ServiceException(412, "无符合条件的教室");
+            }
+        }
+
+        //获取符合条件的教室列表之后
+        //获得排课列表
+        List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<>());
+
+        //必须有周次
+        //星期节数不要求
+
+        //去掉其中单双周的一个
+        Integer w;
+        if (weekly % 2 == 1) {
+            w = 1;
+        } else {
+            w = 2;
+        }
+        ninArranges.stream().filter(i -> i.getWeekly() != w).filter(i -> i.getStartTime() > weekly).filter(i -> i.getEndTime() < weekly).collect(Collectors.toList());
+
+        //判断教师和班级
+        if (!StringUtils.isBlank(classIds)) {
+            List<Long> classIdList = JSON.parseArray(classIds, Long.class);
+            //获取教学班列表
+            List<Long> teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(classIdList);
+        }
+//        按符合条件的教室开始遍历
+        for (Map<String, Object> map : ninHouseArrayList) {
+
+
+
+        }
+
+        /*
+        有教师和学生，把这些时间都去掉
+        2*7*5
+        去掉后遍历时间
+        A教室的周一第一节课
+        按教室分组
+        去除教室时间
+
+
+        */
+
+
+        return null;
+    }
+
 
     /**
      * maxNum分成minNum份，使每份之间的差最小
