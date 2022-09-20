@@ -1,16 +1,6 @@
 require(['../config'], function () {
     require(['jquery', 'util', 'bootstrapBundle'], function ($, util) {
 
-        var img1 = "增加图表";
-        var img2 = "删除图标";
-        var img3 = "修改图标";
-
-
-        function record() {
-
-        }
-
-
         //获取专业列表
         $.ajax({
             url: "nin-career/getCareerClassList",
@@ -18,14 +8,6 @@ require(['../config'], function () {
             dataType: "json",
             success: function (data) {
                 if (data.code == 200) {
-
-                    //todo
-                    // //生成专业管理列表
-                    // for (let key in data.data) {
-                    //     var value = data.data[key];
-                    //     $("<span></span>")
-                    // }
-
                     //生成专业复选框
                     for (let key1 in data.data) {
                         var value1 = data.data[key1];
@@ -46,19 +28,24 @@ require(['../config'], function () {
                                 $("input[name=" + key1 + "]").prop('checked', false);
                             }
                         })
+                        $("input[name=" + key1 + "]").click(function () {
+                            if (!$(this).is(':checked')) {
+                                $("#" + key1).prop('checked', false);
+                            }
+                        })
                     }
+                    $("#career").click(function () {
+                        if ($("#career").is(':checked')) {
+                            $("input[class='career']").prop('checked', true);
+                        } else {
+                            $("input[class='career']").prop('checked', false);
+                        }
+                    })
 
                 }
             }
         })
 
-        $("#career").click(function () {
-            if ($("#career").is(':checked')) {
-                $("input[class='career']").prop('checked', true);
-            } else {
-                $("input[class='career']").prop('checked', false);
-            }
-        })
 
         //获取课程列表
         $.ajax({
@@ -77,17 +64,18 @@ require(['../config'], function () {
                         $("#courseCheckbox").append(input);
                         $("#courseCheckbox").append(label);
                     }
+                    $("#course").click(function () {
+                        if ($("#course").is(':checked')) {
+                            $("input[class='course']").prop('checked', true);
+                        } else {
+                            $("input[class='course']").prop('checked', false);
+                        }
+                    })
+
                 }
             }
         })
 
-        $("#course").click(function () {
-            if ($("#course").is(':checked')) {
-                $("input[class='course']").prop('checked', true);
-            } else {
-                $("input[class='course']").prop('checked', false);
-            }
-        })
 
         //确定添加
         $("#confirm").click(function () {

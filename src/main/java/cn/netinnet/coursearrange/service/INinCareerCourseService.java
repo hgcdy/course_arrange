@@ -16,6 +16,11 @@ import java.util.Map;
  */
 public interface INinCareerCourseService extends IService<NinCareerCourse> {
 
+    /**
+     *
+     * @param careerId
+     * @return
+     */
     List<Map<String, Object>> getSelectList(Long careerId);
 
     /**
@@ -24,5 +29,12 @@ public interface INinCareerCourseService extends IService<NinCareerCourse> {
      * @param courseIdList
      */
     void addBatchCourse(List<Long> careerIdList, List<Long> courseIdList);
+
+//    /**
+//     * 根据专业获取课程列表
+//     * @param careerId
+//     * @return
+//     */
+//    List<Map<String, Object>> getCareerCourse(Long careerId);
 
 }

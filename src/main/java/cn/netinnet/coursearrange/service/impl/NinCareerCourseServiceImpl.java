@@ -77,9 +77,10 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
                 }
             }
         }
-        ninCareerCourseMapper.addBatchCourse(ninCareerCourseArrayList);
-
-
-
+        if (ninCareerCourseArrayList != null && ninCareerCourseArrayList.size() != 0) {
+            ninCareerCourseMapper.addBatchCourse(ninCareerCourseArrayList);
+        }
     }
+
+
 }

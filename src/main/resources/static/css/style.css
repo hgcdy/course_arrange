@@ -61,35 +61,35 @@ td {
     border: 1px solid #000000;
 }
 
-#collegeCareer {
+#careerCourse {
     background-color: #ffffff;
     position: absolute;
     top: 0;
-    right: 47%;
-    padding: 20px;
-        /*left: 0;*/
-    /*bottom: 0;*/
-    width: 20%;
+    right: 31%;
+
+    width: 50%;
+    height: 100%;
     margin: 0 auto;
     /*text-align:center;*/
     /*display: none;*/
     border: 1px solid #000000;
 }
 
-#head div{
-    background-color: #ffffff;
+#careerCourse span {
     position: absolute;
     width: 50%;
-    height: 5%;
-    top: 0;
     margin: 0 auto;
     border: 1px solid #dee2e6;
+    height: 5%;
 }
 
-#admin, #choice, #careerCheckbox, #courseCheckbox {
+#careerCheckbox, #courseCheckbox {
     background-color: #ffffff;
     position: absolute;
-    width: 25%;
+    /*width: 25%;*/
+    /*height: 95%;*/
+    padding: 20px;
+    width: 50%;
     height: 95%;
     top: 5%;
     margin: 0 auto;

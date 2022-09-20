@@ -9,6 +9,12 @@ require(['../config'], function () {
         var className = null;
         const STR = ["college", "careerName", "className", "peopleNum", "courseNum"];
         query();
+        //todo 后续改点击按钮才出现
+        courseCheckbox();
+        careerCheckbox();
+
+
+
 
         //学院选择下拉框
         $("#dropupCollegeButton").click(function (){
@@ -193,7 +199,6 @@ require(['../config'], function () {
             window.location.href = "/nin-career-course";
         })
 
-
         //删除
         function del(id) {
             var $tr = $("<tr><td colspan='2'>删除班级会将与该班级有关的所有信息一起删除</td>></tr>");
@@ -215,6 +220,149 @@ require(['../config'], function () {
             });
         }
 
+
+/*-------careerCourse----------*/
+
+        function careerCheckbox() {
+            //获取专业列表
+            $.ajax({
+                url: "nin-career/getCareerClassList",
+                type: "post",
+                dataType: "json",
+                success: function (data) {
+                    if (data.code == 200) {
+                        //生成专业复选框
+                        $("#careerCheckbox").empty();
+                        var $text = "<input type='checkbox' id='career'><label for='career'><h5>全选</h5></label><br>";
+                        $("#careerCheckbox").append($text);
+                        for (let key1 in data.data) {
+                            var value1 = data.data[key1];
+                            var input1 = $("<input type='checkbox' class='career'>").attr("id", key1);
+                            var label1 = $("<label for=" + key1 + "><h5>" + key1 + "</h5></label><br>");
+                            var img1 = "<img src='../../img/add.jpg' width='25px' height='25px'>"
+                            var img2 = "<img src='../../img/del.png' width='25px' height='25px'>"
+                            // var span = $("<label></label>").append(img1, img2);
+                            $("#careerCheckbox").append(input1, label1, img1, img2);
+                            for (let i = 0; i < value1.length; i++) {
+                                var input2 = $("<input type='checkbox' class='career'>").attr("name", key1).attr("id", value1[i].id);
+                                var label2 = $("<label for=" + value1[i].id + ">" + value1[i].careerName + "</label><br>");
+                                $("#careerCheckbox").append(input2, label2);
+                            }
+                            $("#" + key1).click(function () {
+                                if ($("#" + key1).is(':checked')) {
+                                    $("input[name=" + key1 + "]").prop('checked', true);
+                                } else {
+                                    $("input[name=" + key1 + "]").prop('checked', false);
+                                }
+                            })
+                            $("input[name=" + key1 + "]").click(function () {
+                                if (!$(this).is(':checked')) {
+                                    $("#" + key1).prop('checked', false);
+                                }
+                            })
+                        }
+                        $("#career").click(function () {
+                            if ($("#career").is(':checked')) {
+                                $("input[class='career']").prop('checked', true);
+                            } else {
+                                $("input[class='career']").prop('checked', false);
+                            }
+                        })
+                        $("input[class='career']").click(function () {
+                            if (!$(this).is(':checked')) {
+                                $("#career").prop('checked', false);
+                            }
+                        })
+                    }
+                }
+            })
+        }
+
+        function courseCheckbox() {
+            //获取课程列表
+            $.ajax({
+                url: "nin-course/getSelectCourseList",
+                type: "post",
+                dataType: "json",
+                data: {
+                    sign: 1
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        $("#courseCheckbox").empty();
+                        var list = data.data;
+                        var $text = "<input type='checkbox' id='course'><label for='course'><h5>全选</h5></label><br>";
+                        $("#courseCheckbox").append($text);
+                        for (let i = 0; i < list.length; i++) {
+                            var input = $("<input type='checkbox' class='course'>").attr("id", list[i].id);
+                            var label = $("<label for=" + list[i].id + ">" + list[i].courseName + "</label><br>");
+                            $("#courseCheckbox").append(input, label);
+                        }
+
+                        //全选事件
+                        $("#course").click(function () {
+                            if ($("#course").is(':checked')) {
+                                $("input[class='course']").prop('checked', true);
+                            } else {
+                                $("input[class='course']").prop('checked', false);
+                            }
+                        })
+                        $("input[class='course']").click(function () {
+                            if (!$(this).is(':checked')) {
+                                $("#course").prop('checked', false);
+                            }
+                        })
+
+                        //确认添加按钮
+                        var bu = "<button type='button' class='btn btn-info' id='confirm'>确定添加</button>";
+                        $("#courseCheckbox").append(bu);
+
+                        //确定添加事件
+                        $("#confirm").click(function () {
+                            var $career = $(".career");
+                            var career = "[";
+                            for (let i = 0; i < $career.length; i++) {
+                                if ($($career[i]).is(':checked')) {
+                                    if (!isNaN($($career[i]).attr("id"))) {
+                                        career = career + "," + $($career[i]).attr("id");
+                                    }
+                                }
+                            }
+                            career += "]";
+                            var $course = $(".course");
+                            var course = "[";
+                            for (let i = 0; i < $course.length; i++) {
+                                if ($($course[i]).is(':checked')) {
+                                    if (!isNaN($($course[i]).attr("id"))) {
+                                        course = course + "," + $($course[i]).attr("id");
+                                    }
+                                }
+                            }
+                            course += "]";
+                            $.ajax({
+                                url: "/nin-career-course/addBatchCourse",
+                                type: "post",
+                                dataType: "json",
+                                data: {
+                                    careerIds: career,
+                                    courseIds: course
+                                },
+                                success: function (data) {
+                                    util.hint(data.msg);
+
+                                }
+                            })
+                        })
+                    }
+                }
+            })
+        }
+
+
+
+
+
+/**/
 
         //切换每页记录条数
         $("#page a:eq(0)").click(function () {
