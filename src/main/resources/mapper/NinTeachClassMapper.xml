@@ -20,7 +20,7 @@
 
     <insert id="addBatch" parameterType="cn.netinnet.coursearrange.entity.NinTeachClass">
         INSERT INTO
-        nin_arrange(teach_class_id, class_id, create_user_id, modify_user_id)
+        nin_teach_class(teach_class_id, class_id, create_user_id, modify_user_id)
         VALUES
         <foreach collection="list" index="index" item="item" separator=",">
             (#{item.teachClassId}, #{item.classId}, #{item.createUserId}, #{item.modifyUserId})

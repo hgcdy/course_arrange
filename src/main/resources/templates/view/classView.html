@@ -10,7 +10,7 @@
 <body>
 
 <!--检索查询-->
-<div class="border-bottom" style="height: 7%;">
+<div class="border-bottom" style="height: 7%;" id="selectQuery">
     <span>
         <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupCollegeButton"
                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -104,10 +104,18 @@
 
 <div id="careerCourse">
     <span>
-        <h4>专业选择<img th:src="@{img/add.jpg}" id="add" width="25px" height="25px"></h4>
+        <h4>专业选择&nbsp;&nbsp;&nbsp;&nbsp;
+            <label for="add">学院</label>
+            <img th:src="@{img/add.jpg}" id="add" width="25px" height="25px">
+            <span id="quit" style="width: 25%;right: 0">退出</span>
+        </h4>
     </span>
     <span style="right: 0;">
-        <h4><span id="newCourse">课程选择</span><span style="right: 0;display: none" id="oldCourse">已选课程</span></h4>
+        <h4>
+            <span id="newCourse">课程选择</span>
+            <span style="right: 0;display: none" id="oldCourse">已选课程</span>
+
+        </h4>
     </span>
     <div id="careerCheckbox" style="left: 0;">
         <!--        专业选择-->

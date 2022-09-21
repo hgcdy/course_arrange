@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,19 +24,20 @@ import java.util.Map;
  * @since 2022-08-18
  */
 @RestController
-@RequestMapping("/nin-arrange")
+@RequestMapping("")
 @RequiresRoles(value = {"admin"}, logical = Logical.OR)
 public class NinArrangeController {
     @Autowired
     private INinArrangeService ninArrangeService;
 
-    @GetMapping("")
+    //挑战排课页面
+    @GetMapping("/nin-arrange")
     public ModelAndView gotoView() {
         return new ModelAndView("view/arrangeView");
     }
 
-
-    @GetMapping("/courseForm")
+    //跳转各管理的页面的课程表
+    @GetMapping("/nin-arrange/courseForm")
     public ModelAndView gotoFormView(Long classId, Long studentId, Long teacherId, String type) {
         ModelAndView modelAndView = new ModelAndView("view/courseFormView");
         modelAndView.addObject("classId", String.valueOf(classId));
@@ -45,13 +47,20 @@ public class NinArrangeController {
         return modelAndView;
     }
 
-    @GetMapping("/arrange")
+    @GetMapping("/applyHouse")
+    public ModelAndView gotoApplyHouseView() {
+        return new ModelAndView("view/applyHouseView");
+    }
+
+    //自动排课
+    @GetMapping("/nin-arrange/arrange")
     public ResultModel arrange() {
         ninArrangeService.arrange();
         return ResultModel.ok();
     }
 
-    @PostMapping("/getInfo")
+    //获取课程表的信息
+    @PostMapping("/nin-arrange/getInfo")
     public ResultModel getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
         Map<String, String> info = ninArrangeService.getInfo(classId, teacherId, studentId, count);
         return ResultModel.ok(info);
@@ -63,15 +72,15 @@ public class NinArrangeController {
      * @param classIds 班级id列表
      * @param houseId 教室id
      * @param houseType 教室类型
-     * @param seat 座位
+     * @param seatMin 座位
+     * @param seatMax 座位
      * @param weekly 周次
-     * @param week 星期
-     * @param pitchNum 节数
      * @return
      */
-    @PostMapping("/getLeisure")
-    public ResultModel getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, String seat, Integer weekly, Integer week, Integer pitchNum) {
-        return null;
+    @PostMapping("/nin-arrange/getLeisure")
+    public ResultModel getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly) {
+        Map<String, List<Map<String, Object>>> leisure = ninArrangeService.getLeisure(teacherId, classIds, houseId, houseType, seatMin, seatMax, weekly);
+        return ResultModel.ok(leisure);
     }
 
 

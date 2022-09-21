@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -488,9 +489,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
     @Override
-    public List<Map<String, Object>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly, Integer week, Integer pitchNum) {
-        //todo 逻辑有点没想好
-
+    public Map<String, List<Map<String, Object>>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly) {
         //返回教室id，名称，类型，座位，时间
 
         //教师班级都是为了削减时间
@@ -502,16 +501,16 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             NinHouse ninHouse = ninHouseMapper.selectById(houseId);
             if (seatMin != null) {
                 if (ninHouse.getSeat() < seatMin) {
-                    throw new ServiceException(412, "该教室不符合所需要的座位数量");
+                    throw new ServiceException(412, ninHouse.getHouseName() + "座位数量小于" + seatMin);
                 }
             }
             if (seatMax != null) {
                 if (ninHouse.getSeat() > seatMax) {
-                    throw new ServiceException(412, "该教室不符合所需要的座位数量");
+                    throw new ServiceException(412, ninHouse.getHouseName() + "座位数量大于" + seatMax);
                 }
             }
             HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("id", ninHouse.getId());
+            hashMap.put("id", BigInteger.valueOf (ninHouse.getId()));
             hashMap.put("houseName", ninHouse.getHouseName());
             hashMap.put("houseType", ninHouse.getHouseType());
             hashMap.put("seat", ninHouse.getSeat());
@@ -536,44 +535,79 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //获得排课列表
         List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<>());
 
-        //必须有周次
-        //星期节数不要求
-
         //去掉其中单双周的一个
         Integer w;
         if (weekly % 2 == 1) {
-            w = 1;
-        } else {
             w = 2;
+        } else {
+            w = 1;
         }
-        ninArranges.stream().filter(i -> i.getWeekly() != w).filter(i -> i.getStartTime() > weekly).filter(i -> i.getEndTime() < weekly).collect(Collectors.toList());
+        List<NinArrange> ninArrangeList = ninArranges.stream().filter(i -> i.getWeekly() != w).filter(i -> i.getStartTime() <= weekly).filter(i -> i.getEndTime() >= weekly).collect(Collectors.toList());
 
-        //判断教师和班级
-        if (!StringUtils.isBlank(classIds)) {
-            List<Long> classIdList = JSON.parseArray(classIds, Long.class);
-            //获取教学班列表
-            List<Long> teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(classIdList);
+        //把这个时间的排课找出，如果有教师和班级，排课表中存在，则去除这个时间 11--->null
+        //去除这个时间有使用的教室
+
+
+        //<星期节数, List<教室Map>>
+        Map<String, List<Map<String, Object>>> hashMap = new HashMap<>();
+
+        for (int i = 1; i <= 7; i++) {
+            ok: for (int j = 1; j <= 5; j++) {
+
+                ArrayList<Map<String, Object>> houseList = new ArrayList<>();
+                houseList.addAll(ninHouseArrayList);
+
+                List<Long> teachClassIdList = null;
+                //判断教师和班级
+                if (!StringUtils.isBlank(classIds)) {
+                    List<Long> classIdList = JSON.parseArray(classIds, Long.class);
+                    //获取教学班列表
+                    teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(classIdList);
+                }
+
+                for (NinArrange arrange : ninArrangeList) {
+                    //一样的时间里
+                    if (arrange.getWeek() == i && arrange.getPitchNum() == j) {
+
+                        if (teachClassIdList != null) {
+                            //输入条件有班级，且排课存在班级的
+                            if (teachClassIdList.contains(arrange.getTeachClassId())) {
+                                //那么该时间就不能使用
+                                hashMap.put(""+i+j, null);
+                                //"ij"->null
+                                continue ok;
+
+                            }
+                        }
+
+                        if (teacherId != null) {
+                            //输入条件有教师，且排课中有教师
+                            if (teacherId == arrange.getTeacherId()) {
+                                //该时间不能使用
+                                hashMap.put(""+i+j, null);
+                                //"ij"->null
+                                continue ok;
+
+                            }
+                        }
+
+                        //删除houseList里面出现的
+                        for (int k = 0; k < houseList.size(); k++) {
+                            if (houseList.get(k) != null && ((BigInteger)houseList.get(k).get("id")).longValue() == arrange.getHouseId()) {
+                                houseList.set(k, null);
+                            }
+                        }
+                    }
+                }
+
+                houseList.removeIf(Objects::isNull);
+                if (houseList.size() == 0) {
+                    houseList = null;
+                }
+                hashMap.put(""+i+j, houseList);
+            }
         }
-//        按符合条件的教室开始遍历
-        for (Map<String, Object> map : ninHouseArrayList) {
-
-
-
-        }
-
-        /*
-        有教师和学生，把这些时间都去掉
-        2*7*5
-        去掉后遍历时间
-        A教室的周一第一节课
-        按教室分组
-        去除教室时间
-
-
-        */
-
-
-        return null;
+        return hashMap;
     }
 
 
@@ -618,7 +652,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 //开始结束时间有重叠
                 if (!(ninArrange.getStartTime() > arrange.getEndTime() || ninArrange.getEndTime() < arrange.getStartTime())) {
                     //单双周重叠
-                    if (ninArrange.getWeekly() == arrange.getWeekly()) {
+                    //todo 单双周和每周
+                    if (ninArrange.getWeekly() == 0 || arrange.getWeekly() == 0 || ninArrange.getWeekly() == arrange.getWeekly()) {
                         //当时间一样时，开始对比其他条件
 
                         //教师相同

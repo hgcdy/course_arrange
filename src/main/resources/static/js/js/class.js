@@ -192,9 +192,7 @@ require(['../config'], function () {
             }
         }
 
-        $("#CareerAdminButton").click(function () {
-            window.location.href = "/nin-career-course";
-        })
+
 
         //删除
         function del(id) {
@@ -219,6 +217,12 @@ require(['../config'], function () {
 
 
         /*-------careerCourse----------*/
+
+
+        $("#quit").click(function (){
+            $("#careerCourse").css("display", "none");
+            $("button").attr('disabled', false);
+        })
 
 
         $("#addCourse").click(function () {
@@ -247,10 +251,11 @@ require(['../config'], function () {
                         var img3 = "<img src='../../img/alter.jpg' class='alter' width='25px' height='25px'>"
                         var img4 = "<img src='../../img/query.jpg' class='query' width='25px' height='25px'>"
 
-                        //生成专业复选框
+                        //生成专业全选框
                         $("#careerCheckbox").empty();
                         var $text = "<input type='checkbox' id='career'><label for='career'><h5>全选</h5></label>";
 
+                        //学院专业复选框
                         $("#careerCheckbox").append($text);
                         for (let key1 in data.data) {
                             var value1 = data.data[key1];
@@ -264,7 +269,7 @@ require(['../config'], function () {
                                 var div2 = $("<div></div>").append(input2, label2, img2, img3, img4)
                                 $("#careerCheckbox").append(div2);
                             }
-                            //二级的全选
+                            //二级的全选框
                             $("#" + key1).click(function () {
                                 if ($("#" + key1).is(':checked')) {
                                     $("input[name=" + key1 + "]").prop('checked', true);
@@ -278,7 +283,7 @@ require(['../config'], function () {
                                 }
                             })
                         }
-                        //一级的全选
+                        //一级的全选框
                         $("#career").click(function () {
                             if ($("#career").is(':checked')) {
                                 $("input[class='career']").prop('checked', true);
@@ -293,7 +298,7 @@ require(['../config'], function () {
                         })
 
 
-                        //学院添加课程
+                        //新增专业
                         $(".add").click(function () {
                             // $("img").unbind();
                             var id = $($(this).parent("div").children("input")[0]).attr("id");
@@ -320,7 +325,6 @@ require(['../config'], function () {
                                     }
                                 })
                             }
-
                         })
 
                         //新学院添加

@@ -29,12 +29,6 @@ public class NinCareerCourseController {
     @Autowired
     private INinCareerCourseService ninCareerCourseService;
 
-    @GetMapping("")
-    public ModelAndView gotoTeacherCourse(Long careerId) {
-        ModelAndView modelAndView = new ModelAndView("view/careerAdminView");
-        return modelAndView;
-    }
-
     /**
      * 根据专业id选择查询
      * @param careerId

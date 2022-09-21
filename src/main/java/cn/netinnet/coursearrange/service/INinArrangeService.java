@@ -20,6 +20,6 @@ public interface INinArrangeService extends IService<NinArrange> {
 
     Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer count);
 
-    List<Map<String, Object>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin,Integer seatMax, Integer weekly, Integer week, Integer pitchNum);
+    Map<String, List<Map<String, Object>>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin,Integer seatMax, Integer weekly);
 
 }

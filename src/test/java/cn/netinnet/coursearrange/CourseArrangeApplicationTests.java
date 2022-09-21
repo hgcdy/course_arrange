@@ -57,9 +57,17 @@ class CourseArrangeApplicationTests {
 //        List<Map<String, Object>> maps = ninClassMapper.collegeCareerClassList();
 //        Map<String, Map<String, List<Map<String, Object>>>> collect = maps.stream().collect(Collectors.groupingBy(i -> (String) (i.get("college")), Collectors.groupingBy(i -> (String) i.get("careerName"))));
 
-        String str = "[]";
-        List<Long> longs = JSON.parseArray(str, Long.class);
-        System.out.println(longs);
+//        String str = "[]";
+//        List<Long> longs = JSON.parseArray(str, Long.class);
+
+        ArrayList<String> strings = new ArrayList<>();
+        strings.add("defd");
+        strings.add("dfg");
+        ArrayList<String> strings1 = new ArrayList<>();
+        strings1.addAll(strings);
+        strings1.add("dfvb");
+
+        System.out.println("");
 
     }
 
