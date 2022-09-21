@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -24,6 +27,7 @@ public class NinCareer implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -49,6 +53,7 @@ public class NinCareer implements Serializable {
     @TableField("create_time")
     private LocalDateTime createTime;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     @TableField("create_user_id")
     private Long createUserId;
 
@@ -58,6 +63,7 @@ public class NinCareer implements Serializable {
     @TableField("modify_time")
     private LocalDateTime modifyTime;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     @TableField("modify_user_id")
     private Long modifyUserId;
 

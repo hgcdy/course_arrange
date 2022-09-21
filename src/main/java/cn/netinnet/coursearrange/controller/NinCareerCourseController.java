@@ -54,6 +54,15 @@ public class NinCareerCourseController {
         return ResultModel.ok();
     }
 
+    @PostMapping("/delCareerCourse")
+    public ResultModel delCareerCourse(Long id) {
+        int i = ninCareerCourseService.delCareerCourse(id);
+        if (i > 0) {
+            return ResultModel.ok();
+        }
+        return ResultModel.error(412, "删除失败");
+    }
+
 //    /**
 //     * 根据专业id获取该专业的课程列表
 //     * @param careerId

@@ -50,12 +50,15 @@ define(function () {
      */
     var popup = function (modules, ids, $operate) {
 
+
         var $popup = $("#popup", parent.document);
+        var $table = $popup.find("table");
+        $table.empty();//todo img问题
         $popup.css("display", "block");
         $("button").attr('disabled', true);
         var len = modules.length;
         $popup.css("height", len * 50 + 100 + "px");
-        var $table = $popup.find("table");
+
         for (let i = 0; i < len; i++) {
             $table.append(modules[i]);
         }

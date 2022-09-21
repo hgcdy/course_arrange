@@ -6,6 +6,7 @@ import cn.netinnet.coursearrange.mapper.NinCareerCourseMapper;
 import cn.netinnet.coursearrange.service.INinCareerCourseService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
+import cn.netinnet.coursearrange.util.Utils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,9 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
 
     @Override
     public List<Map<String, Object>> getSelectList(Long careerId) {
-        return ninCareerCourseMapper.getSelectList(careerId);
+        List<Map<String, Object>> list = ninCareerCourseMapper.getSelectList(careerId);
+        Utils.conversion(list);
+        return list;
     }
 
     @Override
@@ -80,6 +83,11 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
         if (ninCareerCourseArrayList != null && ninCareerCourseArrayList.size() != 0) {
             ninCareerCourseMapper.addBatchCourse(ninCareerCourseArrayList);
         }
+    }
+
+    @Override
+    public int delCareerCourse(Long id) {
+        return ninCareerCourseMapper.deleteById(id);
     }
 
 

@@ -9,7 +9,7 @@ public class Utils {
             if (i.get("houseType") != null){
                 int houseType = (int) i.get("houseType");
                 if (houseType == 0) {
-                    i.put("houseType", "教室");
+                    i.put("houseType", "梯形教室");
                 } else if (houseType == 1) {
                     i.put("houseType", "机房");
                 } else if (houseType == 2) {

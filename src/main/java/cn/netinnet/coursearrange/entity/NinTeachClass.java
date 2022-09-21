@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -25,9 +28,11 @@ public class NinTeachClass implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableField("teach_class_id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long teachClassId;
 
     @TableField("class_id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long classId;
 
     @TableField("del_flag")

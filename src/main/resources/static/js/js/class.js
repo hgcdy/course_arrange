@@ -9,9 +9,6 @@ require(['../config'], function () {
         var className = null;
         const STR = ["college", "careerName", "className", "peopleNum", "courseNum"];
         query();
-        //todo 后续改点击按钮才出现
-        courseCheckbox();
-        careerCheckbox();
 
 
         //学院选择下拉框
@@ -139,6 +136,7 @@ require(['../config'], function () {
 
         //新增
         $("#insert").click(function () {
+            //todo careerName
             var $career = $("<tr><td><label for='career'>专业:</label></td><td><input type='text' id='career'></td></tr>");
             var $className = $("<tr><td><label for='className'>班级名称:</label></td><td><input type='text' id='className'></td></tr>");
             // var $label = $("<tr><td><label for='sex'>性别:</label></td><td><select id='sex'><option value='男'>男</option><option value='女'>女</option></select></td></tr>");
@@ -222,6 +220,20 @@ require(['../config'], function () {
 
         /*-------careerCourse----------*/
 
+
+        $("#addCourse").click(function () {
+            $("#careerCourse").css("display", "block");
+            $("button").attr('disabled', true);
+            courseCheckbox();
+            careerCheckbox();
+        })
+
+        $("#newCourse").click(function () {
+            $("#oldCourse").css("display", "none");
+            courseCheckbox();
+        })
+
+
         function careerCheckbox() {
             //获取专业列表
             $.ajax({
@@ -244,7 +256,7 @@ require(['../config'], function () {
                             var value1 = data.data[key1];
                             var input1 = $("<input type='checkbox' class='career'>").attr("id", key1);
                             var label1 = $("<label for=" + key1 + "><h5>" + key1 + "</h5></label>");
-                            var div1 = $("<div></div>").append("<br>", input1, label1, img1, img3)
+                            var div1 = $("<div></div>").append("<br>", input1, label1, img1)
                             $("#careerCheckbox").append(div1);
                             for (let i = 0; i < value1.length; i++) {
                                 var input2 = $("<input type='checkbox' class='career'>").attr("name", key1).attr("id", value1[i].id);
@@ -280,40 +292,120 @@ require(['../config'], function () {
                             }
                         })
 
-                        //todo 回去写
 
                         //学院添加课程
                         $(".add").click(function () {
-                            var id = $($(this).prevAll()[0]).attr("id");
+                            // $("img").unbind();
+                            var id = $($(this).parent("div").children("input")[0]).attr("id");
                             // 跳出弹窗，添加
+                            var $careerName = $("<tr><td><label for='careerName'>专业:</label></td><td><input type='text' id='careerName'></td></tr>");
+                            util.popup([$careerName], ["careerName"], $insert);
+                            careerCheckbox();
+
+                            function $insert(record) {
+                                $.ajax({
+                                    url: "nin-career/addCareer",
+                                    dataType: "json",
+                                    type: "post",
+                                    data: {
+                                        college: id,
+                                        careerName: record.careerName
+                                    },
+                                    success: function (data) {
+                                        if (data.code == 200) {
+                                            // careerCheckbox();
+                                        } else {
+                                            util.hint(data.msg);
+                                        }
+                                    }
+                                })
+                            }
 
                         })
 
                         //新学院添加
                         $("#add").click(function () {
                             //添加新学院及专业
+                            var $college = $("<tr><td><label for='college'>学院:</label></td><td><input type='text' id='college'></td></tr>");
+                            var $careerName = $("<tr><td><label for='careerName'>专业:</label></td><td><input type='text' id='careerName'></td></tr>");
+                            util.popup([$college, $careerName], ["college", "careerName"], $insert);
+
+                            function $insert(record) {
+                                $.ajax({
+                                    url: "nin-career/addCareer",
+                                    dataType: "json",
+                                    type: "post",
+                                    data: {
+                                        college: record.college,
+                                        careerName: record.careerName
+                                    },
+                                    success: function (data) {
+                                        if (data.code == 200) {
+                                            careerCheckbox();
+                                        } else {
+                                            util.hint(data.msg);
+                                        }
+                                    }
+                                })
+                            }
                         })
 
                         //专业删除
                         $(".del").click(function () {
-                            var id = $($(this).prevAll()[0]).attr("id");
+                            var id = $($(this).parent("div").children("input")[0]).attr("id");
                             //根据id删除
+                            $.ajax({
+                                url: "nin-career/delCareer",
+                                type: "post",
+                                dataType: "json",
+                                data: {
+                                    id: id
+                                },
+                                success: function (data) {
+                                    if (data.code == 200) {
+                                        careerCheckbox();
+                                    } else {
+                                        util.hint(data.msg);
+                                    }
+                                }
+                            })
 
                         })
 
                         //专业学院修改
                         $(".alter").click(function () {
-                            var id = $($(this).prevAll()[0]).attr("id");
-                            //如果id是数字，那么是修改专业
-                            //如果不是，那么修改学院
+                            var id = $($(this).parent("div").children("input")[0]).attr("id");
+                            var $careerName = $("<tr><td><label for='careerName'>专业:</label></td><td><input type='text' id='careerName' value=" + $($(this).parent("div").children()[1]).text() + "></td></tr>");
+                            util.popup([$careerName], ["careerName"], $insert);
+
+                            function $insert(record) {
+                                if (record.careerName != $($(this).parent("div").children()[1]).text()) {
+                                    $.ajax({
+                                        url: "nin-career/alterCareer",
+                                        dataType: "json",
+                                        type: "post",
+                                        data: {
+                                            careerName: record.careerName
+                                        },
+                                        success: function (data) {
+                                            if (data.code == 200) {
+                                                careerCheckbox();
+                                            } else {
+                                                util.hint(data.msg);
+                                            }
+                                        }
+                                    })
+                                }
+                            }
 
                         })
 
                         //查看
                         $(".query").click(function () {
-                            var id = $($(this).prevAll()[0]).attr("id");
+                            var id = $($(this).parent("div").children("input")[0]).attr("id");
+                            $("#oldCourse").css("display", "block");
                             //根据专业id查询已选课程，并将右侧跳转
-
+                            courseAlready(id);
                         })
 
                     }
@@ -399,6 +491,70 @@ require(['../config'], function () {
                     }
                 }
             })
+        }
+
+        function courseAlready(careerId) {
+            $("#courseCheckbox").empty();
+            var img2 = "<img src='../../img/del.png' class='del1' width='25px' height='25px'>"
+            var img4 = "<img src='../../img/query.jpg' class='query1' width='25px' height='25px'>"
+            $.ajax({
+                url: "nin-career-course/getSelectList",
+                type: "post",
+                dataType: "json",
+                data: {
+                    careerId: careerId
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        if (data.data.length != 0) {
+                            var map = new Map();
+                            var list = data.data;
+                            for (let i = 0; i < list.length; i++) {
+                                var str = "课程名称：" + list[i]["courseName"] +
+                                    "\n教室类型：" + list[i]["houseType"] +
+                                    "\n" + list[i]["must"] + " " + list[i]["courseTime"] +
+                                    "课时\n开课时间：第" + list[i]["startTime"] +
+                                    "周\n结课时间：第" + list[i]["endTime"] +
+                                    "周\n上课周次：" + list[i]["weekTime"] + "周";
+                                map.set(list[i]["id"], str);
+                                // $(img4).
+                                var div = $("<div>" + list[i]["courseName"] + "</div>").attr("id", list[i]["id"]).append(img2, img4);
+                                $("#courseCheckbox").append(div)
+                            }
+                        } else {
+                            $("#courseCheckbox").text("暂无课程");
+                        }
+                    }
+                    $(".del1").click(function () {
+                        var id = $(this).parent("div").attr("id");
+                        $.ajax({
+                            url: "nin-career-course/delCareerCourse",
+                            type: "post",
+                            dataType: "json",
+                            data: {
+                                id: id
+                            },
+                            success: function (data) {
+                                if (data.code == 200) {
+                                    courseAlready(careerId);
+                                } else {
+                                    util.hint(data.msg);
+                                }
+                            }
+                        })
+
+                    })
+
+                    $(".query1").click(function () {
+                        var id = $(this).parent("div").attr("id");
+                        alert(map.get(id));
+
+                    })
+
+                }
+            })
+
+
         }
 
 

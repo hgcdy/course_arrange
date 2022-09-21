@@ -30,6 +30,8 @@ public interface INinCareerCourseService extends IService<NinCareerCourse> {
      */
     void addBatchCourse(List<Long> careerIdList, List<Long> courseIdList);
 
+    int delCareerCourse(Long id);
+
 //    /**
 //     * 根据专业获取课程列表
 //     * @param careerId
