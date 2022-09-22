@@ -13,10 +13,10 @@
 <body>
 <!--检索查询-->
 <div class="border-bottom" style="height: 7%;">
-<!--    <span>-->
-<!--        教室名称:-->
-<!--        <input type="text" id="houseName">-->
-<!--    </span>&nbsp;&nbsp;-->
+    <!--    <span>-->
+    <!--        教室名称:-->
+    <!--        <input type="text" id="houseName">-->
+    <!--    </span>&nbsp;&nbsp;-->
     <span>
         <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupHouseTypeButton"
                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -32,7 +32,7 @@
         <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupTeacherButton"
                 data-bs-toggle="dropdown" aria-expanded="false">
             * 教师
-<!-- //todo 教师端直接获取-->
+            <!-- //todo 教师端直接获取-->
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropupTeacherButton" data-code="">
 
@@ -41,7 +41,7 @@
     <span>
         <button class="btn btn-secondary dropupButton" type="button" id="dropupClassButton">
             * 班级
-<!--            弹窗多选-->
+            <!--            弹窗多选-->
         </button>
     </span>&nbsp;&nbsp;
     <span>
@@ -61,7 +61,6 @@
         <button type="button" class="btn btn-info" id="reset">重置</button>
     </span>
 </div>
-
 
 
 <div class="border-bottom" style="height: 3%;">
@@ -149,8 +148,8 @@
     </table>
 </div>
 
-<div id="apply"  class="border-bottom">
-<!--    申请-->
+<div id="apply" class="border-bottom">
+    <!--    申请-->
     <table class="table table-sm table-bordered" style="table-layout: fixed;">
         <tr>
             <td>时间</td>
@@ -170,15 +169,13 @@
         </tr>
         <tr>
             <td>课程</td>
-<!--            <td>xxx-->
-<!--                <input type="button" value="重新选择" style="height: 100%;border-left:0px;border-top:0px;border-right:0px;border-bottom:1px;">-->
-<!--            </td>-->
             <td>
-                <input type="button" value="请选择课程" style="height: 100%;border-left:0px;border-top:0px;border-right:0px;border-bottom:1px;">
+                <span id="span1">xxx</span>
+                <input type="button" value="请选择课程" id="input1">
             </td>
         </tr>
     </table>
-    <button>确定申请</button>
+    <button id="affirm-apply">确定申请</button>
 </div>
 
 <div id="classWindow">
@@ -186,9 +183,11 @@
     <table class="table table-sm table-bordered" style="table-layout: fixed">
         <thead>
         <tr>
-            <th scope="col">班级选择 </th>
-            <th  colspan='4'></th>
-            <th><button style="width: 100%;" type="button" class="btn btn-info" id="confirm">确定</button></th>
+            <th scope="col">班级选择</th>
+            <th colspan='4'></th>
+            <th>
+                <button style="width: 100%;" type="button" class="btn btn-info" id="confirm">确定</button>
+            </th>
         </tr>
         </thead>
         <tbody>

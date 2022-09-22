@@ -187,6 +187,39 @@ require(['../config'], function () {
 
             })
 
+            $("#input1").click(function () {
+                //todo
+                // 参数：教师id,教室类型,班级列表
+                // 根据教师-课程表获取课程，去掉不符合的教室类型，且班级列表中必须有选该课程
+                // 返回课表列表，如果无则提示无可选班级
+                $.ajax({
+                    url: "",
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        teacherId: teacherId,
+                        houseType: houseType,
+                        classIdList: classIdList
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            //.....
+                            $("#span1").text("课程名称");
+                            $("#apply td:eq(9)").attr("id", "课程id");
+                            $("#input1").val("重新选择");
+                        }
+                    }
+                })
+
+            })
+
+
+            $("#affirm-apply").click(function () {
+                //todo
+                // 获取申请表格里的信息
+                // 生成一条排课信息
+            })
+
 
         })
         //重置按钮
@@ -207,6 +240,10 @@ require(['../config'], function () {
             $("#apply td:eq(3)").attr("id", null).text("");
 
             $("#apply td:eq(7)").attr("id", null).text("");
+
+            $("#span1").text("");
+            $("#apply td:eq(9)").attr("id", null);
+            $("#input1").val("请选择课程");
 
             seatMin = null;
             $("#seat1").val(null);
