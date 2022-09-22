@@ -109,11 +109,52 @@ define(function () {
     }
 
 
+    var timeString = function (weekly, week, pitchNum) {
+        var x,y,z;
+        x = turn(parseInt(weekly));
+        y = turn(parseInt(week));
+        z = turn(parseInt(pitchNum));
+        if (week == "7") {
+            y = "日"
+        }
+        var str = "第"+ x +"周星期"+ y +"第"+ z +"节课";
+        return str;
+    }
+
+    function turn(i) {
+        var str;
+        switch (i) {
+            case 1: str = "一";break;
+            case 2: str = "二";break;
+            case 3: str = "三";break;
+            case 4: str = "四";break;
+            case 5: str = "五";break;
+            case 6: str = "六";break;
+            case 7: str = "七";break;
+            case 8: str = "八";break;
+            case 9: str = "九";break;
+            case 10: str = "十";break;
+            case 11: str = "十一";break;
+            case 12: str = "十二";break;
+            case 13: str = "十三";break;
+            case 14: str = "十四";break;
+            case 15: str = "十五";break;
+            case 16: str = "十六";break;
+            case 17: str = "十七";break;
+            case 18: str = "十八";break;
+            case 19: str = "十九";break;
+            case 20: str = "二十";break;
+        }
+        return str;
+    }
+
+
 
 
     return {
         createForm: createForm,
         popup: popup,
-        hint: hint
+        hint: hint,
+        timeString: timeString
     };
 });

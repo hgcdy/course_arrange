@@ -573,7 +573,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                             //输入条件有班级，且排课存在班级的
                             if (teachClassIdList.contains(arrange.getTeachClassId())) {
                                 //那么该时间就不能使用
-                                hashMap.put(""+i+j, null);
+
                                 //"ij"->null
                                 continue ok;
 
@@ -584,7 +584,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                             //输入条件有教师，且排课中有教师
                             if (teacherId == arrange.getTeacherId()) {
                                 //该时间不能使用
-                                hashMap.put(""+i+j, null);
+
                                 //"ij"->null
                                 continue ok;
 
@@ -601,10 +601,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 }
 
                 houseList.removeIf(Objects::isNull);
-                if (houseList.size() == 0) {
-                    houseList = null;
+                if (houseList.size() != 0 && houseList != null) {
+                    hashMap.put(""+i+j, houseList);
                 }
-                hashMap.put(""+i+j, houseList);
             }
         }
         return hashMap;

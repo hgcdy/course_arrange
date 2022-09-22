@@ -139,7 +139,6 @@ require(['../config'], function () {
             //todo careerName
             var $career = $("<tr><td><label for='career'>专业:</label></td><td><input type='text' id='career'></td></tr>");
             var $className = $("<tr><td><label for='className'>班级名称:</label></td><td><input type='text' id='className'></td></tr>");
-            // var $label = $("<tr><td><label for='sex'>性别:</label></td><td><select id='sex'><option value='男'>男</option><option value='女'>女</option></select></td></tr>");
             util.popup([$career, $className], ["career", "className"], $insert);
 
             function $insert(record) {
