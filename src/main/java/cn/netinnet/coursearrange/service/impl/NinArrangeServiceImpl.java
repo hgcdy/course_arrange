@@ -6,8 +6,8 @@ import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
+import cn.netinnet.coursearrange.util.Utils;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -289,7 +288,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
                         } while (!compare(ninArrangeList, arrange1, longListNinTeachClassMap));
                         if (count > 100) {
-                            ok: for (int j = 0; j < 7; j++) {
+                            ok:
+                            for (int j = 0; j < 7; j++) {
                                 for (int k = 0; k < 5; k++) {
                                     arrange1.setWeek(j + 1);
                                     arrange1.setPitchNum(k + 1);
@@ -478,7 +478,11 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
                 String value = "" + map.get("courseName") + "/" + str + "/" + map.get("houseName") + "/" + map.get("teacherName") + "/" + map.get("className") + "/" + ((int) map.get("must") == 1 ? "必修" : "选修");
 
-                if (hashMap.get(key) == null){
+                if ((long)map.get("careerId") == -1) {
+                    value += "(补课)";
+                }
+
+                if (hashMap.get(key) == null) {
                     hashMap.put(key, value);
                 } else {
                     hashMap.put(key, hashMap.get(key) + "//" + value);
@@ -496,40 +500,22 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //教室
         List<Map<String, Object>> ninHouseArrayList = new ArrayList<>();
 
-        //查询教室
-        if (houseId != null) {
-            NinHouse ninHouse = ninHouseMapper.selectById(houseId);
-            if (seatMin != null) {
-                if (ninHouse.getSeat() < seatMin) {
-                    throw new ServiceException(412, ninHouse.getHouseName() + "座位数量小于" + seatMin);
-                }
-            }
-            if (seatMax != null) {
-                if (ninHouse.getSeat() > seatMax) {
-                    throw new ServiceException(412, ninHouse.getHouseName() + "座位数量大于" + seatMax);
-                }
-            }
-            HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("id", BigInteger.valueOf (ninHouse.getId()));
-            hashMap.put("houseName", ninHouse.getHouseName());
-            hashMap.put("houseType", ninHouse.getHouseType());
-            hashMap.put("seat", ninHouse.getSeat());
-            ninHouseArrayList.add(hashMap);
-        } else {
-            //如果没有座位要求，按班级人数进行选择，
-            if (seatMax == null && seatMin == null) {
-                if (!StringUtils.isBlank(classIds)) {
-                    List<Long> classIdList = JSON.parseArray(classIds, Long.class);
-                    seatMin = classIdList.size() * 50;
-                }
-            }
-            //座位，类型查询教室
-            ninHouseArrayList = ninHouseMapper.getSelectList(null, houseType, seatMin, seatMax);
-            if (ninHouseArrayList != null && ninHouseArrayList.size() != 0) {
-            } else {
-                throw new ServiceException(412, "无符合条件的教室");
+
+        if (seatMax == null && seatMin == null) {
+            if (!StringUtils.isBlank(classIds)) {
+                List<Long> classIdList = JSON.parseArray(classIds, Long.class);
+                seatMin = classIdList.size() * 50;
             }
         }
+        //座位，类型查询教室
+        ninHouseArrayList = ninHouseMapper.getSelectList(null, houseType, seatMin, seatMax);
+        Utils.conversion(ninHouseArrayList);
+
+        if (ninHouseArrayList != null && ninHouseArrayList.size() != 0) {
+        } else {
+            throw new ServiceException(412, "无符合条件的教室");
+        }
+
 
         //获取符合条件的教室列表之后
         //获得排课列表
@@ -552,7 +538,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         Map<String, List<Map<String, Object>>> hashMap = new HashMap<>();
 
         for (int i = 1; i <= 7; i++) {
-            ok: for (int j = 1; j <= 5; j++) {
+            ok:
+            for (int j = 1; j <= 5; j++) {
 
                 ArrayList<Map<String, Object>> houseList = new ArrayList<>();
                 houseList.addAll(ninHouseArrayList);
@@ -593,7 +580,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
                         //删除houseList里面出现的
                         for (int k = 0; k < houseList.size(); k++) {
-                            if (houseList.get(k) != null && ((BigInteger)houseList.get(k).get("id")).longValue() == arrange.getHouseId()) {
+//                            houseList.get(k).put("id", (houseList.get(k).get("id")));
+                            if (houseList.get(k) != null && houseList.get(k).get("id") == String.valueOf(arrange.getHouseId())) {
                                 houseList.set(k, null);
                             }
                         }
@@ -602,11 +590,48 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
                 houseList.removeIf(Objects::isNull);
                 if (houseList.size() != 0 && houseList != null) {
-                    hashMap.put(""+i+j, houseList);
+                    hashMap.put("" + i + j, houseList);
                 }
             }
         }
         return hashMap;
+    }
+
+    @Override
+    public int addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList) {
+        List<Long> classIds = JSON.parseArray(classIdList, Long.class);
+        if (classIds == null || classIds.size() == 0) {
+            throw new ServiceException(412, "班级为空");
+        }
+        Long teachClassId = IDUtil.getID();
+        ArrayList<NinTeachClass> ninTeachClasses = new ArrayList<>();
+        for (Long classId : classIds) {
+            NinTeachClass ninTeachClass = new NinTeachClass();
+            ninTeachClass.setTeachClassId(teachClassId);
+            ninTeachClass.setClassId(classId);
+            ninTeachClass.setModifyUserId(UserUtil.getUserInfo().getUserId());
+            ninTeachClass.setCreateUserId(UserUtil.getUserInfo().getUserId());
+            ninTeachClasses.add(ninTeachClass);
+        }
+        ninTeachClassMapper.addBatch(ninTeachClasses);
+
+        NinArrange arrange = new NinArrange();
+        arrange.setId(IDUtil.getID());
+        arrange.setCareerId(-1L);//todo 专业暂时写-1
+        arrange.setTeachClassId(teachClassId);
+        arrange.setTeacherId(teacherId);
+        arrange.setHouseId(houseId);
+        arrange.setCourseId(courseId);
+        arrange.setWeekly(0);
+        arrange.setWeek(week);
+        arrange.setPitchNum(pitchNum);
+        arrange.setStartTime(weekly);
+        arrange.setEndTime(weekly);
+        arrange.setPeopleNum(classIds.size() * 50);
+        arrange.setMust(ninCourseMapper.selectById(courseId).getMust());
+        arrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
+        arrange.setCreateUserId(UserUtil.getUserInfo().getUserId());
+        return ninArrangeMapper.insert(arrange);
     }
 
 

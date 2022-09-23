@@ -6,7 +6,9 @@ import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinCourseService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -14,10 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -36,11 +36,15 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     @Autowired
     private NinClassMapper ninClassMapper;
     @Autowired
+    private NinHouseMapper ninHouseMapper;
+    @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
     @Autowired
     private NinClassCourseMapper ninClassCourseMapper;
     @Autowired
     private NinTeacherCourseMapper ninTeacherCourseMapper;
+    @Autowired
+    private NinCareerCourseMapper ninCareerCourseMapper;
 
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size, NinCourse ninCourse) {
@@ -181,5 +185,73 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         return courseList;
     }
 
+    @Override
+    public List<NinCourse> getSelectApplyList(Long teacherId, Long houseId, String classIdList) {
+        List<Long> classIds = JSON.parseArray(classIdList, Long.class);
+        if (classIds == null || classIds.size() == 0) {
+            throw new ServiceException(412, "班级为空！");
+        }
+        //教师的课程列表
+        List<NinTeacherCourse> ninTeacherCourses = ninTeacherCourseMapper.selectList(new QueryWrapper<>(new NinTeacherCourse() {{
+            setTeacherId(teacherId);
+        }}));
+        if (ninTeacherCourses ==null || ninTeacherCourses.size() == 0) {
+            throw new ServiceException(412, "该教师暂无可授课课程");
+        }
+        List<Long> courseIdList = ninTeacherCourses.stream().map(NinTeacherCourse::getCourseId).collect(Collectors.toList());
 
+        //获取班级列表<classId, careerId>
+        Map<Long, Long> classCareerMap = ninClassMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.toMap(NinClass::getId, NinClass::getCareerId));
+
+        //根据班级id获取专业id列表
+        HashSet<Long> careerIdSet = new HashSet<>();
+        for (Long l : classIds) {
+            careerIdSet.add(classCareerMap.get(l));
+        }
+
+        //专业选课表<careerId, List<NinCareerCourse>>
+        Map<Long, List<NinCareerCourse>> careerIdMap = ninCareerCourseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId));
+
+
+        HashSet<Long> courseIdSet = new HashSet<>();
+        //将每个专业的选课放进去，计数，如果课程id出现次数等于专业数量，即这几个专业中重复的课程
+        ArrayList<Long> courseIds = new ArrayList<>();
+        for (Long l : careerIdSet) {
+            for (NinCareerCourse ninCareerCourse: careerIdMap.get(l)) {
+                courseIds.add(ninCareerCourse.getCourseId());
+            }
+        }
+        //计数
+        Map<Long, Long> collect = courseIds.stream().collect(Collectors.groupingBy(it -> it, Collectors.counting()));
+        for (Map.Entry<Long, Long> map : collect.entrySet()) {
+            if (map.getValue() == careerIdSet.size()) {
+                courseIdSet.add(map.getKey());
+            }
+        }
+
+        if (courseIdSet.size() == 0) {
+            throw new ServiceException(412, "所选的班级无共同的课程");
+        }
+
+        //加入教师的课程列表，去重
+        courseIdSet.addAll(courseIdList);
+
+        ArrayList<NinCourse> ninCourses = new ArrayList<>();
+
+        Map<Long, NinCourse> courseIdMap = ninCourseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.toMap(NinCourse::getId, Function.identity()));
+        Integer houseType = ninHouseMapper.selectById(houseId).getHouseType();
+        //如果符合教室的类型，写入列表
+        for (Long l : courseIdSet) {
+            NinCourse course = courseIdMap.get(l);
+            if (houseType == course.getHouseType()) {
+                ninCourses.add(course);
+            }
+        }
+
+        if (ninCourses == null || ninCourses.size() == 0) {
+            throw new ServiceException(412, "所选教室无可上的课程");
+        }
+
+        return ninCourses;
+    }
 }

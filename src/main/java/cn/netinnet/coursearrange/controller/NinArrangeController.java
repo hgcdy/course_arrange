@@ -84,5 +84,12 @@ public class NinArrangeController {
     }
 
 
+    @PostMapping("/nin-arrange/addArrange")
+    public ResultModel addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList) {
+        ninArrangeService.addArrange(weekly, week, pitchNum, houseId, teacherId, courseId, classIdList);
+        return null;
+    }
+
+
 
 }

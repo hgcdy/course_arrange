@@ -60,4 +60,13 @@ public interface INinCourseService extends IService<NinCourse> {
      * @return
      */
     List<NinCourse> getSelectCourseList(Integer sign);
+
+    /**
+     * 教室申请的课程选择
+     * @param teacher
+     * @param houseId
+     * @param classIdList
+     * @return
+     */
+    List<NinCourse> getSelectApplyList(Long teacher, Long houseId, String classIdList);
 }

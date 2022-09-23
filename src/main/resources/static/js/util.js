@@ -50,7 +50,6 @@ define(function () {
      */
     var popup = function (modules, ids, $operate) {
 
-
         var $popup = $("#popup", parent.document);
         var $table = $popup.find("table");
         $table.empty();//todo img问题

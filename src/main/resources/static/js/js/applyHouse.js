@@ -70,9 +70,7 @@ require(['../config'], function () {
                         }
                     }
                 }
-
             })
-
         })
 
         $("#confirm").click(function () {
@@ -100,6 +98,10 @@ require(['../config'], function () {
             if ($.trim(houseType) == "教室类型") {
                 houseType = null;
             }
+
+            $("#apply td:eq(1)").attr("id", null).text("");
+
+            $("#apply td:eq(3)").attr("id", null).text("");
 
             teacherId = $("#dropupTeacherButton").attr("teacher-id");
             // $("#apply td:eq(5)").attr("id", teacherId).text($("#dropupTeacherButton").text());
@@ -186,42 +188,106 @@ require(['../config'], function () {
                 }
 
             })
+        })
 
-            $("#input1").click(function () {
-                //todo
-                // 参数：教师id,教室类型,班级列表
-                // 根据教师-课程表获取课程，去掉不符合的教室类型，且班级列表中必须有选该课程
-                // 返回课表列表，如果无则提示无可选班级
-                $.ajax({
-                    url: "",
-                    type: "post",
-                    dataType: "json",
-                    data: {
-                        teacherId: teacherId,
-                        houseType: houseType,
-                        classIdList: classIdList
-                    },
-                    success: function (data) {
-                        if (data.code == 200) {
-                            //.....
-                            $("#span1").text("课程名称");
-                            $("#apply td:eq(9)").attr("id", "课程id");
-                            $("#input1").val("重新选择");
+
+        $("#input1").click(function () {
+            // 参数：教师id,教室id,班级列表
+            // 根据教师-课程表获取课程，去掉不符合的教室类型，且班级列表中必须有选该课程
+            // 返回课表列表，如果无则提示无可选班级
+            if ($("#apply td:eq(3)").attr("id") == null) {
+                util.hint("请选择教室");
+                return;
+            }
+
+            $.ajax({
+                url: "/nin-course/getSelectApplyList",
+                type: "post",
+                dataType: "json",
+                data: {
+                    teacherId: $("#apply td:eq(5)").attr("id"),
+                    houseId: $("#apply td:eq(3)").attr("id"),
+                    classIdList: $("#apply td:eq(7)").attr("id")
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        //.....
+                        var courseList = data.data;
+
+                        var $select = $("<select style='height: 100%;width: 30%;'></select>");
+                        var $op = $("<option disabled='disabled' selected='selected'></option>");
+                        $($select).append($op);
+                        for (let i = 0; i < courseList.length; i++) {
+                            var $option = $("<option></option>").text(courseList[i].courseName).val(courseList[i].id);
+                            $select.append($option);
                         }
+                        $("#apply td:eq(9)").append($select);
+                        $("#input1").remove();
+                    } else {
+                        util.hint(data.msg);
                     }
-                })
 
+                }
             })
-
-
-            $("#affirm-apply").click(function () {
-                //todo
-                // 获取申请表格里的信息
-                // 生成一条排课信息
-            })
-
 
         })
+
+        //确认申请按钮
+        $("#affirm-apply").click(function () {
+            //todo
+            // 获取申请表格里的信息
+            // 生成一条排课信息
+            var time = $("#apply td:eq(1)").attr("id");
+            var houseId = $("#apply td:eq(3)").attr("id");
+            var teacherId = $("#apply td:eq(5)").attr("id");
+            var classIdList = $("#apply td:eq(7)").attr("id");
+            var courseId = $("select").val();
+            if (teacherId == null) {
+                util.hint("请选择教师");
+                return;
+            }
+            if (classIdList == null) {
+                util.hint("请选择班级");
+                return;
+            }
+            if (time == null) {
+                util.hint("请点击查询后选择时间");
+                return;
+            }
+            if (houseId == null) {
+                util.hint("请选择教室");
+                return;
+            }
+            if (courseId == null) {
+                util.hint("请选择课程");
+                return;
+            }
+
+            $.ajax({
+                url: "/nin-arrange/addArrange",
+                type: "post",
+                dataType: "json",
+                data: {
+                    weekly: weekly,
+                    week: time.split("")[0],
+                    pitchNum: time.split("")[1],
+                    houseId: houseId,
+                    classIdList: classIdList,
+                    teacherId: teacherId,
+                    courseId: courseId
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        util.hint("提交成功");
+                    } else {
+                        util.hint(data.msg);
+                    }
+                }
+            })
+        })
+
+
+
         //重置按钮
         $("#reset").click(function () {
             $("#time-form td").removeClass("bg-success").attr("id", null);
@@ -242,8 +308,7 @@ require(['../config'], function () {
             $("#apply td:eq(7)").attr("id", null).text("");
 
             $("#span1").text("");
-            $("#apply td:eq(9)").attr("id", null);
-            $("#input1").val("请选择课程");
+            $("#apply td:eq(9)").attr("id", null).empty().append("<input type='button' value='选择课程' id='input1'>");
 
             seatMin = null;
             $("#seat1").val(null);
