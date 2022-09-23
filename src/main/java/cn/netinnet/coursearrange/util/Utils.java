@@ -28,6 +28,16 @@ public class Utils {
                     i.put("must", "必修");
                 }
             }
+            if (i.get("weekly") != null){
+                int weekly = (int) i.get("weekly");
+                if (weekly == 0){
+                    i.put("weekly", "单双周");
+                } else if (weekly == 1){
+                    i.put("weekly", "单周");
+                } else if (weekly == 2){
+                    i.put("weekly", "双周");
+                }
+            }
             if (i.get("id") != null){
                 i.put("id", String.valueOf(i.get("id")));
             }

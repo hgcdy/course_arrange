@@ -64,6 +64,9 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
 
     @Override
     public int addSingle(NinCourse ninCourse) {
+
+        //todo BUG 选修班级添加问题
+
         //同名验证
         Integer integer = ninCourseMapper.selectCount(
                 new QueryWrapper<NinCourse>()

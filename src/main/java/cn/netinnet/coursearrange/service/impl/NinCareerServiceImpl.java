@@ -91,6 +91,9 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
     @Override
     public int alterSingle(NinCareer ninCareer) {
         ninCareer.setModifyUserId(UserUtil.getUserInfo().getUserId());
+
+        //fixme 修改时没有id
+
         return ninCareerMapper.updateById(ninCareer);
     }
 }

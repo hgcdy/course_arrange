@@ -47,6 +47,9 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
         if (courseIdList == null ||courseIdList.size() == 0) {
             throw new ServiceException(412, "请选择课程");
         }
+
+        //fixme 重复添加，验证没有生效
+
         //重复验证
         List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper.selectList(new QueryWrapper<>());
         Map<Long, List<NinCareerCourse>> collect = new HashMap<>();

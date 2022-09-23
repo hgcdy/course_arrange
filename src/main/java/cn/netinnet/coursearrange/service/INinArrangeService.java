@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service;
 
+import cn.netinnet.coursearrange.bo.NinArrangeBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -24,4 +25,5 @@ public interface INinArrangeService extends IService<NinArrange> {
 
     int addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList);
 
+    Map<String, Object> getPageSelectList(NinArrangeBo bo, Integer page, Integer size);
 }

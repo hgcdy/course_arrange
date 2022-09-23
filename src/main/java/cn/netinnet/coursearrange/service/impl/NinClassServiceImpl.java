@@ -6,6 +6,7 @@ import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinClassService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
+import cn.netinnet.coursearrange.util.Utils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -54,6 +55,7 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
         PageHelper.startPage(page, size);
         List<Map<String, Object>> list = ninClassMapper.getSelectList(college, careerId, className);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+        Utils.conversion(pageInfo.getList());
         HashMap<String, Object> map = new HashMap<>();
         map.put("list", pageInfo.getList());
         map.put("total", pageInfo.getTotal());
@@ -94,6 +96,7 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     @Override
     public Map<String, Map<String, List<Map<String, Object>>>> collegeCareerClassList() {
         List<Map<String, Object>> list = ninClassMapper.collegeCareerClassList();
+        Utils.conversion(list);
         Map<String, Map<String, List<Map<String, Object>>>> map = list.stream().collect(Collectors.groupingBy(i -> (String) (i.get("college")), Collectors.groupingBy(i -> (String) i.get("careerName"))));
         return map;
     }

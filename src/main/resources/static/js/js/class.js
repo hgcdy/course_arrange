@@ -55,6 +55,9 @@ require(['../config'], function () {
                         var list = data.data;
                         $("#dropupCareerButton").next("ul").empty();
                         for (let i = 0; i < list.length; i++) {
+                            if (list[i].id == -1) {
+                                continue;
+                            }
                             var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].careerName).attr("career-id", list[i].id).click(function () {
                                 $("#dropupCareerButton").text($(this).text()).attr("career-id", $(this).attr("career-id"));
                             });
@@ -196,8 +199,8 @@ require(['../config'], function () {
         //删除
         function del(id) {
             var $tr = $("<tr><td colspan='2'>删除班级会将与该班级有关的所有信息一起删除</td>></tr>");
-            $("#module", parent.document).find("table").append($tr);
-            util.popup([], [], function () {
+            // $("#module", parent.document).find("table").append($tr);
+            util.popup([$tr], [], function () {
                 $.ajax({
                     url: "nin-class/delClass",
                     dataType: "json",
@@ -236,6 +239,10 @@ require(['../config'], function () {
             courseCheckbox();
         })
 
+        function refresh(){
+            careerCheckbox();
+        }
+
 
         function careerCheckbox() {
             //获取专业列表
@@ -257,6 +264,9 @@ require(['../config'], function () {
                         //学院专业复选框
                         $("#careerCheckbox").append($text);
                         for (let key1 in data.data) {
+                            if (key1 == "补课") {
+                                continue;
+                            }
                             var value1 = data.data[key1];
                             var input1 = $("<input type='checkbox' class='career'>").attr("id", key1);
                             var label1 = $("<label for=" + key1 + "><h5>" + key1 + "</h5></label>");
@@ -304,7 +314,6 @@ require(['../config'], function () {
                             // 跳出弹窗，添加
                             var $careerName = $("<tr><td><label for='careerName'>专业:</label></td><td><input type='text' id='careerName'></td></tr>");
                             util.popup([$careerName], ["careerName"], $insert);
-                            careerCheckbox();
 
                             function $insert(record) {
                                 $.ajax({
@@ -318,7 +327,9 @@ require(['../config'], function () {
                                     success: function (data) {
                                         if (data.code == 200) {
                                             // careerCheckbox();
+                                            refresh();
                                         } else {
+
                                             util.hint(data.msg);
                                         }
                                     }
@@ -344,7 +355,7 @@ require(['../config'], function () {
                                     },
                                     success: function (data) {
                                         if (data.code == 200) {
-                                            careerCheckbox();
+                                            refresh();
                                         } else {
                                             util.hint(data.msg);
                                         }
@@ -366,7 +377,7 @@ require(['../config'], function () {
                                 },
                                 success: function (data) {
                                     if (data.code == 200) {
-                                        careerCheckbox();
+                                        refresh();
                                     } else {
                                         util.hint(data.msg);
                                     }
@@ -388,11 +399,12 @@ require(['../config'], function () {
                                         dataType: "json",
                                         type: "post",
                                         data: {
+                                            id: id,
                                             careerName: record.careerName
                                         },
                                         success: function (data) {
                                             if (data.code == 200) {
-                                                careerCheckbox();
+                                                refresh();
                                             } else {
                                                 util.hint(data.msg);
                                             }

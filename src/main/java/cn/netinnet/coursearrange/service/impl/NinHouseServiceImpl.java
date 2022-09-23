@@ -61,7 +61,6 @@ public class NinHouseServiceImpl extends ServiceImpl<NinHouseMapper, NinHouse> i
 
     @Override
     public int delById(@NotNull Long id) {
-        //todo 删除教室后排课置空
         return ninHouseMapper.deleteById(id);
     }
 

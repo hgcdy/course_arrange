@@ -67,6 +67,7 @@ public class NinCareerController {
      */
     @PostMapping("addCareer")
     public ResultModel addCareer(NinCareer ninCareer) {
+
         return ResultModel.ok(ninCareerService.addSingle(ninCareer));
     }
 

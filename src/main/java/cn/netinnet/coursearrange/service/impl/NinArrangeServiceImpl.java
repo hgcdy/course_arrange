@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.bo.NinArrangeBo;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
@@ -11,6 +12,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +58,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void arrange() {
+
+
         long oldData = System.currentTimeMillis();
         //获取选修的排课记录
         List<NinArrange> ninArrangeList = ninArrangeMapper.selectList(new QueryWrapper<NinArrange>().eq("must", 0));
@@ -132,12 +137,12 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     }
 
                     Long[] teachClasses = new Long[ints.length];
-                    for (int j = 0; j < ints.length; j++) {
+                    for (int j = 0, count = 0; j < ints.length; j++) {
                         long id = IDUtil.getID();
-                        for (int k = 0; k < ints[j]; k++) {
+                        for (int k = 0; k < ints[j]; k++, count++) {
                             NinTeachClass ninTeachClass = new NinTeachClass();
                             ninTeachClass.setTeachClassId(id);
-                            ninTeachClass.setClassId(ninClasses.get(j + k).getId());
+                            ninTeachClass.setClassId(ninClasses.get(count).getId());
                             ninTeachClass.setCreateUserId(UserUtil.getUserInfo().getUserId());
                             ninTeachClass.setModifyUserId(UserUtil.getUserInfo().getUserId());
                             ninTeachClasses.add(ninTeachClass);
@@ -288,22 +293,27 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
                         } while (!compare(ninArrangeList, arrange1, longListNinTeachClassMap));
                         if (count > 100) {
+                            boolean b = false;
                             ok:
                             for (int j = 0; j < 7; j++) {
                                 for (int k = 0; k < 5; k++) {
                                     arrange1.setWeek(j + 1);
                                     arrange1.setPitchNum(k + 1);
                                     if (compare(ninArrangeList, arrange1, longListNinTeachClassMap)) {
+                                        b = true;
                                         break ok;
                                     }
                                 }
-                                //如果循环结束。。置空
+                            }
+                            //如果循环结束。。置空
+                            if (!b) {
                                 arrange1.setWeekly(null);
                                 arrange1.setWeek(null);
                                 arrange1.setPitchNum(null);
                                 arrange1.setStartTime(null);
                                 arrange1.setEndTime(null);
                             }
+
                         }
                         //id
                         arrange1.setId(IDUtil.getID());
@@ -410,7 +420,13 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             //学生的行政班级-》教学班级列表
             NinStudent ninStudent = ninStudentMapper.selectById(studentId);
             List<Long> teachClassIdList = ninTeachClassMapper.getTeachClassIdList(ninStudent.getClassId());
-            info = ninArrangeMapper.getInfo(classIdList, teachClassIdList, null);
+            if (classIdList.size() == 0) {
+                classIdList = null;
+            }
+            if (teachClassIdList.size() == 0) {
+                teachClassIdList = null;
+            }
+            info = ninArrangeMapper.getInfo(classIdList, teachClassIdList, null);//fixme sql错误
         }
 
         //Map<教学班id, List<NinTeachClass>>
@@ -516,7 +532,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             throw new ServiceException(412, "无符合条件的教室");
         }
 
-
         //获取符合条件的教室列表之后
         //获得排课列表
         List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<>());
@@ -530,9 +545,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
         List<NinArrange> ninArrangeList = ninArranges.stream().filter(i -> i.getWeekly() != w).filter(i -> i.getStartTime() <= weekly).filter(i -> i.getEndTime() >= weekly).collect(Collectors.toList());
 
-        //把这个时间的排课找出，如果有教师和班级，排课表中存在，则去除这个时间 11--->null
+        //把这个时间的排课找出，如果有教师和班级，排课表中存在，则去除这个时间
         //去除这个时间有使用的教室
-
 
         //<星期节数, List<教室Map>>
         Map<String, List<Map<String, Object>>> hashMap = new HashMap<>();
@@ -560,8 +574,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                             //输入条件有班级，且排课存在班级的
                             if (teachClassIdList.contains(arrange.getTeachClassId())) {
                                 //那么该时间就不能使用
-
-                                //"ij"->null
                                 continue ok;
 
                             }
@@ -571,8 +583,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                             //输入条件有教师，且排课中有教师
                             if (teacherId == arrange.getTeacherId()) {
                                 //该时间不能使用
-
-                                //"ij"->null
                                 continue ok;
 
                             }
@@ -634,6 +644,60 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         return ninArrangeMapper.insert(arrange);
     }
 
+    @Override
+    public Map<String, Object> getPageSelectList(NinArrangeBo bo, Integer page, Integer size) {
+        /*
+        * 专业直接找
+        * 班级id->如果是选修直接找
+        *   教学班id列表
+        * 教师名称模糊查询
+        * 教室名称模糊查询
+        * 课程名称模糊查询
+        */
+        if (bo.getClassId() != null) {
+            NinClass ninClass = ninClassMapper.selectById(bo.getClassId());
+            if (ninClass.getCareerId() != 0) {
+                List<Long> teachClassIdList = ninTeachClassMapper.selectList(new QueryWrapper<>(new NinTeachClass() {{
+                    setClassId(ninClass.getId());
+                }})).stream().map(NinTeachClass::getTeachClassId).collect(Collectors.toList());
+                bo.setTeachClassIdList(teachClassIdList);
+            }
+        }
+
+        PageHelper.startPage(page, size);
+        List<Map<String, Object>> list = ninArrangeMapper.getSelectList(bo);
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+        Utils.conversion(pageInfo.getList());
+
+        //Map<教学班id, List<NinTeachClass>>
+        List<NinTeachClass> ninTeachClasses = ninTeachClassMapper.selectList(new QueryWrapper<>());
+        Map<Long, List<NinTeachClass>> collect = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
+
+        //Map<班级id, 班级名称>
+        List<NinClass> ninClasses = ninClassMapper.selectList(new QueryWrapper<>());
+        Map<Long, String> collect1 = ninClasses.stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
+
+        for (Map<String, Object> map: pageInfo.getList()) {
+            if (map.get("classId") == null) {
+                List<NinTeachClass> teachClassList = collect.get(map.get("teachClassId"));
+                for (NinTeachClass ntc : teachClassList) {
+                    if (map.get("className") == null) {
+                        map.put("className", collect1.get(ntc.getClassId()));
+                    } else {
+                        map.put("className", map.get("className") + ";" + collect1.get(ntc.getClassId()));
+                    }
+                }
+            } else {
+                map.put("className", collect1.get(Long.parseLong((String) map.get("classId"))));
+            }
+        }
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("list", pageInfo.getList());
+        map.put("total", pageInfo.getTotal());
+        return map;
+    }
+
 
     /**
      * maxNum分成minNum份，使每份之间的差最小
@@ -659,13 +723,16 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
      * @return 可以返回true, 不行则返回false
      */
     public Boolean compare(List<NinArrange> ninArrangeList, NinArrange ninArrange, Map<Long, List<NinTeachClass>> longListNinTeachClassMap) {
-        NinArrange arrange1 = ninArrangeList.get(ninArrangeList.size() - 1);
-        //和上一条记录相比，同教学班，同课程时，且在同一天，直接跳出
-        if (arrange1.getCourseId() == ninArrange.getCourseId() && arrange1.getTeachClassId() == ninArrange.getTeachClassId()) {
-            if (arrange1.getWeek() == ninArrange.getWeek()) {
-                return false;
+        if (ninArrangeList.size() > 1) {
+            NinArrange arrange1 = ninArrangeList.get(ninArrangeList.size() - 1);
+            //和上一条记录相比，同教学班，同课程时，且在同一天，直接跳出
+            if (arrange1.getCourseId() == ninArrange.getCourseId() && arrange1.getTeachClassId() == ninArrange.getTeachClassId()) {
+                if (arrange1.getWeek() == ninArrange.getWeek()) {
+                    return false;
+                }
             }
         }
+
         for (NinArrange arrange : ninArrangeList) {
             //为空，表示该记录没有排
             if (arrange.getWeekly() == null) {

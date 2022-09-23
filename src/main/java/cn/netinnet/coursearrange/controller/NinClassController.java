@@ -48,6 +48,7 @@ public class NinClassController {
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          Long careerId, String college, String className) {
         Map<String, Object> map = ninClassService.getPageSelectList(page, size, college, careerId, className);
+
         return ResultModel.ok(map);
     }
 

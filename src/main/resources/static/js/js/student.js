@@ -65,7 +65,7 @@ require(['../config'], function () {
                         var list = data.data;
                         $("#dropupCareerIdButton").next("ul").empty();
                         for (let i = 0; i < list.length; i++) {
-                            if (list[i].id == 0) {
+                            if (list[i].id == 0 || list[i].id == -1) {
                                 continue;
                             }
                             var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].careerName).attr("career-id", list[i].id).click(function () {

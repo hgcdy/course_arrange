@@ -87,4 +87,55 @@
        </where>
     </select>
 
+
+
+    <select id="getSelectList" parameterType="cn.netinnet.coursearrange.bo.NinArrangeBo" resultType="java.util.Map">
+        SELECT career_name AS careerName,
+               class_id AS classId,
+               teach_class_id AS teachClassId,
+               teacher_name AS teacherName,
+               course_name AS courseName,
+               house_name AS houseName,
+               nin_arrange.must AS must,
+               weekly,
+               nin_arrange.start_time AS startTime,
+               nin_arrange.end_time AS endTime,
+               week,
+               pitch_num AS pitchNum
+        FROM nin_teacher,
+             nin_course,
+             nin_house,
+             nin_arrange,
+             nin_career
+        WHERE
+            nin_arrange.del_flag = 0
+            AND nin_teacher.id = nin_arrange.teacher_id
+            AND nin_course.id = nin_arrange.course_id
+            AND nin_house.id = nin_arrange.house_id
+            AND nin_career.id = nin_arrange.career_id
+            <if test="teachClassIdList != null">
+            AND(
+                <foreach collection="teachClassIdList" index="index" item="item" separator="OR" >
+                    nin_arrange.teach_class_id = #{item}
+                </foreach>
+                )
+            </if>
+            <if test="careerId != null">
+                AND career_id = #{careerId}
+            </if>
+            <if test="classId != null">
+                AND class_id = #{classId}
+            </if>
+            <if test="teacherName != null and teacherName != ''">
+                AND teacher_name LIKE CONCAT('%',#{teacherName},'%')
+            </if>
+            <if test="houseName != null and houseName != ''">
+                AND house_name LIKE CONCAT('%',#{houseName},'%')
+            </if>
+            <if test="courseName != null and courseName != ''">
+                AND course_name LIKE CONCAT('%',#{courseName},'%')
+            </if>
+        ORDER BY nin_arrange.career_id, nin_arrange.course_id, teach_class_id
+    </select>
+
 </mapper>

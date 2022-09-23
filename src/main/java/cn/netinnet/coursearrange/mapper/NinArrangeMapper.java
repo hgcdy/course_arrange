@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.mapper;
 
+import cn.netinnet.coursearrange.bo.NinArrangeBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -36,4 +37,10 @@ public interface NinArrangeMapper extends BaseMapper<NinArrange> {
                                       @Param("teachClassIdList") List<Long> teachClassIdList,
                                       @Param("teacherId") Long teacherId);
 
+    /**
+     * 符合条件的排课信息列表
+     * @param bo
+     * @return
+     */
+    List<Map<String, Object>> getSelectList(NinArrangeBo bo);
 }

@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.controller;
 
 
+import cn.netinnet.coursearrange.bo.NinArrangeBo;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import org.apache.shiro.authz.annotation.Logical;
@@ -89,6 +90,13 @@ public class NinArrangeController {
         ninArrangeService.addArrange(weekly, week, pitchNum, houseId, teacherId, courseId, classIdList);
         return null;
     }
+
+
+    @PostMapping("/nin-arrange/getPageSelectList")
+    public ResultModel getPageSelectList(NinArrangeBo bo, Integer page, Integer size) {
+        return ResultModel.ok(ninArrangeService.getPageSelectList(bo, page, size));
+    }
+
 
 
 

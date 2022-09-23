@@ -103,6 +103,8 @@ require(['../config'], function () {
 
             $("#apply td:eq(3)").attr("id", null).text("");
 
+            $("#house-select tbody").empty();
+
             teacherId = $("#dropupTeacherButton").attr("teacher-id");
             // $("#apply td:eq(5)").attr("id", teacherId).text($("#dropupTeacherButton").text());
 
@@ -234,7 +236,6 @@ require(['../config'], function () {
 
         //确认申请按钮
         $("#affirm-apply").click(function () {
-            //todo
             // 获取申请表格里的信息
             // 生成一条排课信息
             var time = $("#apply td:eq(1)").attr("id");
