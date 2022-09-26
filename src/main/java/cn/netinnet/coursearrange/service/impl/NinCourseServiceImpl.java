@@ -8,7 +8,6 @@ import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -37,6 +36,8 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     private NinClassMapper ninClassMapper;
     @Autowired
     private NinHouseMapper ninHouseMapper;
+    @Autowired
+    private NinArrangeMapper ninArrangeMapper;
     @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
     @Autowired
@@ -83,20 +84,35 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             //生成选修教学班
             NinClass ninClass = new NinClass();
             ninClass.setId(IDUtil.getID());
-            ninClass.setClassName(ninCourse.getCourseName() + "1班");
+            ninClass.setClassName(ninCourse.getCourseName() + "选修班");
             ninClass.setCourseNum(1);
             ninClass.setCreateUserId(UserUtil.getUserInfo().getUserId());
             ninClass.setModifyUserId(UserUtil.getUserInfo().getUserId());
             ninClassMapper.insert(ninClass);
 
+            //生成Arrange
+            NinArrange arrange = new NinArrange();
+            arrange.setId(IDUtil.getID());
+            arrange.setCareerId(0L);
+            arrange.setClassId(ninClass.getId());
+            arrange.setCourseId(ninCourse.getId());
+            arrange.setMust(0);
+            arrange.setWeekly(0);
+            arrange.setStartTime(ninCourse.getStartTime() != null ? ninCourse.getStartTime() : 1);
+            arrange.setEndTime(ninCourse.getEndTime() != null ? ninCourse.getEndTime() : 16);
+            arrange.setPeopleNum(0);
+            ninArrangeMapper.insert(arrange);
+
+            //todo 学生选修添加arrange的人数和班级人数（）
+
             //生成班级-课程表
-            NinClassCourse ninClassCourse = new NinClassCourse();
-            ninClassCourse.setId(IDUtil.getID());
-            ninClassCourse.setCourseId(ninCourse.getId());
-            ninClassCourse.setClassId(ninClass.getId());
-            ninClassCourse.setCreateUserId(UserUtil.getUserInfo().getUserId());
-            ninClassCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
-            ninClassCourseMapper.insert(ninClassCourse);
+//            NinClassCourse ninClassCourse = new NinClassCourse();
+//            ninClassCourse.setId(IDUtil.getID());
+//            ninClassCourse.setCourseId(ninCourse.getId());
+//            ninClassCourse.setClassId(ninClass.getId());
+//            ninClassCourse.setCreateUserId(UserUtil.getUserInfo().getUserId());
+//            ninClassCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
+//            ninClassCourseMapper.insert(ninClassCourse);
         }
         return i;
     }
@@ -198,7 +214,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         List<NinTeacherCourse> ninTeacherCourses = ninTeacherCourseMapper.selectList(new QueryWrapper<>(new NinTeacherCourse() {{
             setTeacherId(teacherId);
         }}));
-        if (ninTeacherCourses ==null || ninTeacherCourses.size() == 0) {
+        if (ninTeacherCourses == null || ninTeacherCourses.size() == 0) {
             throw new ServiceException(412, "该教师暂无可授课课程");
         }
         List<Long> courseIdList = ninTeacherCourses.stream().map(NinTeacherCourse::getCourseId).collect(Collectors.toList());
@@ -220,7 +236,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         //将每个专业的选课放进去，计数，如果课程id出现次数等于专业数量，即这几个专业中重复的课程
         ArrayList<Long> courseIds = new ArrayList<>();
         for (Long l : careerIdSet) {
-            for (NinCareerCourse ninCareerCourse: careerIdMap.get(l)) {
+            for (NinCareerCourse ninCareerCourse : careerIdMap.get(l)) {
                 courseIds.add(ninCareerCourse.getCourseId());
             }
         }

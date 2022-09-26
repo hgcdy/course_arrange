@@ -229,7 +229,7 @@ require(['../config'], function () {
                             $($select).append($op2);
 
                             for (let i = 0; i < value.length; i++) {
-                                var $op3 = $("<option></option>").html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + value[i].careerName).val(value[i].id);
+                                var $op3 = $("<option></option>").html("&nbsp;&nbsp;" + value[i].careerName).val(value[i].id);
                                 $($select).append($op3);
                             }
 
@@ -244,8 +244,9 @@ require(['../config'], function () {
         //删除
         function del(id) {
             var $tr = $("<tr><td colspan='2'>删除班级会将与该班级有关的所有信息一起删除</td>></tr>");
-            // $("#module", parent.document).find("table").append($tr);
+            // $("#module", window.parent.document).find("table").append($tr);
             util.popup([$tr], [], function () {
+
                 $.ajax({
                     url: "nin-class/delClass",
                     dataType: "json",
@@ -260,6 +261,7 @@ require(['../config'], function () {
                     }
                 })
             });
+
         }
 
 

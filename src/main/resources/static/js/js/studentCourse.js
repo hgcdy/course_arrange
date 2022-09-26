@@ -3,7 +3,6 @@ require(['../config'], function () {
         const STR = ["courseName", "houseType", "must","courseTime", "startTime", "endTime", "weekTime"];
         query();
 
-
         //新增
         $("#insert").click(function () {
             $.ajax({
