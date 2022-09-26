@@ -83,4 +83,12 @@ public interface NinClassMapper extends BaseMapper<NinClass> {
     int subBatchPeopleNum(List<NinClass> ninClassList);
 
 
+    /**
+     * 批量修改班级的课程记录
+     * @param list 减少时，courseNum为负
+     * [{careerId:xx,courseNum:1},{careerId:xx,courseNum:-1}]
+     * @return
+     */
+    int alterBatchCourseNum(@Param("list") List<Map<String, Object>> list);
+
 }

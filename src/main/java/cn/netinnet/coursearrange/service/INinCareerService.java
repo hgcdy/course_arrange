@@ -37,7 +37,7 @@ public interface INinCareerService extends IService<NinCareer> {
      * 获取学院专业列表
      * @return
      */
-    Map<String, List<NinCareer>> getCareerClassList();
+    Map<String, List<NinCareer>> getCollegeCareerList();
 
     /**
      * 单个新增

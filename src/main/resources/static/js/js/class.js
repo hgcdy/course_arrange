@@ -139,10 +139,17 @@ require(['../config'], function () {
 
         //新增
         $("#insert").click(function () {
-            //todo careerName
-            var $career = $("<tr><td><label for='career'>专业:</label></td><td><input type='text' id='career'></td></tr>");
             var $className = $("<tr><td><label for='className'>班级名称:</label></td><td><input type='text' id='className'></td></tr>");
-            util.popup([$career, $className], ["career", "className"], $insert);
+            var $careerId = $("<tr><td><label for='careerId'>专业:</label></td></tr>");
+            var $td = $("<td></td>")
+            var $select = $("<select id='careerId'></select>");
+            var $op1 = $("<option disabled='disabled' selected='selected'></option>");
+            $($select).append($op1);
+            box($select);
+            $td.append($select);
+            $careerId.append($td);
+
+            util.popup([$careerId, $className], ["careerId", "className"], $insert);
 
             function $insert(record) {
                 $.ajax({
@@ -150,7 +157,7 @@ require(['../config'], function () {
                     dataType: "json",
                     type: "post",
                     data: {
-                        career: record.career,
+                        careerId: record.careerId,
                         className: record.className
                     },
                     success: function (data) {
@@ -168,10 +175,21 @@ require(['../config'], function () {
         function alter($id) {
             var id = $($id).attr("data-id");
             var nextAll = $($id).nextAll();
-            //todo 学院专业下拉
-            var $career = $("<tr><td><label for='career'>专业:</label></td><td><input type='text' id='career' value=" + $(nextAll[0]).text() + "></td></tr>");
-            var $className = $("<tr><td><label for='className'>班级名称:</label></td><td><input type='text' id='className' value=" + $(nextAll[1]).text() + "></td></tr>");
-            util.popup([$career, $className], ["career", "className"], $update);
+            var $className = $("<tr><td><label for='className'>班级名称:</label></td><td><input type='text' id='className' value=" + $(nextAll[2]).text() + "></td></tr>");
+            var $careerId = $("<tr><td><label for='careerId'>专业:</label></td></tr>");
+            var $td = $("<td></td>")
+            var $select = $("<select id='careerId'></select>");
+            var $op1 = $("<option disabled='disabled' selected='selected'></option>");
+            $($select).append($op1);
+            box($select);
+            $td.append($select);
+            $careerId.append($td);
+
+            //todo 编辑时无默认值
+
+            // $("#careerId").find("option[text="+($(nextAll[1]).text())+"]").attr("selected", true);
+
+            util.popup([$careerId, $className], ["careerId", "className"], $update);
 
             function $update(record) {
                 $.ajax({
@@ -180,7 +198,7 @@ require(['../config'], function () {
                     type: "post",
                     data: {
                         id: id,
-                        career: record.career,
+                        careerId: record.careerId,
                         className: record.className
                     },
                     success: function (data) {
@@ -194,6 +212,33 @@ require(['../config'], function () {
             }
         }
 
+
+        function box($select) {
+            $.ajax({
+                url: "nin-career/getCollegeCareerList",
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    if (data.code == 200) {
+                        for (let key in data.data) {
+                            if (key == "补课") {
+                                continue;
+                            }
+                            var value = data.data[key];
+                            var $op2 = $("<option disabled='disabled'></option>").html("&nbsp;" + key);
+                            $($select).append($op2);
+
+                            for (let i = 0; i < value.length; i++) {
+                                var $op3 = $("<option></option>").html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + value[i].careerName).val(value[i].id);
+                                $($select).append($op3);
+                            }
+
+
+                        }
+                    }
+                }
+            })
+        }
 
 
         //删除
@@ -221,7 +266,7 @@ require(['../config'], function () {
         /*-------careerCourse----------*/
 
 
-        $("#quit").click(function (){
+        $("#quit").click(function () {
             $("#careerCourse").css("display", "none");
             $("button").attr('disabled', false);
         })
@@ -239,7 +284,7 @@ require(['../config'], function () {
             courseCheckbox();
         })
 
-        function refresh(){
+        function refresh() {
             careerCheckbox();
         }
 
@@ -247,7 +292,7 @@ require(['../config'], function () {
         function careerCheckbox() {
             //获取专业列表
             $.ajax({
-                url: "nin-career/getCareerClassList",
+                url: "nin-career/getCollegeCareerList",
                 type: "post",
                 dataType: "json",
                 success: function (data) {

@@ -106,11 +106,29 @@
         WHERE id = #{id}
     </update>
 
-
     <update id="subBatchPeopleNum">
         UPDATE nin_class
         SET people_num = #{peopleNum}
         WHERE id = #{id}
+    </update>
+
+
+    <update id="alterBatchCourseNum" parameterType="java.util.List">
+        UPDATE nin_class
+        SET course_num = CASE
+        career_id
+        <if test="list != null">
+            <foreach collection="list" index="index" item="item" >
+                WHEN #{item.careerId} THEN course_num  + #{item.courseNum}
+            </foreach>
+            END
+            WHERE career_id IN
+            (
+            <foreach collection="list" index="index" item="item"  separator=",">
+                #{item.careerId}
+            </foreach>
+            )
+        </if>
     </update>
 
 </mapper>

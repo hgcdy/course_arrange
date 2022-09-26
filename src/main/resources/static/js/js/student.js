@@ -226,7 +226,7 @@ require(['../config'], function () {
                         box($select);
                         $td.append($select);
                         $classId.append($td);
-                        //todo 编辑时默认值
+                        //todo 编辑时无默认值
                         util.popup([$studentName, $studentCode, $studentPassword, $classId], ["studentName", "studentCode", "studentPassword", "classId"], $update);
 
                     }

@@ -90,9 +90,6 @@ public class NinCourseController {
      */
     @PostMapping("/alterCourse")
     public ResultModel alterCourse(NinCourse ninCourse){
-
-        //fixme 课程修改时开始结束时间有问题
-
         int i = ninCourseService.alterSingle(ninCourse);
         if (i > 0){
             return ResultModel.ok();

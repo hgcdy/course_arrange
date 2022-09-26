@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -60,12 +61,27 @@ class CourseArrangeApplicationTests {
 //        String str = "[]";
 //        List<Long> longs = JSON.parseArray(str, Long.class);
 
-        ArrayList<String> strings = new ArrayList<>();
-        strings.add("defd");
-        strings.add("dfg");
-        ArrayList<String> strings1 = new ArrayList<>();
-        strings1.addAll(strings);
-        strings1.add("dfvb");
+//        ArrayList<String> strings = new ArrayList<>();
+//        strings.add("defd");
+//        strings.add("dfg");
+//        ArrayList<String> strings1 = new ArrayList<>();
+//        strings1.addAll(strings);
+//        strings1.add("dfvb");
+
+        ArrayList<Map<String, Object>> maps = new ArrayList<>();
+        Map<String, Object> longIntegerMap = new HashMap<>();
+        longIntegerMap.put("careerId", 101L);
+        longIntegerMap.put("courseNum", -10);
+        maps.add(longIntegerMap);
+
+
+        Map<String, Object> longIntegerMap2 = new HashMap<>();
+        longIntegerMap2.put("careerId", 102L);
+        longIntegerMap2.put("courseNum", -8);
+        maps.add(longIntegerMap2);
+
+
+        ninClassMapper.alterBatchCourseNum(maps);
 
         System.out.println("");
 

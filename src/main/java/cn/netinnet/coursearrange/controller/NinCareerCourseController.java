@@ -46,8 +46,6 @@ public class NinCareerCourseController {
         List<Long> courseIdList = JSON.parseArray(courseIds, Long.class);
         ninCareerCourseService.addBatchCourse(careerIdList, courseIdList);
 
-        //fixme 添加课程班级课程数量没有增加
-
         return ResultModel.ok();
     }
 

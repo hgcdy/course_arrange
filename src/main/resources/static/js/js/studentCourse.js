@@ -11,7 +11,7 @@ require(['../config'], function () {
                 dataType: "json",
                 type: "post",
                 data: {
-                    classId: 1
+                    sign: 0
                 },
                 //获取课程列表
                 success: function (data) {

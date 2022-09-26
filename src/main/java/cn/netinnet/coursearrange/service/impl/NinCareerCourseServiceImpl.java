@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.service.impl;
 import cn.netinnet.coursearrange.entity.NinCareerCourse;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinCareerCourseMapper;
+import cn.netinnet.coursearrange.mapper.NinClassMapper;
 import cn.netinnet.coursearrange.service.INinCareerCourseService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +33,8 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
 
     @Autowired
     private NinCareerCourseMapper ninCareerCourseMapper;
+    @Autowired
+    private NinClassMapper ninClassMapper;
 
     @Override
     public List<Map<String, Object>> getSelectList(Long careerId) {
@@ -40,6 +44,7 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addBatchCourse(List<Long> careerIdList, List<Long> courseIdList) {
         if (careerIdList == null || careerIdList.size() == 0) {
             throw new ServiceException(412, "请选择专业");
@@ -47,7 +52,6 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
         if (courseIdList == null ||courseIdList.size() == 0) {
             throw new ServiceException(412, "请选择课程");
         }
-
 
         //重复验证
         List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper.selectList(new QueryWrapper<>());
@@ -79,12 +83,33 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
             }
         }
         if (ninCareerCourseArrayList != null && ninCareerCourseArrayList.size() != 0) {
+            //插入新的专业选课记录
             ninCareerCourseMapper.addBatchCourse(ninCareerCourseArrayList);
+
+            //班级课程数量
+            Map<Long, List<NinCareerCourse>> collect1 = ninCareerCourseArrayList.stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId));
+            ArrayList<Map<String, Object>> maps = new ArrayList<>();
+            for (Map.Entry<Long, List<NinCareerCourse>> map: collect1.entrySet()) {
+                Map<String, Object> m = new HashMap<>();
+                m.put("careerId", map.getKey());
+                m.put("courseNum", map.getValue().size());
+                maps.add(m);
+            }
+            ninClassMapper.alterBatchCourseNum(maps);
+
         }
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int delCareerCourse(Long id) {
+        NinCareerCourse ninCareerCourse = ninCareerCourseMapper.selectById(id);
+        ArrayList<Map<String, Object>> maps = new ArrayList<>();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("careerId", ninCareerCourse.getCareerId());
+        hashMap.put("courseNum", -1);
+        maps.add(hashMap);
+        ninClassMapper.alterBatchCourseNum(maps);
         return ninCareerCourseMapper.deleteById(id);
     }
 

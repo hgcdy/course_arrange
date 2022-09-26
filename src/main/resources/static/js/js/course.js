@@ -141,25 +141,34 @@ require(['../config'], function () {
                         var $houseType = $("<tr><td><label for='houseType'>教室类型:</label></td><td><select id='houseType'><option value=0>普通教室</option><option value=1>机房</option><option value=2>实验室</option><option value=3>课外</option><option value=4>网课</option></select></td></tr>");
                         $houseType.find("select").val(obj.houseType);
 
-                        var $must = $("<tr><td><label for='must'>是否必修:</label></td><td><select id='must'><option value=0>选修</option><option value=1>必修</option></select></td></tr>");
-                        $must.find("select").val(obj.must);
+                        var $must = $("<tr><td><label for='must'>是否必修:</label></td><td><input type='text' id='must' readonly='readonly'><!--<select id='must'><option value=0>选修</option><option value=1>必修</option></select>--></td></tr>");
+                        $must.find("input").click(function (){
+                            util.hint("不可修改");
+                        });
+                        if (obj.must == 0) {
+                            $must.find("input").val("选修");
+                        } else {
+                            $must.find("input").val("必修");
+                        }
 
                         var $courseTime = $("<tr><td><label for='courseTime'>课时:</label></td><td><select id='courseTime'><option value=8>8</option><option value=16>16</option><option value=32>32</option><option value=48>48</option><option value=64>64</option></select></td></tr>");
                         $courseTime.find("select").val(obj.courseTime);
 
-                        var $startTime = $("<tr><td><label for='startTime'>开始时间:</label></td><td><input type='text' id='startTime' value=" + obj.startTime + "></td></tr>");
+                        var $startTime = $("<tr><td><label for='startTime'>开始时间:</label></td><td><input min='1' max='20'  type='number' id='startTime' value=" + obj.startTime + "></td></tr>");
 
-                        var $endTime = $("<tr><td><label for='endTime'>结束时间:</label></td><td><input type='text' id='endTime' value=" + obj.startTime + "></td></tr>");
+                        var $endTime = $("<tr><td><label for='endTime'>结束时间:</label></td><td><input  min='1' max='20'  type='number' id='endTime' value=" + obj.endTime + "></td></tr>");
 
-                        var $weekTime = $("<tr><td><label for='weekTime'>上课周数:</label></td><td><input type='text' id='weekTime' value=" + obj.weekTime + "></td></tr>");
+                        var $weekTime = $("<tr><td><label for='weekTime'>上课周数:</label></td><td><input  min='1' max='20'  type='number' id='weekTime' value=" + obj.weekTime + "></td></tr>");
 
-                        var $maxClassNum = $("<tr><td><label for='maxClassNum'>上课班级数量:</label></td><td><input type='text' id='maxClassNum' value=" + obj.maxClassNum + "></td></tr>");
+                        var $maxClassNum = $("<tr><td><label for='maxClassNum'>上课班级数量:</label></td><td><input  min='1' max='4'  type='number' id='maxClassNum' value=" + obj.maxClassNum + "></td></tr>");
 
                         $must.click(function (){
                             if ($must.find("select").val() == 0){
                                 $courseTime.find("select").val(32);
+                                $maxClassNum.find("input").val(1);
                             } else {
                                 $courseTime.find("select").val(obj.courseTime);
+                                $maxClassNum.find("input").val(obj.maxClassNum);
                             }
                         })
                         util.popup([$courseName, $houseType, $must, $courseTime, $startTime, $endTime, $weekTime, $maxClassNum], ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime", "maxClassNum"], $update);
@@ -204,18 +213,18 @@ require(['../config'], function () {
             var $must = $("<tr><td><label for='must'>是否必修:</label></td><td><select id='must'><option value=0>选修</option><option value=1>必修</option></select></td></tr>");
             $must.find("select").val(1);
             var $courseTime = $("<tr><td><label for='courseTime'>课时:</label></td><td><select id='courseTime'><option value=8>8</option><option value=16>16</option><option value=32>32</option><option value=48>48</option><option value=64>64</option></select></td></tr>");
-            var $startTime = $("<tr><td><label for='startTime'>开始时间:</label></td><td><input type='text' id='startTime'></td></tr>");
+            var $startTime = $("<tr><td><label for='startTime'>开始时间:</label></td><td><input min='1' max='20'  type='number' value='1' id='startTime'></td></tr>");
 
-            var $endTime = $("<tr><td><label for='endTime'>结束时间:</label></td><td><input type='text' id='endTime'></td></tr>");
+            var $endTime = $("<tr><td><label for='endTime'>结束时间:</label></td><td><input min='1' max='20'  type='number'  value='16' id='endTime'></td></tr>");
 
-            var $weekTime = $("<tr><td><label for='weekTime'>上课周数:</label></td><td><input type='text' id='weekTime'></td></tr>");
+            var $weekTime = $("<tr><td><label for='weekTime'>上课周数:</label></td><td><input min='1' max='20'  type='number' value='16' id='weekTime'></td></tr>");
 
-            var $maxClassNum = $("<tr><td><label for='maxClassNum'>上课班级数量:</label></td><td><input type='text' id='maxClassNum'></td></tr>");
+            var $maxClassNum = $("<tr><td><label for='maxClassNum'>上课班级数量:</label></td><td><input min='1' max='4'  type='number' value='2' id='maxClassNum'></td></tr>");
 
             $must.click(function (){
                 if ($must.find("select").val() == 0){
                     $courseTime.find("select").val(32);
-
+                    $maxClassNum.find("input").val(1);
                 } else {
                     $courseTime.find("select").val(8);
                 }

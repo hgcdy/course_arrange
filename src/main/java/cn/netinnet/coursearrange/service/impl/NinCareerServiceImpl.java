@@ -50,7 +50,7 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
     }
 
     @Override
-    public Map<String, List<NinCareer>> getCareerClassList() {
+    public Map<String, List<NinCareer>> getCollegeCareerList() {
         List<NinCareer> ninCareers = ninCareerMapper.selectList(new QueryWrapper<>());
         Map<String, List<NinCareer>> collect = ninCareers.stream().filter(ninCareer -> !ninCareer.getCollege().equals("选修")).collect(Collectors.groupingBy(NinCareer::getCollege));
         return collect;
@@ -91,9 +91,6 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
     @Override
     public int alterSingle(NinCareer ninCareer) {
         ninCareer.setModifyUserId(UserUtil.getUserInfo().getUserId());
-
-        //fixme 修改时没有id
-
         return ninCareerMapper.updateById(ninCareer);
     }
 }

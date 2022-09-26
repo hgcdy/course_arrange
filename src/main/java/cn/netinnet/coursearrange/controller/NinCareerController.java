@@ -53,9 +53,13 @@ public class NinCareerController {
     }
 
 
-    @PostMapping("getCareerClassList")
-    public ResultModel getCareerClassList() {
-        return ResultModel.ok(ninCareerService.getCareerClassList());
+    /**
+     * 获取学院专业列表
+     * @return
+     */
+    @PostMapping("getCollegeCareerList")
+    public ResultModel getCollegeCareerList() {
+        return ResultModel.ok(ninCareerService.getCollegeCareerList());
     }
 
 
