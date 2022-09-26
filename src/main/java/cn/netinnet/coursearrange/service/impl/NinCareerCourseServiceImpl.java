@@ -48,7 +48,6 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
             throw new ServiceException(412, "请选择课程");
         }
 
-        //fixme 重复添加，验证没有生效
 
         //重复验证
         List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper.selectList(new QueryWrapper<>());
@@ -61,26 +60,22 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
         for (Long careerId : careerIdList) {
             List<NinCareerCourse> careerCourses = collect.get(careerId);
             //同专业的情况下
-            for (Long courseId : courseIdList) {
+            ok: for (Long courseId : courseIdList) {
                 //如果该专业下，数据库中已经存在该课程,b标记为false,跳出
-                boolean b = true;//标记
                 if (careerCourses != null) {
                     for (NinCareerCourse ncc : careerCourses) {
-                        if (courseId == ncc.getCourseId()) {
-                            b = false;
-                            break;
+                        if (courseId.equals(ncc.getCourseId())) {
+                            continue ok;
                         }
                     }
                 }
-                if (b) {
-                    NinCareerCourse ninCareerCourse = new NinCareerCourse();
-                    ninCareerCourse.setCareerId(careerId);
-                    ninCareerCourse.setCourseId(courseId);
-                    ninCareerCourse.setId(IDUtil.getID());
-                    ninCareerCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
-                    ninCareerCourse.setCreateUserId(UserUtil.getUserInfo().getUserId());
-                    ninCareerCourseArrayList.add(ninCareerCourse);
-                }
+                NinCareerCourse ninCareerCourse = new NinCareerCourse();
+                ninCareerCourse.setCareerId(careerId);
+                ninCareerCourse.setCourseId(courseId);
+                ninCareerCourse.setId(IDUtil.getID());
+                ninCareerCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
+                ninCareerCourse.setCreateUserId(UserUtil.getUserInfo().getUserId());
+                ninCareerCourseArrayList.add(ninCareerCourse);
             }
         }
         if (ninCareerCourseArrayList != null && ninCareerCourseArrayList.size() != 0) {

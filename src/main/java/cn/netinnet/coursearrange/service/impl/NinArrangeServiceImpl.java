@@ -743,7 +743,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 //开始结束时间有重叠
                 if (!(ninArrange.getStartTime() > arrange.getEndTime() || ninArrange.getEndTime() < arrange.getStartTime())) {
                     //单双周重叠
-                    //todo 单双周和每周
                     if (ninArrange.getWeekly() == 0 || arrange.getWeekly() == 0 || ninArrange.getWeekly() == arrange.getWeekly()) {
                         //当时间一样时，开始对比其他条件
 
