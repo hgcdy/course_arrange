@@ -426,7 +426,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             if (teachClassIdList.size() == 0) {
                 teachClassIdList = null;
             }
-            info = ninArrangeMapper.getInfo(classIdList, teachClassIdList, null);//fixme sql错误
+            info = ninArrangeMapper.getInfo(classIdList, teachClassIdList, null);
         }
 
         //Map<教学班id, List<NinTeachClass>>

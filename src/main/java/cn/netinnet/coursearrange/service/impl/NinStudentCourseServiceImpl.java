@@ -1,9 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
-import cn.netinnet.coursearrange.entity.NinClass;
-import cn.netinnet.coursearrange.entity.NinClassCourse;
-import cn.netinnet.coursearrange.entity.NinStudent;
-import cn.netinnet.coursearrange.entity.NinStudentCourse;
+import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
@@ -37,7 +34,7 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
     @Autowired
     private NinStudentMapper ninStudentMapper;
     @Autowired
-    private NinClassCourseMapper ninClassCourseMapper;
+    private NinArrangeMapper ninArrangeMapper;
     @Autowired
     private NinClassMapper ninClassMapper;
     @Autowired
@@ -77,30 +74,45 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
                 throw new ServiceException(412, "该学生已经选修了这门课程！");
             }
         }
-        List<NinClassCourse> ninClassCourses = ninClassCourseMapper.selectList(new QueryWrapper<>(new NinClassCourse() {{
+
+        NinArrange arrange = ninArrangeMapper.selectOne(new QueryWrapper<>(new NinArrange() {{
             setCourseId(ninStudentCourse.getCourseId());
         }}));
 
-        //todo 暂时写成随机加入某个选修班级
-        int index = (int) (Math.random()* ninClassCourses.size());
-        NinClassCourse ninClassCourse = ninClassCourses.get(index);
+        //获取班级id
+        Long classId = arrange.getClassId();
+
+        //排课信息的人数+1
+        arrange.setPeopleNum(arrange.getPeopleNum() + 1);
+        ninArrangeMapper.updateById(arrange);
+
         //班级人数+1
-        ninClassMapper.addPeopleNum(ninClassCourse.getClassId());
+        ninClassMapper.addPeopleNum(classId);
 
         ninStudentCourse.setId(IDUtil.getID());
         ninStudentCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
         ninStudentCourse.setCreateUserId(UserUtil.getUserInfo().getUserId());
         //选修教学班id
-        ninStudentCourse.setTakeClassId(ninClassCourse.getClassId());
+        ninStudentCourse.setTakeClassId(classId);
 
         return ninStudentCourseMapper.insert(ninStudentCourse);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int delSingle(Long id) {
-        NinStudentCourse ninStudentCourse = ninStudentCourseMapper.selectById(id);
         //班级人数-1
+        NinStudentCourse ninStudentCourse = ninStudentCourseMapper.selectById(id);
         ninClassMapper.subPeopleNum(ninStudentCourse.getTakeClassId());
+
+        NinArrange arrange = ninArrangeMapper.selectOne(new QueryWrapper<>(new NinArrange() {{
+            setClassId(ninStudentCourse.getTakeClassId());
+        }}));
+
+        //排课信息的人数+1
+        arrange.setPeopleNum(arrange.getPeopleNum() + 1);
+        ninArrangeMapper.updateById(arrange);
+
         return ninStudentCourseMapper.deleteById(id);
     }
 }
