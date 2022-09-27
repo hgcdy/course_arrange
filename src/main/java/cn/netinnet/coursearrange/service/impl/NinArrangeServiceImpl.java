@@ -679,6 +679,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         Map<Long, String> collect1 = ninClasses.stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
 
         for (Map<String, Object> map: pageInfo.getList()) {
+            //修改星期
             switch ((int) map.get("week")) {
                 case 1: map.put("week", "星期一"); break;
                 case 2: map.put("week", "星期二"); break;
@@ -689,6 +690,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 case 7: map.put("week", "星期日"); break;
             }
 
+            //修改节数
             switch ((int) map.get("pitchNum")) {
                 case 1: map.put("pitchNum", "第一节"); break;
                 case 2: map.put("pitchNum", "第二节"); break;

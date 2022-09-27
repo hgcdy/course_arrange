@@ -148,6 +148,7 @@ require(['../config'], function () {
                             $("#page span:eq(2) input").val(page);
                             util.createForm((page - 1) * size + 1, data.data.list, STR, 2);
                             $("#page-text").text("共" + total + "条数据, " + Math.ceil(total / size) + "页");
+
                             $(".delete").click(function () {
                                 var id = $(this).parent().parent().children("th").attr("data-id");
                                 del(id);

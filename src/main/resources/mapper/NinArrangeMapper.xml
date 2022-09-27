@@ -142,7 +142,7 @@
             <if test="courseName != null and courseName != ''">
                 AND course_name LIKE CONCAT('%',#{courseName},'%')
             </if>
-        ORDER BY nin_arrange.career_id, nin_arrange.course_id, teach_class_id, week, pitch_num
+        ORDER BY nin_arrange.must, nin_arrange.career_id, nin_arrange.course_id, teach_class_id, week, pitch_num
     </select>
 
 </mapper>
