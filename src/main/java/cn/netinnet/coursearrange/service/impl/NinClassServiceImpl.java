@@ -89,7 +89,9 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
 
     @Override
     public List<Map<String, Object>> getClassList(String college, Long careerId) {
-        return ninClassMapper.getClassList(college, careerId);
+        List<Map<String, Object>> list = ninClassMapper.getClassList(college, careerId);
+        Utils.conversion(list);
+        return list;
     }
 
 

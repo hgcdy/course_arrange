@@ -661,6 +661,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     setClassId(ninClass.getId());
                 }})).stream().map(NinTeachClass::getTeachClassId).collect(Collectors.toList());
                 bo.setTeachClassIdList(teachClassIdList);
+                bo.setClassId(null);
             }
         }
 
@@ -696,6 +697,26 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         map.put("list", pageInfo.getList());
         map.put("total", pageInfo.getTotal());
         return map;
+    }
+
+    @Override
+    public int delArrange(Long id) {
+        NinArrange arrange = ninArrangeMapper.selectById(id);
+        if (arrange.getMust() == 0) {
+            //选修
+            Long classId = arrange.getClassId();
+            Long courseId = arrange.getCourseId();
+            //删除班级
+            ninClassMapper.deleteById(classId);
+            //删除课程
+            ninCourseMapper.deleteById(courseId);
+            //删除学生选课记录
+            ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse(){{
+                setTakeClassId(classId);
+            }}));
+        }
+
+        return ninArrangeMapper.deleteById(id);
     }
 
 

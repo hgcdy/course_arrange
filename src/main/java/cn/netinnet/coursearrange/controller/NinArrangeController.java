@@ -4,6 +4,7 @@ package cn.netinnet.coursearrange.controller;
 import cn.netinnet.coursearrange.bo.NinArrangeBo;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
+import com.baomidou.mybatisplus.extension.api.R;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class NinArrangeController {
     @Autowired
     private INinArrangeService ninArrangeService;
 
-    //挑战排课页面
+    //跳转排课页面
     @GetMapping("/nin-arrange")
     public ModelAndView gotoView() {
         return new ModelAndView("view/arrangeView");
@@ -48,6 +49,7 @@ public class NinArrangeController {
         return modelAndView;
     }
 
+    //教室申请页面
     @GetMapping("/applyHouse")
     public ModelAndView gotoApplyHouseView() {
         return new ModelAndView("view/applyHouseView");
@@ -85,6 +87,7 @@ public class NinArrangeController {
     }
 
 
+    //添加
     @PostMapping("/nin-arrange/addArrange")
     public ResultModel addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList) {
         ninArrangeService.addArrange(weekly, week, pitchNum, houseId, teacherId, courseId, classIdList);
@@ -92,12 +95,28 @@ public class NinArrangeController {
     }
 
 
+    //查询
     @PostMapping("/nin-arrange/getPageSelectList")
     public ResultModel getPageSelectList(NinArrangeBo bo, Integer page, Integer size) {
         return ResultModel.ok(ninArrangeService.getPageSelectList(bo, page, size));
     }
 
+    //删除
+    @PostMapping("nin-arrange/delArrange")
+    public ResultModel delArrange(Long id) {
+        int i = ninArrangeService.delArrange(id);
+        if (i > 0) {
+            return ResultModel.ok();
+        }
+        return ResultModel.error(412, "删除失败");
+    }
 
+
+    //编辑
+    @PostMapping("nin-arrange/alterArrange")
+    public ResultModel alterArrange() {
+        return null;
+    }
 
 
 }

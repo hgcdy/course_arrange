@@ -90,7 +90,8 @@
 
 
     <select id="getSelectList" parameterType="cn.netinnet.coursearrange.bo.NinArrangeBo" resultType="java.util.Map">
-        SELECT career_name AS careerName,
+        SELECT nin_arrange.id AS id,
+               career_name AS careerName,
                class_id AS classId,
                teach_class_id AS teachClassId,
                teacher_name AS teacherName,

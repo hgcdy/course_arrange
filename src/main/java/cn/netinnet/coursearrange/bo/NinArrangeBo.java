@@ -39,12 +39,12 @@ public class NinArrangeBo{
     /**
      * 课程名称
      */
-    private Long courseName;
+    private String courseName;
 
     /**
      * 教室名称
      */
-    private Long houseName;
+    private String houseName;
 
     /**
      * 是否选修，0-选修，1-必修

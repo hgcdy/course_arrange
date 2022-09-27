@@ -3,9 +3,15 @@ require(['../config'], function () {
         var page = 1;
         var size = 10;
         var total = 0;
+        var careerId = null;
+        var classId = null;
+        var teacherName = null;
+        var courseName = null;
+        var houseName = null;
         query();
         const STR = ["careerName", "className", "teacherName", "courseName", "houseName", "must", "weekly", "startTime", "endTime", "week", "pitchNum"];
 
+        //排课
         $("#arrange").click(function (){
             $.ajax({
                 url: "nin-arrange/arrange",
@@ -18,16 +24,101 @@ require(['../config'], function () {
             })
         })
 
+        //专业选择下拉框
+        $("#dropupCareerIdButton").click(function () {
+            //重置班级选择
+            classId = null;
+            $("#dropupClassIdButton").text("班级").removeAttr("class-id");
+
+            $.ajax({
+                url: "nin-career/getCareerList",
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    if (data.code == 200) {
+                        var list = data.data;
+                        $("#dropupCareerIdButton").next("ul").empty();
+                        for (let i = 0; i < list.length; i++) {
+                            if (list[i].id == 0 || list[i].id == -1) {
+                                continue;
+                            }
+                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].careerName).attr("career-id", list[i].id).click(function () {
+                                $("#dropupCareerIdButton").text($(this).text()).attr("career-id", $(this).attr("career-id"));
+                            });
+                            var $li = $("<li></li>").append($a);
+                            $("#dropupCareerIdButton").next("ul").append($li);
+                        }
+                    }
+                }
+            })
+        })
+
+        //班级选择下拉框
+        $("#dropupClassIdButton").click(function () {
+
+            careerId = $("#dropupCareerIdButton").attr("career-id");
+
+            $.ajax({
+                url: "nin-class/getClassList",
+                dataType: "json",
+                type: "post",
+                data: {
+                    careerId: careerId
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        var list = data.data;
+                        $("#dropupClassIdButton").next("ul").empty();
+                        for (let i = 0; i < list.length; i++) {
+                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].className).attr("class-id", list[i].classId).click(function () {
+                                $("#dropupClassIdButton").text($(this).text()).attr("class-id", $(this).attr("class-id"));
+                            });
+                            var $li = $("<li></li>").append($a);
+                            $("#dropupClassIdButton").next("ul").append($li);
+                        }
+                    }
+                }
+            })
+        })
 
 
+        //查询按钮
+        $("#query").click(function () {
+            careerId = $("#dropupCareerIdButton").attr("career-id");
+            classId = $("#dropupClassIdButton").attr("class-id");
+            teacherName = $("#teacherName").val();
+            houseName = $("#houseName").val();
+            courseName = $("#courseName").val();
+            query();
+        })
+        //重置按钮
+        $("#reset").click(function () {
+            careerId = null;
+            $("#dropupCareerIdButton").text("专业").removeAttr("career-id");
+            classId = null;
+            $("#dropupClassIdButton").text("班级").removeAttr("class-id");
+            teacherName = null;
+            $("#teacherName").val("");
+            houseName = null;
+            $("#houseName").val("");
+            courseName = null;
+            $("#courseName").val("");
+            query();
+        })
 
+
+        //查询
         function query() {
             $.ajax({
                 url: "nin-arrange/getPageSelectList",
                 dataType: "json",
                 type: "post",
                 data: {
-                    //todo data
+                    careerId: careerId,
+                    classId: classId,
+                    teacherName: teacherName,
+                    courseName: courseName,
+                    houseName: houseName,
                     size: size,
                     page: page
                 },
@@ -38,13 +129,10 @@ require(['../config'], function () {
                             $("#page span:eq(2) input").val(page);
                             util.createForm((page - 1) * size + 1, data.data.list, STR, 2);
                             $("#page-text").text("共" + total + "条数据, " + Math.ceil(total / size) + "页");
-                            // $(".delete").click(function () {
-                            //     var id = $(this).parent().parent().children("th").attr("data-id");
-                            //     del(id);
-                            // })
-                            // $(".update").click(function () {
-                            //     alter($(this).parent().parent().children("th"));
-                            // })
+                            $(".delete").click(function () {
+                                var id = $(this).parent().parent().children("th").attr("data-id");
+                                del(id);
+                            })
                         } else {
                             if (page > 1) {
                                 page = page - 1;
@@ -59,6 +147,22 @@ require(['../config'], function () {
         }
 
 
+        //删除
+        function del(id) {
+            $.ajax({
+                url: "nin-arrange/delArrange",
+                dataType: "json",
+                type: "post",
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        query();
+                    }
+                }
+            })
+        }
 
 
 
@@ -146,7 +250,6 @@ require(['../config'], function () {
             query();
             page_skip();
         })
-
         // 页面跳转下面的数字
         function page_skip() {
             var lask = Math.ceil(total / size);
