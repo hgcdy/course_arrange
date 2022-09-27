@@ -665,6 +665,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             }
         }
 
+
         PageHelper.startPage(page, size);
         List<Map<String, Object>> list = ninArrangeMapper.getSelectList(bo);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);

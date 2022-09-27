@@ -101,6 +101,9 @@ require(['../config'], function () {
                         var list = data.data;
                         $("#dropupClassIdButton").next("ul").empty();
                         for (let i = 0; i < list.length; i++) {
+                            if (list[i].careerId == 0) {
+                                continue;//todo 学生根据班级查询，无选修教学班
+                            }
                             var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].className).attr("class-id", list[i].classId).click(function () {
                                 $("#dropupClassIdButton").text($(this).text()).attr("class-id", $(this).attr("class-id"));
                             });

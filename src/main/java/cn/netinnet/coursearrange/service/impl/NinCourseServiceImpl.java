@@ -80,6 +80,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             //生成选修教学班
             NinClass ninClass = new NinClass();
             ninClass.setId(IDUtil.getID());
+            ninClass.setCareerId(0L);
             ninClass.setClassName(ninCourse.getCourseName() + "选修班");
             ninClass.setCourseNum(1);
             ninClass.setCreateUserId(UserUtil.getUserInfo().getUserId());
@@ -97,6 +98,8 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             arrange.setStartTime(ninCourse.getStartTime() != null ? ninCourse.getStartTime() : 1);
             arrange.setEndTime(ninCourse.getEndTime() != null ? ninCourse.getEndTime() : 16);
             arrange.setPeopleNum(0);
+            arrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
+            arrange.setCreateUserId(UserUtil.getUserInfo().getUserId());
             ninArrangeMapper.insert(arrange);
 
         }

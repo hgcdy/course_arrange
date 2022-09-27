@@ -41,7 +41,7 @@ require(['../config'], function () {
                         var list = data.data;
                         $("#dropupCareerIdButton").next("ul").empty();
                         for (let i = 0; i < list.length; i++) {
-                            if (list[i].id == 0 || list[i].id == -1) {
+                            if ( list[i].id == -1) {
                                 continue;
                             }
                             var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].careerName).attr("career-id", list[i].id).click(function () {
@@ -146,8 +146,11 @@ require(['../config'], function () {
                         total = data.data.total;
                         if ((data.data.list).length != 0) {
                             $("#page span:eq(2) input").val(page);
-                            util.createForm((page - 1) * size + 1, data.data.list, STR, 2);
+                            util.createForm((page - 1) * size + 1, data.data.list, STR, 1);
                             $("#page-text").text("共" + total + "条数据, " + Math.ceil(total / size) + "页");
+
+                            var bu2 = "<button type='button' class='btn btn-info update'>编辑</button>&nbsp;";
+                            $("td:contains(选修)").parent().find(".delete").parent().append(bu2);
 
                             $(".delete").click(function () {
                                 var id = $(this).parent().parent().children("th").attr("data-id");
