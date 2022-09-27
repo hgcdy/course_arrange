@@ -124,6 +124,12 @@
             <if test="careerId != null">
                 AND career_id = #{careerId}
             </if>
+            <if test="week != null">
+                AND week = #{week}
+            </if>
+            <if test="pitchNum != null">
+                AND pitch_num = #{pitchNum}
+            </if>
             <if test="classId != null">
                 AND class_id = #{classId}
             </if>
@@ -136,7 +142,7 @@
             <if test="courseName != null and courseName != ''">
                 AND course_name LIKE CONCAT('%',#{courseName},'%')
             </if>
-        ORDER BY nin_arrange.career_id, nin_arrange.course_id, teach_class_id
+        ORDER BY nin_arrange.career_id, nin_arrange.course_id, teach_class_id, week, pitch_num
     </select>
 
 </mapper>

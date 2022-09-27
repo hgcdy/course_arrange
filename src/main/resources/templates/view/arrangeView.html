@@ -23,7 +23,7 @@
     </span>&nbsp;&nbsp;
     <span>
         <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupClassIdButton"
-                data-bs-toggle="dropdown" aria-expanded="false" >
+                data-bs-toggle="dropdown" aria-expanded="false">
             班级
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropupClassIdButton">
@@ -51,25 +51,42 @@
 
 <!--表格展示-->
 <div class="bd-example" id="form">
-    <table class="table table-sm table-bordered"  style="table-layout: fixed;">
-        <thead >
+    <table class="table table-sm table-bordered" style="table-layout: fixed;">
+        <thead>
         <tr style="text-align:center;">
             <th scope="col" width="50px">序号</th>
-            <th scope="col" width="150px">专业</th>
-            <th scope="col" width="250px">班级</th>
-            <th scope="col">教师</th>
+            <th scope="col" width="200px">专业</th>
+            <th scope="col" width="160px">班级</th>
+            <th scope="col" width="80px">教师</th>
             <th scope="col">课程</th>
-            <th scope="col">教室</th>
-            <th scope="col" width="50px">是否必修</th>
+            <th scope="col" width="100px">教室</th>
+            <th scope="col" width="100px">是否必修</th>
             <th scope="col" width="75px">单双周</th>
-            <th scope="col" width="50px">开课时间</th>
-            <th scope="col" width="50px">结课时间</th>
-            <th scope="col" width="50px">星期</th>
-            <th scope="col" width="50px">节数</th>
-            <th scope="col">
-                操作&nbsp;
-                <button type="button" class="btn btn-info" id="insert">新建</button>
+            <th scope="col" width="100px">开课时间</th>
+            <th scope="col" width="100px">结课时间</th>
+            <th scope="col" width="100px">
+                <select name="" id="week">
+                    <option value="">星期</option>
+                    <option value="1">星期一</option>
+                    <option value="2">星期二</option>
+                    <option value="3">星期三</option>
+                    <option value="4">星期四</option>
+                    <option value="5">星期五</option>
+                    <option value="6">星期六</option>
+                    <option value="7">星期日</option>
+                </select>
             </th>
+            <th scope="col" width="100px">
+                <select name="" id="pitchNum">
+                    <option value="">节数</option>
+                    <option value="1">第一节</option>
+                    <option value="2">第二节</option>
+                    <option value="3">第三节</option>
+                    <option value="4">第四节</option>
+                    <option value="5">第五节</option>
+                </select>
+            </th>
+            <th scope="col" width="150px">操作</th>
         </tr>
         </thead>
         <tbody>

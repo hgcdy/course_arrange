@@ -8,6 +8,8 @@ require(['../config'], function () {
         var teacherName = null;
         var courseName = null;
         var houseName = null;
+        var week = null;
+        var pitchNum = null;
         query();
         const STR = ["careerName", "className", "teacherName", "courseName", "houseName", "must", "weekly", "startTime", "endTime", "week", "pitchNum"];
 
@@ -103,8 +105,23 @@ require(['../config'], function () {
             $("#houseName").val("");
             courseName = null;
             $("#courseName").val("");
+            week = null;
+            $("#week").val("");
+            pitchNum = null;
+            $("#pitchNum").val("");
             query();
         })
+
+
+        $("#week").change(function(){
+            week = $(this).val();
+            query();
+        });
+
+        $("#pitchNum").change(function(){
+            pitchNum = $(this).val();
+            query();
+        });
 
 
         //查询
@@ -119,6 +136,8 @@ require(['../config'], function () {
                     teacherName: teacherName,
                     courseName: courseName,
                     houseName: houseName,
+                    week: week,
+                    pitchNum: pitchNum,
                     size: size,
                     page: page
                 },

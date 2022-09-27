@@ -679,6 +679,24 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         Map<Long, String> collect1 = ninClasses.stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
 
         for (Map<String, Object> map: pageInfo.getList()) {
+            switch ((int) map.get("week")) {
+                case 1: map.put("week", "星期一"); break;
+                case 2: map.put("week", "星期二"); break;
+                case 3: map.put("week", "星期三"); break;
+                case 4: map.put("week", "星期四"); break;
+                case 5: map.put("week", "星期五"); break;
+                case 6: map.put("week", "星期六"); break;
+                case 7: map.put("week", "星期日"); break;
+            }
+
+            switch ((int) map.get("pitchNum")) {
+                case 1: map.put("pitchNum", "第一节"); break;
+                case 2: map.put("pitchNum", "第二节"); break;
+                case 3: map.put("pitchNum", "第三节"); break;
+                case 4: map.put("pitchNum", "第四节"); break;
+                case 5: map.put("pitchNum", "第五节"); break;
+            }
+
             if (map.get("classId") == null) {
                 List<NinTeachClass> teachClassList = collect.get(map.get("teachClassId"));
                 for (NinTeachClass ntc : teachClassList) {
