@@ -120,7 +120,7 @@ define(function () {
         return str;
     }
 
-    function turn(i) {
+    var turn = function(i) {
         var str;
         switch (i) {
             case 1: str = "一";break;
@@ -154,6 +154,7 @@ define(function () {
         createForm: createForm,
         popup: popup,
         hint: hint,
-        timeString: timeString
+        timeString: timeString,
+        turn: turn
     };
 });

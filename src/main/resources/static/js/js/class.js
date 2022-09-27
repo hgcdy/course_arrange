@@ -179,9 +179,18 @@ require(['../config'], function () {
             var $careerId = $("<tr><td><label for='careerId'>专业:</label></td></tr>");
             var $td = $("<td></td>")
             var $select = $("<select id='careerId'></select>");
-            var $op1 = $("<option disabled='disabled' selected='selected'></option>");
-            $($select).append($op1);
-            box($select);
+
+            if ($(nextAll[1]).text() == "选修") {
+                var $op = $("<option id='0'>选修</option>");
+                $($select).append($op);
+            } else {
+                var $op1 = $("<option disabled='disabled' selected='selected'></option>");
+                $($select).append($op1);
+                box($select);
+            }
+
+
+
             $td.append($select);
             $careerId.append($td);
 

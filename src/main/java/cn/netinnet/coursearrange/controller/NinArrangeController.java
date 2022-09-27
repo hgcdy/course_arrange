@@ -114,9 +114,26 @@ public class NinArrangeController {
 
     //编辑
     @PostMapping("nin-arrange/alterArrange")
-    public ResultModel alterArrange() {
+    public ResultModel alterArrange(NinArrangeBo bo) {
+        ninArrangeService.alterArrange(bo);
         return null;
     }
+
+
+    /**
+     * 根据课程id获取可选教师教师及时间
+     * @return
+     */
+    @PostMapping("nin-arrange/getTeacherHouseORTime")
+    public ResultModel getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId) {
+        List arrangeBo = ninArrangeService.getTeacherHouseORTime(courseId, teacherId, houseId);
+        return ResultModel.ok(arrangeBo);
+
+    }
+
+
+
+
 
 
 }

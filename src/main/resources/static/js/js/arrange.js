@@ -113,11 +113,11 @@ require(['../config'], function () {
         })
 
 
+        //星期节数下拉
         $("#week").change(function(){
             week = $(this).val();
             query();
         });
-
         $("#pitchNum").change(function(){
             pitchNum = $(this).val();
             query();
@@ -187,6 +187,8 @@ require(['../config'], function () {
             })
         }
 
+
+        //编辑
 
 
 

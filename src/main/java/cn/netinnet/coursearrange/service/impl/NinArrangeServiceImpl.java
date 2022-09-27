@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -36,6 +37,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Autowired
     private NinArrangeMapper ninArrangeMapper;
+    @Autowired
+    private NinTeacherMapper ninTeacherMapper;
     @Autowired
     private NinClassMapper ninClassMapper;
     @Autowired
@@ -494,7 +497,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
                 String value = "" + map.get("courseName") + "/" + str + "/" + map.get("houseName") + "/" + map.get("teacherName") + "/" + map.get("className") + "/" + ((int) map.get("must") == 1 ? "必修" : "选修");
 
-                if ((long)map.get("careerId") == -1) {
+                if ((long) map.get("careerId") == -1) {
                     value += "(补课)";
                 }
 
@@ -511,7 +514,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Override
     public Map<String, List<Map<String, Object>>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly) {
         //返回教室id，名称，类型，座位，时间
-
         //教师班级都是为了削减时间
         //教室
         List<Map<String, Object>> ninHouseArrayList = new ArrayList<>();
@@ -647,13 +649,13 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Override
     public Map<String, Object> getPageSelectList(NinArrangeBo bo, Integer page, Integer size) {
         /*
-        * 专业直接找
-        * 班级id->如果是选修直接找
-        *   教学班id列表
-        * 教师名称模糊查询
-        * 教室名称模糊查询
-        * 课程名称模糊查询
-        */
+         * 专业直接找
+         * 班级id->如果是选修直接找
+         *   教学班id列表
+         * 教师名称模糊查询
+         * 教室名称模糊查询
+         * 课程名称模糊查询
+         */
         if (bo.getClassId() != null) {
             NinClass ninClass = ninClassMapper.selectById(bo.getClassId());
             if (ninClass.getCareerId() != 0) {
@@ -679,27 +681,74 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         List<NinClass> ninClasses = ninClassMapper.selectList(new QueryWrapper<>());
         Map<Long, String> collect1 = ninClasses.stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
 
-        for (Map<String, Object> map: pageInfo.getList()) {
+        //Map<教师id， 教师名称>
+        List<NinTeacher> ninTeachers = ninTeacherMapper.selectList(new QueryWrapper<>());
+        Map<Long, String> collect2 = ninTeachers.stream().collect(Collectors.toMap(NinTeacher::getId, NinTeacher::getTeacherName));
+
+        //Map<教室id， 教室名称>
+        List<NinHouse> ninHouses = ninHouseMapper.selectList(new QueryWrapper<>());
+        Map<Long, String> collect3 = ninHouses.stream().collect(Collectors.toMap(NinHouse::getId, NinHouse::getHouseName));
+
+        for (Map<String, Object> map : pageInfo.getList()) {
             //修改星期
-            switch ((int) map.get("week")) {
-                case 1: map.put("week", "星期一"); break;
-                case 2: map.put("week", "星期二"); break;
-                case 3: map.put("week", "星期三"); break;
-                case 4: map.put("week", "星期四"); break;
-                case 5: map.put("week", "星期五"); break;
-                case 6: map.put("week", "星期六"); break;
-                case 7: map.put("week", "星期日"); break;
+            if (map.get("week") != null) {
+                switch ((int) map.get("week")) {
+                    case 1:
+                        map.put("week", "星期一");
+                        break;
+                    case 2:
+                        map.put("week", "星期二");
+                        break;
+                    case 3:
+                        map.put("week", "星期三");
+                        break;
+                    case 4:
+                        map.put("week", "星期四");
+                        break;
+                    case 5:
+                        map.put("week", "星期五");
+                        break;
+                    case 6:
+                        map.put("week", "星期六");
+                        break;
+                    case 7:
+                        map.put("week", "星期日");
+                        break;
+                }
             }
 
             //修改节数
-            switch ((int) map.get("pitchNum")) {
-                case 1: map.put("pitchNum", "第一节"); break;
-                case 2: map.put("pitchNum", "第二节"); break;
-                case 3: map.put("pitchNum", "第三节"); break;
-                case 4: map.put("pitchNum", "第四节"); break;
-                case 5: map.put("pitchNum", "第五节"); break;
+            if (map.get("pitchNum") != null) {
+                switch ((int) map.get("pitchNum")) {
+                    case 1:
+                        map.put("pitchNum", "第一节");
+                        break;
+                    case 2:
+                        map.put("pitchNum", "第二节");
+                        break;
+                    case 3:
+                        map.put("pitchNum", "第三节");
+                        break;
+                    case 4:
+                        map.put("pitchNum", "第四节");
+                        break;
+                    case 5:
+                        map.put("pitchNum", "第五节");
+                        break;
+                }
             }
 
+            //修改教师
+            if (map.get("teacherName") != null) {
+                map.put("teacherName", collect2.get(map.get("teacherName")));
+            }
+
+            //修改教室
+            if (map.get("houseName") != null) {
+                map.put("houseName", collect3.get(map.get("houseName")));
+            }
+
+            //修改班级
             if (map.get("classId") == null) {
                 List<NinTeachClass> teachClassList = collect.get(map.get("teachClassId"));
                 for (NinTeachClass ntc : teachClassList) {
@@ -732,12 +781,87 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             //删除课程
             ninCourseMapper.deleteById(courseId);
             //删除学生选课记录
-            ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse(){{
+            ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
                 setTakeClassId(classId);
             }}));
         }
 
         return ninArrangeMapper.deleteById(id);
+    }
+
+    @Override
+    public int alterArrange(NinArrangeBo bo) {
+        return 0;
+    }
+
+    @Override
+    public List getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId) {
+
+        List<Object> list = new ArrayList<>();
+
+        if (teacherId == null && houseId == null) {
+            //返回教师列表和教室列表
+            if (courseId == null) {
+                throw new ServiceException(412, "课程id不为空");
+            }
+            List<NinTeacherCourse> ninTeacherCourses = ninTeacherCourseMapper.selectList(new QueryWrapper<>(new NinTeacherCourse() {{
+                setCourseId(courseId);
+            }}));
+            if (ninTeacherCourses == null || ninTeacherCourses.size() == 0) {
+                throw new ServiceException(412, "没有教师选择该课程");
+            }
+            Map<Long, String> teacherMap = ninTeacherMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.toMap(NinTeacher::getId, NinTeacher::getTeacherName));
+
+            //教师列表
+            List<Map<String, Object>> teacherList = new ArrayList<>();
+            for (NinTeacherCourse ntc : ninTeacherCourses) {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("teacherId", ntc.getTeacherId());
+                hashMap.put("teacherName", teacherMap.get(ntc.getTeacherId()));
+                teacherList.add(hashMap);
+            }
+
+            List<NinHouse> ninHouses = ninHouseMapper.selectList(new QueryWrapper<>(new NinHouse() {{
+                setHouseType(ninCourseMapper.selectById(courseId).getHouseType());
+            }}));
+            List<Map<String, Object>> houseList = ninHouses.stream().map(i -> {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("houseId", i.getId());
+                hashMap.put("houseName", i.getHouseName());
+                return hashMap;
+            }).collect(Collectors.toList());
+
+            list.add(teacherList);
+            list.add(houseList);
+
+        }
+        if (teacherId != null && houseId != null) {
+            //返回时间列表
+            List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<NinArrange>().eq("teacher_id", teacherId).or().eq("house_id", houseId));
+            List<String> timeList = ninArranges.stream().map(i -> {
+                String str = "" + i.getWeek() + i.getPitchNum();
+                return str;
+            }).collect(Collectors.toList());
+            for (int i = 1; i <=7 ; i++) {
+                ok: for (int j = 1; j <= 5; j++) {
+                    for (String s : timeList) {
+                        if (s.equals(""+i+j)) {
+                            continue ok;
+                        }
+                    }
+                    list.add(""+i+j);
+                }
+            }
+
+        }
+        if (teacherId == null && houseId != null) {
+            throw new ServiceException(412, "请选择教师");
+        }
+        if (teacherId != null && houseId == null) {
+            throw new ServiceException(412, "请选择教室");
+        }
+
+        return list;
     }
 
 
