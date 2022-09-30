@@ -5,14 +5,22 @@ import cn.netinnet.coursearrange.mapper.NinArrangeMapper;
 import cn.netinnet.coursearrange.mapper.NinClassCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinClassMapper;
 import cn.netinnet.coursearrange.mapper.NinCourseMapper;
+import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.service.INinClassCourseService;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
+import cn.netinnet.coursearrange.util.GenSecretUtil;
+import cn.netinnet.coursearrange.util.HttpUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,22 +76,52 @@ class CourseArrangeApplicationTests {
 //        strings1.addAll(strings);
 //        strings1.add("dfvb");
 
-        ArrayList<Map<String, Object>> maps = new ArrayList<>();
-        Map<String, Object> longIntegerMap = new HashMap<>();
-        longIntegerMap.put("careerId", 101L);
-        longIntegerMap.put("courseNum", -10);
-        maps.add(longIntegerMap);
+//        ArrayList<Map<String, Object>> maps = new ArrayList<>();
+//        Map<String, Object> longIntegerMap = new HashMap<>();
+//        longIntegerMap.put("careerId", 101L);
+//        longIntegerMap.put("courseNum", -10);
+//        maps.add(longIntegerMap);
+//
+//
+//        Map<String, Object> longIntegerMap2 = new HashMap<>();
+//        longIntegerMap2.put("careerId", 102L);
+//        longIntegerMap2.put("courseNum", -8);
+//        maps.add(longIntegerMap2);
+//
+//
+//        ninClassMapper.alterBatchCourseNum(maps);
+//
+//        BigDecimal score = BigDecimal.ZERO;
+//        System.out.println(score);
+//        for (int i = 0; i < 10; i++) {
+//            score = score.add(new BigDecimal("1." + i));
+//            System.out.println(score);
+//        }
+        String subSystemUrl = "";
+        JSONObject obj = null;
 
 
-        Map<String, Object> longIntegerMap2 = new HashMap<>();
-        longIntegerMap2.put("careerId", 102L);
-        longIntegerMap2.put("courseNum", -8);
-        maps.add(longIntegerMap2);
+        try {
+            //apiCode是定死在数据字典里面的
+            subSystemUrl = "http://172.30.6.162:8095/nin_case_platform?";
+            HashMap<String, String> hashMap = new HashMap<>();
+            String str = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NjQ2MTA1ODgsInVzZXIiOiJ7XCJjbGFzc0lkXCI6MCxcImNsYXNzTmFtZVwiOlwiXCIsXCJyb2xlQ29kZVwiOlwiYWRtaW5cIixcInNjaG9vbENvZGVcIjpcIk5FVElOTkVUXCIsXCJzY2hvb2xJZFwiOjAsXCJzY2hvb2xOYW1lXCI6XCJcIixcInVzZXJJZFwiOjcwMzMwNDUwNTk0OTAxMTk2OCxcInVzZXJMb2dpblwiOlwidGVzdEFkbWluXCIsXCJ1c2VyTmFtZVwiOlwidGVzdEFkbWluXCIsXCJ1c2VyVHlwZVwiOjAsXCJ2aXJ0dWFsTG9naW5cIjpmYWxzZX0iLCJjbGllbnRfaWQiOiJSUEEifQ.R1sbTxnUSsJIDtOCV_BGMOTseEwA1kXx9wHMzWr3EHM";
+
+            hashMap.put("access_token", str);
+            hashMap.put("taskTitle", "");
+            String nin_case = GenSecretUtil.creatSecretKey(hashMap, "nin_case");
+            subSystemUrl = subSystemUrl + nin_case;
 
 
-        ninClassMapper.alterBatchCourseNum(maps);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        System.out.println("");
+        String result = HttpUtil.getHttpInterface(subSystemUrl);
+        obj = JSONObject.parseObject(result);
+
+
+        System.out.println(obj);
 
     }
 
