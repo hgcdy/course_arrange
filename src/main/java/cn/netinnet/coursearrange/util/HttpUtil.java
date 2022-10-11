@@ -18,7 +18,7 @@ public class HttpUtil {
             URL url = new URL(path);
             //打开和url之间的连接
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
+
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("Charset", "utf-8");
             connection.connect();

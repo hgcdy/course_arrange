@@ -11,6 +11,7 @@ import cn.netinnet.coursearrange.service.INinClassCourseService;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
 import cn.netinnet.coursearrange.util.GenSecretUtil;
 import cn.netinnet.coursearrange.util.HttpUtil;
+import cn.netinnet.coursearrange.util.SendPostUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -97,32 +98,71 @@ class CourseArrangeApplicationTests {
 //            score = score.add(new BigDecimal("1." + i));
 //            System.out.println(score);
 //        }
+//        String subSystemUrl = "";
+//        JSONObject obj = null;
+//
+//
+//        try {
+//            //apiCode是定死在数据字典里面的
+//            subSystemUrl = "http://172.30.6.162:8095/nin_case_platform?";
+//            HashMap<String, String> hashMap = new HashMap<>();
+//            String str = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NjQ2MTA1ODgsInVzZXIiOiJ7XCJjbGFzc0lkXCI6MCxcImNsYXNzTmFtZVwiOlwiXCIsXCJyb2xlQ29kZVwiOlwiYWRtaW5cIixcInNjaG9vbENvZGVcIjpcIk5FVElOTkVUXCIsXCJzY2hvb2xJZFwiOjAsXCJzY2hvb2xOYW1lXCI6XCJcIixcInVzZXJJZFwiOjcwMzMwNDUwNTk0OTAxMTk2OCxcInVzZXJMb2dpblwiOlwidGVzdEFkbWluXCIsXCJ1c2VyTmFtZVwiOlwidGVzdEFkbWluXCIsXCJ1c2VyVHlwZVwiOjAsXCJ2aXJ0dWFsTG9naW5cIjpmYWxzZX0iLCJjbGllbnRfaWQiOiJSUEEifQ.R1sbTxnUSsJIDtOCV_BGMOTseEwA1kXx9wHMzWr3EHM";
+//
+//            hashMap.put("access_token", str);
+//            hashMap.put("taskTitle", "");
+//            String nin_case = GenSecretUtil.creatSecretKey(hashMap, "nin_case");
+//            subSystemUrl = subSystemUrl + nin_case;
+//
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        String result = HttpUtil.getHttpInterface(subSystemUrl);
+//        obj = JSONObject.parseObject(result);
+//
         String subSystemUrl = "";
-        JSONObject obj = null;
+//        JSONObject obj = null;
+//
+//
+        Map<String, String> queryMap = new HashMap<>();
+        queryMap.put("sxClassTaskId", "1");
+        queryMap.put("platformCode", "ift");
+//
+//
+//        String jm = GenSecretUtil.creatSecretKey(queryMap, "nin_case");
+//        String[] jmlist = jm.split("&");
+//        String secretkey = "";
+//        String timestamp = "";
+//
+//        for (int i = 0; i < jmlist.length; i++) {
+//            if (jmlist[i].indexOf("secretkey") >= 0) {
+//                secretkey = jmlist[i].split("=")[1];
+//                System.out.println("秘钥：" + secretkey);
+//                queryMap.put("secretkey", secretkey);
+//            }
+//            if (jmlist[i].indexOf("timestamp") >= 0) {
+//                timestamp = jmlist[i].split("=")[1];
+//                System.out.println("时间戳：" + timestamp);
+//                queryMap.put("timestamp", timestamp);
+//            }
+//        }
+//
+        String nin_case = GenSecretUtil.creatSecretKey(queryMap, "nin_case");
+
+        subSystemUrl = "http://127.0.0.1:8080/login/getStudentSxTaskGrade?" + nin_case;
+//
+//        ResultModel subSystemResultModel = SendPostUtil.getSubSystemResultModel(queryMap, subSystemUrl);
 
 
-        try {
-            //apiCode是定死在数据字典里面的
-            subSystemUrl = "http://172.30.6.162:8095/nin_case_platform?";
-            HashMap<String, String> hashMap = new HashMap<>();
-            String str = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NjQ2MTA1ODgsInVzZXIiOiJ7XCJjbGFzc0lkXCI6MCxcImNsYXNzTmFtZVwiOlwiXCIsXCJyb2xlQ29kZVwiOlwiYWRtaW5cIixcInNjaG9vbENvZGVcIjpcIk5FVElOTkVUXCIsXCJzY2hvb2xJZFwiOjAsXCJzY2hvb2xOYW1lXCI6XCJcIixcInVzZXJJZFwiOjcwMzMwNDUwNTk0OTAxMTk2OCxcInVzZXJMb2dpblwiOlwidGVzdEFkbWluXCIsXCJ1c2VyTmFtZVwiOlwidGVzdEFkbWluXCIsXCJ1c2VyVHlwZVwiOjAsXCJ2aXJ0dWFsTG9naW5cIjpmYWxzZX0iLCJjbGllbnRfaWQiOiJSUEEifQ.R1sbTxnUSsJIDtOCV_BGMOTseEwA1kXx9wHMzWr3EHM";
+        String httpInterface = HttpUtil.getHttpInterface(subSystemUrl);
+//        String result = HttpUtil.getHttpInterface(subSystemUrl);
+//        obj = JSONObject.parseObject(result);
 
-            hashMap.put("access_token", str);
-            hashMap.put("taskTitle", "");
-            String nin_case = GenSecretUtil.creatSecretKey(hashMap, "nin_case");
-            subSystemUrl = subSystemUrl + nin_case;
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        String result = HttpUtil.getHttpInterface(subSystemUrl);
-        obj = JSONObject.parseObject(result);
-
-
-        System.out.println(obj);
-
+//        System.out.println(subSystemResultModel.getCode());
+//        System.out.println(subSystemResultModel.getMsg());
+//        System.out.println(subSystemResultModel.getData());
+        System.out.println(httpInterface);
     }
 
     public int[] grouping(int maxNum, int minNum){
