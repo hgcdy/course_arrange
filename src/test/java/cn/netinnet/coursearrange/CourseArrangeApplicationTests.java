@@ -121,13 +121,13 @@ class CourseArrangeApplicationTests {
 //        String result = HttpUtil.getHttpInterface(subSystemUrl);
 //        obj = JSONObject.parseObject(result);
 //
-        String subSystemUrl = "";
+//        String subSystemUrl = "";
 //        JSONObject obj = null;
 //
 //
-        Map<String, String> queryMap = new HashMap<>();
-        queryMap.put("sxClassTaskId", "1");
-        queryMap.put("platformCode", "ift");
+//        Map<String, String> queryMap = new HashMap<>();
+//        queryMap.put("sxClassTaskId", "1");
+//        queryMap.put("platformCode", "ift");
 //
 //
 //        String jm = GenSecretUtil.creatSecretKey(queryMap, "nin_case");
@@ -148,21 +148,21 @@ class CourseArrangeApplicationTests {
 //            }
 //        }
 //
-        String nin_case = GenSecretUtil.creatSecretKey(queryMap, "nin_case");
+//        String nin_case = GenSecretUtil.creatSecretKey(queryMap, "nin_case");
 
-        subSystemUrl = "http://127.0.0.1:8080/login/getStudentSxTaskGrade?" + nin_case;
+//        subSystemUrl = "http://127.0.0.1:8080/login/getStudentSxTaskGrade?" + nin_case;
 //
 //        ResultModel subSystemResultModel = SendPostUtil.getSubSystemResultModel(queryMap, subSystemUrl);
 
 
-        String httpInterface = HttpUtil.getHttpInterface(subSystemUrl);
+//        String httpInterface = HttpUtil.getHttpInterface(subSystemUrl);
 //        String result = HttpUtil.getHttpInterface(subSystemUrl);
 //        obj = JSONObject.parseObject(result);
 
 //        System.out.println(subSystemResultModel.getCode());
 //        System.out.println(subSystemResultModel.getMsg());
 //        System.out.println(subSystemResultModel.getData());
-        System.out.println(httpInterface);
+//        System.out.println(httpInterface);
     }
 
     public int[] grouping(int maxNum, int minNum){

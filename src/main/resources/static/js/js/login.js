@@ -30,7 +30,7 @@ require(['../config'], function () {
                         },
                         success: function (data) {
                             if (data.code == 200) {
-                                window.location.href = "index?token=" + data.data;
+                                window.location.href = "index?type="+ val +"&token=" + data.data;
                             } else {
                                 util.hint(data.msg);
                             }

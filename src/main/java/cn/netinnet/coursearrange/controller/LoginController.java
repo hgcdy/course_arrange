@@ -25,30 +25,36 @@ public class LoginController {
     private INinTeacherService ninTeacherService;
 
     @GetMapping("/login")
-    public ModelAndView gotoLogin(){
+    public ModelAndView gotoLogin() {
         return new ModelAndView("login");
     }
 
 
-
     @GetMapping("/logout")
-    public ModelAndView logout(){
+    public ModelAndView logout() {
         return gotoLogin();
     }
 
 
     @GetMapping("/index")
-    public ModelAndView index(){
-        return new ModelAndView("index");
+    public ModelAndView index(String type) {
+        ModelAndView modelAndView = new ModelAndView("login");
+        if (type.equals("admin")) {
+            modelAndView = new ModelAndView("index");
+        } else if (type.equals("student")) {
+            modelAndView = new ModelAndView("indexStu");
+        } else if (type.equals("teacher")) {
+            modelAndView = new ModelAndView("indexTea");
+        }
+        return modelAndView;
     }
 
 
-
     @PostMapping("/login/admin")
-    public ResultModel adminLogin(@NotNull String code, @NotNull String password){
-        if (!code.equals("admin")){
+    public ResultModel adminLogin(@NotNull String code, @NotNull String password) {
+        if (!code.equals("admin")) {
             return ResultModel.error(412, "账号错误");
-        }else if (!password.equals("123456")){
+        } else if (!password.equals("123456")) {
             return ResultModel.error(412, "密码错误");
         }
         UserInfo userInfo = new UserInfo();
@@ -62,7 +68,7 @@ public class LoginController {
     }
 
     @PostMapping("/login/student")
-    public ResultModel studentLogin(@NotNull String code, @NotNull String password){
+    public ResultModel studentLogin(@NotNull String code, @NotNull String password) {
         NinStudent ninStudent = ninStudentService.verify(code, password);
 
         UserInfo userInfo = new UserInfo();
@@ -76,7 +82,7 @@ public class LoginController {
     }
 
     @PostMapping("/login/teacher")
-    public ResultModel teacherLogin(@NotNull String code, @NotNull String password){
+    public ResultModel teacherLogin(@NotNull String code, @NotNull String password) {
 
         NinTeacher ninTeacher = ninTeacherService.verify(code, password);
         UserInfo userInfo = new UserInfo();

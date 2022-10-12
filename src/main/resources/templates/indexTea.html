@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{css/index.css}" rel="stylesheet">
+    <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/index},defer=true"></script>
+    <script th:inline="javascript">
+
+    </script>
+</head>
+<body>
+<div>
+    <!--导航栏-->
+    <header class="p-3 bg-dark text-white">
+        <div class="container-fluid">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                    <h3>课程自动排课系统</h3>
+                </a>
+<!--                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0" style="width: 500px;">-->
+<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-secondary">Home</a></li>-->
+<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-white">Features</a></li>-->
+<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-white">Pricing</a></li>-->
+<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-white">FAQs</a></li>-->
+<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-white">About</a></li>-->
+<!--                </ul>-->
+                <div class="text-end" style="position: absolute;right: 0">
+                    <button type="button" class="btn btn-outline-light me-5">logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+</div>
+
+<!--弹窗-->
+<div id="popup">
+    <div id="module">
+        <table>
+        </table>
+    </div>
+    <div id="but">
+        <button type="button" class="btn btn-info" id="confirm">确定</button>
+        <button type="button" class="btn btn-info" id="cancel">取消</button>
+    </div>
+</div>
+
+<!--菜单栏-->
+<div style="height: 90.6%;">
+    <!--菜单栏-->
+    <div class="bg-white" id="menu" style="width: 12%;float:left;font-size:20px">
+        <ul class="list-unstyled ps-0">
+<!--            <li class="mb-1">-->
+<!--                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"-->
+<!--                        data-bs-target="#home-collapse" aria-expanded="false" style="font-size:20px">-->
+<!--                    用户管理-->
+<!--                </button>-->
+<!--                <div class="collapse" id="home-collapse">-->
+<!--                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">-->
+<!--                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-class">班级管理</a></li>-->
+<!--                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-teacher">教师管理</a></li>-->
+<!--                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-student">学生管理</a></li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+<!--            </li>-->
+<!--            <li class="mb-1">-->
+<!--                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"-->
+<!--                        data-bs-target="#dashboard-collapse" aria-expanded="false" style="font-size:20px">-->
+<!--                    资源管理-->
+<!--                </button>-->
+<!--                <div class="collapse" id="dashboard-collapse">-->
+<!--                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">-->
+<!--                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-course">课程设置</a></li>-->
+<!--                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-house">教室设置</a></li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+<!--            </li>-->
+            <li class="mb-1">
+                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"
+                        data-bs-target="#orders-collapse" aria-expanded="false" style="font-size:20px">
+                    排课管理
+                </button>
+                <div class="collapse" id="orders-collapse">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-arrange">排课</a></li>
+                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="applyHouse">教室申请</a></li>
+                        <li><a href="javaScript:void(0)" class="link-dark rounded">课程表</a></li>
+<!--                        data-html="nin-arrange/courseForm"-->
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+<!--    iframe-->
+    <div id="iframe" class="border">
+        <iframe th:src="@{nin-class}" frameborder="0"></iframe>
+    </div>
+</div>
+
+
+
+<!--提示-->
+<div id="hint">
+</div>
+
+</body>
+</html>
