@@ -6,6 +6,8 @@ import cn.netinnet.coursearrange.entity.NinStudentCourse;
 import cn.netinnet.coursearrange.mapper.NinStudentCourseMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/nin-student-course")
+@RequiresRoles(value = {"admin"}, logical = Logical.OR)
 public class NinStudentCourseController {
     @Autowired
     private INinStudentCourseService ninStudentCourseService;
