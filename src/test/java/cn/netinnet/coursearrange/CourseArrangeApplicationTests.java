@@ -2,12 +2,10 @@ package cn.netinnet.coursearrange;
 
 import cn.netinnet.coursearrange.entity.NinClass;
 import cn.netinnet.coursearrange.mapper.NinArrangeMapper;
-import cn.netinnet.coursearrange.mapper.NinClassCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinClassMapper;
 import cn.netinnet.coursearrange.mapper.NinCourseMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
-import cn.netinnet.coursearrange.service.INinClassCourseService;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
 import cn.netinnet.coursearrange.util.GenSecretUtil;
 import cn.netinnet.coursearrange.util.HttpUtil;
@@ -31,10 +29,6 @@ import java.util.stream.Collectors;
 
 @SpringBootTest
 class CourseArrangeApplicationTests {
-    @Autowired
-    private NinClassCourseMapper ninClassCourseMapper;
-    @Autowired
-    private INinClassCourseService ninClassCourseService;
     @Autowired
     private NinCourseMapper ninCourseMapper;
     @Autowired

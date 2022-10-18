@@ -44,8 +44,6 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     @Autowired
     private NinCareerCourseMapper ninCareerCourseMapper;
     @Autowired
-    private NinClassCourseMapper ninClassCourseMapper;
-    @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
     @Autowired
     private NinArrangeMapper ninArrangeMapper;

@@ -1,6 +1,5 @@
 package cn.netinnet.coursearrange.service.impl;
 
-import cn.netinnet.coursearrange.entity.NinClassCourse;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import cn.netinnet.coursearrange.exception.ServiceException;
