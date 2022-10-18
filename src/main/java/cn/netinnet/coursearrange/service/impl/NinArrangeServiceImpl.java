@@ -771,7 +771,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
     @Override
-    public List getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId) {
+    public List<Object> getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId) {
 
         List<Object> list = new ArrayList<>();
 
@@ -838,6 +838,13 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
 
         return list;
+    }
+
+    @Override
+    public List<NinArrange> getAvailable(Long teacherId, Long houseId, Integer week, Integer pitchNum) {
+        List<NinArrange> available = ninArrangeMapper.getAvailable(teacherId, houseId, week, pitchNum);
+
+        return null;
     }
 
 

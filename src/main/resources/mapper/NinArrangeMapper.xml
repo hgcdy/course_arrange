@@ -187,10 +187,10 @@
         WHERE
         del_flag = 0
         <if test="teacherId != null">
-            AND teacher_id = #{teacherId}
+            OR teacher_id = #{teacherId}
         </if>
         <if test="houseId != null">
-            AND house_id = #{houseId}
+            OR house_id = #{houseId}
         </if>
         <if test="week != null">
             AND week = #{week}

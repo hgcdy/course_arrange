@@ -52,6 +52,14 @@ public interface NinArrangeMapper extends BaseMapper<NinArrange> {
      */
     List<Map<String, Object>> getSelectNull(@Param("must") Integer must);
 
+    /**
+     * 返回可选资源
+     * @param teacherId
+     * @param houseId
+     * @param week
+     * @param pitchNum
+     * @return
+     */
     List<NinArrange> getAvailable(@Param("teacherId") Long teacherId,
                                   @Param("houseId") Long houseId,
                                   @Param("week") Integer week,

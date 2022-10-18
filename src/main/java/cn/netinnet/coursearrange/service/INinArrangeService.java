@@ -38,7 +38,10 @@ public interface INinArrangeService extends IService<NinArrange> {
      * 根据课程id获取可选教室教师或根据教室教师获取时间
      * @return
      */
-     List getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId);
+     List<Object> getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId);
+
+
+     List<NinArrange> getAvailable(Long teacherId, Long houseId, Integer week, Integer pitchNum);
 
 
 
