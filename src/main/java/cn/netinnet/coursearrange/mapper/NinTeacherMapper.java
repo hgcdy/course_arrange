@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.mapper;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,5 +19,7 @@ import java.util.List;
 public interface NinTeacherMapper extends BaseMapper<NinTeacher> {
 
     List<NinTeacher> getSelectList(String teacherName);
+
+    List<NinTeacher> getSelectByCourse(@Param("courseId") Long courseId);
 
 }

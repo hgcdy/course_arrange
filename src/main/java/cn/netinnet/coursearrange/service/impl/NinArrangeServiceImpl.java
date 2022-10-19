@@ -841,10 +841,29 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
     @Override
-    public List<NinArrange> getAvailable(Long teacherId, Long houseId, Integer week, Integer pitchNum) {
-        List<NinArrange> available = ninArrangeMapper.getAvailable(teacherId, houseId, week, pitchNum);
+    public Map<String, List> getAvailable(Long id) {
+        NinArrange ninArrange = ninArrangeMapper.selectById(id);
+        Long teacherId = ninArrange.getTeacherId();
+        Long houseId = ninArrange.getHouseId();
+        Integer week = ninArrange.getWeek();
+        Integer pitchNum = ninArrange.getPitchNum();
+        Long courseId = ninArrange.getCourseId();
 
-        return null;
+        Integer houseType = ninCourseMapper.selectById(courseId).getHouseType();
+
+        //符合条件的教师和教室
+        List<NinTeacher> ninTeachers = ninTeacherMapper.getSelectByCourse(courseId);
+        List<NinHouse> ninHouses = ninHouseMapper.selectList(new QueryWrapper<>()).stream().filter(item -> item.getHouseType() == houseType).collect(Collectors.toList());
+
+        List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<>());
+        Map<Long, List<NinArrange>> teacherArrangeMap = ninArranges.stream().collect(Collectors.groupingBy(NinArrange::getTeacherId));
+
+
+        Map<String, List> map = new HashMap<>();
+        map.put("teacherList", null);
+        map.put("houseList", null);
+        map.put("timeList", null);
+        return map;
     }
 
 

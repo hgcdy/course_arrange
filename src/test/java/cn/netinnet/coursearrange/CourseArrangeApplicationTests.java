@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange;
 
+import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinClass;
 import cn.netinnet.coursearrange.mapper.NinArrangeMapper;
 import cn.netinnet.coursearrange.mapper.NinClassMapper;
@@ -157,6 +158,10 @@ class CourseArrangeApplicationTests {
 //        System.out.println(subSystemResultModel.getMsg());
 //        System.out.println(subSystemResultModel.getData());
 //        System.out.println(httpInterface);
+
+
+
+        System.out.println("");
     }
 
     public int[] grouping(int maxNum, int minNum){

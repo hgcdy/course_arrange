@@ -41,7 +41,7 @@ public interface INinArrangeService extends IService<NinArrange> {
      List<Object> getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId);
 
 
-     List<NinArrange> getAvailable(Long teacherId, Long houseId, Integer week, Integer pitchNum);
+    Map<String, List> getAvailable(Long id);
 
 
 

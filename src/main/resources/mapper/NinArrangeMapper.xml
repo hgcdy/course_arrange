@@ -184,22 +184,15 @@
     <select id="getAvailable" resultType="cn.netinnet.coursearrange.entity.NinArrange">
         SELECT *
         FROM nin_arrange
-        WHERE
-        del_flag = 0
-        <if test="teacherId != null">
-            OR teacher_id = #{teacherId}
-        </if>
-        <if test="houseId != null">
-            OR house_id = #{houseId}
-        </if>
-        <if test="week != null">
-            AND week = #{week}
-        </if>
-        <if test="pitchNum != null">
-            AND pitch_num = #{pitchNum}
-        </if>
-
-
+        <where>
+            <if test="teacherId != null or houseId != null">
+                <if test="teacherId != null">
+                    OR teacher_id = #{teacherId}
+                </if>
+                <if test="houseId != null">
+                    OR house_id = #{houseId}
+                </if>
+        </where>
     </select>
 
 </mapper>

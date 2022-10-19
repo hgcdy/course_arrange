@@ -39,6 +39,8 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     @Autowired
     private NinArrangeMapper ninArrangeMapper;
     @Autowired
+    private NinSettingMapper ninSettingMapper;
+    @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
     @Autowired
     private NinTeacherCourseMapper ninTeacherCourseMapper;
@@ -62,6 +64,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int addSingle(NinCourse ninCourse) {
 
         //同名验证
@@ -75,6 +78,17 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         ninCourse.setCreateUserId(UserUtil.getUserInfo().getUserId());
         ninCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
         int i = ninCourseMapper.insert(ninCourse);
+
+        //教师权限记录
+        NinSetting ninSetting = new NinSetting();
+        ninSetting.setId(IDUtil.getID());
+        ninSetting.setCourseId(ninCourse.getId());
+        ninSetting.setUserType("teacher");
+        ninSetting.setOpenState(1);
+        ninSetting.setCreateUserId(UserUtil.getUserInfo().getUserId());
+        ninSetting.setModifyUserId(UserUtil.getUserInfo().getUserId());
+        ninSettingMapper.insert(ninSetting);
+
         //如果是选修课程
         if (ninCourse.getMust() == 0) {
             //生成选修教学班
@@ -102,6 +116,10 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             arrange.setCreateUserId(UserUtil.getUserInfo().getUserId());
             ninArrangeMapper.insert(arrange);
 
+            //生成学生权限记录
+            ninSetting.setId(IDUtil.getID());
+            ninSetting.setUserType("student");
+            ninSettingMapper.insert(ninSetting);
         }
         return i;
     }
