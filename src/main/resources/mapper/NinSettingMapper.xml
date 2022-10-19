@@ -23,18 +23,10 @@
     </sql>
 
     <update id="alterBatch">
-        UPDATE nin_setting
-        <trim prefix="set" suffixOverrides=",">
-            <if test="openState != null">
-                open_state = #{openState},
-            </if>
-            <if test="openTime != null">
-                open_time = #{openTime},
-            </if>
-            <if test="closeTime != null">
-                close_time = #{closeTime},
-            </if>
-        </trim>
+        UPDATE nin_setting SET
+            open_state = #{openState},
+            open_time = #{openTime},
+            close_time = #{closeTime},
         WHERE id IN
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")" >
             #{item}
@@ -46,12 +38,9 @@
     <select id="getSelectList" resultType="java.util.Map">
         SELECT nin_setting.id AS id, course_id AS courseId, course_name AS courseName, open_state AS openState, open_time AS openTime, close_time AS closeTime
         FROM nin_setting INNER JOIN nin_course ON nin_setting.course_id = nin_course.id
-        WHERE nin_arrange.user_type = #{userType}
+        WHERE nin_setting.user_type = #{userType}
         <if test="courseName != null and courseName != ''">
             AND nin_course.course_name LIKE ('%', #{courseName}, '%')
-        </if>
-        <if test="openState != null">
-            AND nin_setting.open_otate = #{openState}
         </if>
     </select>
 

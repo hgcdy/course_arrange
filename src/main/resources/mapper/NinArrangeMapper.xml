@@ -192,6 +192,7 @@
                 <if test="houseId != null">
                     OR house_id = #{houseId}
                 </if>
+            </if>
         </where>
     </select>
 

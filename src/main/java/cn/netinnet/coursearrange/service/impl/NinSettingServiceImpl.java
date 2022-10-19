@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -35,21 +36,40 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
 
 
     @Override
-    public List<Map<String, Object>> getSelectList(String userType, Integer openState, String courseName) {
-        List<Map<String, Object>> list = ninSettingMapper.getSelectList(userType, openState, courseName);
-        List<Map<String, Object>> result = list.stream().map(i -> {
+    public List<Map<String, Object>> getSelectList(String userType, String state, String courseName) {
+        List<Map<String, Object>> result = ninSettingMapper.getSelectList(userType, courseName).stream().map(map -> {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            String openTime = dtf.format((LocalDateTime) i.get("openTime"));
-            i.put("openTime", openTime);
-            String closeTime = dtf.format((LocalDateTime) i.get("closeTime"));
-            i.put("closeTime", closeTime);
-            return i;
+            LocalDateTime openTime = (LocalDateTime) map.get("openTime");
+            map.put("openTime", dtf.format(openTime));
+            LocalDateTime closeTime = (LocalDateTime) map.get("closeTime");
+            map.put("closeTime", dtf.format(closeTime));
+            LocalDateTime dateTime = LocalDateTime.now();
+            int i = (int) map.get("openState");
+            if (i == 0) {
+                map.put("state", "开放中");
+            } else if (i == 1){
+                map.put("state", "未开放");
+            } else if (i == 2) {
+                boolean after = dateTime.isAfter(openTime);
+                boolean after1 = dateTime.isAfter(closeTime);
+                if (!after) {
+                    map.put("state", "未开放");
+                } else if (after && !after1){
+                    map.put("state", "开放中");
+                } else {
+                    map.put("state", "已结束");
+                }
+            }
+            return map;
         }).collect(Collectors.toList());
+        if (state != null && !state.equals("")) {
+            result = result.stream().filter(i -> i.get("state").equals(state)).collect(Collectors.toList());
+        }
         return result;
     }
 
     @Override
-    public ResultModel alterBatch(String settingIds, Integer openState, Date openTime, Date closeTime) {
+    public ResultModel alterBatch(String settingIds, Integer openState, LocalDateTime openTime, LocalDateTime closeTime) {
         List<Long> settingIdList = JSON.parseArray(settingIds, Long.class);
         if (settingIdList != null && settingIdList.size() != 0) {
             ninSettingMapper.alterBatch(settingIdList, openState, openTime, closeTime);

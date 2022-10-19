@@ -12,5 +12,58 @@
 </head>
 <body>
 
+<div class="border-bottom" style="height: 5%;">
+    <span></span>教师</span>
+    <span>学生</span>
+</div>
+
+<!--检索查询-->
+<div class="border-bottom" style="height: 7%;">
+    <span>
+        课程名称:
+        <input type="text" id="courseName">
+    </span>&nbsp;&nbsp;
+    <span>
+        <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupStateTypeButton"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            状态
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropupStateTypeButton" data-code="">
+            <li><a class="dropdown-item" href="javaScript:void(0)" data-code="">不限</a></li>
+            <li><a class="dropdown-item" href="javaScript:void(0)" data-code="0">开放</a></li>
+            <li><a class="dropdown-item" href="javaScript:void(0)" data-code="1">未开放</a></li>
+            <li><a class="dropdown-item" href="javaScript:void(0)" data-code="2">已结束</a></li>
+        </ul>
+    </span>&nbsp;&nbsp;
+    <span>
+        <button type="button" class="btn btn-info" id="query">查询</button>
+        <button type="button" class="btn btn-info" id="reset">重置</button>
+        <button type="button" class="btn btn-info disparkBatch" >批量开放</button>
+        <button type="button" class="btn btn-info finishBatch" >批量结束</button>
+        <button type="button" class="btn btn-info timingBatch" >批量定时开放</button>
+    </span>
+</div>
+
+<!--表格展示-->
+<div class="bd-example" id="form">
+    <table class="table table-sm table-bordered" style="table-layout: fixed">
+        <thead>
+        <tr>
+            <th scope="col" width="50px"><input type='checkbox' id='checkAll'></th>
+            <th scope="col" width="50px">序号</th>
+            <th scope="col">课程</th>
+            <th scope="col">状态</th>
+            <th scope="col">开始时间</th>
+            <th scope="col">结束时间</th>
+            <th scope="col">
+                操作&nbsp;&nbsp;&nbsp;&nbsp;
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
 </body>
 </html>

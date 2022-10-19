@@ -5,6 +5,7 @@ import cn.netinnet.coursearrange.model.ResultModel;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +20,9 @@ import java.util.Map;
  */
 public interface INinSettingService extends IService<NinSetting> {
 
-    List<Map<String, Object>> getSelectList(String userType, Integer openState, String courseName);
+    List<Map<String, Object>> getSelectList(String userType, String state, String courseName);
 
-    ResultModel alterBatch(String settingIds, Integer openState, Date openTime, Date closeTime);
+    ResultModel alterBatch(String settingIds, Integer openState, LocalDateTime openTime, LocalDateTime closeTime);
 
 
 

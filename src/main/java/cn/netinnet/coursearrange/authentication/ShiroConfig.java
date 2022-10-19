@@ -29,19 +29,13 @@ public class ShiroConfig {
         return new ShiroRealm();
     }
 
-    /**
-     * shiro session的管理
-     */
+
     @Bean
     public DefaultWebSessionManager sessionManager() {
-        DefaultWebSessionManager defaultWebSessionManager = new DefaultWebSessionManager();
-        defaultWebSessionManager.setGlobalSessionTimeout(60 * 30 * 1000);
-        defaultWebSessionManager.setDeleteInvalidSessions(true);
-        defaultWebSessionManager.setSessionValidationSchedulerEnabled(true);
-        defaultWebSessionManager.setSessionIdCookieEnabled(true);
-        // tomcat的JESSIONID自动生成模块
-        defaultWebSessionManager.setSessionIdUrlRewritingEnabled(false);
-        return defaultWebSessionManager;
+        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+        // 去掉shiro登录时url里的JSESSIONID
+        sessionManager.setSessionIdUrlRewritingEnabled(false);
+        return sessionManager;
     }
 
     /**
@@ -61,6 +55,7 @@ public class ShiroConfig {
         defaultSessionStorageEvaluator.setSessionStorageEnabled(false);
         subjectDAO.setSessionStorageEvaluator(defaultSessionStorageEvaluator);
         securityManager.setSubjectDAO(subjectDAO);
+        securityManager.setSessionManager(sessionManager());
         return securityManager;
     }
 

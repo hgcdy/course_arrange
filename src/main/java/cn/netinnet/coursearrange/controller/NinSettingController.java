@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -30,14 +33,23 @@ public class NinSettingController {
     private INinSettingService ninSettingService;
 
     @GetMapping("")
-    public ResultModel getSelectList(String userType, Integer openState, String courseName) {
-        List<Map<String, Object>> list = ninSettingService.getSelectList(userType, openState, courseName);
+    public ModelAndView gotoStudent(){
+        return new ModelAndView("view/settingView");
+    }
+
+
+    @GetMapping("/getSelectList")
+    public ResultModel getSelectList(String userType, String state, String courseName) {
+        List<Map<String, Object>> list = ninSettingService.getSelectList(userType, state , courseName);
         return ResultModel.ok(list);
     }
 
     @PostMapping("/alterBatch")
-    public ResultModel alterBatch(String settingIds, Integer openState, Date openTime, Date closeTime) {
-        return ninSettingService.alterBatch(settingIds, openState, openTime, closeTime);
+    public ResultModel alterBatch(String settingIds, Integer openState, String openTime, String closeTime) {
+        //todo 报错
+        return ninSettingService.alterBatch(settingIds, openState,
+                openTime == null ? null : LocalDateTime.parse(openTime),
+                closeTime == null ? null : LocalDateTime.parse(closeTime));
     }
 
 

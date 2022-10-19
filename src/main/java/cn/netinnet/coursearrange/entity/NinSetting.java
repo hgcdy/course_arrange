@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -24,16 +27,18 @@ public class NinSetting implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
      * 开放的课程id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @TableField("course_id")
     private Long courseId;
 
     /**
-     * 用户类型 0-教师，1-学生
+     * 用户类型
      */
     @TableField("user_type")
     private String userType;

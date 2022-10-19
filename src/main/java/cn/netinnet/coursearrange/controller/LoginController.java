@@ -45,6 +45,8 @@ public class LoginController {
             modelAndView = new ModelAndView("indexStu");
         } else if (type.equals("teacher")) {
             modelAndView = new ModelAndView("indexTea");
+        } else {
+            modelAndView = new ModelAndView("login");
         }
         return modelAndView;
     }
