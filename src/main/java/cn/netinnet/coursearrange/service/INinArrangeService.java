@@ -1,9 +1,11 @@
 package cn.netinnet.coursearrange.service;
 
+import cn.netinnet.coursearrange.bo.AvailableBo;
 import cn.netinnet.coursearrange.bo.NinArrangeBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.model.ResultModel;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.sun.org.apache.xerces.internal.xs.StringList;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
@@ -20,6 +22,8 @@ import java.util.Map;
 public interface INinArrangeService extends IService<NinArrange> {
 
     void arrange();
+
+    void empty();
 
     Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer count);
 
@@ -41,7 +45,12 @@ public interface INinArrangeService extends IService<NinArrange> {
      List<Object> getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId);
 
 
-    Map<String, List> getAvailable(Long id);
+    /**
+     * 给选修课程添加教室教师时的选择
+     * @param id
+     * @return
+     */
+     Map<String, List> getAvailable(Long id, Long teacherId, Long houseId, Integer week, Integer pitchNum);
 
 
 

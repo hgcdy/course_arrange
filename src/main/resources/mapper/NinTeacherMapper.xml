@@ -32,7 +32,7 @@
     </select>
 
     <!--根据课程查询教师-->
-    <select id="getSelectByCourse">
+    <select id="getSelectByCourse" resultType="cn.netinnet.coursearrange.entity.NinTeacher">
         SELECT nin_teacher.*
         FROM nin_teacher INNER JOIN nin_teacher_course ON nin_teacher.id = nin_teacher_course.teacher_id
         WHERE nin_teacher_course.course_id = #{courseId}

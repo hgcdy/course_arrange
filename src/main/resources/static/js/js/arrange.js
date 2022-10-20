@@ -26,6 +26,19 @@ require(['../config'], function () {
             })
         })
 
+        //清空
+        $("#empty").click(function () {
+            $.ajax({
+                url: "nin-arrange/empty",
+                dataType:"json",
+                type: "get",
+                success:function (){
+                    query();
+                    util.hint("删除成功！");
+                }
+            })
+        })
+
         //专业选择下拉框
         $("#dropupCareerIdButton").click(function () {
             //重置班级选择
@@ -156,6 +169,10 @@ require(['../config'], function () {
                                 var id = $(this).parent().parent().children("th").attr("data-id");
                                 del(id);
                             })
+                            $(".update").click(function () {
+                                var id = $(this).parent().parent().children("th").attr("data-id");
+                                alter(id);
+                            })
                         } else {
                             if (page > 1) {
                                 page = page - 1;
@@ -189,7 +206,51 @@ require(['../config'], function () {
 
 
         //编辑
+        function alter(id) {
+            $.ajax({
+                url: "nin-arrange/getAvailable",
+                type: "post",
+                dataType: "json",
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        var teacherId = data.data.teacherId;
+                        var houseId = data.data.houseId;
+                        var week = data.data.week;
+                        var pitchNum = data.data.pitchNum;
+                        getAvailable(id, teacherId, houseId, week, pitchNum)
+                    }
+                }
+            })
+        }
 
+
+        function getAvailable(id, teacherId, houseId, week, pitchNum) {
+            $.ajax({
+                url: "nin-arrange/getAvailable",
+                type: "post",
+                dataType: "json",
+                data: {
+                    id: id,
+                    teacherId: teacherId,
+                    houseId: houseId,
+                    week: week,
+                    pitchNum: pitchNum
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        var teacherList = data.data.teacherList;
+                        var houseList = data.data.houseList;
+                        var timeList = data.data.timeList;
+
+                    }
+                }
+
+            })
+
+        }
 
 
 

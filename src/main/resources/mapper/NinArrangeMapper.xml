@@ -40,6 +40,11 @@
         </foreach>
     </insert>
 
+    <delete id="empty">
+        DELETE FROM nin_arrange
+        WHERE career_id != 0 AND career_id != -1
+    </delete>
+
     <!-- 条件查询课表信息 -->
     <select id="getInfo" resultType="java.util.Map">
         SELECT career_id AS careerId,
@@ -182,16 +187,26 @@
     </select>
 
     <select id="getAvailable" resultType="cn.netinnet.coursearrange.entity.NinArrange">
+
+
         SELECT *
         FROM nin_arrange
         <where>
+            <if test="week != null">
+                ADN week = #{week}
+            </if>
+            <if test="pitchNum != null">
+                ADN pitch_num = #{pitchNum}
+            </if>
             <if test="teacherId != null or houseId != null">
+            (
                 <if test="teacherId != null">
                     OR teacher_id = #{teacherId}
                 </if>
                 <if test="houseId != null">
                     OR house_id = #{houseId}
                 </if>
+            )
             </if>
         </where>
     </select>

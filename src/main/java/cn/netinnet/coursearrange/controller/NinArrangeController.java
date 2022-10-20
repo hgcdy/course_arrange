@@ -3,9 +3,11 @@ package cn.netinnet.coursearrange.controller;
 
 import cn.netinnet.coursearrange.bo.NinArrangeBo;
 import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.mapper.NinArrangeMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.util.UserUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -33,6 +35,7 @@ import java.util.Map;
 public class NinArrangeController {
     @Autowired
     private INinArrangeService ninArrangeService;
+
 
     //跳转排课页面
     @GetMapping("/nin-arrange")
@@ -66,6 +69,16 @@ public class NinArrangeController {
     @GetMapping("/nin-arrange/arrange")
     public ResultModel arrange() {
         ninArrangeService.arrange();
+        return ResultModel.ok();
+    }
+
+    /**
+     * 清空记录
+     * @return
+     */
+    @GetMapping("nin-arrange/empty")
+    public ResultModel empty() {
+        ninArrangeService.empty();
         return ResultModel.ok();
     }
 
@@ -124,6 +137,16 @@ public class NinArrangeController {
     public ResultModel alterArrange(NinArrangeBo bo) {
         ninArrangeService.alterArrange(bo);
         return null;
+    }
+
+    /**
+     * 选修课添加教室教师时可选的资源
+     * @return
+     */
+    @PostMapping("/getAvailable")
+    ResultModel getAvailable(Long id, Long teacherId, Long houseId, Integer week, Integer pitchNum){
+        Map<String, List> available = ninArrangeService.getAvailable(id, teacherId, houseId, week, pitchNum);
+        return ResultModel.ok(available);
     }
 
 

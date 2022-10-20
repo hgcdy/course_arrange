@@ -42,8 +42,14 @@ class CourseArrangeApplicationTests {
     private NinArrangeMapper ninArrangeMapper;
 
 
+
     @Test
     void contextLoads() {
+        Map<String, List> available = ninArrangeService.getAvailable(406235486637396699L, 972914525964923264L, null, 1, null);
+        System.out.println(available.get("teacherList"));
+        System.out.println(available.get("houseList"));
+        System.out.println(available.get("timeList"));
+
 //     ninArrangeService.arrange();
 //        Map<String, String> info = ninArrangeService.getInfo(null, null, 1L, null);
 //        System.out.println(info);

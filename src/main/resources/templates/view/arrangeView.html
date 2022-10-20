@@ -46,6 +46,7 @@
     <span>
         <button type="button" class="btn btn-info" id="query">查询</button>
         <button type="button" class="btn btn-info" id="reset">重置</button>
+        <button type="button" class="btn btn-info" id="empty">清空</button>
         <button type="button" class="btn btn-info" id="arrange">自动排课</button>
     </span>
 </div>
@@ -128,23 +129,42 @@
 </div>
 
 
-<!--<div id="arrangeAlter">-->
-<!--    <select name="" id="teacherId">-->
+<div id="arrangeAlter">
+    <div>
+        <label for="teacherId">教师: </label>
+        <select name="" id="teacherId">
+            <option value=""></option>
+            <option value="1">是</option>
+            <option value="2">否</option>
 
-<!--    </select>-->
-<!--    <select name="" id="houseId">-->
+        </select>
+    </div>
+    <div>
+        <label for="houseId">教室:</label>
+        <select name="" id="houseId">
+            <option value=""></option>
+        </select>
+    </div>
+    <div>
+        <label for="week_">星期:</label>
+        <select name="" id="week_">
+            <option value=""></option>
 
-<!--    </select>-->
-<!--    <select name="" id="time">-->
+        </select>
+    </div>
+    <div>
+        <label for="pitchNum_">节数:</label>
+        <select name="" id="pitchNum_">
+            <option value=""></option>
 
-<!--    </select>-->
-
-<!--    <div style="position: absolute;width: 200px">-->
-<!--        <button type="button" class="btn btn-info" >查询</button>-->
-<!--        <button type="button" class="btn btn-info" >查询</button>-->
-<!--    </div>-->
-
-<!--</div>-->
+        </select>
+    </div>
+    <div style="position: absolute;width: 200px">
+        <button type="button" class="btn btn-info">确定</button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button type="button" class="btn btn-info">取消</button>
+    </div>
+</div>
 
 </body>
 </html>

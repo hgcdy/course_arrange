@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.bo.AvailableBo;
 import cn.netinnet.coursearrange.bo.NinArrangeBo;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
@@ -22,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * <p>
@@ -61,7 +61,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void arrange() {
-
 
         long oldData = System.currentTimeMillis();
         //获取选修的排课记录
@@ -389,6 +388,10 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     }
 
+    @Override
+    public void empty() {
+        ninArrangeMapper.empty();
+    }
 
     @Override
     public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
@@ -817,14 +820,15 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 String str = "" + i.getWeek() + i.getPitchNum();
                 return str;
             }).collect(Collectors.toList());
-            for (int i = 1; i <=7 ; i++) {
-                ok: for (int j = 1; j <= 5; j++) {
+            for (int i = 1; i <= 7; i++) {
+                ok:
+                for (int j = 1; j <= 5; j++) {
                     for (String s : timeList) {
-                        if (s.equals(""+i+j)) {
+                        if (s.equals("" + i + j)) {
                             continue ok;
                         }
                     }
-                    list.add(""+i+j);
+                    list.add("" + i + j);
                 }
             }
 
@@ -840,28 +844,63 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
     @Override
-    public Map<String, List> getAvailable(Long id) {
+    public Map<String, List> getAvailable(Long id, Long teacherId, Long houseId, Integer week, Integer pitchNum) {
         NinArrange ninArrange = ninArrangeMapper.selectById(id);
-        Long teacherId = ninArrange.getTeacherId();
-        Long houseId = ninArrange.getHouseId();
-        Integer week = ninArrange.getWeek();
-        Integer pitchNum = ninArrange.getPitchNum();
         Long courseId = ninArrange.getCourseId();
 
         Integer houseType = ninCourseMapper.selectById(courseId).getHouseType();
 
-        //符合条件的教师和教室
-        List<NinTeacher> ninTeachers = ninTeacherMapper.getSelectByCourse(courseId);
-        List<NinHouse> ninHouses = ninHouseMapper.selectList(new QueryWrapper<>()).stream().filter(item -> item.getHouseType() == houseType).collect(Collectors.toList());
+        List<NinTeacher> ninTeachers = new ArrayList<>();
+        List<NinHouse> ninHouses = new ArrayList<>();
 
         List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<>());
-        Map<Long, List<NinArrange>> teacherArrangeMap = ninArranges.stream().collect(Collectors.groupingBy(NinArrange::getTeacherId));
+        Map<Long, List<NinArrange>> teacherMap = ninArranges.stream().filter(i -> i.getTeacherId() != null).collect(Collectors.groupingBy(NinArrange::getTeacherId));
+        Map<Long, List<NinArrange>> houseMap = ninArranges.stream().filter(i -> i.getHouseId() != null).collect(Collectors.groupingBy(NinArrange::getHouseId));
+
+        List<Integer> timeList = new ArrayList<Integer>(35);
+        for (int i = 1; i <=7 ; i++) {
+            if (week != null && week != i) {
+                continue;
+            }
+            for (int j = 1; j <= 5; j++) {
+                if (pitchNum != null && pitchNum != j) {
+                    continue;
+                }
+                timeList.add(i * 10 +j);
+            }
+        }
+
+        //符合条件的教师和教室
+        if (teacherId == null) {
+            ninTeachers = ninTeacherMapper.getSelectByCourse(courseId);
+        } else {
+            ninTeachers.add(ninTeacherMapper.selectById(teacherId));
+            List<NinArrange> arrangeList = teacherMap.get(teacherId);
+            List<Integer> collect = arrangeList.stream().map(a -> {
+                Integer i = a.getWeek() * 10 + a.getPitchNum();
+                return i;
+            }).collect(Collectors.toList());
+            timeList.removeAll(collect);
+        }
+
+        if (houseId == null) {
+            ninHouses = ninHouseMapper.selectList(new QueryWrapper<>()).stream().filter(item -> item.getHouseType() == houseType).collect(Collectors.toList());
+        } else {
+            ninHouses.add(ninHouseMapper.selectById(houseId));
+            List<NinArrange> arrangeList = houseMap.get(houseId);
+            List<Integer> collect = arrangeList.stream().map(a -> {
+                int i = a.getWeek() * 10 + a.getPitchNum();
+                return i;
+            }).collect(Collectors.toList());
+            timeList.removeAll(collect);
+        }
 
 
-        Map<String, List> map = new HashMap<>();
-        map.put("teacherList", null);
-        map.put("houseList", null);
-        map.put("timeList", null);
+        HashMap<String, List> map = new HashMap<>();
+        map.put("teacherList", ninTeachers);
+        map.put("houseList", ninHouses);
+        map.put("timeList", timeList);
+
         return map;
     }
 
