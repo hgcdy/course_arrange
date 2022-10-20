@@ -111,12 +111,7 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
         return ninStudentMapper.insert(ninStudent);
     }
 
-    @Override
-    public int delBatch(List<Long> ids) {
-        int i = ninStudentMapper.deleteBatchIds(ids);
-        //todo 批量班级人数-1，但接口未使用
-        return i;
-    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)

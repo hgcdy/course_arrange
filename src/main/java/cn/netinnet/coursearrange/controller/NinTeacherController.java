@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/nin-teacher")
-@RequiresRoles(value = {"admin"}, logical = Logical.OR)
+@RequiresRoles(value = {"admin", "teacher"}, logical = Logical.OR)
 public class NinTeacherController {
 
     @Autowired

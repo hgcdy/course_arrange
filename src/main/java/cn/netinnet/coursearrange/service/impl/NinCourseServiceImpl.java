@@ -1,9 +1,11 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.bo.NinSettingBo;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinCourseService;
+import cn.netinnet.coursearrange.service.INinSettingService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.alibaba.fastjson.JSON;
@@ -41,6 +43,8 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     @Autowired
     private NinSettingMapper ninSettingMapper;
     @Autowired
+    private INinSettingService ninSettingService;
+    @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
     @Autowired
     private NinTeacherCourseMapper ninTeacherCourseMapper;
@@ -74,6 +78,14 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         if (integer > 0) {
             throw new ServiceException(412, "重名");
         }
+
+        Integer seat = ninHouseMapper.selectList(new QueryWrapper<>(new NinHouse() {{
+            setHouseType(ninCourse.getHouseType());
+        }})).stream().sorted(Comparator.comparing(NinHouse::getSeat).reversed()).collect(Collectors.toList()).get(0).getSeat();
+        if (ninCourse.getMaxClassNum() * 50 > seat) {
+            throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的教室");
+        }
+
         ninCourse.setId(IDUtil.getID());
         ninCourse.setCreateUserId(UserUtil.getUserInfo().getUserId());
         ninCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
@@ -136,6 +148,11 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             setCourseId(id);
         }}));
 
+        //删除选课权限表
+        ninSettingMapper.delete(new QueryWrapper<>(new NinSetting() {{
+            setCourseId(id);
+        }}));
+
         if (course.getMust() == 0) {
             //删除学生-课程
             ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
@@ -172,7 +189,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
                 //班级课程数-1
                 ninClassMapper.alterBatchCourseNum(maps);
                 //删除专业-课程表
-                ninCareerCourseMapper.delete(new QueryWrapper<>(new NinCareerCourse(){{
+                ninCareerCourseMapper.delete(new QueryWrapper<>(new NinCareerCourse() {{
                     setCourseId(id);
                 }}));
             }
@@ -206,7 +223,14 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
                     i.getMust() == sign
             ).collect(Collectors.toList());
         }
+        UserInfo userInfo = UserUtil.getUserInfo();
+        String userType = userInfo.getUserType();
+        if (!userType.equals("admin")) {
+            Map<Long, NinSettingBo> boMap = ninSettingService.getSelectList(userType, "开放中", null).stream().collect(Collectors.toMap(NinSettingBo::getCourseId, Function.identity()));
+            courseList = courseList.stream().filter(i -> boMap.get(i.getId()) != null).collect(Collectors.toList());
+        }
         return courseList;
+
     }
 
     @Override

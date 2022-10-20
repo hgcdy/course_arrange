@@ -21,6 +21,10 @@ require(['../config'], function () {
                 url: "nin-teacher/getPageSelectList",
                 dataType: "json",
                 type: "post",
+                data: {
+                    page: 1,
+                    size: 100
+                },
                 success: function (data) {
                     if (data.code == 200) {
                         var list = data.data.list;

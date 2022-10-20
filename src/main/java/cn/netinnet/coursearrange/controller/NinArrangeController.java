@@ -2,8 +2,10 @@ package cn.netinnet.coursearrange.controller;
 
 
 import cn.netinnet.coursearrange.bo.NinArrangeBo;
+import cn.netinnet.coursearrange.entity.UserInfo;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
+import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.extension.api.R;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -27,7 +29,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("")
-@RequiresRoles(value = {"admin"}, logical = Logical.OR)
+@RequiresRoles(value = {"admin", "teacher", "student"}, logical = Logical.OR)
 public class NinArrangeController {
     @Autowired
     private INinArrangeService ninArrangeService;
@@ -52,7 +54,12 @@ public class NinArrangeController {
     //教室申请页面
     @GetMapping("/applyHouse")
     public ModelAndView gotoApplyHouseView() {
-        return new ModelAndView("view/applyHouseView");
+        ModelAndView modelAndView = new ModelAndView("view/applyHouseView");
+        UserInfo userInfo = UserUtil.getUserInfo();
+        if (userInfo.getUserType().equals("teacher")) {
+            modelAndView.addObject("teacherId", userInfo.getUserId().toString());
+        }
+        return modelAndView;
     }
 
     //自动排课

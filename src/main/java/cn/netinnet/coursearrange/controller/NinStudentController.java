@@ -91,20 +91,7 @@ public class NinStudentController {
         return ResultModel.error(412, "删除失败");
     }
 
-    /**
-     * 批量删除
-     * @param Ids
-     * @return
-     */
-    @PostMapping("/delBatchStudent")
-    public ResultModel delBatchStudent(String Ids){
-        List<Long> studentIdList = JSON.parseArray(Ids, Long.class);
-        int i = ninStudentService.delBatch(studentIdList);
-        if (i > 0){
-            return ResultModel.ok();
-        }
-        return ResultModel.error(412, "删除失败");
-    }
+
 
     /**
      * 修改

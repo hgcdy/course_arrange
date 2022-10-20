@@ -232,7 +232,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 arrange.setHouseId((long) houseType);
             } else {
                 //符合教室类型，大于班级人数的教室,排序
-                //todo 教室最多可容纳的人数小于该教学班的人数，添加课程时提醒
                 List<NinHouse> collect = integerListNinHouseMap.get(houseType).stream().filter(i -> i.getSeat() >= arrange.getPeopleNum()).collect(Collectors.toList());
                 Integer seat = collect.stream().min(Comparator.comparing(NinHouse::getSeat)).get().getSeat();
                 List<NinHouse> ninHouses = collect.stream().collect(Collectors.groupingBy(NinHouse::getSeat)).get(seat);
@@ -629,7 +628,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
         NinArrange arrange = new NinArrange();
         arrange.setId(IDUtil.getID());
-        arrange.setCareerId(-1L);//todo 专业暂时写-1
+        arrange.setCareerId(-1L);
         arrange.setTeachClassId(teachClassId);
         arrange.setTeacherId(teacherId);
         arrange.setHouseId(houseId);

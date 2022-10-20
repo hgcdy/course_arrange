@@ -154,7 +154,6 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delById(Long id) {
-        //todo 未测试
         NinClass ninClass = ninClassMapper.selectById(id);
         if (ninClass.getCareerId() == 0) {
             //选修班级

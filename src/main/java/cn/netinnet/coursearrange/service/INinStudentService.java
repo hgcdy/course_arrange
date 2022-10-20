@@ -35,12 +35,7 @@ public interface INinStudentService extends IService<NinStudent> {
      */
     int addSingle(NinStudent ninStudent);
 
-    /**
-     * 批量删除
-     * @param ids 学生id集合
-     * @return
-     */
-    int delBatch(List<Long> ids);
+
 
     /**
      * 单个删除

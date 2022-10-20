@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.service.impl;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
+import cn.netinnet.coursearrange.entity.UserInfo;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,12 +40,21 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
 
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size, String teacherName) {
-        PageHelper.startPage(page, size);
-        List<NinTeacher> list = ninTeacherMapper.getSelectList(teacherName);
-        PageInfo<NinTeacher> pageInfo = new PageInfo<>(list);
+        UserInfo userInfo = UserUtil.getUserInfo();
         HashMap<String, Object> map = new HashMap<>();
-        map.put("list", pageInfo.getList());
-        map.put("total", pageInfo.getTotal());
+        if (userInfo.getUserType().equals("teacher")) {
+            NinTeacher ninTeacher = ninTeacherMapper.selectById(userInfo.getUserId());
+            List<NinTeacher> list = new ArrayList<>();
+            list.add(ninTeacher);
+            map.put("list", list);
+            map.put("total", 1);
+        } else {
+            PageHelper.startPage(page, size);
+            List<NinTeacher> list = ninTeacherMapper.getSelectList(teacherName);
+            PageInfo<NinTeacher> pageInfo = new PageInfo<>(list);
+            map.put("list", pageInfo.getList());
+            map.put("total", pageInfo.getTotal());
+        }
         return map;
     }
 
