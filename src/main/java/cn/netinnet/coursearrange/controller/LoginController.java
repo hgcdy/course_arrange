@@ -97,4 +97,11 @@ public class LoginController {
         return ResultModel.ok(token);
     }
 
+    @GetMapping("nin-class-course")
+    public ModelAndView gotoView(Long classId) {
+        ModelAndView modelAndView = new ModelAndView("view/classCourseView");
+        modelAndView.addObject("classId", String.valueOf(classId));
+        return modelAndView;
+    }
+
 }
