@@ -2,6 +2,7 @@ package cn.netinnet.coursearrange.controller;
 
 
 import cn.netinnet.coursearrange.bo.NinArrangeBo;
+import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.UserInfo;
 import cn.netinnet.coursearrange.mapper.NinArrangeMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
@@ -134,9 +135,12 @@ public class NinArrangeController {
 
     //编辑
     @PostMapping("nin-arrange/alterArrange")
-    public ResultModel alterArrange(NinArrangeBo bo) {
-        ninArrangeService.alterArrange(bo);
-        return null;
+    public ResultModel alterArrange(NinArrange arrange) {
+        int i = ninArrangeService.alterArrange(arrange);
+        if (i > 0) {
+            return ResultModel.ok();
+        }
+        return ResultModel.error(412, "编辑失败");
     }
 
     /**

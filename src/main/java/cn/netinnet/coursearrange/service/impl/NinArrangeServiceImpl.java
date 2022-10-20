@@ -768,8 +768,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
     @Override
-    public int alterArrange(NinArrangeBo bo) {
-        return 0;
+    public int alterArrange(NinArrange arrange) {
+        arrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
+        return ninArrangeMapper.updateById(arrange);
     }
 
     @Override
@@ -873,6 +874,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //符合条件的教师和教室
         if (teacherId == null) {
             ninTeachers = ninTeacherMapper.getSelectByCourse(courseId);
+            if (ninTeachers == null || ninTeachers.size() == 0) {
+                throw new ServiceException(412, "已无可选的教师");
+            }
         } else {
             ninTeachers.add(ninTeacherMapper.selectById(teacherId));
             List<NinArrange> arrangeList = teacherMap.get(teacherId);
@@ -885,6 +889,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
         if (houseId == null) {
             ninHouses = ninHouseMapper.selectList(new QueryWrapper<>()).stream().filter(item -> item.getHouseType() == houseType).collect(Collectors.toList());
+            if (ninHouses == null || ninHouses.size() == 0) {
+                throw new ServiceException(412, "已无可选的教室");
+            }
         } else {
             ninHouses.add(ninHouseMapper.selectById(houseId));
             List<NinArrange> arrangeList = houseMap.get(houseId);
@@ -895,12 +902,14 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             timeList.removeAll(collect);
         }
 
+        if (timeList == null || timeList.size() == 0) {
+            throw new ServiceException(412, "已无可选的时间段");
+        }
 
         HashMap<String, List> map = new HashMap<>();
         map.put("teacherList", ninTeachers);
         map.put("houseList", ninHouses);
         map.put("timeList", timeList);
-
         return map;
     }
 

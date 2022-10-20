@@ -204,6 +204,15 @@ require(['../config'], function () {
             })
         }
 
+/*
+获取单条的数据
+展示
+调用getAvailable
+如果原本为空,生成列表
+如果不为空,空和原本那条
+每次修改，列表该变
+*/
+
 
         //编辑
         function alter(id) {
@@ -220,7 +229,13 @@ require(['../config'], function () {
                         var houseId = data.data.houseId;
                         var week = data.data.week;
                         var pitchNum = data.data.pitchNum;
-                        getAvailable(id, teacherId, houseId, week, pitchNum)
+                        getAvailable(id, teacherId, houseId, week, pitchNum);
+
+                        //点击确认时，获取值，修改，删除select，隐藏，获取数据
+
+                        //取消时，隐藏，删除select
+
+
                     }
                 }
             })
@@ -244,6 +259,12 @@ require(['../config'], function () {
                         var teacherList = data.data.teacherList;
                         var houseList = data.data.houseList;
                         var timeList = data.data.timeList;
+
+                        //生成下拉列表
+                        //初始值，如果原本的值不为空，则为初始值，否则空
+
+                        //当检测到select值变更时,调用getAvailable
+
 
                     }
                 }

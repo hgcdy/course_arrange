@@ -35,7 +35,7 @@ public interface INinArrangeService extends IService<NinArrange> {
 
     int delArrange(Long id);
 
-    int alterArrange(NinArrangeBo bo);
+    int alterArrange(NinArrange arrange);
 
 
     /**

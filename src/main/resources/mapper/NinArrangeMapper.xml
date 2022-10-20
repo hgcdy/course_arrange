@@ -187,9 +187,7 @@
     </select>
 
     <select id="getAvailable" resultType="cn.netinnet.coursearrange.entity.NinArrange">
-
-
-        SELECT *
+        SELECT COUNT(1)
         FROM nin_arrange
         <where>
             <if test="week != null">
