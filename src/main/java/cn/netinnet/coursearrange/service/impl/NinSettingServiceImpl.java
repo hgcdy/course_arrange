@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.bo.NinSettingBo;
 import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinSettingMapper;
@@ -36,43 +37,46 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
 
 
     @Override
-    public List<Map<String, Object>> getSelectList(String userType, String state, String courseName) {
-        List<Map<String, Object>> result = ninSettingMapper.getSelectList(userType, courseName).stream().map(map -> {
+    public List<NinSettingBo> getSelectList(String userType, String state, String courseName) {
+        List<NinSettingBo> result = ninSettingMapper.getSelectList(userType, courseName).stream().map(bo -> {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime openTime = (LocalDateTime) map.get("openTime");
-            map.put("openTime", dtf.format(openTime));
-            LocalDateTime closeTime = (LocalDateTime) map.get("closeTime");
-            map.put("closeTime", dtf.format(closeTime));
+            String openTime = bo.getOpenTime();
+            String closeTime = bo.getCloseTime();
             LocalDateTime dateTime = LocalDateTime.now();
-            int i = (int) map.get("openState");
+            int i = bo.getOpenState();
             if (i == 0) {
-                map.put("state", "开放中");
+                bo.setState("开放中");
             } else if (i == 1){
-                map.put("state", "未开放");
+                bo.setState("未开放");
             } else if (i == 2) {
-                boolean after = dateTime.isAfter(openTime);
-                boolean after1 = dateTime.isAfter(closeTime);
+                boolean after = dateTime.isAfter(LocalDateTime.parse(openTime, dtf));
+                boolean after1 = dateTime.isAfter(LocalDateTime.parse(closeTime, dtf));
                 if (!after) {
-                    map.put("state", "未开放");
+                    bo.setState("未开放");
                 } else if (after && !after1){
-                    map.put("state", "开放中");
+                    bo.setState("开放中");
                 } else {
-                    map.put("state", "已结束");
+                    bo.setState("已结束");
                 }
             }
-            return map;
+            return bo;
         }).collect(Collectors.toList());
         if (state != null && !state.equals("")) {
-            result = result.stream().filter(i -> i.get("state").equals(state)).collect(Collectors.toList());
+            result = result.stream().filter(i -> i.getState().equals(state)).collect(Collectors.toList());
         }
         return result;
     }
 
     @Override
-    public ResultModel alterBatch(String settingIds, Integer openState, LocalDateTime openTime, LocalDateTime closeTime) {
+    public ResultModel alterBatch(String settingIds, Integer openState, String openTime, String closeTime) {
         List<Long> settingIdList = JSON.parseArray(settingIds, Long.class);
+
         if (settingIdList != null && settingIdList.size() != 0) {
-            ninSettingMapper.alterBatch(settingIdList, openState, openTime, closeTime);
+            if (openState == 2) {
+                ninSettingMapper.alterBatch(settingIdList, openState, LocalDateTime.parse(openTime), LocalDateTime.parse(closeTime));
+            } else {
+                ninSettingMapper.alterBatch(settingIdList, openState, null, null);
+            }
             return ResultModel.ok();
         } else {
             throw new ServiceException(412, "id不得为空");

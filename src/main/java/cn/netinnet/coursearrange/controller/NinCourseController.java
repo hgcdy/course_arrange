@@ -24,7 +24,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/nin-course")
-@RequiresRoles(value = {"admin"}, logical = Logical.OR)
+@RequiresRoles(value = {"admin", "teacher", "student"}, logical = Logical.OR)
 public class NinCourseController {
 
     @Autowired
@@ -61,6 +61,7 @@ public class NinCourseController {
      * @return
      */
     @PostMapping("/addCourse")
+    @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel addCourse(NinCourse ninCourse){
         int i = ninCourseService.addSingle(ninCourse);
         if (i > 0){
@@ -75,6 +76,7 @@ public class NinCourseController {
      * @return
      */
     @PostMapping("/delCourse")
+    @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel delCourse(@NotNull Long id){
         int i = ninCourseService.delById(id);
         if (i > 0){
@@ -89,6 +91,7 @@ public class NinCourseController {
      * @return
      */
     @PostMapping("/alterCourse")
+    @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel alterCourse(NinCourse ninCourse){
         int i = ninCourseService.alterSingle(ninCourse);
         if (i > 0){

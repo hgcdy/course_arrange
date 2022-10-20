@@ -3,9 +3,11 @@ package cn.netinnet.coursearrange.controller;
 
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinStudentCourse;
+import cn.netinnet.coursearrange.entity.UserInfo;
 import cn.netinnet.coursearrange.mapper.NinStudentCourseMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
+import cn.netinnet.coursearrange.util.UserUtil;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +28,23 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/nin-student-course")
-@RequiresRoles(value = {"admin"}, logical = Logical.OR)
+@RequiresRoles(value = {"admin", "student"}, logical = Logical.OR)
 public class NinStudentCourseController {
     @Autowired
     private INinStudentCourseService ninStudentCourseService;
 
     @GetMapping("")
     public ModelAndView gotoView(Long studentId){
-        ModelAndView modelAndView = new ModelAndView("view/studentCourseView");
+        ModelAndView modelAndView = new ModelAndView();
+        if (studentId == null) {
+            UserInfo userInfo = UserUtil.getUserInfo();
+            if (userInfo.getUserType().equals("student")) {
+                studentId = userInfo.getUserId();
+                modelAndView = new ModelAndView("viewStu/studentCourseView");
+            }
+        } else {
+            modelAndView = new ModelAndView("view/studentCourseView");
+        }
         modelAndView.addObject("studentId", String.valueOf(studentId));
         return modelAndView;
     }

@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.mapper;
 
+import cn.netinnet.coursearrange.bo.NinSettingBo;
 import cn.netinnet.coursearrange.entity.NinSetting;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -21,7 +22,7 @@ import java.util.Map;
 @Mapper
 public interface NinSettingMapper extends BaseMapper<NinSetting> {
 
-    List<Map<String, Object>> getSelectList(@Param("userType") String userType, @Param("courseName") String courseName);
+    List<NinSettingBo> getSelectList(@Param("userType") String userType, @Param("courseName") String courseName);
 
     void alterBatch(@Param("list") List<Long> settingIdList, @Param("openState") Integer openState, @Param("openTime") LocalDateTime openTime, @Param("closeTime") LocalDateTime closeTime);
 

@@ -3,9 +3,51 @@ require(['../config'], function () {
         var userType = "teacher";
         var state = null;
         var courseName = null;
-        var settingIds = null;
         const STR = ["courseName", "state", "openTime", "closeTime"];
         query();
+
+        $("#dropupStateTypeButton").next("ul").find("a").click(function () {
+            $("#dropupStateTypeButton").text($(this).text());
+        })
+
+        //查询按钮
+        $("#query").click(function () {
+            state = $("#dropupStateTypeButton").text();
+            if ($.trim(state) == "状态") {
+                state = null;
+            }
+            courseName = $("#courseName").val();
+            query();
+        })
+        //重置按钮
+        $("#reset").click(function () {
+            state = null;
+            $("#dropupCollegeButton").text("状态");
+            courseName = null;
+            $("#courseName").val(null);
+            query();
+        })
+
+        //批量修改按钮
+        $("#disparkBatch, #finishBatch, #timingBatch").click(function () {
+            var $input = $("input[name='checkbox']");
+            if ($input != null && $input.length > 0) {
+                var str = "["
+                for (let i = 0; i < $input.length; i++) {
+                    if ($($input[i]).is(':checked')) {
+                        str = str + $($input[i]).attr("id") + ',';
+                    }
+                }
+                str = str + "]";
+                alter(str, $(this).attr("data-openState"));
+            }
+        })
+
+        //教师学生切换
+        $("#student, #teacher").click(function () {
+            userType = $(this).attr("id");
+            query();
+        })
 
         // 获取数据
         function query() {
@@ -20,47 +62,63 @@ require(['../config'], function () {
                 },
                 success: function (data) {
                     if (data.code == 200) {
-                        if ((data.data).length != 0) {
-                            var num = 1;
-                            var size = data.data.length;
-                            var $tbody = $("tbody");
-                            $tbody.empty();
-                            for (let i = 0; i < size; i++) {
-                                var $tr = $("<tr></tr>");
-                                var input = $("<input type='checkbox' class='setting'>").attr("id", data.data[i]["id"]);
-                                var $th = $("<th></th>").append(input);
-                                var $thNum = $("<th></th>").text(num++).attr("scope", "row");
-                                $tr.append($th, $thNum);
-                                for (let j = 0; j < STR.length; j++) {
-                                    var $td = $("<td></td>").text(data.data[i][STR[j]]);
-                                    $tr.append($td);
-                                }
-                                var bu1 = "<button type='button' data-openState='0' class='btn btn-info dispark'>开放</button>&nbsp;";
-                                var bu2 = "<button type='button' data-openState='1' class='btn btn-info finish'>不开放</button>&nbsp;";
-                                var bu3 = "<button type='button' data-openState='2' class='btn btn-info timing'>定时开放</button>&nbsp;";
-                                var $td = $("<td></td>");
-                                $td.append(bu1, bu2, bu3);
+                        var num = 1;
+                        var size = data.data.length;
+                        var $tbody = $("tbody");
+                        $tbody.empty();
+                        $("#checkAll").prop('checked', false);
+                        for (let i = 0; i < size; i++) {
+                            var $tr = $("<tr></tr>");
+                            var input = $("<input type='checkbox' name='checkbox' class='setting'>").attr("id", data.data[i]["id"]);
+                            var $th = $("<th></th>").append(input);
+                            var $thNum = $("<th></th>").text(num++).attr("scope", "row");
+                            $tr.append($th, $thNum);
+                            for (let j = 0; j < STR.length; j++) {
+                                var $td = $("<td></td>").text(data.data[i][STR[j]]);
                                 $tr.append($td);
-                                $tbody.append($tr);
                             }
-                            $(".dispark, .finish, .timing").click(function () {
-                                var id = $(this).parent().parent().children("th").children("input").attr("id");
-                                settingIds = "[" + id + "]";
-                                alter(settingIds, $(this).attr("data-openState"));
-                            })
-
+                            var bu1 = "<button type='button' data-openState='0' class='btn btn-info dispark'>开放</button>&nbsp;";
+                            var bu2 = "<button type='button' data-openState='1' class='btn btn-info finish'>不开放</button>&nbsp;";
+                            var bu3 = "<button type='button' data-openState='2' class='btn btn-info timing'>定时开放</button>&nbsp;";
+                            var $td = $("<td></td>");
+                            $td.append(bu1, bu2, bu3);
+                            $tr.append($td);
+                            $tbody.append($tr);
                         }
+                        $("#checkAll").unbind("click");
+                        $("#checkAll").click(function () {
+                            if ($("#checkAll").is(':checked')) {
+                                $("input[name='checkbox']").prop('checked', true);
+                            } else {
+                                $("input[name='checkbox']").prop('checked', false);
+                            }
+                        })
+
+                        $("input[name='checkbox']").click(function () {
+                            if (!$(this).is(':checked')) {
+                                $("#checkAll").prop('checked', false);
+                            }
+                        })
+
+
+                        $(".dispark, .finish, .timing").click(function () {
+                            var id = $(this).parent().parent().children("th").children("input").attr("id");
+                            alter("[" + id + "]", $(this).attr("data-openState"));
+                        })
+
+
                     }
                 }
             })
         }
 
-
+        //修改
         function alter(settingIds, openState) {
             if (openState == 2) {
                 var $openTime = $("<tr><td><label for='openTime'>开始时间:</label></td><td><input type='datetime-local' id='openTime'></td></tr>");
                 var $closeTime = $("<tr><td><label for='closeTime'>结束时间:</label></td><td><input type='datetime-local' id='closeTime'></td></tr>");
                 util.popup([$openTime, $closeTime], ["openTime", "closeTime"], $update);
+
                 function $update(record) {
                     $.ajax({
                         url: "nin-setting/alterBatch",
@@ -97,8 +155,6 @@ require(['../config'], function () {
                     }
                 })
             }
-
-
 
 
         }

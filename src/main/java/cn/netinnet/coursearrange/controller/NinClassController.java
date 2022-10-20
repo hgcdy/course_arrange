@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/nin-class")
-@RequiresRoles(value = {"admin"}, logical = Logical.OR)
+@RequiresRoles(value = {"admin", "student", "teacher"}, logical = Logical.OR)
 public class NinClassController {
     @Autowired
     private INinClassService ninClassService;
@@ -89,6 +89,7 @@ public class NinClassController {
      * @return
      */
     @PostMapping("/addClass")
+    @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel addClass(NinClass ninClass) {
         int i = ninClassService.addSingle(ninClass);
         if (i > 0) {
@@ -104,6 +105,7 @@ public class NinClassController {
      * @return
      */
     @PostMapping("/delClass")
+    @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel delClass(Long id) {
         int i = ninClassService.delById(id);
         if (i > 0) {
@@ -119,6 +121,7 @@ public class NinClassController {
      * @return
      */
     @PostMapping("/delClassStudent")
+    @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel delClassStudent(Long id) {
         int i = ninClassService.delBatchStudent(id);
         if (i > 0) {
@@ -134,6 +137,7 @@ public class NinClassController {
      * @return
      */
     @PostMapping("/alterClass")
+    @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel alterClass(NinClass ninClass) {
         int i = ninClassService.alterSingle(ninClass);
         if (i > 0) {

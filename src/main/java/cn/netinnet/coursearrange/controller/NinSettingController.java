@@ -1,6 +1,8 @@
 package cn.netinnet.coursearrange.controller;
 
 
+import cn.netinnet.coursearrange.bo.NinSettingBo;
+import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,16 +42,13 @@ public class NinSettingController {
 
     @GetMapping("/getSelectList")
     public ResultModel getSelectList(String userType, String state, String courseName) {
-        List<Map<String, Object>> list = ninSettingService.getSelectList(userType, state , courseName);
+        List<NinSettingBo> list = ninSettingService.getSelectList(userType, state , courseName);
         return ResultModel.ok(list);
     }
 
     @PostMapping("/alterBatch")
     public ResultModel alterBatch(String settingIds, Integer openState, String openTime, String closeTime) {
-        //todo 报错
-        return ninSettingService.alterBatch(settingIds, openState,
-                openTime == null ? null : LocalDateTime.parse(openTime),
-                closeTime == null ? null : LocalDateTime.parse(closeTime));
+            return ninSettingService.alterBatch(settingIds, openState, openTime, closeTime);
     }
 
 

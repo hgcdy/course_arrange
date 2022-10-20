@@ -19,13 +19,6 @@
                 <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
                     <h3>课程自动排课系统</h3>
                 </a>
-<!--                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0" style="width: 500px;">-->
-<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-secondary">Home</a></li>-->
-<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-white">Features</a></li>-->
-<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-white">Pricing</a></li>-->
-<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-white">FAQs</a></li>-->
-<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-white">About</a></li>-->
-<!--                </ul>-->
                 <div class="text-end" style="position: absolute;right: 0">
                     <button type="button" class="btn btn-outline-light me-5">logout</button>
                 </div>
@@ -54,47 +47,21 @@
             <li class="mb-1">
                 <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"
                         data-bs-target="#home-collapse" aria-expanded="false" style="font-size:20px">
-                    用户管理
+                    功能
                 </button>
                 <div class="collapse" id="home-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-class">班级管理</a></li>
-                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-teacher">教师管理</a></li>
-                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-student">学生管理</a></li>
+                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-student-course">选课</a></li>
+                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-student">课程表查看</a></li>
+                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-student">班级课程表查看</a></li>
                     </ul>
                 </div>
             </li>
-<!--            <li class="mb-1">-->
-<!--                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"-->
-<!--                        data-bs-target="#dashboard-collapse" aria-expanded="false" style="font-size:20px">-->
-<!--                    资源管理-->
-<!--                </button>-->
-<!--                <div class="collapse" id="dashboard-collapse">-->
-<!--                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">-->
-<!--                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-course">课程设置</a></li>-->
-<!--                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-house">教室设置</a></li>-->
-<!--                    </ul>-->
-<!--                </div>-->
-<!--            </li>-->
-<!--            <li class="mb-1">-->
-<!--                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"-->
-<!--                        data-bs-target="#orders-collapse" aria-expanded="false" style="font-size:20px">-->
-<!--                    排课管理-->
-<!--                </button>-->
-<!--                <div class="collapse" id="orders-collapse">-->
-<!--                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">-->
-<!--                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-arrange">排课</a></li>-->
-<!--&lt;!&ndash;                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="applyHouse">教室申请</a></li>&ndash;&gt;-->
-<!--                        <li><a href="javaScript:void(0)" class="link-dark rounded">课程表</a></li>-->
-<!--&lt;!&ndash;                        data-html="nin-arrange/courseForm"&ndash;&gt;-->
-<!--                    </ul>-->
-<!--                </div>-->
-<!--            </li>-->
         </ul>
     </div>
 <!--    iframe-->
     <div id="iframe" class="border">
-        <iframe th:src="@{nin-class}" frameborder="0"></iframe>
+        <iframe th:src="@{nin-student-course}" frameborder="0"></iframe>
     </div>
 </div>
 

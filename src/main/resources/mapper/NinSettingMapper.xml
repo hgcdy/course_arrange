@@ -24,9 +24,13 @@
 
     <update id="alterBatch">
         UPDATE nin_setting SET
-            open_state = #{openState},
-            open_time = #{openTime},
-            close_time = #{closeTime},
+            open_state = #{openState}
+            <if test="openTime != null">
+                ,open_time = #{openTime}
+            </if>
+            <if test="closeTime != null">
+                ,close_time = #{closeTime}
+            </if>
         WHERE id IN
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")" >
             #{item}
@@ -35,12 +39,19 @@
     </update>
 
 
-    <select id="getSelectList" resultType="java.util.Map">
-        SELECT nin_setting.id AS id, course_id AS courseId, course_name AS courseName, open_state AS openState, open_time AS openTime, close_time AS closeTime
+    <select id="getSelectList" resultType="cn.netinnet.coursearrange.bo.NinSettingBo">
+        SELECT *
+        FROM
+        (SELECT nin_setting.id AS id, course_id AS courseId, user_type AS userType, course_name AS courseName, open_state AS openState, open_time AS openTime, close_time AS closeTime
         FROM nin_setting INNER JOIN nin_course ON nin_setting.course_id = nin_course.id
-        WHERE nin_setting.user_type = #{userType}
+        WHERE nin_setting.open_state = 2
+        UNION ALL
+        SELECT nin_setting.id AS id, course_id AS courseId, user_type AS userType, course_name AS courseName, open_state AS openState, null AS openTime, null AS closeTime
+        FROM nin_setting INNER JOIN nin_course ON nin_setting.course_id = nin_course.id
+        WHERE nin_setting.open_state != 2) AS a
+        WHERE a.userType = #{userType}
         <if test="courseName != null and courseName != ''">
-            AND nin_course.course_name LIKE ('%', #{courseName}, '%')
+            AND a.courseName LIKE CONCAT('%', #{courseName}, '%')
         </if>
     </select>
 

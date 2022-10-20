@@ -1,22 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<!--学生选课管理-->
+<!--教师选课-->
 <head>
     <meta charset="UTF-8">
     <title>title</title>
     <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{css/style.css}" rel="stylesheet">
-    <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/studentCourse},defer=true"></script>
+    <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/teacherCourse},defer=true"></script>
     <script th:inline="javascript">
-        var studentId = [[${studentId}]];
+        var teacherId = [[${teacherId}]];
     </script>
 </head>
 <body>
-<div class="border-bottom" style="height: 5%;">
-    <button type="button" class="btn" id="back">返回</button>
-    <button type="button" class="btn" id="details">选课</button>
-    <button type="button" class="btn" id="formButton">课程表</button>
-</div>
 
 <!--表格展示-->
 <div class="bd-example" id="form">
