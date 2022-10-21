@@ -86,7 +86,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-teacher/getTeacherById",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     id: id
                 },

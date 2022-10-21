@@ -7,11 +7,9 @@ import com.alibaba.fastjson.JSON;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Map;
@@ -43,15 +41,25 @@ public class NinCareerCourseController {
         return ResultModel.ok(list);
     }
 
+    /**
+     * 批量给多个专业批量添加课程
+     * @param careerIds
+     * @param courseIds
+     * @return
+     */
     @PostMapping("/addBatchCourse")
     public ResultModel addBatchCourse(String careerIds, String courseIds) {
         List<Long> careerIdList = JSON.parseArray(careerIds, Long.class);
         List<Long> courseIdList = JSON.parseArray(courseIds, Long.class);
         ninCareerCourseService.addBatchCourse(careerIdList, courseIdList);
-
         return ResultModel.ok();
     }
 
+    /**
+     * 根据id删除记录
+     * @param id
+     * @return
+     */
     @PostMapping("/delCareerCourse")
     public ResultModel delCareerCourse(Long id) {
         int i = ninCareerCourseService.delCareerCourse(id);
@@ -61,15 +69,5 @@ public class NinCareerCourseController {
         return ResultModel.error(412, "删除失败");
     }
 
-//    /**
-//     * 根据专业id获取该专业的课程列表
-//     * @param careerId
-//     * @return
-//     */
-//    @PostMapping("/getCareerCourse")
-//    public ResultModel getCareerCourse(Long careerId) {
-//
-//        return null;
-//    }
 
 }

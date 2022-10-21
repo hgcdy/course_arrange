@@ -1,12 +1,9 @@
 package cn.netinnet.coursearrange.controller;
 
 
-import cn.netinnet.coursearrange.entity.NinClass;
 import cn.netinnet.coursearrange.entity.NinStudent;
-import cn.netinnet.coursearrange.mapper.NinStudentMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinStudentService;
-import com.alibaba.fastjson.JSON;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,6 +29,7 @@ public class NinStudentController {
     @Autowired
     private INinStudentService ninStudentService;
 
+    //跳转学生页面
     @GetMapping("")
     public ModelAndView gotoStudent(){
         return new ModelAndView("view/studentView");
@@ -53,18 +50,9 @@ public class NinStudentController {
         return ResultModel.ok(map);
     }
 
-//    /**
-//     * 专业班级列表
-//     * @return
-//     */
-//    @PostMapping("/getCareerClassList")
-//    public ResultModel getCareerClassList(){
-//        Map<String, List<NinClass>> map = ninStudentService.getCareerClassList();
-//        return ResultModel.ok(map);
-//    }
 
     /**
-     * 新增
+     * 新增学生
      * @param ninStudent
      * @return
      */
@@ -78,7 +66,7 @@ public class NinStudentController {
     }
 
     /**
-     * 删除
+     * 删除学生
      * @param id
      * @return
      */
@@ -94,7 +82,7 @@ public class NinStudentController {
 
 
     /**
-     * 修改
+     * 修改学生信息
      * @param ninStudent
      * @return
      */
@@ -107,7 +95,7 @@ public class NinStudentController {
         return ResultModel.error(412, "修改失败");
     }
 
-    @PostMapping("/getStudentById")
+    @GetMapping("/getStudentById")
     public ResultModel getStudentById(Long id){
         return ResultModel.ok(ninStudentService.getStudentById(id));
     }

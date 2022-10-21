@@ -29,6 +29,7 @@ public class NinTeacherController {
     @Autowired
     private INinTeacherService ninTeacherService;
 
+    //跳转教师页面
     @GetMapping("")
     public ModelAndView gotoView(){
         return new ModelAndView("view/teacherView");
@@ -50,7 +51,7 @@ public class NinTeacherController {
     }
 
     /**
-     * 新增
+     * 新增教师
      * @param ninTeacher
      * @return
      */
@@ -64,7 +65,7 @@ public class NinTeacherController {
     }
 
     /**
-     * 删除
+     * 删除教师
      * @param id
      * @return
      */
@@ -78,7 +79,7 @@ public class NinTeacherController {
     }
 
     /**
-     * 修改
+     * 修改教师信息
      * @param ninTeacher
      * @return
      */
@@ -91,7 +92,7 @@ public class NinTeacherController {
         return ResultModel.error(412, "修改失败");
     }
 
-    @PostMapping("/getTeacherById")
+    @GetMapping("/getTeacherById")
     public ResultModel getTeacherById(Long id){
         return ResultModel.ok(ninTeacherService.getTeacherById(id));
     }

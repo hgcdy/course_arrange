@@ -1,10 +1,8 @@
 package cn.netinnet.coursearrange.controller;
 
 
-import cn.netinnet.coursearrange.entity.NinHouse;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import cn.netinnet.coursearrange.entity.UserInfo;
-import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinTeacherCourseService;
 import cn.netinnet.coursearrange.util.UserUtil;
@@ -33,6 +31,7 @@ public class NinTeacherCourseController {
     @Autowired
     private INinTeacherCourseService ninTeacherCourseService;
 
+    //跳转教师-课程页面
     @GetMapping("")
     public ModelAndView gotoTeacherCourse(Long teacherId){
         ModelAndView modelAndView = new ModelAndView();
@@ -49,12 +48,14 @@ public class NinTeacherCourseController {
         return modelAndView;
     }
 
+    //查询
     @PostMapping("/getSelectList")
     public ResultModel getSelectList(Long teacherId){
         List<Map<String, Object>> list = ninTeacherCourseService.getSelectList(teacherId);
         return ResultModel.ok(list);
     }
 
+    //添加教师-课程记录
     @PostMapping("/addTeacherCourse")
     public ResultModel addTeacherCourse(NinTeacherCourse ninTeacherCourse){
         int i = ninTeacherCourseService.addSingle(ninTeacherCourse);
@@ -64,6 +65,7 @@ public class NinTeacherCourseController {
         return ResultModel.error(412, "新增失败");
     }
 
+    //删除教室-课程记录
     @PostMapping("/delTeacherCourse")
     public ResultModel delTeacherCourse(Long id){
         int i = ninTeacherCourseService.delById(id);

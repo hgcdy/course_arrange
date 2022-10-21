@@ -2,7 +2,6 @@ package cn.netinnet.coursearrange.authentication;
 
 import cn.netinnet.coursearrange.entity.UserInfo;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -26,7 +25,7 @@ public class ShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         System.out.println("权限验证");
-        //todo 执行多次，不知道为啥
+        //todo 会多次执行
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
         //获取用户信息及用户角色类型

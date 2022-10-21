@@ -1,7 +1,6 @@
 package cn.netinnet.coursearrange.service;
 
 import cn.netinnet.coursearrange.entity.NinTeacher;
-import cn.netinnet.coursearrange.entity.NinTeacher;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Map;

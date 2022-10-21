@@ -24,21 +24,22 @@ public class LoginController {
     @Autowired
     private INinTeacherService ninTeacherService;
 
+    //跳转登录页面
     @GetMapping("/login")
     public ModelAndView gotoLogin() {
         return new ModelAndView("login");
     }
 
-
+    //退出，跳转登录页面
     @GetMapping("/logout")
     public ModelAndView logout() {
         return gotoLogin();
     }
 
-
+    //判断登录用户类型
     @GetMapping("/index")
     public ModelAndView index(String type) {
-        ModelAndView modelAndView = new ModelAndView("login");
+        ModelAndView modelAndView = null;
         if (type.equals("admin")) {
             modelAndView = new ModelAndView("index");
         } else if (type.equals("student")) {
@@ -51,7 +52,7 @@ public class LoginController {
         return modelAndView;
     }
 
-
+    //管理员登录
     @PostMapping("/login/admin")
     public ResultModel adminLogin(@NotNull String code, @NotNull String password) {
         if (!code.equals("admin")) {
@@ -69,6 +70,7 @@ public class LoginController {
         return ResultModel.ok(token);
     }
 
+    //学生登录
     @PostMapping("/login/student")
     public ResultModel studentLogin(@NotNull String code, @NotNull String password) {
         NinStudent ninStudent = ninStudentService.verify(code, password);
@@ -83,6 +85,7 @@ public class LoginController {
         return ResultModel.ok(token);
     }
 
+    //教师登录
     @PostMapping("/login/teacher")
     public ResultModel teacherLogin(@NotNull String code, @NotNull String password) {
 
@@ -97,6 +100,7 @@ public class LoginController {
         return ResultModel.ok(token);
     }
 
+    //跳转班级课程页面
     @GetMapping("nin-class-course")
     public ModelAndView gotoView(Long classId) {
         ModelAndView modelAndView = new ModelAndView("view/classCourseView");

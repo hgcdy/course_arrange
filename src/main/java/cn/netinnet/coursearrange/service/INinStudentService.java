@@ -1,11 +1,8 @@
 package cn.netinnet.coursearrange.service;
 
-import cn.netinnet.coursearrange.entity.NinClass;
-import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import java.util.List;
 import java.util.Map;
 
 /**

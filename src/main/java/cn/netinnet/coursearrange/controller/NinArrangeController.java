@@ -4,12 +4,9 @@ package cn.netinnet.coursearrange.controller;
 import cn.netinnet.coursearrange.bo.NinArrangeBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.UserInfo;
-import cn.netinnet.coursearrange.mapper.NinArrangeMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.util.UserUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.api.R;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +34,6 @@ public class NinArrangeController {
     @Autowired
     private INinArrangeService ninArrangeService;
 
-
     //跳转排课页面
     @GetMapping("/nin-arrange")
     public ModelAndView gotoView() {
@@ -55,7 +51,7 @@ public class NinArrangeController {
         return modelAndView;
     }
 
-    //教室申请页面
+    //跳转教室申请页面
     @GetMapping("/applyHouse")
     public ModelAndView gotoApplyHouseView() {
         ModelAndView modelAndView = new ModelAndView("view/applyHouseView");
@@ -91,7 +87,7 @@ public class NinArrangeController {
     }
 
     /**
-     * 获取空闲资源（教室申请）
+     * 补课-获取空闲资源（教室申请）
      * @param teacherId 教师id
      * @param classIds 班级id列表
      * @param houseId 教室id
@@ -155,14 +151,13 @@ public class NinArrangeController {
 
 
     /**
-     * 根据课程id获取可选教师教师及时间
+     * 根据课程id获取可选教师教师及时间（未使用）
      * @return
      */
     @PostMapping("nin-arrange/getTeacherHouseORTime")
     public ResultModel getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId) {
         List arrangeBo = ninArrangeService.getTeacherHouseORTime(courseId, teacherId, houseId);
         return ResultModel.ok(arrangeBo);
-
     }
 
 

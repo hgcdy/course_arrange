@@ -121,7 +121,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-house/getHouseById",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     id: id
                 },

@@ -28,13 +28,17 @@ public class NinClassController {
     @Autowired
     private INinClassService ninClassService;
 
+    /**
+     * 跳转班级页面
+     * @return
+     */
     @GetMapping("")
     public ModelAndView gotoView() {
         return new ModelAndView("view/classView");
     }
 
     /**
-     * 条件分页查询
+     * 班级条件分页查询
      *
      * @param page
      * @param size
@@ -53,17 +57,24 @@ public class NinClassController {
     }
 
     /**
-     * 课程列表
+     * 班级-课程记录查询
      *
      * @param classId
      * @return
      */
     @PostMapping("/getCourseList")
     public ResultModel getCourseList(Long classId) {
+        //todo 待优化
         List<Map<String, Object>> list = ninClassService.getSelectList(classId);
         return ResultModel.ok(list);
     }
 
+    /**
+     * 获取班级列表
+     * @param college
+     * @param careerId
+     * @return
+     */
     @PostMapping("/getClassList")
     public ResultModel getClassList(String college, Long careerId) {
         return ResultModel.ok(ninClassService.getClassList(college, careerId));
@@ -71,7 +82,7 @@ public class NinClassController {
 
 
     /**
-     * 全部的学院专业班级列表
+     * 班级列表，按学院专业分组
      *
      * @return
      */
@@ -83,7 +94,7 @@ public class NinClassController {
 
 
     /**
-     * 新增
+     * 新增班级
      *
      * @param ninClass
      * @return
@@ -131,7 +142,7 @@ public class NinClassController {
     }
 
     /**
-     * 修改
+     * 修改班级
      *
      * @param ninClass
      * @return

@@ -1,12 +1,8 @@
 package cn.netinnet.coursearrange.service;
 
-import cn.netinnet.coursearrange.bo.AvailableBo;
 import cn.netinnet.coursearrange.bo.NinArrangeBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
-import cn.netinnet.coursearrange.model.ResultModel;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.sun.org.apache.xerces.internal.xs.StringList;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 import java.util.Map;

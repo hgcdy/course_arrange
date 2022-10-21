@@ -4,12 +4,8 @@ import cn.netinnet.coursearrange.bo.NinSettingBo;
 import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.model.ResultModel;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.apache.ibatis.annotations.Param;
 
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>

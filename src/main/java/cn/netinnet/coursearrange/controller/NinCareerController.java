@@ -4,7 +4,6 @@ package cn.netinnet.coursearrange.controller;
 import cn.netinnet.coursearrange.entity.NinCareer;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinCareerService;
-import cn.netinnet.coursearrange.service.INinCourseService;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -33,8 +30,7 @@ public class NinCareerController {
     private INinCareerService ninCareerService;
 
     /**
-     * 获取学院列表
-     *
+     * 获取学院名称列表
      * @return
      */
     @PostMapping("getCollegeList")
@@ -43,7 +39,7 @@ public class NinCareerController {
     }
 
     /**
-     * 获取专业列表
+     * 根据学院获取专业列表
      *
      * @return
      */
@@ -54,7 +50,7 @@ public class NinCareerController {
 
 
     /**
-     * 获取学院专业列表
+     * 获取专业列表，并按学院分组
      * @return
      */
     @PostMapping("getCollegeCareerList")
@@ -71,7 +67,6 @@ public class NinCareerController {
      */
     @PostMapping("addCareer")
     public ResultModel addCareer(NinCareer ninCareer) {
-
         return ResultModel.ok(ninCareerService.addSingle(ninCareer));
     }
 

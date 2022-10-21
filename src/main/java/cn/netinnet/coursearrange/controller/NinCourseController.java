@@ -30,6 +30,7 @@ public class NinCourseController {
     @Autowired
     private INinCourseService ninCourseService;
 
+    //跳转课程页面
     @GetMapping("")
     public ModelAndView gotoView(){
         return new ModelAndView("view/CourseView");
@@ -50,6 +51,7 @@ public class NinCourseController {
         return ResultModel.ok(map);
     }
 
+    //根据id获取课程信息
     @PostMapping("/getCourseById")
     public ResultModel getCourseById(Long id){
         return ResultModel.ok(ninCourseService.getCourseById(id));
@@ -102,6 +104,8 @@ public class NinCourseController {
 
     /**
      * 获取可选的课程列表
+     * 0-选修，1-必修，null或其他全选
+     * 如果不是admin，根据setting限制课程
      * @return
      */
     @PostMapping("/getSelectCourseList")
@@ -111,7 +115,7 @@ public class NinCourseController {
     }
 
     /**
-     * 教室申请中获取可选课程
+     * 教室申请-获取可选课程
      * @param teacherId
      * @param classIdList
      * @param houseId
