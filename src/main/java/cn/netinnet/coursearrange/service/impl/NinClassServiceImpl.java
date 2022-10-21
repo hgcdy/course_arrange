@@ -61,15 +61,15 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     }
 
     @Override
-    public List<Map<String, Object>> getSelectList(Long classId) {
+    public List<Map<String, Object>> getCourseList(Long classId) {
         NinClass ninClass = ninClassMapper.selectById(classId);
         List<Map<String, Object>> list = new ArrayList<>();
         if (ninClass.getCareerId() == 0) {
             //选修
-            List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<>(new NinArrange() {{
+            NinArrange ninArrange = ninArrangeMapper.selectOne(new QueryWrapper<>(new NinArrange() {{
                 setClassId(classId);
             }}));
-            NinCourse course = ninCourseMapper.selectById(ninArranges.get(0).getCourseId());
+            NinCourse course = ninCourseMapper.selectById(ninArrange.getCourseId());
             HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("courseName", course.getCourseName());
             hashMap.put("houseType", course.getHouseType());

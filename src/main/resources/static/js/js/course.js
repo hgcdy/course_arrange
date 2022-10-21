@@ -187,7 +187,6 @@ require(['../config'], function () {
                             id: id,
                             courseName: record.courseName,
                             houseType: record.houseType,
-                            must: record.must,
                             courseTime: record.courseTime,
                             startTime: record.startTime,
                             endTime: record.endTime,

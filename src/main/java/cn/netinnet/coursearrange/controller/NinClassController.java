@@ -58,14 +58,13 @@ public class NinClassController {
 
     /**
      * 班级-课程记录查询
-     *
+     * 根据班级查询课程
      * @param classId
      * @return
      */
     @PostMapping("/getCourseList")
     public ResultModel getCourseList(Long classId) {
-        //todo 待优化
-        List<Map<String, Object>> list = ninClassService.getSelectList(classId);
+        List<Map<String, Object>> list = ninClassService.getCourseList(classId);
         return ResultModel.ok(list);
     }
 

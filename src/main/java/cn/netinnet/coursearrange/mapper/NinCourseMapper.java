@@ -25,5 +25,9 @@ public interface NinCourseMapper extends BaseMapper<NinCourse> {
     List<NinCourse> getSelectList(NinCourse ninCourse);
 
 
+    //去除被选的选修课程后的全部课程
+    List<NinCourse> reSelectCourse();
+
+
 
 }

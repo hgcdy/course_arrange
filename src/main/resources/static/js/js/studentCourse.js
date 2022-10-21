@@ -44,7 +44,7 @@ require(['../config'], function () {
                         if (data.code == 200) {
                             query();
                         } else {
-                            alert(data.msg);
+                            util.hint(data.msg);
                         }
                     }
                 })

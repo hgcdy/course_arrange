@@ -79,11 +79,16 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             throw new ServiceException(412, "重名");
         }
 
-        Integer seat = ninHouseMapper.selectList(new QueryWrapper<>(new NinHouse() {{
-            setHouseType(ninCourse.getHouseType());
-        }})).stream().sorted(Comparator.comparing(NinHouse::getSeat).reversed()).collect(Collectors.toList()).get(0).getSeat();
-        if (ninCourse.getMaxClassNum() * 50 > seat) {
-            throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的教室");
+        if (ninCourse.getHouseType() != 3 && ninCourse.getHouseType() != 4) {
+            List<NinHouse> houses = ninHouseMapper.selectList(new QueryWrapper<>(new NinHouse() {{
+                setHouseType(ninCourse.getHouseType());
+            }})).stream().sorted(Comparator.comparing(NinHouse::getSeat).reversed()).collect(Collectors.toList());
+            if (houses != null && houses.size() != 0) {
+                List<Integer> list = houses.stream().map(NinHouse::getSeat).filter(i -> i > ninCourse.getMaxClassNum() * 50).collect(Collectors.toList());
+                if (list.size() == 0) {
+                    throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的教室");
+                }
+            }
         }
 
         ninCourse.setId(IDUtil.getID());
@@ -217,17 +222,22 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
 
     @Override
     public List<NinCourse> getSelectCourseList(Integer sign) {
+        UserInfo userInfo = UserUtil.getUserInfo();
+        String userType = userInfo.getUserType();
+
         List<NinCourse> courseList = ninCourseMapper.selectList(new QueryWrapper<>());
         if (sign != null && (sign == 0 || sign == 1)) {
             courseList = courseList.stream().filter(i ->
                     i.getMust() == sign
             ).collect(Collectors.toList());
+        } else {
+            courseList = ninCourseMapper.reSelectCourse();
         }
-        UserInfo userInfo = UserUtil.getUserInfo();
-        String userType = userInfo.getUserType();
+
         if (!userType.equals("admin")) {
             Map<Long, NinSettingBo> boMap = ninSettingService.getSelectList(userType, "开放中", null).stream().collect(Collectors.toMap(NinSettingBo::getCourseId, Function.identity()));
             courseList = courseList.stream().filter(i -> boMap.get(i.getId()) != null).collect(Collectors.toList());
+
         }
         return courseList;
 

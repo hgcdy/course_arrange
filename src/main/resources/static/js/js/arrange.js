@@ -19,9 +19,14 @@ require(['../config'], function () {
                 url: "nin-arrange/arrange",
                 dataType:"json",
                 type: "get",
-                success:function (){
-                    query();
-                    util.hint("生成成功！");
+                success:function (data){
+                    if (data.code == 200) {
+                        query();
+                        util.hint("生成成功！");
+                    } else {
+                        util.hint(data.msg);
+                    }
+
                 }
             })
         })

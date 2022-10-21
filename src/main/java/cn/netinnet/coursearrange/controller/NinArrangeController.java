@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -161,6 +164,11 @@ public class NinArrangeController {
     }
 
 
+    @GetMapping("/exportCourseForm")
+    public ResultModel exportCourseForm(Integer type, Long id, HttpServletRequest request, HttpServletResponse response) throws ParseException {
+        ninArrangeService.exportCourseForm(type, id, request, response);
+        return ResultModel.ok();
+    }
 
 
 

@@ -4,6 +4,8 @@ import cn.netinnet.coursearrange.bo.NinArrangeBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +50,11 @@ public interface INinArrangeService extends IService<NinArrange> {
      */
      Map<String, List> getAvailable(Long id, Long teacherId, Long houseId, Integer week, Integer pitchNum);
 
-
+    /**
+     * 导出，
+     * @param type 0-班级， 1-教师， 2-学生
+     * @param id
+     */
+     void exportCourseForm(Integer type, Long id, HttpServletRequest request, HttpServletResponse response);
 
 }

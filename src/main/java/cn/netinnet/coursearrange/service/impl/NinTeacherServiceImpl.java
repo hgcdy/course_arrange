@@ -49,8 +49,8 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
             map.put("total", 1);
         } else {
             PageHelper.startPage(page, size);
-            List<NinTeacher> list = ninTeacherMapper.getSelectList(teacherName);
-            PageInfo<NinTeacher> pageInfo = new PageInfo<>(list);
+            List<Map<String, Object>> list = ninTeacherMapper.getSelectList(teacherName);
+            PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
             map.put("list", pageInfo.getList());
             map.put("total", pageInfo.getTotal());
         }

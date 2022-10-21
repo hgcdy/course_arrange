@@ -5,10 +5,13 @@ import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinArrangeService;
+import cn.netinnet.coursearrange.util.ExcelUtils;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import cn.netinnet.coursearrange.util.Utils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,6 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -95,11 +103,14 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
         //遍历专业列表 确定教学班和课程
         for (Long careerId : careerIdList) {
-            if (careerId == 0) {
+            if (careerId == 0 || careerId == -1) {
                 continue;
             }
             //获得该专业的专业-课程表
             List<NinCareerCourse> ninCareerCourses1 = longListNinCareerCourseMap.get(careerId);
+            if (ninCareerCourses1 == null) {
+                throw new ServiceException(412, "请到班级管理完成专业课程安排！");
+            }
 
             //该专业的班级列表（有序的）
             List<NinClass> ninClasses = longListNinClassMap.get(careerId);
@@ -192,8 +203,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             //选择该课程的教师(教师-课程表记录)
             List<NinTeacherCourse> ninTeacherCourses = longListNinTeacherCourseMap.get(map.getKey());
             if (ninTeacherCourses == null) {
-                //没有教师授课
-                break;
+                throw new ServiceException(412, ninCourse.getCourseName() + "还未有教师");
             }
 
             //教师id列表
@@ -265,6 +275,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
             //该课程的排课记录
             List<NinArrange> ninArranges1 = longListNinArrangeMap.get(course.getId());
+            if (ninArranges1 == null) {
+                continue;
+            }
 
             for (NinArrange arrange : ninArranges1) {
                 //一周要上复数课程的，先随机插入，一定次数后按顺序排
@@ -910,6 +923,76 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         map.put("houseList", ninHouses);
         map.put("timeList", timeList);
         return map;
+    }
+
+    @Override
+    public void exportCourseForm(Integer type, Long id, HttpServletRequest request, HttpServletResponse response) {
+        Map<String, String> info = null;
+        if (type == 0) {
+            info = getInfo(id, null, null, null);
+        } else if (type == 1) {
+            info = getInfo(null, id, null, null);
+        } else if (type == 2) {
+            info = getInfo(null, null, id, null);
+        }
+        int len = 8;
+        String[] headers = new String[len], fields = new String[len];
+        headers[0] = "";
+        headers[1] = "星期一";
+        headers[2] = "星期二";
+        headers[3] = "星期三";
+        headers[4] = "星期四";
+        headers[5] = "星期五";
+        headers[6] = "星期六";
+        headers[7] = "星期日";
+
+        fields[0] = "pitchNum";
+        fields[1] = "1";
+        fields[2] = "2";
+        fields[3] = "3";
+        fields[4] = "4";
+        fields[5] = "5";
+        fields[6] = "6";
+        fields[7] = "7";
+
+        JSONArray array = new JSONArray();
+        for (int i = 0; i < 5; i++) {
+            JSONObject jsonObject = new JSONObject();
+            String str = null;
+            switch (i){
+                case 0: str = "第一节课";break;
+                case 1: str = "第二节课";break;
+                case 2: str = "第三节课";break;
+                case 3: str = "第四节课";break;
+                case 4: str = "第五节课";break;
+            }
+            jsonObject.put("pitchNum", str);
+            array.add(jsonObject);
+        }
+
+        for (Map.Entry<String, String> map: info.entrySet()) {
+            String[] split = map.getKey().split("");
+            int i = Integer.valueOf(split[0]).intValue();
+            int j = Integer.valueOf(split[1]).intValue();
+            ((JSONObject) array.get(j - 1)).put("" + i, map.getValue());
+        }
+
+        String fileName = "成绩单.xls";
+        response.setContentType("application/octet-stream");
+        response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+        try {
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        try {
+            response.flushBuffer();
+            ExcelUtils.exportJsonArrayToExcel(array, fileName, response.getOutputStream(), headers, fields, "");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 

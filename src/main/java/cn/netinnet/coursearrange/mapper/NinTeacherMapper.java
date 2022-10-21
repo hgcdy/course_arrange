@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -18,7 +19,7 @@ import java.util.List;
 @Mapper
 public interface NinTeacherMapper extends BaseMapper<NinTeacher> {
 
-    List<NinTeacher> getSelectList(String teacherName);
+    List<Map<String, Object>> getSelectList(String teacherName);
 
     List<NinTeacher> getSelectByCourse(@Param("courseId") Long courseId);
 

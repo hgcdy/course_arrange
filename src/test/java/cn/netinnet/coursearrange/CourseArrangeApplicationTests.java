@@ -14,11 +14,21 @@ import cn.netinnet.coursearrange.util.SendPostUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.apache.poi.*;
 
-import java.io.UnsupportedEncodingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -41,144 +51,133 @@ class CourseArrangeApplicationTests {
     @Autowired
     private NinArrangeMapper ninArrangeMapper;
 
-
-
     @Test
     void contextLoads() {
-        Map<String, List> available = ninArrangeService.getAvailable(406235486637396699L, 972914525964923264L, null, 1, null);
-        System.out.println(available.get("teacherList"));
-        System.out.println(available.get("houseList"));
-        System.out.println(available.get("timeList"));
-
-//     ninArrangeService.arrange();
-//        Map<String, String> info = ninArrangeService.getInfo(null, null, 1L, null);
-//        System.out.println(info);
-//        List<Map<String, Object>> info = ninArrangeMapper.getInfo(null, null, 3L);
-//        ArrayList<Long> classIdList = new ArrayList<>();
-//        classIdList.add(100L);
-//        ArrayList<Long> teachClassIdList = new ArrayList<>();
-//        teachClassIdList.add(812322783474005866L);
-//
-//        List<Map<String, Object>> info1 = ninArrangeMapper.getInfo(classIdList, null, null);
-//        List<Map<String, Object>> info2 = ninArrangeMapper.getInfo(null, teachClassIdList, null);
-//        List<Map<String, Object>> info3 = ninArrangeMapper.getInfo(classIdList, teachClassIdList, null);
-
-//        List<NinClass> cds = ninClassMapper.getSelectList("新工科产业学院", null, null);
-
-//        List<Map<String, Object>> maps = ninClassMapper.collegeCareerClassList();
-//        Map<String, Map<String, List<Map<String, Object>>>> collect = maps.stream().collect(Collectors.groupingBy(i -> (String) (i.get("college")), Collectors.groupingBy(i -> (String) i.get("careerName"))));
-
-//        String str = "[]";
-//        List<Long> longs = JSON.parseArray(str, Long.class);
-
-//        ArrayList<String> strings = new ArrayList<>();
-//        strings.add("defd");
-//        strings.add("dfg");
-//        ArrayList<String> strings1 = new ArrayList<>();
-//        strings1.addAll(strings);
-//        strings1.add("dfvb");
-
-//        ArrayList<Map<String, Object>> maps = new ArrayList<>();
-//        Map<String, Object> longIntegerMap = new HashMap<>();
-//        longIntegerMap.put("careerId", 101L);
-//        longIntegerMap.put("courseNum", -10);
-//        maps.add(longIntegerMap);
-//
-//
-//        Map<String, Object> longIntegerMap2 = new HashMap<>();
-//        longIntegerMap2.put("careerId", 102L);
-//        longIntegerMap2.put("courseNum", -8);
-//        maps.add(longIntegerMap2);
-//
-//
-//        ninClassMapper.alterBatchCourseNum(maps);
-//
-//        BigDecimal score = BigDecimal.ZERO;
-//        System.out.println(score);
-//        for (int i = 0; i < 10; i++) {
-//            score = score.add(new BigDecimal("1." + i));
-//            System.out.println(score);
-//        }
-//        String subSystemUrl = "";
-//        JSONObject obj = null;
-//
-//
-//        try {
-//            //apiCode是定死在数据字典里面的
-//            subSystemUrl = "http://172.30.6.162:8095/nin_case_platform?";
-//            HashMap<String, String> hashMap = new HashMap<>();
-//            String str = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NjQ2MTA1ODgsInVzZXIiOiJ7XCJjbGFzc0lkXCI6MCxcImNsYXNzTmFtZVwiOlwiXCIsXCJyb2xlQ29kZVwiOlwiYWRtaW5cIixcInNjaG9vbENvZGVcIjpcIk5FVElOTkVUXCIsXCJzY2hvb2xJZFwiOjAsXCJzY2hvb2xOYW1lXCI6XCJcIixcInVzZXJJZFwiOjcwMzMwNDUwNTk0OTAxMTk2OCxcInVzZXJMb2dpblwiOlwidGVzdEFkbWluXCIsXCJ1c2VyTmFtZVwiOlwidGVzdEFkbWluXCIsXCJ1c2VyVHlwZVwiOjAsXCJ2aXJ0dWFsTG9naW5cIjpmYWxzZX0iLCJjbGllbnRfaWQiOiJSUEEifQ.R1sbTxnUSsJIDtOCV_BGMOTseEwA1kXx9wHMzWr3EHM";
-//
-//            hashMap.put("access_token", str);
-//            hashMap.put("taskTitle", "");
-//            String nin_case = GenSecretUtil.creatSecretKey(hashMap, "nin_case");
-//            subSystemUrl = subSystemUrl + nin_case;
-//
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        String result = HttpUtil.getHttpInterface(subSystemUrl);
-//        obj = JSONObject.parseObject(result);
-//
-//        String subSystemUrl = "";
-//        JSONObject obj = null;
-//
-//
-//        Map<String, String> queryMap = new HashMap<>();
-//        queryMap.put("sxClassTaskId", "1");
-//        queryMap.put("platformCode", "ift");
-//
-//
-//        String jm = GenSecretUtil.creatSecretKey(queryMap, "nin_case");
-//        String[] jmlist = jm.split("&");
-//        String secretkey = "";
-//        String timestamp = "";
-//
-//        for (int i = 0; i < jmlist.length; i++) {
-//            if (jmlist[i].indexOf("secretkey") >= 0) {
-//                secretkey = jmlist[i].split("=")[1];
-//                System.out.println("秘钥：" + secretkey);
-//                queryMap.put("secretkey", secretkey);
-//            }
-//            if (jmlist[i].indexOf("timestamp") >= 0) {
-//                timestamp = jmlist[i].split("=")[1];
-//                System.out.println("时间戳：" + timestamp);
-//                queryMap.put("timestamp", timestamp);
-//            }
-//        }
-//
-//        String nin_case = GenSecretUtil.creatSecretKey(queryMap, "nin_case");
-
-//        subSystemUrl = "http://127.0.0.1:8080/login/getStudentSxTaskGrade?" + nin_case;
-//
-//        ResultModel subSystemResultModel = SendPostUtil.getSubSystemResultModel(queryMap, subSystemUrl);
 
 
-//        String httpInterface = HttpUtil.getHttpInterface(subSystemUrl);
-//        String result = HttpUtil.getHttpInterface(subSystemUrl);
-//        obj = JSONObject.parseObject(result);
 
-//        System.out.println(subSystemResultModel.getCode());
-//        System.out.println(subSystemResultModel.getMsg());
-//        System.out.println(subSystemResultModel.getData());
-//        System.out.println(httpInterface);
+
 
 
 
         System.out.println("");
     }
-
-    public int[] grouping(int maxNum, int minNum){
-        int[] ints = new int[minNum];
-        for (int i = 0; i < maxNum; i++) {
-            ints[i % ints.length]++;
-        }
-        return ints;
-    }
-
-
+//
+//    @ResponseBody
+//    @RequestMapping(value = "export")
+//    public AjaxJson exportFile(Office office, HttpServletRequest request, HttpServletResponse response, RedirectAttributes redirectAttributes) {
+//        AjaxJson j = new AjaxJson();
+//        try {
+//            String fileName = "机构"+DateUtils.getDate("yyyyMMddHHmmss")+".xlsx";
+//            Page<Office> page = officeService.findPage(new Page<Office>(request, response, -1), office);
+//
+//            for(int i=0;i<page.getList().size();i++){
+//                System.out.println(page.getList().get(i));
+//            }
+//            //new ExportExcel("机构", Office.class).setDataList(page.getList()).write(response, fileName).dispose();
+//            String path = System.getProperty("catalina.home");
+//            createExcel(response,page.getList(),fileName,path);
+//
+//            downloadExcel(response,path+fileName);
+//
+//            j.setSuccess(true);
+//            j.setMsg("导出成功！");
+//            return j;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            j.setSuccess(false);
+//            j.setMsg("导出测试记录失败！失败信息："+e.getMessage());
+//        }
+//        return j;
+//    }
+//
+//    public void downloadExcel(HttpServletResponse response,String path) throws IOException{
+//
+//        //1、设置响应的头文件，会自动识别文件内容
+//        response.setContentType("multipart/form-data");
+//
+//        //2、设置Content-Disposition
+//        response.setHeader("Content-Disposition", "attachment;filename=test.xls");
+//
+//        OutputStream out = null;
+//        InputStream in = null;
+//        try {
+//            //3、输出流
+//            out = response.getOutputStream();
+//
+//            //4、获取服务端生成的excel文件，这里的path等于4.8中的path
+//            in = new FileInputStream(new File(path));
+//
+//            //5、输出文件
+//            int b;
+//            while((b=in.read())!=-1){
+//                out.write(b);
+//            }
+//
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//
+//        finally{
+//            in.close();
+//            out.close();
+//
+//        }
+//    }
+//
+//    public void createExcel(HttpServletResponse response,List<Office> list,String filename,String path) throws IOException{
+//
+//        //1、创建workbook,对应一个Excel
+//        HSSFWorkbook wb = new HSSFWorkbook();
+//
+//        //2、创建一个sheet,参数为sheet的名称
+//        HSSFSheet sheet = wb.createSheet(filename);
+//
+//        //3、创建第一行
+//        HSSFRow row = sheet.createRow(0);
+//
+//        //4、创建第一行的列信息，也就是列名
+//        HSSFCell cell = row.createCell(0);
+//        cell.setCellValue("机构名称");
+//
+//        cell = row.createCell(1);
+//        cell.setCellValue("机构编号");
+//
+//        //5、写入数据
+//        for(int i=1;i<=list.size();i++){
+//            row = sheet.createRow(i);
+//            cell = row.createCell(0);
+//            cell.setCellValue(list.get(i-1).getName());
+//            cell = row.createCell(1);
+//            cell.setCellValue(list.get(i-1).getCode());
+//        }
+//
+//        //6、生成文件
+//        //String path = System.getProperty("catalina.home");
+//
+//
+//        FileOutputStream os = new FileOutputStream(path+filename);;
+//        try {
+//            wb.write(os);
+//        } catch (FileNotFoundException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        finally{
+//            os.close();
+//        }}
+//
+////  前端
+//    $("#export").click(function(){//导出Excel文件
+//        alert("sasasas");
+//        window.location.href = '${ctx}/sys/office/export';
+//    });
+//
+//
 }
 
 

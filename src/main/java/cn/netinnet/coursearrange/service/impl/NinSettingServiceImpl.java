@@ -74,7 +74,7 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
             }
             return ResultModel.ok();
         } else {
-            throw new ServiceException(412, "id不得为空");
+            throw new ServiceException(412, "请选择课程！");
         }
     }
 

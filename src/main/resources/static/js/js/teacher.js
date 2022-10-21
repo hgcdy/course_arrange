@@ -4,7 +4,7 @@ require(['../config'], function () {
         var size = 10;
         var total = 0;
         var teacherName = null;
-        const STR = ["teacherName", "teacherCode", "teacherPassword"];
+        const STR = ["teacherName", "teacherCode", "teacherPassword", "courseNum"];
         query();
 
         //查询按钮

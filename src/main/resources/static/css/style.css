@@ -152,7 +152,7 @@ td {
     height: 20%;
     margin: 0 auto;
     /*text-align:center;*/
-    /*display: none;*/
+    display: none;
     border: 1px solid #000000;
 }
 

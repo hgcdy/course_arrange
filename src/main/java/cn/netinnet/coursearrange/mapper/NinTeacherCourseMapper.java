@@ -19,4 +19,6 @@ import java.util.Map;
 public interface NinTeacherCourseMapper extends BaseMapper<NinTeacherCourse> {
     List<Map<String, Object>> getSelectList(Long teacherId);
 
+
+
 }
