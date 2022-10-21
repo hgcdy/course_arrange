@@ -53,6 +53,7 @@ class CourseArrangeApplicationTests {
 
     @Test
     void contextLoads() {
+        ninArrangeMapper.updateNullById(520709357548888553L);
 
 
 

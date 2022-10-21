@@ -3,10 +3,12 @@ package cn.netinnet.coursearrange.service.impl;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinCourse;
+import cn.netinnet.coursearrange.entity.NinHouse;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinArrangeMapper;
 import cn.netinnet.coursearrange.mapper.NinCourseMapper;
+import cn.netinnet.coursearrange.mapper.NinHouseMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.service.INinTeacherCourseService;
 import cn.netinnet.coursearrange.util.IDUtil;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -37,6 +40,8 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
     private NinCourseMapper ninCourseMapper;
     @Autowired
     private NinArrangeMapper ninArrangeMapper;
+    @Autowired
+    private NinHouseMapper ninHouseMapper;
 
     @Override
     public List<Map<String, Object>> getSelectList(Long teacherId) {
@@ -66,19 +71,52 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
                 setCourseId(ninTeacherCourse.getCourseId());
             }}));
             NinArrange arrange = ninArranges.get(0);
+
+            //教师
             arrange.setTeacherId(ninTeacherCourse.getTeacherId());
-            List<NinArrange> ninArranges1 = ninArrangeMapper.selectList(new QueryWrapper<>(new NinArrange() {{
-                setCourseId(ninTeacherCourse.getTeacherId());
-            }}));
+
+            List<NinArrange> ninArranges1 = ninArrangeMapper.selectList(new QueryWrapper<>());
             int[][] taskCourseTime = ApplicationConstant.TASK_COURSE_TIME;
-            if (ninArranges1 != null && ninArranges1.size() != 0) {
-                arrange.setWeek(taskCourseTime[1][0]);
-                arrange.setPitchNum(taskCourseTime[1][1]);
-            } else {
-                arrange.setWeek(taskCourseTime[0][0]);
-                arrange.setPitchNum(taskCourseTime[0][1]);
+
+            //人数
+            int num = course.getMaxClassNum() * ApplicationConstant.CLASS_PEOPLE_NUM;
+            List<Long> houseIdList = ninHouseMapper.selectList(new QueryWrapper<>(new NinHouse() {{
+                setHouseType(course.getHouseType());
+            }})).stream().filter(i -> i.getSeat() >= num).map(NinHouse::getId).collect(Collectors.toList());
+            Boolean bo = false;
+            ok: for (Long houseId : houseIdList) {
+                for (int[] time : taskCourseTime) {
+                    int size = 1;
+                    if (ninArranges1 != null) {
+                        List<NinArrange> collect = ninArranges1.stream().filter(i -> {
+                            if (((i.getTeacherId() != null && i.getTeacherId().equals(ninTeacherCourse.getTeacherId()))
+                                    || (i.getHouseId() != null && i.getHouseId().equals(houseId)))
+                                    && i.getWeek() == time[0]
+                                    && i.getPitchNum() == time[1]) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }).collect(Collectors.toList());
+                        if (collect == null) {
+                            size = 0;
+                        } else {
+                            size = collect.size();
+                        }
+                    }
+                    if (ninArranges1 == null || size == 0) {
+                        bo = true;
+                        arrange.setHouseId(houseId);
+                        arrange.setWeek(time[0]);
+                        arrange.setPitchNum(time[1]);
+                        ninArrangeMapper.updateById(arrange);
+                        break ok;
+                    }
+                }
             }
-            ninArrangeMapper.updateById(arrange);
+            if (!bo) {
+                throw new ServiceException(412, "没有合适的教室或时间安排该课程");
+            }
         }
 
         ninTeacherCourse.setId(IDUtil.getID());
@@ -95,11 +133,8 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
             setTeacherId(ninTeacherCourse.getTeacherId());
             setCourseId(ninTeacherCourse.getCourseId());
         }}));
-        if (ninArrange.getMust() == 0) {
-            ninArrange.setTeachClassId(null);
-            ninArrange.setWeek(null);
-            ninArrange.setPitchNum(null);
-            ninArrangeMapper.updateById(ninArrange);
+        if (ninArrange != null && ninArrange.getMust() == 0) {
+            ninArrangeMapper.updateNullById(ninArrange.getId());
         }
         return ninTeacherCourseMapper.deleteById(id);
     }

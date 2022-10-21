@@ -39,6 +39,14 @@
             (#{item.id}, #{item.careerId}, #{item.classId}, #{item.teacherId}, #{item.teachClassId}, #{item.courseId}, #{item.houseId}, #{item.must}, #{item.weekly}, #{item.startTime}, #{item.endTime}, #{item.week}, #{item.pitchNum}, #{item.peopleNum}, #{item.createUserId}, #{item.modifyUserId})
         </foreach>
     </insert>
+    <update id="updateNullById">
+        UPDATE nin_arrange SET
+        teacher_id = null,
+        house_id = null,
+        week = null,
+        pitch_num = null
+        WHERE id = #{id}
+    </update>
 
     <delete id="empty">
         DELETE FROM nin_arrange

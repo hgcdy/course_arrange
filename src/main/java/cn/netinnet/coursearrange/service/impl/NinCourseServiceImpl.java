@@ -88,6 +88,8 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
                 if (list.size() == 0) {
                     throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的教室");
                 }
+            } else {
+                throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的教室");
             }
         }
 

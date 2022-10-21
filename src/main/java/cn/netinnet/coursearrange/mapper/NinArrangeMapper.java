@@ -66,4 +66,6 @@ public interface NinArrangeMapper extends BaseMapper<NinArrange> {
      */
     List<NinArrange> getAvailable(@Param("teacherId") Long teacherId,
                                   @Param("houseId") Long houseId);
+
+    void updateNullById(Long id);
 }

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -49,7 +50,10 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
             map.put("total", 1);
         } else {
             PageHelper.startPage(page, size);
-            List<Map<String, Object>> list = ninTeacherMapper.getSelectList(teacherName);
+            List<Map<String, Object>> list = ninTeacherMapper.getSelectList(teacherName).stream().map(i -> {
+                i.put("id", i.get("id").toString());
+                return i;
+            }).collect(Collectors.toList());
             PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
             map.put("list", pageInfo.getList());
             map.put("total", pageInfo.getTotal());
