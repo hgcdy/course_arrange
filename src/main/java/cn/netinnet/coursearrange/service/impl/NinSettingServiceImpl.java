@@ -69,7 +69,7 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
         if (settingIdList != null && settingIdList.size() != 0) {
             if (openState == 2) {
                 if (LocalDateTime.parse(openTime).isAfter(LocalDateTime.parse(closeTime))) {
-                    throw new ServiceException(412, "开始时间大于结束时间");
+                    throw new ServiceException(412, "开始时间大于结束时间,请重试");
                 }
                 ninSettingMapper.alterBatch(settingIdList, openState, LocalDateTime.parse(openTime), LocalDateTime.parse(closeTime));
             } else {
