@@ -327,7 +327,7 @@ public class ExcelUtils {
                     try {
                         for (int k = 0; k < fields.get(i).length; k++) {
                             cell = row.createCell(k);
-                            row.setHeightInPoints((short) 100);
+                            row.setHeightInPoints((short) 75);
                             cell.setCellStyle(cessStyle);
                             cell.setCellValue(obj.getString(fields.get(i)[k]));
                         }

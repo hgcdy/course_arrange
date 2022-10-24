@@ -518,7 +518,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 if (hashMap.get(key) == null) {
                     hashMap.put(key, value);
                 } else {
-                    hashMap.put(key, hashMap.get(key) + "//" + value);
+                    hashMap.put(key, hashMap.get(key) + "##" + value);
                 }
             }
         }
