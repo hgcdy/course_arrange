@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.NinArrangeBo;
+import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
@@ -408,34 +409,39 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Override
     public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
         List<Map<String, Object>> info = new ArrayList<>();
+
+        //根据不同的id获取排课记录信息
         if (teacherId != null) {
             //教师
             info = ninArrangeMapper.getInfo(null, null, teacherId);
         } else if (classId != null) {
-            //班级(选修)
+            //如果是选修班级
             List<Long> longs = new ArrayList<>();
             longs.add(classId);
             info = ninArrangeMapper.getInfo(longs, null, null);
             if (info.size() == 0) {
-                //如果为空，则为必修班级
+                //查询如果为空，则为必修班级
                 longs.remove(0);
+                //根据班级获取教学班id列表
                 longs = ninTeachClassMapper.getTeachClassIdList(classId);
                 info = ninArrangeMapper.getInfo(null, longs, null);
             }
         } else if (studentId != null) {
             //学生
-            //学生的选修班级
+            //获取学生选课记录
             List<Long> classIdList = new ArrayList<>();
             List<NinStudentCourse> ninStudentCourses = ninStudentCourseMapper.selectList(new QueryWrapper<>(new NinStudentCourse() {{
                 setStudentId(getStudentId());
             }}));
+            //选课记录不为空，获取其选课班级id
             if (ninStudentCourses != null && ninStudentCourses.size() != 0) {
                 for (NinStudentCourse nsc : ninStudentCourses) {
                     classIdList.add(nsc.getTakeClassId());
                 }
             }
-            //学生的行政班级-》教学班级列表
+            //获取学生的行政班id
             NinStudent ninStudent = ninStudentMapper.selectById(studentId);
+            //根据行政班id获取教学班id列表
             List<Long> teachClassIdList = ninTeachClassMapper.getTeachClassIdList(ninStudent.getClassId());
             if (classIdList.size() == 0) {
                 classIdList = null;
@@ -449,14 +455,18 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //Map<教学班id, List<NinTeachClass>>
         List<NinTeachClass> ninTeachClasses = ninTeachClassMapper.selectList(new QueryWrapper<>());
         Map<Long, List<NinTeachClass>> collect = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
+
         //Map<班级id, 班级名称>
         List<NinClass> ninClasses = ninClassMapper.selectList(new QueryWrapper<>());
         Map<Long, String> collect1 = ninClasses.stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
+
         //存放最终结果
         HashMap<String, String> hashMap = new HashMap<>();
         for (Map<String, Object> map : info) {
+            //如果班级id为空，即存在教学班
             if (map.get("classId") == null) {
                 List<NinTeachClass> teachClassList = collect.get(map.get("teachClassId"));
+                //获取该记录教学班对应的几个班级（拼接班级名称，以;分隔）
                 for (NinTeachClass ntc : teachClassList) {
                     if (map.get("className") == null) {
                         map.put("className", collect1.get(ntc.getClassId()));
@@ -470,16 +480,17 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
 
 
+        //count 查询某一周的课表 空则表示整个学期
         if (count != null) {
             for (Map<String, Object> map : info) {
                 //单双周
-                if (count % 2 == 0 && (Integer) map.get("weekly") == 1) {
+                if (count % 2 == 0 && (Integer) map.get("weekly") == 1) {//课程记录为单周，但count为双，跳过
                     continue;
                 }
-                if (count % 2 == 1 && (Integer) map.get("weekly") == 2) {
+                if (count % 2 == 1 && (Integer) map.get("weekly") == 2) {//课程记录为双周，但count为单，跳过
                     continue;
                 }
-                //开始结束范围
+                //count在开始结束范围内
                 if ((Integer) map.get("endTime") < count) {
                     continue;
                 }
@@ -496,7 +507,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         } else {
             for (Map<String, Object> map : info) {
 
-                if (map.get("weekly") == null) {
+                if (map.get("weekly") == null) {//为空，即没有时间，跳过
                     continue;
                 }
 
@@ -515,6 +526,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     value += "(补课)";
                 }
 
+                //同一节要上两种课(选修和必修或单双周)
                 if (hashMap.get(key) == null) {
                     hashMap.put(key, value);
                 } else {
@@ -527,22 +539,20 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Override
     public Map<String, List<Map<String, Object>>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly) {
-        //返回教室id，名称，类型，座位，时间
-        //教师班级都是为了削减时间
-        //教室
         List<Map<String, Object>> ninHouseArrayList = new ArrayList<>();
 
-
+        //如果无限制座位，那么以班级人数上限为准
         if (seatMax == null && seatMin == null) {
             if (!StringUtils.isBlank(classIds)) {
                 List<Long> classIdList = JSON.parseArray(classIds, Long.class);
-                seatMin = classIdList.size() * 50;
+                seatMin = classIdList.size() * ApplicationConstant.CLASS_PEOPLE_NUM;
             }
         }
-        //座位，类型查询教室
+        //根据座位，类型查询教室
         ninHouseArrayList = ninHouseMapper.getSelectList(null, houseType, seatMin, seatMax);
         Utils.conversion(ninHouseArrayList);
 
+        //如果没有符合条件的教室
         if (ninHouseArrayList != null && ninHouseArrayList.size() != 0) {
         } else {
             throw new ServiceException(412, "无符合条件的教室");
@@ -552,13 +562,14 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //获得排课列表
         List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<>());
 
-        //去掉其中单双周的一个
+        //当weekly为单数时，去除双周的记录，保留每周都上课和单周上课的记录
         Integer w;
         if (weekly % 2 == 1) {
             w = 2;
         } else {
             w = 1;
         }
+        //筛选，在开始结束范围内
         List<NinArrange> ninArrangeList = ninArranges.stream().filter(i -> i.getWeekly() != w).filter(i -> i.getStartTime() <= weekly).filter(i -> i.getEndTime() >= weekly).collect(Collectors.toList());
 
         //把这个时间的排课找出，如果有教师和班级，排课表中存在，则去除这个时间
@@ -567,6 +578,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //<星期节数, List<教室Map>>
         Map<String, List<Map<String, Object>>> hashMap = new HashMap<>();
 
+        //遍历时间
         for (int i = 1; i <= 7; i++) {
             ok:
             for (int j = 1; j <= 5; j++) {
@@ -635,6 +647,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             throw new ServiceException(412, "时间冲突，添加失败");
         }
 
+        //添加教学班记录
         Long teachClassId = IDUtil.getID();
         ArrayList<NinTeachClass> ninTeachClasses = new ArrayList<>();
         for (Long classId : classIds) {
@@ -647,6 +660,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
         ninTeachClassMapper.addBatch(ninTeachClasses);
 
+        //添加排课记录
         NinArrange arrange = new NinArrange();
         arrange.setId(IDUtil.getID());
         arrange.setCareerId(-1L);
@@ -659,7 +673,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         arrange.setPitchNum(pitchNum);
         arrange.setStartTime(weekly);
         arrange.setEndTime(weekly);
-        arrange.setPeopleNum(classIds.size() * 50);
+        arrange.setPeopleNum(classIds.size() * ApplicationConstant.CLASS_PEOPLE_NUM);
         arrange.setMust(ninCourseMapper.selectById(courseId).getMust());
         arrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
         arrange.setCreateUserId(UserUtil.getUserInfo().getUserId());
@@ -668,97 +682,25 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Override
     public Map<String, Object> getPageSelectList(NinArrangeBo bo, Integer page, Integer size) {
-        /*
-         * 专业直接找
-         * 班级id->如果是选修直接找
-         *   教学班id列表
-         * 教师名称模糊查询
-         * 教室名称模糊查询
-         * 课程名称模糊查询
-         */
+        //如果查询遇见有班级
         if (bo.getClassId() != null) {
             NinClass ninClass = ninClassMapper.selectById(bo.getClassId());
             if (ninClass.getCareerId() != 0) {
+                //如果不是选修，查询教学班id列表
+                //如果是，则什么都不做
                 List<Long> teachClassIdList = ninTeachClassMapper.selectList(new QueryWrapper<>(new NinTeachClass() {{
                     setClassId(ninClass.getId());
                 }})).stream().map(NinTeachClass::getTeachClassId).collect(Collectors.toList());
+                //添加教学班列表，将班级置空
                 bo.setTeachClassIdList(teachClassIdList);
                 bo.setClassId(null);
             }
         }
 
-
         PageHelper.startPage(page, size);
         List<Map<String, Object>> list = ninArrangeMapper.getSelectList(bo);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
         Utils.conversion(pageInfo.getList());
-
-        //Map<教学班id, List<NinTeachClass>>
-//        List<NinTeachClass> ninTeachClasses = ninTeachClassMapper.selectList(new QueryWrapper<>());
-//        Map<Long, List<NinTeachClass>> collect = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
-
-        //Map<班级id, 班级名称>
-//        List<NinClass> ninClasses = ninClassMapper.selectList(new QueryWrapper<>());
-//        Map<Long, String> collect1 = ninClasses.stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
-
-        //Map<教师id， 教师名称>
-//        List<NinTeacher> ninTeachers = ninTeacherMapper.selectList(new QueryWrapper<>());
-//        Map<Long, String> collect2 = ninTeachers.stream().collect(Collectors.toMap(NinTeacher::getId, NinTeacher::getTeacherName));
-
-        //Map<教室id， 教室名称>
-//        List<NinHouse> ninHouses = ninHouseMapper.selectList(new QueryWrapper<>());
-//        Map<Long, String> collect3 = ninHouses.stream().collect(Collectors.toMap(NinHouse::getId, NinHouse::getHouseName));
-
-        //todo conversion
-//        for (Map<String, Object> map : pageInfo.getList()) {
-//            //修改星期
-//            if (map.get("week") != null) {
-//                switch ((int) map.get("week")) {
-//                    case 1:
-//                        map.put("week", "星期一");
-//                        break;
-//                    case 2:
-//                        map.put("week", "星期二");
-//                        break;
-//                    case 3:
-//                        map.put("week", "星期三");
-//                        break;
-//                    case 4:
-//                        map.put("week", "星期四");
-//                        break;
-//                    case 5:
-//                        map.put("week", "星期五");
-//                        break;
-//                    case 6:
-//                        map.put("week", "星期六");
-//                        break;
-//                    case 7:
-//                        map.put("week", "星期日");
-//                        break;
-//                }
-//            }
-//
-//            //修改节数
-//            if (map.get("pitchNum") != null) {
-//                switch ((int) map.get("pitchNum")) {
-//                    case 1:
-//                        map.put("pitchNum", "第一节");
-//                        break;
-//                    case 2:
-//                        map.put("pitchNum", "第二节");
-//                        break;
-//                    case 3:
-//                        map.put("pitchNum", "第三节");
-//                        break;
-//                    case 4:
-//                        map.put("pitchNum", "第四节");
-//                        break;
-//                    case 5:
-//                        map.put("pitchNum", "第五节");
-//                        break;
-//                }
-//            }
-//        }
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("list", pageInfo.getList());
@@ -948,36 +890,18 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
         int len = 8;
         String[] headers = new String[len], fields = new String[len];
-        headers[0] = "";
-        headers[1] = "星期一";
-        headers[2] = "星期二";
-        headers[3] = "星期三";
-        headers[4] = "星期四";
-        headers[5] = "星期五";
-        headers[6] = "星期六";
-        headers[7] = "星期日";
 
+        for (int i = 0; i < 8; i++) {
+            headers[i] = Utils.cnWeek(i);//{"", "星期一", "星期二", ..}
+            fields[i] = "" + i;//{"pitchNum", "1", "2", ..}
+        }
         fields[0] = "pitchNum";
-        fields[1] = "1";
-        fields[2] = "2";
-        fields[3] = "3";
-        fields[4] = "4";
-        fields[5] = "5";
-        fields[6] = "6";
-        fields[7] = "7";
+
 
         JSONArray array = new JSONArray();
         for (int i = 0; i < 5; i++) {
             JSONObject jsonObject = new JSONObject();
-            String str = null;
-            switch (i){
-                case 0: str = "第一节课";break;
-                case 1: str = "第二节课";break;
-                case 2: str = "第三节课";break;
-                case 3: str = "第四节课";break;
-                case 4: str = "第五节课";break;
-            }
-            jsonObject.put("pitchNum", str);
+            jsonObject.put("pitchNum", Utils.cnPitchNum(i));
             array.add(jsonObject);
         }
 
@@ -988,7 +912,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             ((JSONObject) array.get(j - 1)).put("" + i, map.getValue());
         }
 
-        String fileName = name + "课程表.xls";
+        String fileName = name + "-课程表.xls";
         response.setContentType("application/octet-stream");
         response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
         try {
