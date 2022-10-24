@@ -179,7 +179,7 @@ public class ExcelUtils {
                                     value = "2";
                                 }
                             }
-                            if("jobNumber".equals(fields[j]) /*&& !StringUtil.isBlankOrNull(value)*/){
+                            if("jobNumber".equals(fields[j]) && value != null && !value.trim().equals("")){
                                 value = decimalFormat.format(Integer.parseInt(value));
                             }
 
@@ -258,7 +258,7 @@ public class ExcelUtils {
         boolean flag = false;
         for (int i = 0; i < fields.length; i++) {
             String fieldName = fields[i];
-            String methodName = "get" /* + StringUtil.firstCharToUpperCase(fieldName)*/;
+            String methodName = "get" /* + StringUtil.firstCharToUpperCase(fieldName)*/;//todo firstCharToUpperCases首字母大写
             Method getMethod;
             try {
                 getMethod = object.getClass().getMethod(methodName);
@@ -294,17 +294,22 @@ public class ExcelUtils {
                 JSONArray array = renderData.getJSONArray("list_" + i);
                 //生成一个表格
                 HSSFSheet sheet = workbook.createSheet(title[i]);
+
                 //设置表格默认列宽15个字节
-                sheet.setDefaultColumnWidth(15);
+                sheet.setDefaultColumnWidth(20);
                 //生成一个样式
                 HSSFCellStyle style = getCellStyle(workbook);
+
                 //生成一个字体
                 HSSFFont font = getFont(workbook);
                 //把字体应用到当前样式
                 style.setFont(font);
+                style.setWrapText(true);
                 //生成表格标题
                 HSSFRow row = sheet.createRow(0);
                 row.setHeight((short) 300);
+
+
                 HSSFCell cell = null;
                 for (int j = 0; j < headers.get(i).length; j++) {
                     cell = row.createCell(j);
@@ -322,6 +327,7 @@ public class ExcelUtils {
                     try {
                         for (int k = 0; k < fields.get(i).length; k++) {
                             cell = row.createCell(k);
+                            row.setHeightInPoints((short) 100);
                             cell.setCellStyle(cessStyle);
                             cell.setCellValue(obj.getString(fields.get(i)[k]));
                         }
@@ -460,6 +466,7 @@ public class ExcelUtils {
         HSSFCellStyle style = workbook.createCellStyle();
         style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);//垂直
         style.setAlignment(HSSFCellStyle.ALIGN_CENTER);//水平
+        style.setWrapText(true);//todo 修改
         return style;
     }
 

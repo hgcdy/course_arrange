@@ -3,10 +3,16 @@ package cn.netinnet.coursearrange.controller;
 
 import cn.netinnet.coursearrange.bo.NinArrangeBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
+import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.exception.ServiceException;
+import cn.netinnet.coursearrange.mapper.NinClassMapper;
+import cn.netinnet.coursearrange.mapper.NinStudentMapper;
+import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.util.UserUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +42,8 @@ import java.util.Map;
 public class NinArrangeController {
     @Autowired
     private INinArrangeService ninArrangeService;
+    @Autowired
+    private NinStudentMapper ninStudentMapper;
 
     //跳转排课页面
     @GetMapping("/nin-arrange")
@@ -52,6 +60,39 @@ public class NinArrangeController {
         modelAndView.addObject("teacherId", String.valueOf(teacherId));
         modelAndView.addObject("type", type);
         return modelAndView;
+    }
+
+    //学生教师课程表
+    @GetMapping("/stu-course-form")
+    public ModelAndView stuCourseForm() {
+        UserInfo userInfo = UserUtil.getUserInfo();
+        if (userInfo.getUserType().equals("student")) {
+            ModelAndView modelAndView = new ModelAndView("view/courseFormView_1");
+            modelAndView.addObject("studentId", String.valueOf(userInfo.getUserId()));
+            return modelAndView;
+        }
+        throw new ServiceException(412, "接口错误");
+    }
+    @GetMapping("/class-course-form")
+    public ModelAndView classCourseForm() {
+        UserInfo userInfo = UserUtil.getUserInfo();
+        if (userInfo.getUserType().equals("student")) {
+            NinStudent ninStudent = ninStudentMapper.selectById(userInfo.getUserId());
+            ModelAndView modelAndView = new ModelAndView("view/CourseFormView_1");
+            modelAndView.addObject("classId", String.valueOf(ninStudent.getClassId()));
+            return modelAndView;
+        }
+        throw new ServiceException(412, "接口错误");
+    }
+    @GetMapping("/tea-course-form")
+    public ModelAndView teaCourseForm() {
+        UserInfo userInfo = UserUtil.getUserInfo();
+        if (userInfo.getUserType().equals("teacher")) {
+            ModelAndView modelAndView = new ModelAndView("view/courseFormView_1");
+            modelAndView.addObject("teacherId", String.valueOf(userInfo.getUserId()));
+            return modelAndView;
+        }
+        throw new ServiceException(412, "接口错误");
     }
 
     //跳转教室申请页面
@@ -74,6 +115,7 @@ public class NinArrangeController {
 
     /**
      * 清空记录
+     *
      * @return
      */
     @GetMapping("nin-arrange/empty")
@@ -91,13 +133,14 @@ public class NinArrangeController {
 
     /**
      * 补课-获取空闲资源（教室申请）
+     *
      * @param teacherId 教师id
-     * @param classIds 班级id列表
-     * @param houseId 教室id
+     * @param classIds  班级id列表
+     * @param houseId   教室id
      * @param houseType 教室类型
-     * @param seatMin 座位
-     * @param seatMax 座位
-     * @param weekly 周次
+     * @param seatMin   座位
+     * @param seatMax   座位
+     * @param weekly    周次
      * @return
      */
     @PostMapping("/nin-arrange/getLeisure")
@@ -110,8 +153,11 @@ public class NinArrangeController {
     //添加
     @PostMapping("/nin-arrange/addArrange")
     public ResultModel addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList) {
-        ninArrangeService.addArrange(weekly, week, pitchNum, houseId, teacherId, courseId, classIdList);
-        return null;
+        int i = ninArrangeService.addArrange(weekly, week, pitchNum, houseId, teacherId, courseId, classIdList);
+        if (i > 0) {
+            return ResultModel.ok();
+        }
+        return ResultModel.error(412, "操作失败");
     }
 
 
@@ -144,10 +190,11 @@ public class NinArrangeController {
 
     /**
      * 选修课添加教室教师时可选的资源
+     *
      * @return
      */
     @PostMapping("/getAvailable")
-    ResultModel getAvailable(Long id, Long teacherId, Long houseId, Integer week, Integer pitchNum){
+    ResultModel getAvailable(Long id, Long teacherId, Long houseId, Integer week, Integer pitchNum) {
         Map<String, List> available = ninArrangeService.getAvailable(id, teacherId, houseId, week, pitchNum);
         return ResultModel.ok(available);
     }
@@ -155,6 +202,7 @@ public class NinArrangeController {
 
     /**
      * 根据课程id获取可选教师教师及时间（未使用）
+     *
      * @return
      */
     @PostMapping("nin-arrange/getTeacherHouseORTime")
@@ -164,13 +212,20 @@ public class NinArrangeController {
     }
 
 
+    /**
+     * 导出课程表
+     * @param type
+     * @param id
+     * @param request
+     * @param response
+     * @return
+     * @throws ParseException
+     */
     @GetMapping("/exportCourseForm")
-    public ResultModel exportCourseForm(Integer type, Long id, HttpServletRequest request, HttpServletResponse response) throws ParseException {
+    public ResultModel exportCourseForm(String type, Long id, HttpServletRequest request, HttpServletResponse response) throws ParseException {
         ninArrangeService.exportCourseForm(type, id, request, response);
         return ResultModel.ok();
     }
-
-
 
 
 }

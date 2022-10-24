@@ -19,13 +19,6 @@
                 <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
                     <h3>课程自动排课系统</h3>
                 </a>
-<!--                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0" style="width: 500px;">-->
-<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-secondary">Home</a></li>-->
-<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-white">Features</a></li>-->
-<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-white">Pricing</a></li>-->
-<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-white">FAQs</a></li>-->
-<!--                    <li><a href="javaScript:void(0)" class="nav-link px-2 text-white">About</a></li>-->
-<!--                </ul>-->
                 <div class="text-end" style="position: absolute;right: 0">
                     <button type="button" class="btn btn-outline-light me-5">logout</button>
                 </div>
@@ -71,8 +64,8 @@
                 </button>
                 <div class="collapse" id="resource-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-course">课程设置</a></li>
                         <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-house">教室设置</a></li>
+                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-course">课程设置</a></li>
                     </ul>
                 </div>
             </li>
@@ -84,8 +77,7 @@
                 <div class="collapse" id="arrange-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                         <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-arrange">排课</a></li>
-                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="applyHouse">教师申请</a></li>
-                        <li><a href="javaScript:void(0)" class="link-dark rounded">课程表</a></li>
+                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="applyHouse">教室申请</a></li>
                     </ul>
                 </div>
             </li>
@@ -96,7 +88,7 @@
                 </button>
                 <div class="collapse" id="setting-collapse">
                     <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-setting">选课设置</a></li>
+                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-setting">选课时间设置</a></li>
                     </ul>
                 </div>
             </li>
@@ -104,7 +96,7 @@
     </div>
 <!--    iframe-->
     <div id="iframe" class="border">
-        <iframe th:src="@{nin-class}" frameborder="0"></iframe>
+        <iframe th:src="@{welcome}" frameborder="0"></iframe>
     </div>
 </div>
 

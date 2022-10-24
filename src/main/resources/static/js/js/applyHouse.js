@@ -40,6 +40,17 @@ require(['../config'], function () {
                     }
                 }
             })
+
+            $("#apply td:eq(9)").attr("id", null).empty().append("<input type='button' value='选择课程' id='input1'>");
+            $("#apply td:eq(1)").attr("id", null).text("");
+            $("#apply td:eq(3)").attr("id", null).text("");
+            $("#time-form td").removeClass("bg-success").attr("id", null);
+            $("#house-select tbody").empty();
+            map = null;
+            $("#input1").click(function () {
+                input1();
+            })
+
         })
         //班级弹窗
         $("#dropupClassButton").click(function () {
@@ -75,6 +86,18 @@ require(['../config'], function () {
                     }
                 }
             })
+
+            $("#apply td:eq(9)").attr("id", null).empty().append("<input type='button' value='选择课程' id='input1'>");
+            $("#apply td:eq(1)").attr("id", null).text("");
+            $("#apply td:eq(3)").attr("id", null).text("");
+            $("#time-form td").removeClass("bg-success").attr("id", null);
+            $("#house-select tbody").empty();
+            map = null;
+            $("#input1").click(function () {
+                input1();
+            })
+
+
         })
 
         $("#confirm").click(function () {
@@ -94,7 +117,6 @@ require(['../config'], function () {
             $("#apply td:eq(7)").attr("id", classIdList).text(classNameList);
             $("#classWindow").css("display", "none");
         })
-
 
         //查询按钮
         $("#query").click(function () {
@@ -175,6 +197,11 @@ require(['../config'], function () {
             $("#time-form td").click(function () {
                 $("#house-select tbody").empty()
                 var id = $(this).attr("id");
+                $("#apply td:eq(3)").attr("id", null).text("");
+                $("#apply td:eq(9)").attr("id", null).empty().append("<input type='button' value='选择课程' id='input1'>");
+                $("#input1").click(function () {
+                    input1();
+                })
                 if (id != null && id != "") {
 
                     var split = id.split("");
@@ -187,7 +214,11 @@ require(['../config'], function () {
                     }
 
                     $("#house-select td").click(function () {
+                        $("#apply td:eq(9)").attr("id", null).empty().append("<input type='button' value='选择课程' id='input1'>");
                         $("#apply td:eq(3)").attr("id", $(this).attr("id")).text($(this).text());
+                        $("#input1").click(function () {
+                            input1();
+                        })
                     })
                 } else {
                     $("#house-select tbody").append("<tr><td>无可选教室</td></tr>")
@@ -197,7 +228,7 @@ require(['../config'], function () {
         })
 
 
-        $("#input1").click(function () {
+        function input1() {
             // 参数：教师id,教室id,班级列表
             // 根据教师-课程表获取课程，去掉不符合的教室类型，且班级列表中必须有选该课程
             // 返回课表列表，如果无则提示无可选班级
@@ -205,7 +236,6 @@ require(['../config'], function () {
                 util.hint("请选择教室");
                 return;
             }
-
             $.ajax({
                 url: "/nin-course/getSelectApplyList",
                 type: "post",
@@ -236,7 +266,11 @@ require(['../config'], function () {
                 }
             })
 
+        }
+        $("#input1").click(function () {
+            input1();
         })
+
 
         //确认申请按钮
         $("#affirm-apply").click(function () {
@@ -282,11 +316,7 @@ require(['../config'], function () {
                     courseId: courseId
                 },
                 success: function (data) {
-                    if (data.code == 200) {
-                        util.hint("提交成功");
-                    } else {
-                        util.hint(data.msg);
-                    }
+                    util.hint(data.msg);
                 }
             })
         })
@@ -314,6 +344,7 @@ require(['../config'], function () {
 
             $("#span1").text("");
             $("#apply td:eq(9)").attr("id", null).empty().append("<input type='button' value='选择课程' id='input1'>");
+
 
             seatMin = null;
             $("#seat1").val(null);

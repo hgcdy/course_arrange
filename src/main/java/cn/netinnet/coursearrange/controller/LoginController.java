@@ -36,6 +36,9 @@ public class LoginController {
         return gotoLogin();
     }
 
+    @GetMapping("/welcome")
+    public ModelAndView welcome() {return new ModelAndView("welcome");}
+
     //判断登录用户类型
     @GetMapping("/index")
     public ModelAndView index(String type) {
@@ -43,9 +46,9 @@ public class LoginController {
         if (type.equals("admin")) {
             modelAndView = new ModelAndView("index");
         } else if (type.equals("student")) {
-            modelAndView = new ModelAndView("indexStu");
+            modelAndView = new ModelAndView("viewStu/indexStu");
         } else if (type.equals("teacher")) {
-            modelAndView = new ModelAndView("indexTea");
+            modelAndView = new ModelAndView("viewTea/indexTea");
         } else {
             modelAndView = new ModelAndView("login");
         }

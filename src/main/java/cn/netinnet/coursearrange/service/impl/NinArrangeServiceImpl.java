@@ -597,7 +597,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
                         if (teacherId != null) {
                             //输入条件有教师，且排课中有教师
-                            if (teacherId == arrange.getTeacherId()) {
+                            if (teacherId.equals(arrange.getTeacherId())) {
                                 //该时间不能使用
                                 continue ok;
 
@@ -606,8 +606,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
                         //删除houseList里面出现的
                         for (int k = 0; k < houseList.size(); k++) {
-//                            houseList.get(k).put("id", (houseList.get(k).get("id")));
-                            if (houseList.get(k) != null && houseList.get(k).get("id") == String.valueOf(arrange.getHouseId())) {
+                            if (houseList.get(k) != null && houseList.get(k).get("id").equals(String.valueOf(arrange.getHouseId()))) {
                                 houseList.set(k, null);
                             }
                         }
@@ -629,6 +628,13 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         if (classIds == null || classIds.size() == 0) {
             throw new ServiceException(412, "班级为空");
         }
+
+        //判断
+        Integer arrangeVerify = ninArrangeMapper.getArrangeVerify(classIds, weekly, week, pitchNum, teacherId, houseId);
+        if (arrangeVerify > 0) {
+            throw new ServiceException(412, "时间冲突，添加失败");
+        }
+
         Long teachClassId = IDUtil.getID();
         ArrayList<NinTeachClass> ninTeachClasses = new ArrayList<>();
         for (Long classId : classIds) {
@@ -926,13 +932,17 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
     @Override
-    public void exportCourseForm(Integer type, Long id, HttpServletRequest request, HttpServletResponse response) {
+    public void exportCourseForm(String type, Long id, HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> info = null;
-        if (type == 0) {
+        String name = null;
+        if (type.equals("class")) {
+            name = ninClassMapper.selectById(id).getClassName();
             info = getInfo(id, null, null, null);
-        } else if (type == 1) {
+        } else if (type.equals("teacher")) {
+            name  = ninTeacherMapper.selectById(id).getTeacherName();
             info = getInfo(null, id, null, null);
-        } else if (type == 2) {
+        } else if (type.equals("student")) {
+            name = ninStudentMapper.selectById(id).getStudentName();
             info = getInfo(null, null, id, null);
         }
         int len = 8;
@@ -977,11 +987,11 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             ((JSONObject) array.get(j - 1)).put("" + i, map.getValue());
         }
 
-        String fileName = "成绩单.xls";
+        String fileName = name + "课程表.xls";
         response.setContentType("application/octet-stream");
         response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
         try {
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            response.setHeader("Content-Disposition", URLEncoder.encode(fileName, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -991,7 +1001,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
     }
 
@@ -1023,12 +1032,13 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         if (ninArrangeList.size() > 1) {
             NinArrange arrange1 = ninArrangeList.get(ninArrangeList.size() - 1);
             //和上一条记录相比，同教学班，同课程时，且在同一天，直接跳出
-            if (arrange1.getCourseId() == ninArrange.getCourseId() && arrange1.getTeachClassId() == ninArrange.getTeachClassId()) {
+            if (arrange1.getCourseId().equals(ninArrange.getCourseId()) && arrange1.getTeachClassId().equals(ninArrange.getTeachClassId())) {
                 if (arrange1.getWeek() == ninArrange.getWeek()) {
                     return false;
                 }
             }
         }
+
 
         for (NinArrange arrange : ninArrangeList) {
             //为空，表示该记录没有排
@@ -1044,13 +1054,13 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         //当时间一样时，开始对比其他条件
 
                         //教师相同
-                        if (ninArrange.getTeacherId() == arrange.getTeacherId()) {
+                        if (ninArrange.getTeacherId().equals(arrange.getTeacherId())) {
                             return false;
                         }
                         //不是网课或课外(网课id和类型编号均为3，课外id和类型编号为4)
                         if (ninArrange.getHouseId() != 3 && ninArrange.getHouseId() != 4) {
                             //教室相同
-                            if (ninArrange.getHouseId() == arrange.getHouseId()) {
+                            if (ninArrange.getHouseId().equals(arrange.getHouseId())) {
                                 return false;
                             }
                         }
@@ -1079,7 +1089,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         //遍历两个列表，只要有一个相同，即表示发生了冲突
                         for (Long l1 : A) {
                             for (Long l2 : B) {
-                                if (l1 == l2) {
+                                if (l1.equals(l2)) {
                                     return false;
                                 }
                             }

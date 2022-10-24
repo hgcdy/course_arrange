@@ -39,6 +39,8 @@
             (#{item.id}, #{item.careerId}, #{item.classId}, #{item.teacherId}, #{item.teachClassId}, #{item.courseId}, #{item.houseId}, #{item.must}, #{item.weekly}, #{item.startTime}, #{item.endTime}, #{item.week}, #{item.pitchNum}, #{item.peopleNum}, #{item.createUserId}, #{item.modifyUserId})
         </foreach>
     </insert>
+
+
     <update id="updateNullById">
         UPDATE nin_arrange SET
         teacher_id = null,
@@ -216,5 +218,24 @@
             </if>
         </where>
     </select>
+
+    <select id="getArrangeVerify" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM nin_arrange INNER JOIN nin_teach_class ON nin_arrange.teach_class_id = nin_teach_class.teach_class_id
+        WHERE week = #{week}
+        AND pitch_num = #{pitchNum}
+        AND start_time &lt;= #{weekly}
+        AND end_time &gt;= #{weekly}
+        AND (weekly = IF(#{weekly} % 2 = 1, 1, 2) OR weekly = 0)
+        AND (
+            teacher_id = #{teacherId} OR
+            house_id = #{houseId} OR
+            <foreach collection="list" index="index" item="item" separator="OR" >
+                nin_teach_class.class_id = #{item}
+            </foreach>
+            )
+    </select>
+
+
 
 </mapper>

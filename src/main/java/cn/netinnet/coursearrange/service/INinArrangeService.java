@@ -55,6 +55,6 @@ public interface INinArrangeService extends IService<NinArrange> {
      * @param type 0-班级， 1-教师， 2-学生
      * @param id
      */
-     void exportCourseForm(Integer type, Long id, HttpServletRequest request, HttpServletResponse response);
+     void exportCourseForm(String type, Long id, HttpServletRequest request, HttpServletResponse response);
 
 }

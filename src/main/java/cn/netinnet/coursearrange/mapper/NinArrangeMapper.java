@@ -67,5 +67,22 @@ public interface NinArrangeMapper extends BaseMapper<NinArrange> {
     List<NinArrange> getAvailable(@Param("teacherId") Long teacherId,
                                   @Param("houseId") Long houseId);
 
+    /**
+     * 删除教师选课时的置空
+     * @param id
+     */
     void updateNullById(Long id);
+
+    /**
+     *
+     * @param classIdList
+     * @param weekly 第几周（sql里表示0每周，1-单周，2-双周）
+     * @param week
+     * @param pitchNum
+     * @param houseId
+     * @param teacherId
+     * @return
+     */
+    Integer getArrangeVerify(@Param("list") List<Long> classIdList, Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId);
+
 }

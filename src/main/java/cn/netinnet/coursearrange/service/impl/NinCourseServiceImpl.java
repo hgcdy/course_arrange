@@ -294,14 +294,26 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         }
 
         //加入教师的课程列表，去重
-        courseIdSet.addAll(courseIdList);
+//        courseIdSet.addAll(courseIdList);
+        courseIdList.addAll(courseIdSet);
+        List<Long> longs = new ArrayList<>();
+        Map<Long, Long> map = courseIdList.stream().collect(Collectors.groupingBy(i -> i, Collectors.counting()));
+        for (Map.Entry<Long, Long> m: map.entrySet()) {
+            if (m.getValue() > 1) {
+                longs.add(m.getKey());
+            }
+        }
+
+        if (longs.size() == 0) {
+            throw new ServiceException(412, "没有符合条件的课程");
+        }
 
         ArrayList<NinCourse> ninCourses = new ArrayList<>();
 
         Map<Long, NinCourse> courseIdMap = ninCourseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.toMap(NinCourse::getId, Function.identity()));
         Integer houseType = ninHouseMapper.selectById(houseId).getHouseType();
         //如果符合教室的类型，写入列表
-        for (Long l : courseIdSet) {
+        for (Long l : longs) {
             NinCourse course = courseIdMap.get(l);
             if (houseType == course.getHouseType()) {
                 ninCourses.add(course);
