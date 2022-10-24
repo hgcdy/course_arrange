@@ -709,55 +709,56 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 //        List<NinHouse> ninHouses = ninHouseMapper.selectList(new QueryWrapper<>());
 //        Map<Long, String> collect3 = ninHouses.stream().collect(Collectors.toMap(NinHouse::getId, NinHouse::getHouseName));
 
-        for (Map<String, Object> map : pageInfo.getList()) {
-            //修改星期
-            if (map.get("week") != null) {
-                switch ((int) map.get("week")) {
-                    case 1:
-                        map.put("week", "星期一");
-                        break;
-                    case 2:
-                        map.put("week", "星期二");
-                        break;
-                    case 3:
-                        map.put("week", "星期三");
-                        break;
-                    case 4:
-                        map.put("week", "星期四");
-                        break;
-                    case 5:
-                        map.put("week", "星期五");
-                        break;
-                    case 6:
-                        map.put("week", "星期六");
-                        break;
-                    case 7:
-                        map.put("week", "星期日");
-                        break;
-                }
-            }
-
-            //修改节数
-            if (map.get("pitchNum") != null) {
-                switch ((int) map.get("pitchNum")) {
-                    case 1:
-                        map.put("pitchNum", "第一节");
-                        break;
-                    case 2:
-                        map.put("pitchNum", "第二节");
-                        break;
-                    case 3:
-                        map.put("pitchNum", "第三节");
-                        break;
-                    case 4:
-                        map.put("pitchNum", "第四节");
-                        break;
-                    case 5:
-                        map.put("pitchNum", "第五节");
-                        break;
-                }
-            }
-        }
+        //todo conversion
+//        for (Map<String, Object> map : pageInfo.getList()) {
+//            //修改星期
+//            if (map.get("week") != null) {
+//                switch ((int) map.get("week")) {
+//                    case 1:
+//                        map.put("week", "星期一");
+//                        break;
+//                    case 2:
+//                        map.put("week", "星期二");
+//                        break;
+//                    case 3:
+//                        map.put("week", "星期三");
+//                        break;
+//                    case 4:
+//                        map.put("week", "星期四");
+//                        break;
+//                    case 5:
+//                        map.put("week", "星期五");
+//                        break;
+//                    case 6:
+//                        map.put("week", "星期六");
+//                        break;
+//                    case 7:
+//                        map.put("week", "星期日");
+//                        break;
+//                }
+//            }
+//
+//            //修改节数
+//            if (map.get("pitchNum") != null) {
+//                switch ((int) map.get("pitchNum")) {
+//                    case 1:
+//                        map.put("pitchNum", "第一节");
+//                        break;
+//                    case 2:
+//                        map.put("pitchNum", "第二节");
+//                        break;
+//                    case 3:
+//                        map.put("pitchNum", "第三节");
+//                        break;
+//                    case 4:
+//                        map.put("pitchNum", "第四节");
+//                        break;
+//                    case 5:
+//                        map.put("pitchNum", "第五节");
+//                        break;
+//                }
+//            }
+//        }
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("list", pageInfo.getList());

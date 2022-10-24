@@ -30,10 +30,13 @@
                nin_course.course_time AS courseTime,
                nin_course.start_time AS startTime,
                nin_course.end_time AS endTime,
-               nin_course.week_time AS weekTime
-        FROM nin_student_course, nin_course
+               nin_course.week_time AS weekTime,
+               nin_arrange.week AS week,
+               nin_arrange.pitch_num AS pitchNum
+        FROM nin_student_course, nin_course, nin_arrange
         WHERE nin_student_course.del_flag = 0
         AND nin_student_course.course_id = nin_course.id
+        AND nin_arrange.course_id = nin_course.id
         AND nin_student_course.student_id = #{studentId}
     </select>
 

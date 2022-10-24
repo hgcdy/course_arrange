@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 @RestControllerAdvice
 public class ControllerExceptionHandler {
 
+
+
     /**
      * 捕获所有未知的异常
      */
@@ -25,6 +27,7 @@ public class ControllerExceptionHandler {
         response.setStatus(500);
         return ResultModel.error(500, "接口调用失败，请联系管理员！");
     }
+
 
     /**
      * 捕获没有权限异常

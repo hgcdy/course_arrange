@@ -1,6 +1,6 @@
 require(['../config'], function () {
     require(['jquery', 'util', 'bootstrapBundle'], function ($, util) {
-        const STR = ["courseName", "houseType", "must","courseTime", "startTime", "endTime", "weekTime"];
+        const STR = ["courseName", "houseType", "must","courseTime", "startTime", "endTime", "weekTime", "week", "pitchNum"];
         query();
 
         //新增
@@ -79,6 +79,7 @@ require(['../config'], function () {
                 },
                 success: function (data) {
                     if (data.code == 200) {
+
                         util.createForm(1, data.data[0], STR, 1);
                         if (data.data[0].length ==0){
                             $("tbody").prepend("<tr><td colspan=6>暂无</td></tr>")
