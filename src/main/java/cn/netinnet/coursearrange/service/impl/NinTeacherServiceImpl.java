@@ -65,8 +65,7 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
     public int addSingle(NinTeacher ninTeacher) {
         Integer integer = ninTeacherMapper.selectCount(
                 new QueryWrapper<NinTeacher>()
-                        .eq("teacher_name", ninTeacher.getTeacherName())
-                        .or().eq("teacher_code", ninTeacher.getTeacherCode()));
+                        .eq("teacher_code", ninTeacher.getTeacherCode()));
         if (integer > 0) {
             throw new ServiceException(412, "重名");
         }
@@ -93,8 +92,7 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
         Integer integer = ninTeacherMapper.selectCount(
                 new QueryWrapper<NinTeacher>()
                         .ne("id", ninTeacher.getId())
-                        .and(i -> i.eq("teacher_name", ninTeacher.getTeacherName())
-                                .or().eq("teacher_code", ninTeacher.getTeacherCode())));
+                        .eq("teacher_code", ninTeacher.getTeacherCode()));
         if (integer > 0) {
             throw new ServiceException(412, "重名");
         }
