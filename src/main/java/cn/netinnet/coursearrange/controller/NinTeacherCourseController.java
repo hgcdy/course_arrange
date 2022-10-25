@@ -48,14 +48,22 @@ public class NinTeacherCourseController {
         return modelAndView;
     }
 
-    //查询
+    /**
+     * 查询
+     * @param teacherId
+     * @return
+     */
     @PostMapping("/getSelectList")
     public ResultModel getSelectList(Long teacherId){
         List<Map<String, Object>> list = ninTeacherCourseService.getSelectList(teacherId);
         return ResultModel.ok(list);
     }
 
-    //添加教师-课程记录
+    /**
+     * 添加教师-课程记录
+     * @param ninTeacherCourse
+     * @return
+     */
     @PostMapping("/addTeacherCourse")
     public ResultModel addTeacherCourse(NinTeacherCourse ninTeacherCourse){
         int i = ninTeacherCourseService.addSingle(ninTeacherCourse);
@@ -65,7 +73,11 @@ public class NinTeacherCourseController {
         return ResultModel.error(412, "新增失败");
     }
 
-    //删除教室-课程记录
+    /**
+     * 删除教师-课程记录
+     * @param id
+     * @return
+     */
     @PostMapping("/delTeacherCourse")
     public ResultModel delTeacherCourse(Long id){
         int i = ninTeacherCourseService.delById(id);

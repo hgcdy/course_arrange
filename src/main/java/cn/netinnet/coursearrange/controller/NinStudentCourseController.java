@@ -52,14 +52,22 @@ public class NinStudentCourseController {
         return modelAndView;
     }
 
-    //查询
+    /**
+     * 查询
+     * @param studentId
+     * @return
+     */
     @PostMapping("/getSelectList")
     public ResultModel getSelectList(Long studentId){
         List<List<Map<String, Object>>> selectList = ninStudentCourseService.getSelectList(studentId);
         return ResultModel.ok(selectList);
     }
 
-    //添加记录
+    /**
+     * 添加记录
+     * @param ninStudentCourse
+     * @return
+     */
     @PostMapping("/addStudentCourse")
     public ResultModel addStudent(NinStudentCourse ninStudentCourse){
         int i = ninStudentCourseService.addSingle(ninStudentCourse);
@@ -69,7 +77,11 @@ public class NinStudentCourseController {
         return ResultModel.error(412, "新增失败");
     }
 
-    //删除记录
+    /**
+     * 删除记录
+     * @param id
+     * @return
+     */
     @PostMapping("/delStudentCourse")
     public ResultModel delStudent(Long id){
         int i = ninStudentCourseService.delSingle(id);

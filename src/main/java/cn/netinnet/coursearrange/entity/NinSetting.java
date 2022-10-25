@@ -27,6 +27,9 @@ public class NinSetting implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 设置记录id
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
@@ -46,6 +49,7 @@ public class NinSetting implements Serializable {
     /**
      * 开放状态 0-开放，1-不开放，2-定时
      */
+    @TableField("open_state")
     private Integer openState;
 
     /**
@@ -60,6 +64,9 @@ public class NinSetting implements Serializable {
     @TableField("close_time")
     private LocalDateTime closeTime;
 
+    /**
+     * 逻辑删除标识
+     */
     @TableField("del_flag")
     private Integer delFlag;
 
@@ -69,6 +76,9 @@ public class NinSetting implements Serializable {
     @TableField("create_time")
     private LocalDateTime createTime;
 
+    /**
+     * 创建人id
+     */
     @TableField("create_user_id")
     private Long createUserId;
 
@@ -78,6 +88,9 @@ public class NinSetting implements Serializable {
     @TableField("modify_time")
     private LocalDateTime modifyTime;
 
+    /**
+     * 修改人id
+     */
     @TableField("modify_user_id")
     private Long modifyUserId;
 

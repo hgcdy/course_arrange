@@ -27,22 +27,40 @@ public class NinStudent implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 学生id
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
+    /**
+     * 学生名称
+     */
     @TableField("student_name")
     private String studentName;
 
+    /**
+     * 学生账号
+     */
     @TableField("student_code")
     private String studentCode;
 
+    /**
+     * 学生用户密码
+     */
     @TableField("student_password")
     private String studentPassword;
 
+    /**
+     * 行政班级id
+     */
     @TableField("class_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long classId;
 
+    /**
+     * 逻辑删除标识
+     */
     @TableField("del_flag")
     private String delFlag;
 
@@ -52,6 +70,9 @@ public class NinStudent implements Serializable {
     @TableField("create_time")
     private LocalDateTime createTime;
 
+    /**
+     * 创建人id
+     */
     @TableField("create_user_id")
     private Long createUserId;
 
@@ -61,6 +82,9 @@ public class NinStudent implements Serializable {
     @TableField("modify_time")
     private LocalDateTime modifyTime;
 
+    /**
+     * 修改人id
+     */
     @TableField("modify_user_id")
     private Long modifyUserId;
 

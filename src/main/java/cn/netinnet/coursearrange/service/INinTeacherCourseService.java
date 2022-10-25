@@ -17,7 +17,7 @@ import java.util.Map;
 public interface INinTeacherCourseService extends IService<NinTeacherCourse> {
 
     /**
-     *
+     * 查询
      * @param teacherId
      * @return
      */

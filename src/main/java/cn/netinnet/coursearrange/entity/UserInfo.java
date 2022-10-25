@@ -72,14 +72,4 @@ public class UserInfo implements Serializable {
         UserType = userType;
     }
 
-    @Override
-    public String toString() {
-        return "UserInfo{" +
-                "UserId=" + UserId +
-                ", UserName='" + UserName + '\'' +
-                ", UserCode='" + UserCode + '\'' +
-                ", UserPassword='" + UserPassword + '\'' +
-                ", UserType='" + UserType + '\'' +
-                '}';
-    }
 }

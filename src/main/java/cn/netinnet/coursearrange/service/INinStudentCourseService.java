@@ -17,23 +17,21 @@ import java.util.Map;
 public interface INinStudentCourseService extends IService<NinStudentCourse> {
 
     /**
-     *
-     * @param page
-     * @param size
+     * 查询
      * @param studentId
      * @return
      */
     List<List<Map<String, Object>>> getSelectList(Long studentId);
 
     /**
-     *
+     * 添加
      * @param ninStudentCourse
      * @return
      */
     int addSingle(NinStudentCourse ninStudentCourse);
 
     /**
-     *
+     * 删除
      * @param id
      * @return
      */

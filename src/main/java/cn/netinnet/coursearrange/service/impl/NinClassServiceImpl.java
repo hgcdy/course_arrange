@@ -46,7 +46,11 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
     @Autowired
+    private NinTeacherCourseMapper ninTeacherCourseMapper;
+    @Autowired
     private NinArrangeMapper ninArrangeMapper;
+    @Autowired
+    private NinSettingMapper ninSettingMapper;
 
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size, String college, Long careerId, String className) {
@@ -97,6 +101,7 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     public Map<String, Map<String, List<Map<String, Object>>>> collegeCareerClassList() {
         List<Map<String, Object>> list = ninClassMapper.collegeCareerClassList();
         Utils.conversion(list);
+        //按学院，专业名称分组
         Map<String, Map<String, List<Map<String, Object>>>> map = list.stream().collect(Collectors.groupingBy(i -> (String) (i.get("college")), Collectors.groupingBy(i -> (String) i.get("careerName"))));
         return map;
     }
@@ -160,6 +165,24 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
             //删除学生选课信息
             ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
                 setTakeClassId(ninClass.getId());
+            }}));
+            //删除课程
+            NinArrange arrange = ninArrangeMapper.selectOne(new QueryWrapper<>(new NinArrange() {{
+                setClassId(ninClass.getId());
+            }}));
+            Long courseId = arrange.getCourseId();
+            ninCourseMapper.deleteById(courseId);
+            //删除设置记录
+            ninSettingMapper.delete(new QueryWrapper<>(new NinSetting() {{
+                setCourseId(courseId);
+            }}));
+            //删除教师选课
+            ninTeacherCourseMapper.delete(new QueryWrapper<>(new NinTeacherCourse(){{
+                setCourseId(courseId);
+            }}));
+            //删除排课记录
+            ninArrangeMapper.delete(new QueryWrapper<>(new NinArrange(){{
+                setCourseId(courseId);
             }}));
         } else {
             //删除班级下的所有学生及学生选课信息，同时学生选课对应的选修班级人数-1

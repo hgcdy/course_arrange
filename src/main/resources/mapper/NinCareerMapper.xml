@@ -24,7 +24,6 @@
         SELECT id, college, career_name, class_num
         FROM nin_career
         WHERE del_flag = 0
-<!--         AND id != -1 -->
         <if test="college != null and college != ''">
              AND college = #{college}
         </if>

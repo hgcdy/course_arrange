@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author liuyc
- *
  * 发送post请求
  */
 @Component

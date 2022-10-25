@@ -27,14 +27,20 @@ public class NinCourse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 课程id
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
+    /**
+     * 课程名称
+     */
     @TableField("course_name")
     private String courseName;
 
     /**
-     * 课程需要的教室类型.0-普通教室，1-机房，2-实验室
+     * 课程需要的教室类型.0-教室，1-机房，2-实验室，3-课外，4-网课
      */
     @TableField("house_type")
     private Integer houseType;
@@ -42,33 +48,42 @@ public class NinCourse implements Serializable {
     /**
      * 是否必修，0-选修，1-必修
      */
+    @TableField("must")
     private Integer must;
 
     /**
      * 课时
      */
+    @TableField("course_time")
     private Integer courseTime;
 
     /**
      * 最早开课时间
      */
+    @TableField("start_time")
     private Integer startTime;
 
     /**
      * 最晚结课时间
      */
+    @TableField("end_time")
     private Integer endTime;
 
     /**
      * 几周内结课
      */
+    @TableField("week_time")
     private Integer weekTime;
 
     /**
      * 最多上课班级
      */
+    @TableField("max_class_num")
     private Integer maxClassNum;
 
+    /**
+     * 逻辑删除标识
+     */
     @TableField("del_flag")
     private Integer delFlag;
 
@@ -78,6 +93,9 @@ public class NinCourse implements Serializable {
     @TableField("create_time")
     private LocalDateTime createTime;
 
+    /**
+     * 创建人id
+     */
     @TableField("create_user_id")
     private Long createUserId;
 
@@ -87,6 +105,9 @@ public class NinCourse implements Serializable {
     @TableField("modify_time")
     private LocalDateTime modifyTime;
 
+    /**
+     * 修改人id
+     */
     @TableField("modify_user_id")
     private Long modifyUserId;
 

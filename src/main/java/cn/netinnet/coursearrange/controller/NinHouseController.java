@@ -36,7 +36,16 @@ public class NinHouseController {
     }
 
 
-    //分页查询
+    /**
+     * 分页条件查询
+     * @param page
+     * @param size
+     * @param houseName
+     * @param houseType
+     * @param firstSeat
+     * @param tailSeat
+     * @return
+     */
     @PostMapping("/getPageSelectList")
     public ResultModel getSelectPageList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
@@ -87,7 +96,11 @@ public class NinHouseController {
         return ResultModel.error(412, "修改失败");
     }
 
-    //根据id获取
+    /**
+     * 根据id获取单条记录
+     * @param id
+     * @return
+     */
     @GetMapping("/getHouseById")
     public ResultModel getHouseById(@NotNull Long id){
         return ResultModel.ok(ninHouseService.getHouseById(id));

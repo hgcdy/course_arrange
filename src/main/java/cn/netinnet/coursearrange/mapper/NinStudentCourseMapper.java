@@ -33,6 +33,11 @@ public interface NinStudentCourseMapper extends BaseMapper<NinStudentCourse> {
      */
     List<NinStudentCourse> getStudentIds(@Param("list") List<Long> studentIdList);
 
+    /**
+     * 查询
+     * @param Student
+     * @return
+     */
     List<Map<String, Object>> getSelectList(Long Student);
 
 }

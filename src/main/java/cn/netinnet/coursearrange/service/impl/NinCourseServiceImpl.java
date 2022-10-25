@@ -147,14 +147,12 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     @Transactional(rollbackFor = Exception.class)
     public int delById(Long id) {
         NinCourse course = ninCourseMapper.selectById(id);
-
         //删除其他表有关该课程的记录
 
         //删除教师-课程
         ninTeacherCourseMapper.delete(new QueryWrapper<>(new NinTeacherCourse() {{
             setCourseId(id);
         }}));
-
         //删除选课权限表
         ninSettingMapper.delete(new QueryWrapper<>(new NinSetting() {{
             setCourseId(id);
@@ -165,14 +163,12 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
                 setCourseId(id);
             }}));
-
             //课程id查询排课信息
             NinArrange arrange = ninArrangeMapper.selectOne(new QueryWrapper<>(new NinArrange() {{
                 setCourseId(id);
             }}));
             //获取班级id
             Long classId = arrange.getClassId();
-
             //删除选修班级
             ninClassMapper.deleteById(classId);
 
@@ -200,7 +196,6 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
                     setCourseId(id);
                 }}));
             }
-
         }
         //删除课程
         int i = ninCourseMapper.deleteById(id);
@@ -228,11 +223,13 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         String userType = userInfo.getUserType();
 
         List<NinCourse> courseList = ninCourseMapper.selectList(new QueryWrapper<>());
+        //0-返回选修课程，1-返回必修课程
         if (sign != null && (sign == 0 || sign == 1)) {
             courseList = courseList.stream().filter(i ->
                     i.getMust() == sign
             ).collect(Collectors.toList());
         } else {
+            //如果不是0或1，即表示是教师获取可选的课程（返回除被选的选修课程外的所有课程）
             courseList = ninCourseMapper.reSelectCourse();
         }
 
@@ -293,8 +290,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             throw new ServiceException(412, "所选的班级无共同的课程");
         }
 
-        //加入教师的课程列表，去重
-//        courseIdSet.addAll(courseIdList);
+        //选出共有的课程
         courseIdList.addAll(courseIdSet);
         List<Long> longs = new ArrayList<>();
         Map<Long, Long> map = courseIdList.stream().collect(Collectors.groupingBy(i -> i, Collectors.counting()));

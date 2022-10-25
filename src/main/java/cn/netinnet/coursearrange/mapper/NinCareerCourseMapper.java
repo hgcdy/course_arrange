@@ -19,7 +19,16 @@ import java.util.Map;
 @Mapper
 public interface NinCareerCourseMapper extends BaseMapper<NinCareerCourse> {
 
+    /**
+     * 条件查询
+     * @param careerId
+     * @return
+     */
     List<Map<String, Object>> getSelectList(Long careerId);
 
+    /**
+     * 多专业多课程批量添加
+     * @param ninCareerCourseList
+     */
     void addBatchCourse(@Param("list") List<NinCareerCourse> ninCareerCourseList);
 }

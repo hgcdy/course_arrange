@@ -16,7 +16,7 @@ import java.util.Map;
 public interface INinTeacherService extends IService<NinTeacher> {
 
     /**
-     * 分页条件查询
+     * 分页条件查询（当是教师用户查询时，返回自身）
      * @param page
      * @param size
      * @param teacherName

@@ -27,14 +27,21 @@ public class NinCareer implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 专业id
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
      * 学院
      */
+    @TableField("college")
     private String college;
 
+    /**
+     * 专业名称
+     */
     @TableField("career_name")
     private String careerName;
 
@@ -44,6 +51,9 @@ public class NinCareer implements Serializable {
     @TableField("class_num")
     private Integer classNum;
 
+    /**
+     * 逻辑删除标识
+     */
     @TableField("del_flag")
     private Integer delFlag;
 
@@ -53,6 +63,9 @@ public class NinCareer implements Serializable {
     @TableField("create_time")
     private LocalDateTime createTime;
 
+    /**
+     * 创建人id
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     @TableField("create_user_id")
     private Long createUserId;
@@ -63,6 +76,9 @@ public class NinCareer implements Serializable {
     @TableField("modify_time")
     private LocalDateTime modifyTime;
 
+    /**
+     * 修改人id
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     @TableField("modify_user_id")
     private Long modifyUserId;

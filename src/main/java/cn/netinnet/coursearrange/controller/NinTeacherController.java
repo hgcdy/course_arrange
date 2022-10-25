@@ -92,6 +92,11 @@ public class NinTeacherController {
         return ResultModel.error(412, "修改失败");
     }
 
+    /**
+     * 根据id获取单条记录
+     * @param id
+     * @return
+     */
     @GetMapping("/getTeacherById")
     public ResultModel getTeacherById(Long id){
         return ResultModel.ok(ninTeacherService.getTeacherById(id));

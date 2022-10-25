@@ -19,8 +19,18 @@ import java.util.Map;
 @Mapper
 public interface NinTeacherMapper extends BaseMapper<NinTeacher> {
 
+    /**
+     * 条件查询
+     * @param teacherName
+     * @return
+     */
     List<Map<String, Object>> getSelectList(String teacherName);
 
+    /**
+     * 根据课程查询教师
+     * @param courseId
+     * @return
+     */
     List<NinTeacher> getSelectByCourse(@Param("courseId") Long courseId);
 
 }

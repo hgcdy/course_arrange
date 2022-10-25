@@ -6,7 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * @author chenjf
+ * get请求
  */
 public class HttpUtil {
 

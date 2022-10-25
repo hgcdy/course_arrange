@@ -19,7 +19,19 @@ import java.util.Map;
 @Mapper
 public interface NinStudentMapper extends BaseMapper<NinStudent> {
 
+    /**
+     * 分页条件查询
+     * @param careerIds
+     * @param classId
+     * @param studentName
+     * @return
+     */
     List<Map<String, Object>> getSelectList(@Param("careerIds") List<Long> careerIds, @Param("classId") Long classId, @Param("studentName") String studentName);
 
+    /**
+     * 批量删除学生
+     * @param studentIds
+     * @return
+     */
     int delBatchStudent(@Param("list") List<Long> studentIds);
 }

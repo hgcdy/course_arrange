@@ -27,15 +27,21 @@ public class NinStudentCourse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 学生-课程记录id
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
+    /**
+     * 学生id
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     @TableField("student_id")
     private Long studentId;
 
     /**
-     * 学生选修课程
+     * 学生选修课程id
      */
     @JsonSerialize(using = ToStringSerializer.class)
     @TableField("course_id")
@@ -47,6 +53,9 @@ public class NinStudentCourse implements Serializable {
     @TableField("take_class_id")
     private Long takeClassId;
 
+    /**
+     * 逻辑删除标识
+     */
     @TableField("del_flag")
     private String delFlag;
 
@@ -56,6 +65,9 @@ public class NinStudentCourse implements Serializable {
     @TableField("create_time")
     private LocalDateTime createTime;
 
+    /**
+     * 创建人id
+     */
     @TableField("create_user_id")
     private Long createUserId;
 
@@ -65,6 +77,9 @@ public class NinStudentCourse implements Serializable {
     @TableField("modify_time")
     private LocalDateTime modifyTime;
 
+    /**
+     * 修改人id
+     */
     @TableField("modify_user_id")
     private Long modifyUserId;
 

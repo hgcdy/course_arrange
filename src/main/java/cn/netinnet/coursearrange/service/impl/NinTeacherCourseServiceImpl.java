@@ -84,6 +84,7 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
                 setHouseType(course.getHouseType());
             }})).stream().filter(i -> i.getSeat() >= num).map(NinHouse::getId).collect(Collectors.toList());
             Boolean bo = false;
+            //判断是否冲突
             ok: for (Long houseId : houseIdList) {
                 for (int[] time : taskCourseTime) {
                     int size = 1;
@@ -128,11 +129,13 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delById(Long id) {
+        //删除教师-课程记录
         NinTeacherCourse ninTeacherCourse = ninTeacherCourseMapper.selectById(id);
         NinArrange ninArrange = ninArrangeMapper.selectOne(new QueryWrapper<>(new NinArrange() {{
             setTeacherId(ninTeacherCourse.getTeacherId());
             setCourseId(ninTeacherCourse.getCourseId());
         }}));
+        //该记录是选修时，修改，将教师等信息置空
         if (ninArrange != null && ninArrange.getMust() == 0) {
             ninArrangeMapper.updateNullById(ninArrange.getId());
         }

@@ -17,7 +17,7 @@ import java.util.Map;
 public interface INinCareerCourseService extends IService<NinCareerCourse> {
 
     /**
-     *
+     * 条件查询
      * @param careerId
      * @return
      */
@@ -30,13 +30,13 @@ public interface INinCareerCourseService extends IService<NinCareerCourse> {
      */
     void addBatchCourse(List<Long> careerIdList, List<Long> courseIdList);
 
+    /**
+     * 根据id删除
+     * @param id
+     * @return
+     */
     int delCareerCourse(Long id);
 
-//    /**
-//     * 根据专业获取课程列表
-//     * @param careerId
-//     * @return
-//     */
-//    List<Map<String, Object>> getCareerCourse(Long careerId);
+
 
 }

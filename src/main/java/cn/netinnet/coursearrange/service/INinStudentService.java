@@ -19,7 +19,6 @@ public interface INinStudentService extends IService<NinStudent> {
      * 分页条件查询
      * @param page
      * @param size
-     * @param classIds 班级id列表
      * @param studentName 名字或账号
      * @return
      */
@@ -48,8 +47,11 @@ public interface INinStudentService extends IService<NinStudent> {
      */
     int alterSingle(NinStudent ninStudent);
 
-
-
+    /**
+     * 根据id查询单条记录
+     * @param id
+     * @return
+     */
     NinStudent getStudentById(Long id);
 
     /**

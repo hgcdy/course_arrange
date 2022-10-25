@@ -27,14 +27,20 @@ public class NinHouse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 教室id
+     */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
+    /**
+     * 教室名称
+     */
     @TableField("house_name")
     private String houseName;
 
     /**
-     * 教室类型,0-普通教室，1-机房，2-实验室
+     * 教室类型,0-教室，1-机房，2-实验室，3-课外，4-网课
      */
     @TableField("house_type")
     private Integer houseType;
@@ -42,8 +48,12 @@ public class NinHouse implements Serializable {
     /**
      * 教室座位
      */
+    @TableField("seat")
     private Integer seat;
 
+    /**
+     * 逻辑删除标识
+     */
     @TableField("del_flag")
     private Integer delFlag;
 
@@ -53,6 +63,9 @@ public class NinHouse implements Serializable {
     @TableField("create_time")
     private LocalDateTime createTime;
 
+    /**
+     * 创建人id
+     */
     @TableField("create_user_id")
     private Long createUserId;
 
@@ -62,6 +75,9 @@ public class NinHouse implements Serializable {
     @TableField("modify_time")
     private LocalDateTime modifyTime;
 
+    /**
+     * 修改人id
+     */
     @TableField("modify_user_id")
     private Long modifyUserId;
 

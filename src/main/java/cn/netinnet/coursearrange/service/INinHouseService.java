@@ -19,7 +19,6 @@ public interface INinHouseService extends IService<NinHouse> {
      * 分页条件查询
      * @param page 页码
      * @param size 页数
-     * @param ninHouse 实体类
      * @return
      */
     Map<String, Object> getPageSelectList(Integer page, Integer size,  String houseName, Integer houseType, Integer firstSeat, Integer tailSeat);

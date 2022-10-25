@@ -19,36 +19,80 @@ import java.util.Map;
  */
 public interface INinArrangeService extends IService<NinArrange> {
 
+    /**
+     * 自动排课
+     */
     void arrange();
 
+    /**
+     * 清空排课记录
+     */
     void empty();
 
+    /**
+     * 获取课程表信息
+     * @param classId
+     * @param teacherId
+     * @param studentId
+     * @param count 周次（为空则获取整个学期的课程表）
+     * @return
+     */
     Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer count);
 
+    /**
+     * 补课-获取空闲资源（教室申请）
+     * @param teacherId
+     * @param classIds
+     * @param houseId
+     * @param houseType
+     * @param seatMin
+     * @param seatMax
+     * @param weekly
+     * @return
+     */
     Map<String, List<Map<String, Object>>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin,Integer seatMax, Integer weekly);
 
+    /**
+     * 添加·排课信息
+     * @param weekly
+     * @param week
+     * @param pitchNum
+     * @param houseId
+     * @param teacherId
+     * @param courseId
+     * @param classIdList
+     * @return
+     */
     int addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList);
 
+    /**
+     * 分页条件查询
+     * @param bo
+     * @param page
+     * @param size
+     * @return
+     */
     Map<String, Object> getPageSelectList(NinArrangeBo bo, Integer page, Integer size);
 
+    /**
+     * 根据id删除排课记录
+     * @param id
+     * @return
+     */
     int delArrange(Long id);
 
+    /**
+     * 修改排课记录
+     * @param arrange
+     * @return
+     */
     int alterArrange(NinArrange arrange);
-
 
     /**
      * 根据课程id获取可选教室教师或根据教室教师获取时间
      * @return
      */
      List<Object> getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId);
-
-
-    /**
-     * 给选修课程添加教室教师时的选择
-     * @param id
-     * @return
-     */
-     Map<String, List> getAvailable(Long id, Long teacherId, Long houseId, Integer week, Integer pitchNum);
 
     /**
      * 导出，

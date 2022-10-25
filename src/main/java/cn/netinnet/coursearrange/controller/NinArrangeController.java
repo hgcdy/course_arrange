@@ -124,7 +124,14 @@ public class NinArrangeController {
         return ResultModel.ok();
     }
 
-    //获取课程表的信息
+    /**
+     * 获取课程表的信息
+     * @param classId
+     * @param teacherId
+     * @param studentId
+     * @param count
+     * @return
+     */
     @PostMapping("/nin-arrange/getInfo")
     public ResultModel getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
         Map<String, String> info = ninArrangeService.getInfo(classId, teacherId, studentId, count);
@@ -150,7 +157,17 @@ public class NinArrangeController {
     }
 
 
-    //添加
+    /**
+     * 添加排课记录（教室申请）
+     * @param weekly
+     * @param week
+     * @param pitchNum
+     * @param houseId
+     * @param teacherId
+     * @param courseId
+     * @param classIdList
+     * @return
+     */
     @PostMapping("/nin-arrange/addArrange")
     public ResultModel addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList) {
         int i = ninArrangeService.addArrange(weekly, week, pitchNum, houseId, teacherId, courseId, classIdList);
@@ -161,13 +178,24 @@ public class NinArrangeController {
     }
 
 
-    //查询
+    /**
+     * 条件分页查询
+     * @param bo
+     * @param page
+     * @param size
+     * @return
+     */
     @PostMapping("/nin-arrange/getPageSelectList")
     public ResultModel getPageSelectList(NinArrangeBo bo, Integer page, Integer size) {
         return ResultModel.ok(ninArrangeService.getPageSelectList(bo, page, size));
     }
 
-    //删除
+
+    /**
+     * 根据id删除排课记录
+     * @param id
+     * @return
+     */
     @PostMapping("nin-arrange/delArrange")
     public ResultModel delArrange(Long id) {
         int i = ninArrangeService.delArrange(id);
@@ -178,7 +206,11 @@ public class NinArrangeController {
     }
 
 
-    //编辑
+    /**
+     * 编辑排课记录（未使用）
+     * @param arrange
+     * @return
+     */
     @PostMapping("nin-arrange/alterArrange")
     public ResultModel alterArrange(NinArrange arrange) {
         int i = ninArrangeService.alterArrange(arrange);
@@ -186,17 +218,6 @@ public class NinArrangeController {
             return ResultModel.ok();
         }
         return ResultModel.error(412, "编辑失败");
-    }
-
-    /**
-     * 选修课添加教室教师时可选的资源
-     *
-     * @return
-     */
-    @PostMapping("/getAvailable")
-    ResultModel getAvailable(Long id, Long teacherId, Long houseId, Integer week, Integer pitchNum) {
-        Map<String, List> available = ninArrangeService.getAvailable(id, teacherId, houseId, week, pitchNum);
-        return ResultModel.ok(available);
     }
 
 
