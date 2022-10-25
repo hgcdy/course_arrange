@@ -4,7 +4,7 @@ require(['../config'], function () {
         var size = 10;
         var total = 0;
         var teacherName = null;
-        const STR = ["teacherName", "teacherCode", "teacherPassword", "courseNum"];
+        const STR = ["teacherName", "teacherCode", "courseName"];
         query();
 
         //查询按钮
@@ -95,14 +95,17 @@ require(['../config'], function () {
                         var obj = data.data;
                         var $teacherName = $("<tr><td><label for='teacherName'>教师名称:</label></td><td><input type='text' id='teacherName' value=" + obj.teacherName + "></td></tr>");
                         var $teacherCode = $("<tr><td><label for='teacherCode'>教师账号:</label></td><td><input type='text' id='teacherCode' value=" + obj.teacherCode + "></td></tr>");
-                        var $teacherPassword = $("<tr><td><label for='teacherPassword'>密码:</label></td><td><input type='text' id='teacherPassword' value=" + obj.teacherPassword + "></td></tr>");
-
+                        var $teacherPassword = $("<tr><td><label for='teacherPassword'>密码:</label></td><td><input type='text' id='teacherPassword' value='******'></td></tr>");
                         util.popup([$teacherName, $teacherCode, $teacherPassword], ["teacherName", "teacherCode", "teacherPassword"], $update);
                     }
                 }
             })
 
             function $update(record) {
+                if (record.teacherPassword == "******") {
+                    record.teacherPassword = null;
+                }
+
                 $.ajax({
                     url: "nin-teacher/alterTeacher",
                     dataType: "json",

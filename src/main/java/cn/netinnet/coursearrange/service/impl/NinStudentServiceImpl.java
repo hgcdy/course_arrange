@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinCareer;
 import cn.netinnet.coursearrange.entity.NinClass;
 import cn.netinnet.coursearrange.entity.NinStudent;
@@ -39,10 +40,7 @@ import java.util.stream.Collectors;
 @Service
 public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStudent> implements INinStudentService {
 
-    /**
-     * 班级最大人数
-     */
-    private static final int MAX_PEOPLE_NUM = 50;
+
 
     @Autowired
     private NinStudentMapper ninStudentMapper;
@@ -91,19 +89,18 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
         }
 
         //限制班级人数
-        if (ninClass.getPeopleNum() >= MAX_PEOPLE_NUM) {
+        if (ninClass.getPeopleNum() >= ApplicationConstant.CLASS_PEOPLE_NUM) {
             throw new ServiceException(412, "该班级人数过多");
         }
 
         //班级人数+1
         ninClassMapper.addPeopleNum(ninStudent.getClassId());
-//        Integer i = ninStudentMapper.selectCount(
-//                new QueryWrapper<NinStudent>()
-//                        .eq("student_name", ninStudent.getStudentName())
-//                        .or().eq("student_code", ninStudent.getStudentCode()));
-//        if (i > 0) {
-//            throw new ServiceException(412, "重名");
-//        }
+        Integer i = ninStudentMapper.selectCount(new QueryWrapper<>(new NinStudent(){{
+            setStudentCode(ninStudent.getStudentCode());
+        }}));
+        if (i > 0) {
+            throw new ServiceException(412, "重名");
+        }
         //主键id，创建者id和修改者id
         ninStudent.setId(IDUtil.getID());
         ninStudent.setCreateUserId(UserUtil.getUserInfo().getUserId());
@@ -129,19 +126,24 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int alterSingle(NinStudent ninStudent) {
-//        Integer i1 = ninStudentMapper.selectCount(
-//                new QueryWrapper<NinStudent>()
-//                        .ne("id", ninStudent.getId())
-//                        .and(i -> i.eq("student_name", ninStudent.getStudentName())
-//                                .or().eq("student_code", ninStudent.getStudentCode())));
-//        if (i1 > 0) {
-//            throw new ServiceException(412, "重名");
-//        }
+        Integer i1 = ninStudentMapper.selectCount(
+                new QueryWrapper<NinStudent>()
+                        .ne("id", ninStudent.getId())
+                        .eq("student_name", ninStudent.getStudentName()));
+        if (i1 > 0) {
+            throw new ServiceException(412, "重名");
+        }
         NinStudent ninStudent1 = ninStudentMapper.selectById(ninStudent.getId());
         if (ninStudent1.getClassId() != ninStudent.getClassId()) {
             ninClassMapper.subPeopleNum(ninStudent1.getClassId());
             ninClassMapper.addPeopleNum(ninStudent.getClassId());
         }
+
+        //todo 判断密码长度 空字符串等，目前先这样
+        if (ninStudent.getStudentPassword().equals("")) {
+            ninStudent.setStudentPassword(null);
+        }
+
 
         ninStudent.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninStudentMapper.updateById(ninStudent);

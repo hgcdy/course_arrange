@@ -98,6 +98,10 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
         if (integer > 0) {
             throw new ServiceException(412, "重名");
         }
+        //todo 判断密码长度 空字符串等，目前先这样
+        if (ninTeacher.getTeacherPassword().equals("")) {
+            ninTeacher.setTeacherPassword(null);
+        }
         ninTeacher.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninTeacherMapper.updateById(ninTeacher);
     }

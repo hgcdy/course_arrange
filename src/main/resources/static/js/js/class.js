@@ -189,8 +189,6 @@ require(['../config'], function () {
                 box($select);
             }
 
-
-
             $td.append($select);
             $careerId.append($td);
 

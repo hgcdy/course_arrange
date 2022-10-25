@@ -7,7 +7,7 @@ require(['../config'], function () {
         var studentName = null;
         var careerId = null;
         var classId = null;
-        const STR = ["college", "careerName", "className", "studentName", "studentCode", "studentPassword"];
+        const STR = ["college", "careerName", "className", "studentName", "studentCode"];
         query();
 
 
@@ -102,7 +102,7 @@ require(['../config'], function () {
                         $("#dropupClassIdButton").next("ul").empty();
                         for (let i = 0; i < list.length; i++) {
                             if (list[i].careerId == 0) {
-                                continue;//todo 学生根据班级查询，无选修教学班
+                                continue;//
                             }
                             var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].className).attr("class-id", list[i].classId).click(function () {
                                 $("#dropupClassIdButton").text($(this).text()).attr("class-id", $(this).attr("class-id"));
@@ -220,16 +220,14 @@ require(['../config'], function () {
                         var obj = data.data;
                         var $studentName = $("<tr><td><label for='studentName'>学生名称:</label></td><td><input type='text' id='studentName' value=" + obj.studentName + "></td></tr>");
                         var $studentCode = $("<tr><td><label for='studentCode'>学生账号:</label></td><td><input type='text' id='studentCode' value=" + obj.studentCode + "></td></tr>");
-                        var $studentPassword = $("<tr><td><label for='studentPassword'>密码:</label></td><td><input type='text' id='studentPassword' value=" + obj.studentPassword + "></td></tr>");
+                        var $studentPassword = $("<tr><td><label for='studentPassword'>密码:</label></td><td><input type='text' id='studentPassword' value='******'></td></tr>");
                         var $classId = $("<tr><td><label for='classId'>班级:</label></td></tr>");
                         var $td = $("<td></td>")
-                        var $select = $("<select id='classId'></select>");
-                        // var $op1 = $("<option disabled='disabled' selected='selected'></option>");
-                        // $($select).append($op1);
-                        box($select);
+                        var $select = $("<select id='classId' ></select>");
+                        box($select, obj.classId);
                         $td.append($select);
                         $classId.append($td);
-                        //todo 编辑时无默认值
+
                         util.popup([$studentName, $studentCode, $studentPassword, $classId], ["studentName", "studentCode", "studentPassword", "classId"], $update);
 
                     }
@@ -237,6 +235,9 @@ require(['../config'], function () {
             })
 
             function $update(record) {
+                if (record.studentPassword == "******") {
+                    record.studentPassword = null;
+                }
                 $.ajax({
                     url: "nin-student/alterStudent",
                     dataType: "json",
@@ -298,7 +299,7 @@ require(['../config'], function () {
             }
         })
 
-        function box($select) {
+        function box($select, classId_) {
             $.ajax({
                 url: "nin-class/collegeCareerClassList",
                 dataType: "json",
@@ -314,7 +315,11 @@ require(['../config'], function () {
                                 var $op3 = $("<option disabled='disabled'></option>").html("&nbsp;&nbsp;&nbsp;" + key1);
                                 $($select).append($op3);
                                 for (let i = 0; i < value1.length; i++) {
-                                    var $op4 = $("<option></option>").html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + value1[i].className).val(value1[i].classId);
+                                    if (classId_ != null && classId_ == value1[i].classId) {
+                                        var $op4 = $("<option selected = 'selected'></option>").html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + value1[i].className).val(value1[i].classId);
+                                    } else {
+                                        var $op4 = $("<option></option>").html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + value1[i].className).val(value1[i].classId);
+                                    }
                                     $($select).append($op4);
                                 }
                             }
