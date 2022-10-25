@@ -167,8 +167,8 @@ require(['../config'], function () {
                             util.createForm((page - 1) * size + 1, data.data.list, STR, 1);
                             $("#page-text").text("共" + total + "条数据, " + Math.ceil(total / size) + "页");
 
-                            var bu2 = "<button type='button' class='btn btn-info update'>编辑</button>&nbsp;";
-                            $("td:contains(选修)").parent().find(".delete").parent().append(bu2);
+                            // var bu2 = "<button type='button' class='btn btn-info update'>编辑</button>&nbsp;";
+                            // $("td:contains(选修)").parent().find(".delete").parent().append(bu2);
 
                             $(".delete").click(function () {
                                 var id = $(this).parent().parent().children("th").attr("data-id");

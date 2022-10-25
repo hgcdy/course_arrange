@@ -6,6 +6,7 @@ require(['../config'], function () {
         const STR = ["courseName", "state", "openTime", "closeTime"];
         query();
 
+        //状态下拉框
         $("#dropupStateTypeButton").next("ul").find("a").click(function () {
             $("#dropupStateTypeButton").text($(this).text());
         })
@@ -44,8 +45,10 @@ require(['../config'], function () {
         })
 
         //教师学生切换
-        $("#student, #teacher").click(function () {
-            userType = $(this).attr("id");
+        $("#stuSetting, #teaSetting").click(function () {
+            userType = $(this).attr("data-id");
+            $("#stuSetting, #teaSetting").css("border", "");
+            $(this).css("border", "1px solid #000000")
             query();
         })
 
@@ -67,6 +70,7 @@ require(['../config'], function () {
                         var $tbody = $("tbody");
                         $tbody.empty();
                         $("#checkAll").prop('checked', false);
+                        //生成列表
                         for (let i = 0; i < size; i++) {
                             var $tr = $("<tr></tr>");
                             var input = $("<input type='checkbox' name='checkbox' class='setting'>").attr("id", data.data[i]["id"]);
@@ -85,6 +89,8 @@ require(['../config'], function () {
                             $tr.append($td);
                             $tbody.append($tr);
                         }
+
+                        //添加全选框
                         $("#checkAll").unbind("click");
                         $("#checkAll").click(function () {
                             if ($("#checkAll").is(':checked')) {
@@ -93,20 +99,17 @@ require(['../config'], function () {
                                 $("input[name='checkbox']").prop('checked', false);
                             }
                         })
-
                         $("input[name='checkbox']").click(function () {
                             if (!$(this).is(':checked')) {
                                 $("#checkAll").prop('checked', false);
                             }
                         })
 
-
+                        //添加点击事件
                         $(".dispark, .finish, .timing").click(function () {
                             var id = $(this).parent().parent().children("th").children("input").attr("id");
                             alter("[" + id + "]", $(this).attr("data-openState"));
                         })
-
-
                     }
                 }
             })
@@ -115,8 +118,8 @@ require(['../config'], function () {
         //修改
         function alter(settingIds, openState) {
             if (openState == 2) {
-                var $openTime = $("<tr><td><label for='openTime'>开始时间:</label></td><td><input type='datetime-local' id='openTime'></td></tr>");
-                var $closeTime = $("<tr><td><label for='closeTime'>结束时间:</label></td><td><input type='datetime-local' id='closeTime'></td></tr>");
+                var $openTime = $("<tr><td><label for='openTime'>开始时间:</label></td><td><input type='datetime-local' step=1 id='openTime'></td></tr>");
+                var $closeTime = $("<tr><td><label for='closeTime'>结束时间:</label></td><td><input type='datetime-local' step=1 id='closeTime'></td></tr>");
                 util.popup([$openTime, $closeTime], ["openTime", "closeTime"], $update);
 
                 function $update(record) {
@@ -155,9 +158,8 @@ require(['../config'], function () {
                     }
                 })
             }
-
-
         }
+
 
     })
 })
