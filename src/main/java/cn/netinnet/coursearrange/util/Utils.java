@@ -115,6 +115,18 @@ public class Utils {
             case 5:
                 str = "第五节";
                 break;
+            case 6:
+                str = "第六节";
+                break;
+            case 7:
+                str = "第七节";
+                break;
+            case 8:
+                str = "第八节";
+                break;
+            case 9:
+                str = "第九节";
+                break;
             default:
                 str = "";
         }

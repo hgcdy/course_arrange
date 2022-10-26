@@ -184,7 +184,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     ninArrange.setMust(1);
                     //人数
                     Map<Long, List<NinTeachClass>> longListNinTeachClassMap = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
-                    ninArrange.setPeopleNum(longListNinTeachClassMap.get(longs[i]).size() * 50);
+                    ninArrange.setPeopleNum(longListNinTeachClassMap.get(longs[i]).size() * ApplicationConstant.CLASS_PEOPLE_NUM);
                     //创建修改者id
                     ninArrange.setCreateUserId(UserUtil.getUserInfo().getUserId());
                     ninArrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
@@ -302,7 +302,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                             }
 
                             arrange1.setWeek((int) (Math.random() * 5) + 1);
-                            arrange1.setPitchNum((int) (Math.random() * 5) + 1);
+                            arrange1.setPitchNum((int) (Math.random() * ApplicationConstant.DAY_PITCH_NUM) + 1);
                             if (count++ > 100) {
                                 break;
                             }
@@ -312,7 +312,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                             boolean b = false;
                             ok:
                             for (int j = 0; j < 7; j++) {
-                                for (int k = 0; k < 5; k++) {
+                                for (int k = 0; k < ApplicationConstant.DAY_PITCH_NUM; k++) {
                                     arrange1.setWeek(j + 1);
                                     arrange1.setPitchNum(k + 1);
                                     if (compare(ninArrangeList, arrange1, longListNinTeachClassMap)) {
@@ -357,7 +357,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         arrange1.setWeekly(0);
                         ok:
                         for (int j = 0; j < 7; j++) {
-                            for (int k = 0; k < 5; k++) {
+                            for (int k = 0; k < ApplicationConstant.DAY_PITCH_NUM; k++) {
                                 arrange1.setWeek(j + 1);
                                 arrange1.setPitchNum(k + 1);
                                 if (compare(ninArrangeList, arrange1, longListNinTeachClassMap)) {
@@ -369,7 +369,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         arrange1.setEndTime(arrange1.getStartTime() + course.getCourseTime() - 1);
                         ok:
                         for (int j = 0; j < 7; j++) {
-                            for (int k = 0; k < 5; k++) {
+                            for (int k = 0; k < ApplicationConstant.DAY_PITCH_NUM; k++) {
                                 for (int i = 0; i < 2; i++) {
                                     arrange1.setWeek(j + 1);
                                     arrange1.setPitchNum(k + 1);
@@ -422,7 +422,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Override
     public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
-        List<Map<String, Object>> info = new ArrayList<>();
+        List<NinArrangeBo> info = new ArrayList<>();
 
         //根据不同的id获取排课记录信息
         if (teacherId != null) {
@@ -466,57 +466,52 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             info = ninArrangeMapper.getInfo(classIdList, teachClassIdList, null);
         }
 
-
-        //Map<班级id, 班级名称>
-        List<NinClass> ninClasses = ninClassMapper.selectList(new QueryWrapper<>());
-        Map<Long, String> collect1 = ninClasses.stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
-
         //存放最终结果  星期一第二节（"12"） -> 信息字符串
         HashMap<String, String> hashMap = new HashMap<>();
 
         //count 查询某一周的课表 空则表示整个学期
         if (count != null) {
-            for (Map<String, Object> map : info) {
+            for (NinArrangeBo bo : info) {
                 //单双周
-                if (count % 2 == 0 && (Integer) map.get("weekly") == 1) {//课程记录为单周，但count为双，跳过
+                if (count % 2 == 0 && bo.getWeekly() == 1) {//课程记录为单周，但count为双，跳过
                     continue;
                 }
-                if (count % 2 == 1 && (Integer) map.get("weekly") == 2) {//课程记录为双周，但count为单，跳过
+                if (count % 2 == 1 && bo.getWeekly() == 2) {//课程记录为双周，但count为单，跳过
                     continue;
                 }
                 //count在开始结束范围内
-                if ((Integer) map.get("endTime") < count) {
+                if ((Integer) bo.getEndTime() < count) {
                     continue;
                 }
-                if ((Integer) map.get("startTime") > count) {
+                if ((Integer) bo.getStartTime() > count) {
                     continue;
                 }
 
-                String key = "" + map.get("week") + map.get("pitchNum");
+                String key = "" + bo.getWeek() + bo.getPitchNum();
 
-                String value = "" + map.get("courseName") + "/" + map.get("houseName") + "/" + map.get("teacherName") + "/" + map.get("className");
+                String value = "" + bo.getCourseName() + "/" + bo.getHouseName() + "/" + bo.getTeacherName() + "/" + bo.getClassName();
 
                 hashMap.put(key, value);
             }
         } else {
-            for (Map<String, Object> map : info) {
+            for (NinArrangeBo bo : info) {
 
-                if (map.get("weekly") == null) {//为空，即没有时间，跳过
+                if (bo.getWeekly() == null) {//为空，即没有时间，跳过
                     continue;
                 }
 
-                String key = "" + map.get("week") + map.get("pitchNum");
+                String key = "" + bo.getWeek() + bo.getPitchNum();
 
-                String str = map.get("startTime") + "-" + map.get("endTime") + "周";
-                if ((Integer) map.get("weekly") == 1) {
+                String str = bo.getStartTime() + "-" + bo.getEndTime() + "周";
+                if (bo.getWeek() == 1) {
                     str = str + "(单)";
-                } else if ((Integer) map.get("weekly") == 2) {
+                } else if (bo.getWeek() == 2) {
                     str = str + "(双)";
                 }
 
-                String value = "" + map.get("courseName") + "/" + str + "/" + map.get("houseName") + "/" + map.get("teacherName") + "/" + map.get("className") + "/" + ((int) map.get("must") == 1 ? "必修" : "选修");
+                String value = "" + bo.getCourseName() + "/" + str + "/" + bo.getHouseName() + "/" + bo.getTeacherName() + "/" + bo.getClassName() + "/" + (bo.getMust() == 1 ? "必修" : "选修");
 
-                if ((long) map.get("careerId") == -1) {
+                if (bo.getCareerId() == -1) {
                     value += "(补课)";
                 }
 
@@ -575,7 +570,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //遍历时间
         for (int i = 1; i <= 7; i++) {
             ok:
-            for (int j = 1; j <= 5; j++) {
+            for (int j = 1; j <= ApplicationConstant.DAY_PITCH_NUM; j++) {
 
                 ArrayList<Map<String, Object>> houseList = new ArrayList<>();
                 houseList.addAll(ninHouseArrayList);
@@ -676,7 +671,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Override
     public Map<String, Object> getPageSelectList(NinArrangeBo bo, Integer page, Integer size) {
-        //如果查询遇见有班级
+        //如果查询条件有班级
         if (bo.getClassId() != null) {
             NinClass ninClass = ninClassMapper.selectById(bo.getClassId());
             if (ninClass.getCareerId() != 0) {
@@ -785,7 +780,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             }).collect(Collectors.toList());
             for (int i = 1; i <= 7; i++) {
                 ok:
-                for (int j = 1; j <= 5; j++) {
+                for (int j = 1; j <= ApplicationConstant.DAY_PITCH_NUM; j++) {
                     for (String s : timeList) {
                         if (s.equals("" + i + j)) {
                             continue ok;
@@ -834,9 +829,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
         //获得并拼接数据
         JSONArray array = new JSONArray();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < ApplicationConstant.DAY_PITCH_NUM; i++) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("pitchNum", Utils.cnPitchNum(i));
+            jsonObject.put("pitchNum", Utils.cnPitchNum(i + 1));
             array.add(jsonObject);
         }
         for (Map.Entry<String, String> map: info.entrySet()) {

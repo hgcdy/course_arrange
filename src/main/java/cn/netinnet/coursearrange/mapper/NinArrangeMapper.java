@@ -39,7 +39,7 @@ public interface NinArrangeMapper extends BaseMapper<NinArrange> {
      * @param teacherId
      * @return
      */
-    List<Map<String, Object>> getInfo(@Param("classIdList") List<Long> classIdList,
+    List<NinArrangeBo> getInfo(@Param("classIdList") List<Long> classIdList,
                                       @Param("teachClassIdList") List<Long> teachClassIdList,
                                       @Param("teacherId") Long teacherId);
 

@@ -31,9 +31,6 @@
 
     </delete>
 
-
-
-
     <select id="getSelectList" resultType="java.util.Map">
         SElECT nin_student.id AS id,
                 student_name AS studentName,

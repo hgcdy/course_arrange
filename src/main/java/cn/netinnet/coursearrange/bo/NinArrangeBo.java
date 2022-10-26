@@ -11,11 +11,20 @@ import java.util.List;
 @Accessors(chain = true)
 public class NinArrangeBo{
 
+    /**
+     * 排课记录id
+     */
+    private Long id;
 
     /**
      * 专业id
      */
     private Long careerId;
+
+    /**
+     * 专业名称
+     */
+    private String careerName;
 
     /**
      * 班级id
@@ -26,6 +35,11 @@ public class NinArrangeBo{
      * 教学班id列表
      */
     private List<Long> teachClassIdList;
+
+    /**
+     * 班级名称（多个班级以;隔开）
+     */
+    private String className;
 
     /**
      * 教师名称
@@ -71,5 +85,10 @@ public class NinArrangeBo{
      * 节数
      */
     private Integer pitchNum;
+
+    /**
+     * 人数
+     */
+    private Integer peopleNum;
 
 }

@@ -81,10 +81,14 @@ public class ShiroConfig {
         authMap.put("/login", "anon");
         authMap.put("/login/**", "anon");
         authMap.put("/logout", "logout");
+        authMap.put("/welcome", "anon");
+
+        authMap.put("/favicon.ico", "anon");
         authMap.put("/bootstrap/**", "anon");
         authMap.put("/css/**", "anon");
         authMap.put("/js/**", "anon");
         authMap.put("/img/**", "anon");
+
 
 //        authMap.put("/index", "authc");
         // 在 Shiro过滤器链上加入 JWTFilter
