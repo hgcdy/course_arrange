@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.NinSettingBo;
+import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
@@ -93,19 +94,21 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             }
         }
 
+        Long userId = UserUtil.getUserInfo().getUserId();
+
         ninCourse.setId(IDUtil.getID());
-        ninCourse.setCreateUserId(UserUtil.getUserInfo().getUserId());
-        ninCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
+        ninCourse.setCreateUserId(userId);
+        ninCourse.setModifyUserId(userId);
         int i = ninCourseMapper.insert(ninCourse);
 
         //教师权限记录
         NinSetting ninSetting = new NinSetting();
         ninSetting.setId(IDUtil.getID());
         ninSetting.setCourseId(ninCourse.getId());
-        ninSetting.setUserType("teacher");
+        ninSetting.setUserType(ApplicationConstant.TYPE_TEACHER);
         ninSetting.setOpenState(1);
-        ninSetting.setCreateUserId(UserUtil.getUserInfo().getUserId());
-        ninSetting.setModifyUserId(UserUtil.getUserInfo().getUserId());
+        ninSetting.setCreateUserId(userId);
+        ninSetting.setModifyUserId(userId);
         ninSettingMapper.insert(ninSetting);
 
         //如果是选修课程
@@ -116,8 +119,8 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             ninClass.setCareerId(0L);
             ninClass.setClassName(ninCourse.getCourseName() + "选修班");
             ninClass.setCourseNum(1);
-            ninClass.setCreateUserId(UserUtil.getUserInfo().getUserId());
-            ninClass.setModifyUserId(UserUtil.getUserInfo().getUserId());
+            ninClass.setCreateUserId(userId);
+            ninClass.setModifyUserId(userId);
             ninClassMapper.insert(ninClass);
 
             //生成Arrange
@@ -131,13 +134,13 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             arrange.setStartTime(ninCourse.getStartTime() != null ? ninCourse.getStartTime() : 1);
             arrange.setEndTime(ninCourse.getEndTime() != null ? ninCourse.getEndTime() : 16);
             arrange.setPeopleNum(0);
-            arrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
-            arrange.setCreateUserId(UserUtil.getUserInfo().getUserId());
+            arrange.setModifyUserId(userId);
+            arrange.setCreateUserId(userId);
             ninArrangeMapper.insert(arrange);
 
             //生成学生权限记录
             ninSetting.setId(IDUtil.getID());
-            ninSetting.setUserType("student");
+            ninSetting.setUserType(ApplicationConstant.TYPE_STUDENT);
             ninSettingMapper.insert(ninSetting);
         }
         return i;
@@ -233,7 +236,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             courseList = ninCourseMapper.reSelectCourse();
         }
 
-        if (!userType.equals("admin")) {
+        if (!userType.equals(ApplicationConstant.TYPE_ADMIN)) {
             Map<Long, NinSettingBo> boMap = ninSettingService.getSelectList(userType, "开放中", null).stream().collect(Collectors.toMap(NinSettingBo::getCourseId, Function.identity()));
             courseList = courseList.stream().filter(i -> boMap.get(i.getId()) != null).collect(Collectors.toList());
 

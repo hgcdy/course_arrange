@@ -37,6 +37,14 @@ public class NinClassController {
         return new ModelAndView("view/classView");
     }
 
+    //跳转班级课程页面
+    @GetMapping("nin-class-course")
+    public ModelAndView gotoView(Long classId) {
+        ModelAndView modelAndView = new ModelAndView("view/classCourseView");
+        modelAndView.addObject("classId", String.valueOf(classId));
+        return modelAndView;
+    }
+
     /**
      * 班级条件分页查询
      *
@@ -155,5 +163,7 @@ public class NinClassController {
         }
         return ResultModel.error(412, "修改失败");
     }
+
+
 
 }

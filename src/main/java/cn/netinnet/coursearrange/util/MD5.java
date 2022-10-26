@@ -443,6 +443,9 @@ public class MD5
  public static void main(String args[])
  {
 	 System.out.println(MD5.getMD5Encode("20170613164100zhibo20164046623559"));
+     System.out.println(MD5.getMD5Encode("Wjs66935741"));
+     System.out.println(MD5.getMD5Encode("123456"));
+
 
  }
 

@@ -2,6 +2,7 @@ package cn.netinnet.coursearrange.controller;
 
 
 import cn.netinnet.coursearrange.bo.NinArrangeBo;
+import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.UserInfo;
@@ -66,7 +67,7 @@ public class NinArrangeController {
     @GetMapping("/stu-course-form")
     public ModelAndView stuCourseForm() {
         UserInfo userInfo = UserUtil.getUserInfo();
-        if (userInfo.getUserType().equals("student")) {
+        if (userInfo.getUserType().equals(ApplicationConstant.TYPE_STUDENT)) {
             ModelAndView modelAndView = new ModelAndView("view/courseFormView_1");
             modelAndView.addObject("studentId", String.valueOf(userInfo.getUserId()));
             return modelAndView;
@@ -76,7 +77,7 @@ public class NinArrangeController {
     @GetMapping("/class-course-form")
     public ModelAndView classCourseForm() {
         UserInfo userInfo = UserUtil.getUserInfo();
-        if (userInfo.getUserType().equals("student")) {
+        if (userInfo.getUserType().equals(ApplicationConstant.TYPE_STUDENT)) {
             NinStudent ninStudent = ninStudentMapper.selectById(userInfo.getUserId());
             ModelAndView modelAndView = new ModelAndView("view/CourseFormView_1");
             modelAndView.addObject("classId", String.valueOf(ninStudent.getClassId()));
@@ -87,7 +88,7 @@ public class NinArrangeController {
     @GetMapping("/tea-course-form")
     public ModelAndView teaCourseForm() {
         UserInfo userInfo = UserUtil.getUserInfo();
-        if (userInfo.getUserType().equals("teacher")) {
+        if (userInfo.getUserType().equals(ApplicationConstant.TYPE_TEACHER)) {
             ModelAndView modelAndView = new ModelAndView("view/courseFormView_1");
             modelAndView.addObject("teacherId", String.valueOf(userInfo.getUserId()));
             return modelAndView;
@@ -100,7 +101,7 @@ public class NinArrangeController {
     public ModelAndView gotoApplyHouseView() {
         ModelAndView modelAndView = new ModelAndView("view/applyHouseView");
         UserInfo userInfo = UserUtil.getUserInfo();
-        if (userInfo.getUserType().equals("teacher")) {
+        if (userInfo.getUserType().equals(ApplicationConstant.TYPE_TEACHER)) {
             modelAndView.addObject("teacherId", userInfo.getUserId().toString());
         }
         return modelAndView;

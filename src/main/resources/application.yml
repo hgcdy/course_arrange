@@ -25,3 +25,16 @@ mybatis:
   config-location: classpath:mybatis-config.xml
   mapper-locations: classpath:mapper/*.xml
 
+#项目配置
+project:
+  #管理员信息
+  admin:
+    #名称
+    name: admin
+    #账号
+    code: admin
+    #密码
+    password: 123456789
+
+
+

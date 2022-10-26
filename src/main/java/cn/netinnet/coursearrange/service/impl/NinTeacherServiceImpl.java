@@ -8,8 +8,10 @@ import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
 import cn.netinnet.coursearrange.service.INinTeacherService;
 import cn.netinnet.coursearrange.util.IDUtil;
+import cn.netinnet.coursearrange.util.MD5;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -69,6 +71,18 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
         if (integer > 0) {
             throw new ServiceException(412, "重名");
         }
+
+        String password = ninTeacher.getTeacherPassword();
+        if (password != null) {
+            if (password.length() < 6) {
+                throw new ServiceException(412, "密码需大于六位数");
+            }
+            if (StringUtils.isBlank(password)) {
+                throw new ServiceException(412, "密码不符合条件");
+            }
+            ninTeacher.setTeacherPassword(MD5.getMD5Encode(ninTeacher.getTeacherPassword()));
+        }
+
         ninTeacher.setId(IDUtil.getID());
         ninTeacher.setCreateUserId(UserUtil.getUserInfo().getUserId());
         ninTeacher.setModifyUserId(UserUtil.getUserInfo().getUserId());
@@ -96,10 +110,18 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
         if (integer > 0) {
             throw new ServiceException(412, "重名");
         }
-        //todo 判断密码长度 空字符串等，目前先这样
-        if (ninTeacher.getTeacherPassword().equals("")) {
-            ninTeacher.setTeacherPassword(null);
+
+        String password = ninTeacher.getTeacherPassword();
+        if (password != null) {
+            if (password.length() < 6) {
+                throw new ServiceException(412, "密码需大于六位数");
+            }
+            if (StringUtils.isBlank(password)) {
+                throw new ServiceException(412, "密码不符合条件");
+            }
+            ninTeacher.setTeacherPassword(MD5.getMD5Encode(ninTeacher.getTeacherPassword()));
         }
+
         ninTeacher.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninTeacherMapper.updateById(ninTeacher);
     }
@@ -112,12 +134,12 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
 
     @Override
     public NinTeacher verify(String code, String password) {
-        List<NinTeacher> ninTeachers = ninTeacherMapper.selectList(new QueryWrapper<>(new NinTeacher() {{
+        NinTeacher ninTeacher = ninTeacherMapper.selectOne(new QueryWrapper<>(new NinTeacher() {{
             setTeacherCode(code);
         }}));
-        if (ninTeachers != null && ninTeachers.size() != 0) {
-            if (ninTeachers.get(0).getTeacherPassword().equals(password)) {
-                return ninTeachers.get(0);
+        if (ninTeacher != null) {
+            if (ninTeacher.getTeacherPassword().equals(MD5.getMD5Encode(password))) {
+                return ninTeacher;
             } else {
                 throw new ServiceException(412, "密码错误");
             }

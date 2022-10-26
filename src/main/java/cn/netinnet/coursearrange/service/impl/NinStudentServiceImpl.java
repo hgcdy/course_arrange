@@ -12,6 +12,7 @@ import cn.netinnet.coursearrange.mapper.NinStudentCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinStudentMapper;
 import cn.netinnet.coursearrange.service.INinStudentService;
 import cn.netinnet.coursearrange.util.IDUtil;
+import cn.netinnet.coursearrange.util.MD5;
 import cn.netinnet.coursearrange.util.UserUtil;
 import cn.netinnet.coursearrange.util.Utils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -101,6 +102,18 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
         if (i > 0) {
             throw new ServiceException(412, "重名");
         }
+
+        String password = ninStudent.getStudentPassword();
+        if (password != null) {
+            if (password.length() < 6) {
+                throw new ServiceException(412, "密码需大于六位数");
+            }
+            if (StringUtils.isBlank(password)) {
+                throw new ServiceException(412, "密码不符合条件");
+            }
+            ninStudent.setStudentPassword(MD5.getMD5Encode(ninStudent.getStudentPassword()));
+        }
+
         //主键id，创建者id和修改者id
         ninStudent.setId(IDUtil.getID());
         ninStudent.setCreateUserId(UserUtil.getUserInfo().getUserId());
@@ -139,9 +152,15 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
             ninClassMapper.addPeopleNum(ninStudent.getClassId());
         }
 
-        //todo 判断密码长度 空字符串等，目前先这样
-        if (ninStudent.getStudentPassword().equals("")) {
-            ninStudent.setStudentPassword(null);
+        String password = ninStudent.getStudentPassword();
+        if (password != null) {
+            if (password.length() < 6) {
+                throw new ServiceException(412, "密码需大于六位数");
+            }
+            if (StringUtils.isBlank(password)) {
+                throw new ServiceException(412, "密码不符合条件");
+            }
+            ninStudent.setStudentPassword(MD5.getMD5Encode(ninStudent.getStudentPassword()));
         }
 
 
@@ -157,12 +176,12 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
 
     @Override
     public NinStudent verify(String code, String password) {
-        List<NinStudent> ninStudents = ninStudentMapper.selectList(new QueryWrapper<>(new NinStudent() {{
+        NinStudent ninStudent = ninStudentMapper.selectOne(new QueryWrapper<>(new NinStudent() {{
             setStudentCode(code);
         }}));
-        if (ninStudents != null && ninStudents.size() != 0) {
-            if (ninStudents.get(0).getStudentPassword().equals(password)) {
-                return ninStudents.get(0);
+        if (ninStudent != null) {
+            if (ninStudent.getStudentPassword().equals(MD5.getMD5Encode(password))) {
+                return ninStudent;
             } else {
                 throw new ServiceException(412, "密码错误");
             }

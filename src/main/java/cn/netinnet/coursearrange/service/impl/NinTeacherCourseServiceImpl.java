@@ -55,8 +55,8 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
         List<NinTeacherCourse> ninTeacherCourses = ninTeacherCourseMapper.selectList(new QueryWrapper<>(new NinTeacherCourse() {{
             setTeacherId(ninTeacherCourse.getTeacherId());
         }}));
-        if (ninTeacherCourses.size() >= 2){
-            throw new ServiceException(412, "该教师已经有两门授课课程了");
+        if (ninTeacherCourses.size() >= ApplicationConstant.TEACHER_COURSE_NUM){
+            throw new ServiceException(412, "该教师选课户数已经上限");
         }
 
         for (NinTeacherCourse ntc: ninTeacherCourses) {

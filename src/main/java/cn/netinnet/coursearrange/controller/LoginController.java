@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.controller;
 
 import cn.netinnet.coursearrange.authentication.JWTUtil;
+import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.UserInfo;
@@ -36,6 +37,7 @@ public class LoginController {
         return gotoLogin();
     }
 
+    //欢迎页面
     @GetMapping("/welcome")
     public ModelAndView welcome() {return new ModelAndView("welcome");}
 
@@ -43,11 +45,11 @@ public class LoginController {
     @GetMapping("/index")
     public ModelAndView index(String type) {
         ModelAndView modelAndView = null;
-        if (type.equals("admin")) {
+        if (type.equals(ApplicationConstant.TYPE_ADMIN)) {
             modelAndView = new ModelAndView("index");
-        } else if (type.equals("student")) {
+        } else if (type.equals(ApplicationConstant.TYPE_STUDENT)) {
             modelAndView = new ModelAndView("viewStu/indexStu");
-        } else if (type.equals("teacher")) {
+        } else if (type.equals(ApplicationConstant.TYPE_TEACHER)) {
             modelAndView = new ModelAndView("viewTea/indexTea");
         } else {
             modelAndView = new ModelAndView("login");
@@ -58,17 +60,17 @@ public class LoginController {
     //管理员登录
     @PostMapping("/login/admin")
     public ResultModel adminLogin(@NotNull String code, @NotNull String password) {
-        if (!code.equals("admin")) {
+        if (!code.equals(ApplicationConstant.ADMIN_CODE)) {
             return ResultModel.error(412, "账号错误");
-        } else if (!password.equals("123456")) {
+        } else if (!password.equals(ApplicationConstant.ADMIN_PASSWORD)) {
             return ResultModel.error(412, "密码错误");
         }
         UserInfo userInfo = new UserInfo();
         userInfo.setUserId(1L);
-        userInfo.setUserCode(code);
-        userInfo.setUserName("admin");
-        userInfo.setUserPassword("123456");
-        userInfo.setUserType("admin");
+        userInfo.setUserCode(ApplicationConstant.ADMIN_CODE);
+        userInfo.setUserName(ApplicationConstant.ADMIN_NAME);
+        userInfo.setUserPassword(ApplicationConstant.ADMIN_PASSWORD);
+        userInfo.setUserType(ApplicationConstant.TYPE_ADMIN);
         String token = JWTUtil.sign(userInfo);
         return ResultModel.ok(token);
     }
@@ -83,7 +85,7 @@ public class LoginController {
         userInfo.setUserCode(ninStudent.getStudentCode());
         userInfo.setUserName(ninStudent.getStudentName());
         userInfo.setUserPassword(ninStudent.getStudentPassword());
-        userInfo.setUserType("student");
+        userInfo.setUserType(ApplicationConstant.TYPE_STUDENT);
         String token = JWTUtil.sign(userInfo);
         return ResultModel.ok(token);
     }
@@ -98,17 +100,11 @@ public class LoginController {
         userInfo.setUserCode(ninTeacher.getTeacherCode());
         userInfo.setUserName(ninTeacher.getTeacherName());
         userInfo.setUserPassword(ninTeacher.getTeacherPassword());
-        userInfo.setUserType("teacher");
+        userInfo.setUserType(ApplicationConstant.TYPE_TEACHER);
         String token = JWTUtil.sign(userInfo);
         return ResultModel.ok(token);
     }
 
-    //跳转班级课程页面
-    @GetMapping("nin-class-course")
-    public ModelAndView gotoView(Long classId) {
-        ModelAndView modelAndView = new ModelAndView("view/classCourseView");
-        modelAndView.addObject("classId", String.valueOf(classId));
-        return modelAndView;
-    }
+
 
 }

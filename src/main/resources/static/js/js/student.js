@@ -236,7 +236,7 @@ require(['../config'], function () {
 
             function $update(record) {
                 if (record.studentPassword == "******") {
-                    record.studentPassword = null;
+                    record.studentPassword = undefined;
                 }
                 $.ajax({
                     url: "nin-student/alterStudent",

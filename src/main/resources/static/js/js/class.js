@@ -186,15 +186,11 @@ require(['../config'], function () {
             } else {
                 var $op1 = $("<option disabled='disabled' selected='selected'></option>");
                 $($select).append($op1);
-                box($select);
+                box($select, $(nextAll[1]).text());
             }
 
             $td.append($select);
             $careerId.append($td);
-
-            //todo 编辑时无默认值
-
-            // $("#careerId").find("option[text="+($(nextAll[1]).text())+"]").attr("selected", true);
 
             util.popup([$careerId, $className], ["careerId", "className"], $update);
 
@@ -220,7 +216,7 @@ require(['../config'], function () {
         }
 
 
-        function box($select) {
+        function box($select, careerName_) {
             $.ajax({
                 url: "nin-career/getCollegeCareerList",
                 dataType: "json",
@@ -236,7 +232,11 @@ require(['../config'], function () {
                             $($select).append($op2);
 
                             for (let i = 0; i < value.length; i++) {
-                                var $op3 = $("<option></option>").html("&nbsp;&nbsp;" + value[i].careerName).val(value[i].id);
+                                if (careerName_ != null && careerName_ == value[i].careerName) {
+                                    var $op3 = $("<option selected = 'selected'></option>").html("&nbsp;&nbsp;" + value[i].careerName).val(value[i].id);
+                                } else {
+                                    var $op3 = $("<option></option>").html("&nbsp;&nbsp;" + value[i].careerName).val(value[i].id);
+                                }
                                 $($select).append($op3);
                             }
 
