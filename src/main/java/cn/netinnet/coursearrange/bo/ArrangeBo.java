@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class NinArrangeBo{
+public class ArrangeBo {
 
     /**
      * 排课记录id
@@ -65,11 +65,13 @@ public class NinArrangeBo{
      * 是否选修，0-选修，1-必修
      */
     private Integer must;
+    private String cnMust;
 
     /**
      * 周次(0-每周，1-单周，2-双周)
      */
     private Integer weekly;
+    private String cnWeekly;
 
     /**
      * 开始周次
@@ -85,11 +87,13 @@ public class NinArrangeBo{
      * 星期
      */
     private Integer week;
+    private String cnWeek;
 
     /**
      * 节数
      */
     private Integer pitchNum;
+    private String cnPitchNum;
 
     /**
      * 人数

@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.mapper;
 
-import cn.netinnet.coursearrange.bo.NinSettingBo;
+import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.entity.NinSetting;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -26,7 +26,7 @@ public interface NinSettingMapper extends BaseMapper<NinSetting> {
      * @param courseName
      * @return
      */
-    List<NinSettingBo> getSelectList(@Param("userType") String userType, @Param("courseName") String courseName);
+    List<SettingBo> getSelectList(@Param("userType") String userType, @Param("courseName") String courseName);
 
     /**
      * 修改

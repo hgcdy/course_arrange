@@ -1,7 +1,7 @@
 package cn.netinnet.coursearrange.controller;
 
 
-import cn.netinnet.coursearrange.bo.NinSettingBo;
+import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class NinSettingController {
      */
     @GetMapping("/getSelectList")
     public ResultModel getSelectList(String userType, String state, String courseName) {
-        List<NinSettingBo> list = ninSettingService.getSelectList(userType, state , courseName);
+        List<SettingBo> list = ninSettingService.getSelectList(userType, state , courseName);
         return ResultModel.ok(list);
     }
 

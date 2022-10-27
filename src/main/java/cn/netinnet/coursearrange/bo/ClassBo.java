@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class NinClassBo {
+public class ClassBo {
 
     /**
      * 学院
@@ -31,7 +31,10 @@ public class NinClassBo {
      * 班级id
      */
     @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long classId;
+
 
     /**
      * 班级名称

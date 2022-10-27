@@ -1,12 +1,12 @@
 package cn.netinnet.coursearrange.mapper;
 
+import cn.netinnet.coursearrange.bo.StudentBo;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -26,7 +26,7 @@ public interface NinStudentMapper extends BaseMapper<NinStudent> {
      * @param studentName
      * @return
      */
-    List<Map<String, Object>> getSelectList(@Param("careerIds") List<Long> careerIds, @Param("classId") Long classId, @Param("studentName") String studentName);
+    List<StudentBo> getSelectList(@Param("careerIds") List<Long> careerIds, @Param("classId") Long classId, @Param("studentName") String studentName);
 
     /**
      * 批量删除学生

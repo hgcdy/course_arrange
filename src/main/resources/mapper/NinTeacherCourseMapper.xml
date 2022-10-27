@@ -20,7 +20,7 @@
     </sql>
 
 
-    <select id="getSelectList" resultType="cn.netinnet.coursearrange.bo.UserCourseBo">
+    <select id="getSelectList" resultType="cn.netinnet.coursearrange.bo.ContactCourseBo">
         SELECT nin_teacher_course.id AS id, teacher_id,
                nin_teacher_course.course_id AS courseId,
                nin_course.course_name AS courseName,

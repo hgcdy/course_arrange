@@ -22,7 +22,7 @@
 
 <!--  条件选择查询 -->
     <select id="getSelectList" resultType="java.util.Map">
-        SELECT id, teacher_name AS teacherName, teacher_code AS teacherCode, teacher_password AS teacherPassword,
+        SELECT id, teacher_name AS teacherName, teacher_code AS teacherCode,
         (SELECT IFNULL(GROUP_CONCAT(course_name SEPARATOR '; '), "暂无")
             FROM nin_teacher_course , nin_course
             WHERE nin_course.id = nin_teacher_course.course_id

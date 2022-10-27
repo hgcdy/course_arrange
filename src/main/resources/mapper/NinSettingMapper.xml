@@ -39,7 +39,7 @@
     </update>
 
 
-    <select id="getSelectList1" resultType="cn.netinnet.coursearrange.bo.NinSettingBo">
+    <select id="getSelectList1" resultType="cn.netinnet.coursearrange.bo.SettingBo">
         SELECT *
         FROM
         (SELECT nin_setting.id AS id, course_id AS courseId, user_type AS userType, course_name AS courseName, open_state AS openState, open_time AS openTime, close_time AS closeTime
@@ -55,7 +55,7 @@
         </if>
     </select>
 
-    <select id="getSelectList" resultType="cn.netinnet.coursearrange.bo.NinSettingBo">
+    <select id="getSelectList" resultType="cn.netinnet.coursearrange.bo.SettingBo">
         SELECT *
         FROM
         (SELECT nin_setting.id AS id,

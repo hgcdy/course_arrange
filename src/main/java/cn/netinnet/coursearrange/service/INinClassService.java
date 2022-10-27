@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.service;
 
-import cn.netinnet.coursearrange.bo.NinClassBo;
+import cn.netinnet.coursearrange.bo.ClassBo;
 import cn.netinnet.coursearrange.entity.NinClass;
 import cn.netinnet.coursearrange.entity.NinCourse;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -41,13 +41,13 @@ public interface INinClassService extends IService<NinClass> {
      * @param careerId
      * @return
      */
-    List<Map<String, Object>> getClassList(String college, Long careerId);
+    List<ClassBo> getClassList(String college, Long careerId);
 
     /**
      * 全部的学院专业班级列表
      * @return
      */
-    Map<String, Map<String, List<NinClassBo>>> collegeCareerClassList();
+    Map<String, Map<String, List<ClassBo>>> collegeCareerClassList();
 
     /**
      * 单个新增

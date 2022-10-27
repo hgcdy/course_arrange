@@ -11,7 +11,7 @@ require(['../config'], function () {
         var week = null;
         var pitchNum = null;
         query();
-        const STR = ["careerName", "className", "teacherName", "courseName", "houseName", "must", "weekly", "startTime", "endTime", "week", "pitchNum"];
+        const STR = ["careerName", "className", "teacherName", "courseName", "houseName", "cnMust", "cnWeekly", "startTime", "endTime", "cnWeek", "cnPitchNum"];
 
         //排课
         $("#arrange").click(function (){

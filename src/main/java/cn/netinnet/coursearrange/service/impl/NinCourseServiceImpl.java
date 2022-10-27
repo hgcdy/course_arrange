@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.service.impl;
 
-import cn.netinnet.coursearrange.bo.NinSettingBo;
+import cn.netinnet.coursearrange.bo.CourseBo;
+import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
@@ -9,6 +10,7 @@ import cn.netinnet.coursearrange.service.INinCourseService;
 import cn.netinnet.coursearrange.service.INinSettingService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
+import cn.netinnet.coursearrange.util.Utils;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -55,8 +57,16 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size, NinCourse ninCourse) {
         PageHelper.startPage(page, size);
-        List<NinCourse> list = ninCourseMapper.getSelectList(ninCourse);
-        PageInfo<NinCourse> pageInfo = new PageInfo<>(list);
+        List<CourseBo> list = ninCourseMapper.getSelectList(ninCourse).stream().map(i -> {
+            if (i.getMust() != null) {
+                i.setCnMust(Utils.cnMust(i.getMust()));
+            }
+            if (i.getHouseType() != null) {
+                i.setCnHouseType(Utils.cnHouse(i.getHouseType()));
+            }
+            return i;
+        }).collect(Collectors.toList());
+        PageInfo<CourseBo> pageInfo = new PageInfo<>(list);
         HashMap<String, Object> map = new HashMap<>();
         map.put("list", pageInfo.getList());
         map.put("total", pageInfo.getTotal());
@@ -237,7 +247,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         }
 
         if (!userType.equals(ApplicationConstant.TYPE_ADMIN)) {
-            Map<Long, NinSettingBo> boMap = ninSettingService.getSelectList(userType, "开放中", null).stream().collect(Collectors.toMap(NinSettingBo::getCourseId, Function.identity()));
+            Map<Long, SettingBo> boMap = ninSettingService.getSelectList(userType, "开放中", null).stream().collect(Collectors.toMap(SettingBo::getCourseId, Function.identity()));
             courseList = courseList.stream().filter(i -> boMap.get(i.getId()) != null).collect(Collectors.toList());
 
         }

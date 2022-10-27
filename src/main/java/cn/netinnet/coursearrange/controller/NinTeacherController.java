@@ -50,6 +50,8 @@ public class NinTeacherController {
         return ResultModel.ok(map);
     }
 
+
+
     /**
      * 新增教师
      * @param ninTeacher
@@ -90,6 +92,15 @@ public class NinTeacherController {
             return ResultModel.ok();
         }
         return ResultModel.error(412, "修改失败");
+    }
+
+    /**
+     * 教室申请时查询所有教师（教师用户返回自己）
+     * @return
+     */
+    @PostMapping("getTeaAll")
+    public ResultModel getTeaAll() {
+        return ResultModel.ok(ninTeacherService.getTeaAll());
     }
 
     /**

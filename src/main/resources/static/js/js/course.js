@@ -6,7 +6,7 @@ require(['../config'], function () {
         var courseName = null;
         var houseType = null;
         var must = null;
-        const STR = ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime", "maxClassNum"];
+        const STR = ["courseName", "cnHouseType", "cnMust", "courseTime", "startTime", "endTime", "weekTime", "maxClassNum"];
         query();
 
         //下拉框
@@ -62,27 +62,6 @@ require(['../config'], function () {
                         total = data.data.total;
                         if ((data.data.list).length != 0) {
                             $("#page span:eq(2) input").val(page);
-                            var list = data.data.list;
-                            for (let i = 0; i < list.length; i++) {
-                                var h = list[i].houseType;
-                                var m = list[i].must;
-                                if (h == 0) {
-                                    list[i].houseType = "普通教室";
-                                } else if (h == 1) {
-                                    list[i].houseType = "机房";
-                                } else if (h == 2) {
-                                    list[i].houseType = "实验室";
-                                } else if (h == 3) {
-                                    list[i].houseType = "课外";
-                                } else if (h == 4) {
-                                    list[i].houseType = "网课";
-                                }
-                                if (m == 0) {
-                                    list[i].must = "选修";
-                                } else if (m == 1) {
-                                    list[i].must = "必修";
-                                }
-                            }
                             util.createForm((page - 1) * size + 1, data.data.list, STR, 2);
                             $("#page-text").text("共" + total + "条数据, " + Math.ceil(total / size) + "页");
                             $(".delete").click(function () {

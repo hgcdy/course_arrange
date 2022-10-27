@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.service;
 
-import cn.netinnet.coursearrange.bo.NinSettingBo;
+import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.model.ResultModel;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -24,7 +24,7 @@ public interface INinSettingService extends IService<NinSetting> {
      * @param courseName
      * @return
      */
-    List<NinSettingBo> getSelectList(String userType, String state, String courseName);
+    List<SettingBo> getSelectList(String userType, String state, String courseName);
 
     /**
      * 修改设置

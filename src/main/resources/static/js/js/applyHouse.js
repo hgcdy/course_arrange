@@ -18,16 +18,12 @@ require(['../config'], function () {
         //教师选择下拉框
         $("#dropupTeacherButton").click(function () {
             $.ajax({
-                url: "nin-teacher/getPageSelectList",
+                url: "nin-teacher/getTeaAll",
                 dataType: "json",
                 type: "post",
-                data: {
-                    page: 1,
-                    size: 100
-                },
                 success: function (data) {
                     if (data.code == 200) {
-                        var list = data.data.list;
+                        var list = data.data;
                         $("#dropupTeacherButton").next("ul").empty();
                         for (let i = 0; i < list.length; i++) {
                             var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].teacherName).attr("teacher-id", list[i].id).click(function () {

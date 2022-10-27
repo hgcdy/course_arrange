@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import cn.netinnet.coursearrange.entity.UserInfo;
@@ -42,24 +43,15 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
 
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size, String teacherName) {
-        UserInfo userInfo = UserUtil.getUserInfo();
         HashMap<String, Object> map = new HashMap<>();
-        if (userInfo.getUserType().equals("teacher")) {
-            NinTeacher ninTeacher = ninTeacherMapper.selectById(userInfo.getUserId());
-            List<NinTeacher> list = new ArrayList<>();
-            list.add(ninTeacher);
-            map.put("list", list);
-            map.put("total", 1);
-        } else {
-            PageHelper.startPage(page, size);
-            List<Map<String, Object>> list = ninTeacherMapper.getSelectList(teacherName).stream().map(i -> {
-                i.put("id", i.get("id").toString());
-                return i;
-            }).collect(Collectors.toList());
-            PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
-            map.put("list", pageInfo.getList());
-            map.put("total", pageInfo.getTotal());
-        }
+        PageHelper.startPage(page, size);
+        List<Map<String, Object>> list = ninTeacherMapper.getSelectList(teacherName).stream().map(i -> {
+            i.put("id", i.get("id").toString());
+            return i;
+        }).collect(Collectors.toList());
+        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+        map.put("list", pageInfo.getList());
+        map.put("total", pageInfo.getTotal());
         return map;
     }
 
@@ -145,6 +137,18 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
             }
         } else {
             throw new ServiceException(412, "账号不存在");
+        }
+    }
+
+    @Override
+    public List<NinTeacher> getTeaAll() {
+        UserInfo userInfo = UserUtil.getUserInfo();
+        if (userInfo.equals(ApplicationConstant.TYPE_TEACHER)) {
+            return new ArrayList<NinTeacher>(){{
+                add(ninTeacherMapper.selectById(userInfo.getUserId()));
+            }};
+        } else {
+            return ninTeacherMapper.selectList(new QueryWrapper<>());
         }
     }
 }

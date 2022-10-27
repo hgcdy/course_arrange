@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.service;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,6 +47,11 @@ public interface INinTeacherService extends IService<NinTeacher> {
      */
     int alterSingle(NinTeacher ninTeacher);
 
+    /**
+     * 根据id获取单条记录
+     * @param id
+     * @return
+     */
     NinTeacher getTeacherById(Long id);
 
     /**
@@ -55,4 +61,10 @@ public interface INinTeacherService extends IService<NinTeacher> {
      * @return
      */
     NinTeacher verify(String code, String password);
+
+    /**
+     * 获取所有教师
+     * @return
+     */
+    List<NinTeacher> getTeaAll();
 }

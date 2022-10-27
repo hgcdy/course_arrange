@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
-import cn.netinnet.coursearrange.bo.UserCourseBo;
+import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.entity.NinCareerCourse;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinCareerCourseMapper;
@@ -8,7 +8,6 @@ import cn.netinnet.coursearrange.mapper.NinClassMapper;
 import cn.netinnet.coursearrange.service.INinCareerCourseService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
-import cn.netinnet.coursearrange.util.Utils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +37,8 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
     private NinClassMapper ninClassMapper;
 
     @Override
-    public List<UserCourseBo> getSelectList(Long careerId) {
-        List<UserCourseBo> list = ninCareerCourseMapper.getSelectList(careerId);
+    public List<ContactCourseBo> getSelectList(Long careerId) {
+        List<ContactCourseBo> list = ninCareerCourseMapper.getSelectList(careerId);
         return list;
     }
 

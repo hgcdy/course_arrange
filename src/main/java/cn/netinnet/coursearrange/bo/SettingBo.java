@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class NinSettingBo {
+public class SettingBo {
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;

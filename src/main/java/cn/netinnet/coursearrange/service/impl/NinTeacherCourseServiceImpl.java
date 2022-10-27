@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
-import cn.netinnet.coursearrange.bo.UserCourseBo;
+import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinCourse;
@@ -43,8 +43,8 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
     private NinHouseMapper ninHouseMapper;
 
     @Override
-    public List<UserCourseBo> getSelectList(Long teacherId) {
-        List<UserCourseBo> list = ninTeacherCourseMapper.getSelectList(teacherId);
+    public List<ContactCourseBo> getSelectList(Long teacherId) {
+        List<ContactCourseBo> list = ninTeacherCourseMapper.getSelectList(teacherId);
         return list;
     }
 

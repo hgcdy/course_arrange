@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
-import cn.netinnet.coursearrange.bo.NinArrangeBo;
+import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
@@ -422,7 +422,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Override
     public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
-        List<NinArrangeBo> info = new ArrayList<>();
+        List<ArrangeBo> info = new ArrayList<>();
 
         //根据不同的id获取排课记录信息
         if (teacherId != null) {
@@ -471,7 +471,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
         //count 查询某一周的课表 空则表示整个学期
         if (count != null) {
-            for (NinArrangeBo bo : info) {
+            for (ArrangeBo bo : info) {
                 //单双周
                 if (count % 2 == 0 && bo.getWeekly() == 1) {//课程记录为单周，但count为双，跳过
                     continue;
@@ -494,7 +494,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 hashMap.put(key, value);
             }
         } else {
-            for (NinArrangeBo bo : info) {
+            for (ArrangeBo bo : info) {
 
                 if (bo.getWeekly() == null) {//为空，即没有时间，跳过
                     continue;
@@ -670,7 +670,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
     @Override
-    public Map<String, Object> getPageSelectList(NinArrangeBo bo, Integer page, Integer size) {
+    public Map<String, Object> getPageSelectList(ArrangeBo bo, Integer page, Integer size) {
         //如果查询条件有班级
         if (bo.getClassId() != null) {
             NinClass ninClass = ninClassMapper.selectById(bo.getClassId());
@@ -687,9 +687,22 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
 
         PageHelper.startPage(page, size);
-        List<Map<String, Object>> list = ninArrangeMapper.getSelectList(bo);
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
-        Utils.conversion(pageInfo.getList());
+        List<ArrangeBo> list = ninArrangeMapper.getSelectList(bo).stream().map(i -> {
+            if (i.getWeek() != null) {
+                i.setCnWeek(Utils.cnWeek(i.getWeek()));
+            }
+            if (i.getPitchNum() != null) {
+                i.setCnPitchNum(Utils.cnPitchNum(i.getPitchNum()));
+            }
+            if (i.getMust() != null) {
+                i.setCnMust(Utils.cnMust(i.getMust()));
+            }
+            if (i.getWeekly() != null) {
+                i.setCnWeekly(Utils.cnWeekly(i.getWeekly()));
+            }
+            return i;
+        }).collect(Collectors.toList());
+        PageInfo<ArrangeBo> pageInfo = new PageInfo<>(list);
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("list", pageInfo.getList());

@@ -1,7 +1,7 @@
 package cn.netinnet.coursearrange.controller;
 
 
-import cn.netinnet.coursearrange.bo.UserCourseBo;
+import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinCareerCourseService;
 import com.alibaba.fastjson.JSON;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -38,7 +37,7 @@ public class NinCareerCourseController {
      */
     @PostMapping("/getSelectList")
     public ResultModel getSelectList(Long careerId) {
-        List<UserCourseBo> list = ninCareerCourseService.getSelectList(careerId);
+        List<ContactCourseBo> list = ninCareerCourseService.getSelectList(careerId);
         return ResultModel.ok(list);
     }
 

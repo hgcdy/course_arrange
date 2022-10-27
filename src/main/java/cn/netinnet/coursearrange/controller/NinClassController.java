@@ -1,7 +1,7 @@
 package cn.netinnet.coursearrange.controller;
 
 
-import cn.netinnet.coursearrange.bo.NinClassBo;
+import cn.netinnet.coursearrange.bo.ClassBo;
 import cn.netinnet.coursearrange.entity.NinClass;
 import cn.netinnet.coursearrange.entity.NinCourse;
 import cn.netinnet.coursearrange.model.ResultModel;
@@ -90,7 +90,7 @@ public class NinClassController {
      */
     @GetMapping("collegeCareerClassList")
     public ResultModel collegeCareerClassList() {
-        Map<String, Map<String, List<NinClassBo>>> stringMapMap = ninClassService.collegeCareerClassList();
+        Map<String, Map<String, List<ClassBo>>> stringMapMap = ninClassService.collegeCareerClassList();
         return ResultModel.ok(stringMapMap);
     }
 

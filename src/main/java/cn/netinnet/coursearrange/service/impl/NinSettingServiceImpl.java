@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
-import cn.netinnet.coursearrange.bo.NinSettingBo;
+import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinSettingMapper;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,8 +31,8 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
 
 
     @Override
-    public List<NinSettingBo> getSelectList(String userType, String state, String courseName) {
-        List<NinSettingBo> result = ninSettingMapper.getSelectList(userType, courseName);
+    public List<SettingBo> getSelectList(String userType, String state, String courseName) {
+        List<SettingBo> result = ninSettingMapper.getSelectList(userType, courseName);
 //                .stream().map(bo -> {
 //            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 //            String openTime = bo.getOpenTime();

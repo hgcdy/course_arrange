@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.mapper;
 
-import cn.netinnet.coursearrange.bo.NinArrangeBo;
+import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -39,24 +39,24 @@ public interface NinArrangeMapper extends BaseMapper<NinArrange> {
      * @param teacherId
      * @return
      */
-    List<NinArrangeBo> getInfo(@Param("classIdList") List<Long> classIdList,
-                                      @Param("teachClassIdList") List<Long> teachClassIdList,
-                                      @Param("teacherId") Long teacherId);
+    List<ArrangeBo> getInfo(@Param("classIdList") List<Long> classIdList,
+                            @Param("teachClassIdList") List<Long> teachClassIdList,
+                            @Param("teacherId") Long teacherId);
 
     /**
      * 符合条件的排课信息列表
      * @param bo
      * @return
      */
-    List<Map<String, Object>> getSelectList(NinArrangeBo bo);
+    List<ArrangeBo> getSelectList(ArrangeBo bo);
 
 
-    /**
-     * 返回字段有为空的数据
-     * @param must
-     * @return
-     */
-    List<Map<String, Object>> getSelectNull(@Param("must") Integer must);
+//    /**
+//     * 返回字段有为空的数据
+//     * @param must
+//     * @return
+//     */
+//    List<Map<String, Object>> getSelectNull(@Param("must") Integer must);
 
     /**
      * 返回可选资源

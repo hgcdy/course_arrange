@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class UserCourseBo {
+public class ContactCourseBo {
 
     /**
      * 关联表id

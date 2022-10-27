@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.bo.StudentBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinCareer;
 import cn.netinnet.coursearrange.entity.NinClass;
@@ -14,7 +15,6 @@ import cn.netinnet.coursearrange.service.INinStudentService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.MD5;
 import cn.netinnet.coursearrange.util.UserUtil;
-import cn.netinnet.coursearrange.util.Utils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -71,9 +71,8 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
             careerIds.add(careerId);
         }
         PageHelper.startPage(page, size);
-        List<Map<String, Object>> list = ninStudentMapper.getSelectList(careerIds, classId, studentName);
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
-        Utils.conversion(pageInfo.getList());
+        List<StudentBo> list = ninStudentMapper.getSelectList(careerIds, classId, studentName);
+        PageInfo<StudentBo> pageInfo = new PageInfo<>(list);
         HashMap<String, Object> map = new HashMap<>();
         map.put("list", pageInfo.getList());
         map.put("total", pageInfo.getTotal());

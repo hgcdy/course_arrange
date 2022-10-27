@@ -1,19 +1,16 @@
 package cn.netinnet.coursearrange.controller;
 
 
-import cn.netinnet.coursearrange.bo.NinArrangeBo;
+import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.UserInfo;
 import cn.netinnet.coursearrange.exception.ServiceException;
-import cn.netinnet.coursearrange.mapper.NinClassMapper;
 import cn.netinnet.coursearrange.mapper.NinStudentMapper;
-import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.util.UserUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,7 +184,7 @@ public class NinArrangeController {
      * @return
      */
     @PostMapping("/nin-arrange/getPageSelectList")
-    public ResultModel getPageSelectList(NinArrangeBo bo, Integer page, Integer size) {
+    public ResultModel getPageSelectList(ArrangeBo bo, Integer page, Integer size) {
         return ResultModel.ok(ninArrangeService.getPageSelectList(bo, page, size));
     }
 
