@@ -104,16 +104,6 @@ public class ShiroConfig {
         return shiroFilterFactoryBean;
     }
 
-//    /**
-//     * 添加注解支持
-//     */
-//    @Bean
-//    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
-//        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
-//        // 强制使用cglib，防止重复代理和可能引起代理出错的问题
-//        defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
-//        return defaultAdvisorAutoProxyCreator;
-//    }
 
     // 加入注解的使用，不加入这个注解不生效
     @Bean

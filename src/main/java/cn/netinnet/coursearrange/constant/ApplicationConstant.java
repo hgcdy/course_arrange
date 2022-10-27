@@ -32,6 +32,8 @@ public class ApplicationConstant {
     public static int DAY_PITCH_NUM = 5;
 
 
+
+
     @Value("${project.admin.name}")
     public void setAdminName(String adminName) {
         ApplicationConstant.ADMIN_NAME = adminName;

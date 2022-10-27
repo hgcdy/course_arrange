@@ -714,21 +714,27 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     public int delArrange(Long id) {
         NinArrange arrange = ninArrangeMapper.selectById(id);
         if (arrange.getMust() == 0) {
+
             //选修
             Long classId = arrange.getClassId();
             Long courseId = arrange.getCourseId();
+
             //删除班级
             ninClassMapper.deleteById(classId);
+
             //删除课程
             ninCourseMapper.deleteById(courseId);
+
             //删除学生选课记录
             ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
                 setTakeClassId(classId);
             }}));
+
             //删除教师选课记录
             ninTeacherCourseMapper.delete(new QueryWrapper<>(new NinTeacherCourse() {{
                 setCourseId(courseId);
             }}));
+
             //删除设置记录
             ninSettingMapper.delete(new QueryWrapper<>(new NinSetting() {{
                 setCourseId(courseId);
@@ -839,7 +845,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
         fields[0] = "pitchNum";
 
-
         //获得并拼接数据
         JSONArray array = new JSONArray();
         for (int i = 0; i < ApplicationConstant.DAY_PITCH_NUM; i++) {
@@ -870,7 +875,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
 
     }
-
 
     /**
      * maxNum分成minNum份，使每份之间的差最小
@@ -906,7 +910,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             }
         }
 
-
         for (NinArrange arrange : ninArrangeList) {
             //为空，表示该记录没有排
             if (arrange.getWeekly() == null) {
@@ -919,7 +922,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     //单双周重叠
                     if (ninArrange.getWeekly() == 0 || arrange.getWeekly() == 0 || ninArrange.getWeekly() == arrange.getWeekly()) {
                         //当时间一样时，开始对比其他条件
-
                         //教师相同
                         if (ninArrange.getTeacherId().equals(arrange.getTeacherId())) {
                             return false;
@@ -967,6 +969,5 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
         return true;
     }
-
 }
 

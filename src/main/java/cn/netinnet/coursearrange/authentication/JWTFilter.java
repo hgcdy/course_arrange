@@ -25,7 +25,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
         String jwtToken = JWTUtil.getToken(httpServletRequest);
         String url = httpServletRequest.getServletPath();
-
         if (jwtToken != null) {
             try {
                 executeLogin(request, response);
@@ -36,7 +35,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         }
         return true;
         //如果是登录等免认证跳过
-
     }
 
 
@@ -53,7 +51,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             return onLoginFailure(jwtToken, e, request, response);
         }
     }
-
 
     //跨域支持
     @Override

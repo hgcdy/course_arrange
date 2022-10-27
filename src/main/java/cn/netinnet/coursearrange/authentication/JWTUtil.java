@@ -8,6 +8,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import org.apache.shiro.authc.ExpiredCredentialsException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -56,8 +57,8 @@ public class JWTUtil {
             return true;
         } catch (TokenExpiredException e) {
             System.out.println("token已过期");
-            return false;
-//            throw new ExpiredCredentialsException(e.getMessage());
+            //return false;
+            throw new ExpiredCredentialsException(e.getMessage());
         } catch (Exception e) {
             System.out.println("token校验失败");
             return false;

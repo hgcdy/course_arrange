@@ -250,8 +250,6 @@ public class ExcelUtils {
      * @param object 实体对象
      * @param fields 字段名
      * @return
-     * @Author liyq liyq@netinnet.cn
-     * @Date 2017/8/22 13:46
      * @Description
      */
     private static boolean isHasValues(Object object, String[] fields) {
@@ -283,8 +281,6 @@ public class ExcelUtils {
      * @param fields
      * @param rule       自己定义合并单元格的规则
      * @return
-     * @Author liyq liyq@netinnet.cn
-     * @Date 2017/8/25 14:20
      * @Description 导出，支持多个sheet导出
      */
     private static void export(JSONObject renderData, String[] title, OutputStream os, List<String[]> headers, List<String[]> fields, String rule) {
@@ -367,8 +363,6 @@ public class ExcelUtils {
      * @param field  与标题的顺序要一致,fields遵循驼峰命名规则
      * @param rule   自己定义合并单元格的规则
      * @return
-     * @Author liyq liyq@netinnet.cn
-     * @Date 2017/8/25 14:19
      * @Description 导出JsonArray数据
      */
     public static void exportJsonArrayToExcel(JSONArray array, String title, OutputStream os, String[] header, String[] field, String rule) {

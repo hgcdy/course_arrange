@@ -49,7 +49,6 @@ public class ShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
 
         System.out.println("-----开始身份验证-----");
-
         //从token中获取信息
         String token = ((JWTToken) authenticationToken).getToken();
 
@@ -58,20 +57,17 @@ public class ShiroRealm extends AuthorizingRealm {
         if (StringUtils.isBlank(token)) {
             throw new IncorrectCredentialsException("---token为空，未通过认证---");
         }
-
         if (!JWTUtil.verify(token)) {
             throw new IncorrectCredentialsException("---token校验不通过---");
         }
 
         UserInfo userInfo = JWTUtil.getUserInfo(token);
-
         //校验获取的用户信息是否为空
         if (userInfo == null) {
             throw new IncorrectCredentialsException("---获取认证的用户信息为空---");
         }
 
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(userInfo, token, getName());
-
         System.out.println("-----身份验证成功-----");
 
         return info;

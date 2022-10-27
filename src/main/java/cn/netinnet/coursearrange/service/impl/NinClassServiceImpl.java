@@ -137,30 +137,37 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
         NinClass ninClass = ninClassMapper.selectById(id);
         if (ninClass.getCareerId() == 0) {
             //选修班级
+
             //删除学生选课信息
             ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
                 setTakeClassId(ninClass.getId());
             }}));
+
             //删除课程
             NinArrange arrange = ninArrangeMapper.selectOne(new QueryWrapper<>(new NinArrange() {{
                 setClassId(ninClass.getId());
             }}));
             Long courseId = arrange.getCourseId();
             ninCourseMapper.deleteById(courseId);
+
             //删除设置记录
             ninSettingMapper.delete(new QueryWrapper<>(new NinSetting() {{
                 setCourseId(courseId);
             }}));
+
             //删除教师选课
             ninTeacherCourseMapper.delete(new QueryWrapper<>(new NinTeacherCourse(){{
                 setCourseId(courseId);
             }}));
+
             //删除排课记录
             ninArrangeMapper.delete(new QueryWrapper<>(new NinArrange(){{
                 setCourseId(courseId);
             }}));
+
         } else {
             //删除班级下的所有学生及学生选课信息，同时学生选课对应的选修班级人数-1
+
             //根据班级id获取该班级的学生列表
             List<NinStudent> ninStudents = ninStudentMapper.selectList(new QueryWrapper<>(new NinStudent() {{
                 setClassId(id);
@@ -191,8 +198,10 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
                 }
             }
         }
+
         //删除班级
         int i = ninClassMapper.deleteById(id);
+
         //专业的班级数量-1
         ninCareerMapper.subClassNum(ninClass.getCareerId());
         return i;
