@@ -45,17 +45,18 @@
     <div class="bg-white" id="menu" style="width: 12%;float:left;font-size:20px">
         <ul class="list-unstyled ps-0">
             <li class="mb-1">
-                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"
-                        data-bs-target="#orders-collapse" aria-expanded="false" style="font-size:20px">
-                    排课管理
-                </button>
-                <div class="collapse" id="orders-collapse">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+<!--                <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"-->
+<!--                        data-bs-target="#orders-collapse" aria-expanded="false" style="font-size:20px">-->
+<!--                    排课管理-->
+<!--                </button>-->
+<!--                <div class="collapse" id="orders-collapse">-->
+                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small" id="notAdmin">
                         <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-teacher-course">选课</a></li>
                         <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="applyHouse">教师申请</a></li>
                         <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="tea-course-form">课程表</a></li>
+                        <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="">个人信息</a></li>
                     </ul>
-                </div>
+<!--                </div>-->
             </li>
         </ul>
     </div>

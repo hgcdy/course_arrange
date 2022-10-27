@@ -11,6 +11,7 @@ import cn.netinnet.coursearrange.mapper.NinCareerMapper;
 import cn.netinnet.coursearrange.mapper.NinClassMapper;
 import cn.netinnet.coursearrange.mapper.NinStudentCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinStudentMapper;
+import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinStudentService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.MD5;
@@ -186,6 +187,32 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
             }
         } else {
             throw new ServiceException(412, "账号不存在");
+        }
+    }
+
+    @Override
+    public ResultModel alterPassword(String code, String oldPassword, String newPassword) {
+        if (newPassword != null) {
+            if (newPassword.length() < 6) {
+                throw new ServiceException(412, "密码需大于六位数");
+            }
+            if (StringUtils.isBlank(newPassword)) {
+                throw new ServiceException(412, "密码不符合条件");
+            }
+        }
+        NinStudent ninStudent = ninStudentMapper.selectOne(new QueryWrapper<>(new NinStudent() {{
+            setStudentCode(code);
+        }}));
+        if (!oldPassword.equals(newPassword)) {
+            if (ninStudent.getStudentPassword().equals(MD5.getMD5Encode(oldPassword))) {
+                ninStudent.setStudentPassword(MD5.getMD5Encode(newPassword));
+                ninStudentMapper.updateById(ninStudent);
+                return ResultModel.ok();
+            } else {
+                return ResultModel.error(412, "旧密码验证错误");
+            }
+        } else {
+            return ResultModel.error(412, "新密码和旧密码一致");
         }
     }
 

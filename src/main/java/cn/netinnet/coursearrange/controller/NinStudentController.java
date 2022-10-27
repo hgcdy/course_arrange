@@ -105,6 +105,23 @@ public class NinStudentController {
         return ResultModel.ok(ninStudentService.getStudentById(id));
     }
 
+    @RequiresRoles(value = {"student"}, logical = Logical.OR)
+    @GetMapping("/getStuUserInfo")
+    public ResultModel getStuUserInfo(Long id) {
+        return null;
+    }
 
+    /**
+     * 学生修改密码
+     * @param code
+     * @param oldPassword
+     * @param newPassword
+     * @return
+     */
+    @RequiresRoles(value = {"student"}, logical = Logical.OR)
+    @PostMapping("/alterStuPassword")
+    public ResultModel alterPassword(String code, String oldPassword, String newPassword){
+        return ninStudentService.alterPassword(code, oldPassword, newPassword);
+    }
 
 }

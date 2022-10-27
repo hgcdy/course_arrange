@@ -92,16 +92,4 @@ public class NinStudentCourseController {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 }

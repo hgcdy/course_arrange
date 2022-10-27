@@ -2,12 +2,14 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.TeacherBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
+import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import cn.netinnet.coursearrange.entity.UserInfo;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
+import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinTeacherService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.MD5;
@@ -147,6 +149,32 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
             }};
         } else {
             return ninTeacherMapper.selectList(new QueryWrapper<>());
+        }
+    }
+
+    @Override
+    public ResultModel alterPassword(String code, String oldPassword, String newPassword) {
+        if (newPassword != null) {
+            if (newPassword.length() < 6) {
+                throw new ServiceException(412, "密码需大于六位数");
+            }
+            if (StringUtils.isBlank(newPassword)) {
+                throw new ServiceException(412, "密码不符合条件");
+            }
+        }
+        NinTeacher ninTeacher = ninTeacherMapper.selectOne(new QueryWrapper<>(new NinTeacher() {{
+            setTeacherCode(code);
+        }}));
+        if (!oldPassword.equals(newPassword)) {
+            if (ninTeacher.getTeacherPassword().equals(MD5.getMD5Encode(oldPassword))) {
+                ninTeacher.setTeacherPassword(MD5.getMD5Encode(newPassword));
+                ninTeacherMapper.updateById(ninTeacher);
+                return ResultModel.ok();
+            } else {
+                return ResultModel.error(412, "旧密码验证错误");
+            }
+        } else {
+            return ResultModel.error(412, "新密码和旧密码一致");
         }
     }
 }

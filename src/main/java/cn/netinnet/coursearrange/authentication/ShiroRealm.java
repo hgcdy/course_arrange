@@ -24,7 +24,6 @@ public class ShiroRealm extends AuthorizingRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        System.out.println("-----开始权限验证-----");
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
         //获取用户信息及用户角色类型
@@ -42,8 +41,6 @@ public class ShiroRealm extends AuthorizingRealm {
                 // 过滤空字符的权限
                 .filter(StringUtils::isNotBlank).collect(Collectors.toSet());
         info.setStringPermissions(permissionSet);
-
-        System.out.println("-----权限校验成功-----");
 
         return info;
     }

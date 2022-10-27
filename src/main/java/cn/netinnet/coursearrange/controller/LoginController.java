@@ -69,7 +69,6 @@ public class LoginController {
         userInfo.setUserId(1L);
         userInfo.setUserCode(ApplicationConstant.ADMIN_CODE);
         userInfo.setUserName(ApplicationConstant.ADMIN_NAME);
-        userInfo.setUserPassword(ApplicationConstant.ADMIN_PASSWORD);
         userInfo.setUserType(ApplicationConstant.TYPE_ADMIN);
         String token = JWTUtil.sign(userInfo);
         return ResultModel.ok(token);
@@ -84,7 +83,6 @@ public class LoginController {
         userInfo.setUserId(ninStudent.getId());
         userInfo.setUserCode(ninStudent.getStudentCode());
         userInfo.setUserName(ninStudent.getStudentName());
-        userInfo.setUserPassword(ninStudent.getStudentPassword());
         userInfo.setUserType(ApplicationConstant.TYPE_STUDENT);
         String token = JWTUtil.sign(userInfo);
         return ResultModel.ok(token);
@@ -99,7 +97,6 @@ public class LoginController {
         userInfo.setUserId(ninTeacher.getId());
         userInfo.setUserCode(ninTeacher.getTeacherCode());
         userInfo.setUserName(ninTeacher.getTeacherName());
-        userInfo.setUserPassword(ninTeacher.getTeacherPassword());
         userInfo.setUserType(ApplicationConstant.TYPE_TEACHER);
         String token = JWTUtil.sign(userInfo);
         return ResultModel.ok(token);

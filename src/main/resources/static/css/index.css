@@ -1,3 +1,8 @@
+#notAdmin li a{
+    font-size: 20px;
+    font-weight: bold;
+}
+
 iframe {
     width: 100%;
     height: 100%;

@@ -20,11 +20,6 @@ public class UserInfo implements Serializable {
     private String UserCode;
 
     /**
-     * 用户密码
-     */
-    private String UserPassword;
-
-    /**
      * 用户身份
      */
     private String UserType;
@@ -54,14 +49,6 @@ public class UserInfo implements Serializable {
 
     public void setUserCode(String userCode) {
         UserCode = userCode;
-    }
-
-    public String getUserPassword() {
-        return UserPassword;
-    }
-
-    public void setUserPassword(String userPassword) {
-        UserPassword = userPassword;
     }
 
     public String getUserType() {
