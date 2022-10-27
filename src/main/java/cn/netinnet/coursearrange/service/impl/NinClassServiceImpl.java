@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.bo.NinClassBo;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
@@ -65,28 +66,8 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     }
 
     @Override
-    public List<Map<String, Object>> getCourseList(Long classId) {
-        NinClass ninClass = ninClassMapper.selectById(classId);
-        List<Map<String, Object>> list = new ArrayList<>();
-        if (ninClass.getCareerId() == 0) {
-            //选修
-            NinArrange ninArrange = ninArrangeMapper.selectOne(new QueryWrapper<>(new NinArrange() {{
-                setClassId(classId);
-            }}));
-            NinCourse course = ninCourseMapper.selectById(ninArrange.getCourseId());
-            HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("courseName", course.getCourseName());
-            hashMap.put("houseType", course.getHouseType());
-            hashMap.put("must", course.getMust());
-            hashMap.put("courseTime", course.getCourseTime());
-            hashMap.put("startTime", course.getStartTime());
-            hashMap.put("endTime", course.getEndTime());
-            hashMap.put("weekTime", course.getWeekTime());
-            list.add(hashMap);
-        } else {
-            list = ninCareerCourseMapper.getSelectList(ninClass.getCareerId());
-        }
-        return list;
+    public List<NinCourse> getCourseList(Long classId) {
+        return ninClassMapper.getCourseList(classId);
     }
 
     @Override
@@ -98,11 +79,10 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
 
 
     @Override
-    public Map<String, Map<String, List<Map<String, Object>>>> collegeCareerClassList() {
-        List<Map<String, Object>> list = ninClassMapper.collegeCareerClassList();
-        Utils.conversion(list);
+    public Map<String, Map<String, List<NinClassBo>>> collegeCareerClassList() {
+        List<NinClassBo> list = ninClassMapper.collegeCareerClassList();
         //按学院，专业名称分组
-        Map<String, Map<String, List<Map<String, Object>>>> map = list.stream().collect(Collectors.groupingBy(i -> (String) (i.get("college")), Collectors.groupingBy(i -> (String) i.get("careerName"))));
+        Map<String, Map<String, List<NinClassBo>>> map = list.stream().collect(Collectors.groupingBy(i -> i.getCollege(), Collectors.groupingBy(i -> i.getCareerName())));
         return map;
     }
 

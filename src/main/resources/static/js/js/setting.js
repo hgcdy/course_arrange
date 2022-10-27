@@ -10,7 +10,6 @@ require(['../config'], function () {
         $("#dropupStateTypeButton").next("ul").find("a").click(function () {
             $("#dropupStateTypeButton").text($(this).text());
         })
-
         //查询按钮
         $("#query").click(function () {
             state = $("#dropupStateTypeButton").text();
@@ -28,6 +27,7 @@ require(['../config'], function () {
             $("#courseName").val(null);
             query();
         })
+
 
         //批量修改按钮
         $("#disparkBatch, #finishBatch, #timingBatch").click(function () {
@@ -117,21 +117,39 @@ require(['../config'], function () {
 
         //修改
         function alter(settingIds, openState) {
-            if (openState == 2) {
-                var $openTime = $("<tr><td><label for='openTime'>开始时间:</label></td><td><input type='datetime-local' step=1 id='openTime'></td></tr>");
-                var $closeTime = $("<tr><td><label for='closeTime'>结束时间:</label></td><td><input type='datetime-local' step=1 id='closeTime'></td></tr>");
-                util.popup([$openTime, $closeTime], ["openTime", "closeTime"], $update);
+            if (settingIds.length > 2) {
+                if (openState == 2) {
+                    var $openTime = $("<tr><td><label for='openTime'>开始时间:</label></td><td><input type='datetime-local' step=1 id='openTime'></td></tr>");
+                    var $closeTime = $("<tr><td><label for='closeTime'>结束时间:</label></td><td><input type='datetime-local' step=1 id='closeTime'></td></tr>");
+                    util.popup([$openTime, $closeTime], ["openTime", "closeTime"], $update);
 
-                function $update(record) {
+                    function $update(record) {
+                        $.ajax({
+                            url: "nin-setting/alterBatch",
+                            dataType: "json",
+                            type: "post",
+                            data: {
+                                settingIds: settingIds,
+                                openState: openState,
+                                openTime: record.openTime,
+                                closeTime: record.closeTime
+                            },
+                            success: function (data) {
+                                util.hint(data.msg);
+                                if (data.code == 200) {
+                                    query();
+                                }
+                            }
+                        })
+                    }
+                } else {
                     $.ajax({
                         url: "nin-setting/alterBatch",
                         dataType: "json",
                         type: "post",
                         data: {
                             settingIds: settingIds,
-                            openState: openState,
-                            openTime: record.openTime,
-                            closeTime: record.closeTime
+                            openState: openState
                         },
                         success: function (data) {
                             util.hint(data.msg);
@@ -142,22 +160,9 @@ require(['../config'], function () {
                     })
                 }
             } else {
-                $.ajax({
-                    url: "nin-setting/alterBatch",
-                    dataType: "json",
-                    type: "post",
-                    data: {
-                        settingIds: settingIds,
-                        openState: openState
-                    },
-                    success: function (data) {
-                        util.hint(data.msg);
-                        if (data.code == 200) {
-                            query();
-                        }
-                    }
-                })
+                util.hint("请选择课程");
             }
+
         }
 
 

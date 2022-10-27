@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.controller;
 
 
+import cn.netinnet.coursearrange.bo.UserCourseBo;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import cn.netinnet.coursearrange.entity.UserInfo;
 import cn.netinnet.coursearrange.model.ResultModel;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -55,7 +55,7 @@ public class NinTeacherCourseController {
      */
     @PostMapping("/getSelectList")
     public ResultModel getSelectList(Long teacherId){
-        List<Map<String, Object>> list = ninTeacherCourseService.getSelectList(teacherId);
+        List<UserCourseBo> list = ninTeacherCourseService.getSelectList(teacherId);
         return ResultModel.ok(list);
     }
 

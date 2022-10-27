@@ -1,7 +1,9 @@
 package cn.netinnet.coursearrange.controller;
 
 
+import cn.netinnet.coursearrange.bo.NinClassBo;
 import cn.netinnet.coursearrange.entity.NinClass;
+import cn.netinnet.coursearrange.entity.NinCourse;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinClassService;
 import org.apache.shiro.authz.annotation.Logical;
@@ -37,13 +39,6 @@ public class NinClassController {
         return new ModelAndView("view/classView");
     }
 
-    //跳转班级课程页面
-    @GetMapping("nin-class-course")
-    public ModelAndView gotoView(Long classId) {
-        ModelAndView modelAndView = new ModelAndView("view/classCourseView");
-        modelAndView.addObject("classId", String.valueOf(classId));
-        return modelAndView;
-    }
 
     /**
      * 班级条件分页查询
@@ -72,7 +67,7 @@ public class NinClassController {
      */
     @PostMapping("/getCourseList")
     public ResultModel getCourseList(Long classId) {
-        List<Map<String, Object>> list = ninClassService.getCourseList(classId);
+        List<NinCourse> list = ninClassService.getCourseList(classId);
         return ResultModel.ok(list);
     }
 
@@ -95,7 +90,7 @@ public class NinClassController {
      */
     @GetMapping("collegeCareerClassList")
     public ResultModel collegeCareerClassList() {
-        Map<String, Map<String, List<Map<String, Object>>>> stringMapMap = ninClassService.collegeCareerClassList();
+        Map<String, Map<String, List<NinClassBo>>> stringMapMap = ninClassService.collegeCareerClassList();
         return ResultModel.ok(stringMapMap);
     }
 

@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.mapper;
 
+import cn.netinnet.coursearrange.bo.UserCourseBo;
 import cn.netinnet.coursearrange.entity.NinCareerCourse;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -24,7 +25,7 @@ public interface NinCareerCourseMapper extends BaseMapper<NinCareerCourse> {
      * @param careerId
      * @return
      */
-    List<Map<String, Object>> getSelectList(Long careerId);
+    List<UserCourseBo> getSelectList(Long careerId);
 
     /**
      * 多专业多课程批量添加

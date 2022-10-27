@@ -20,17 +20,12 @@
     </sql>
 
 
-    <select id="getSelectList" resultType="java.util.Map">
-        SELECT nin_teacher_course.id AS id,
-               teacher_id AS teacherId,
+    <select id="getSelectList" resultType="cn.netinnet.coursearrange.bo.UserCourseBo">
+        SELECT nin_teacher_course.id AS id, teacher_id,
                nin_teacher_course.course_id AS courseId,
                nin_course.course_name AS courseName,
-               nin_course.house_type AS houseType,
-               nin_course.must AS must,
-               nin_course.course_time AS courseTime,
-               nin_course.start_time AS startTime,
-               nin_course.end_time AS endTime,
-               nin_course.week_time AS weekTime
+               house_type, must, course_time,
+               start_time, end_time, week_time
         FROM nin_teacher_course, nin_course
         WHERE nin_teacher_course.del_flag = 0
         AND nin_teacher_course.course_id = nin_course.id

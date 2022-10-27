@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.controller;
 
 
+import cn.netinnet.coursearrange.bo.UserCourseBo;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinCareerCourseService;
 import com.alibaba.fastjson.JSON;
@@ -37,7 +38,7 @@ public class NinCareerCourseController {
      */
     @PostMapping("/getSelectList")
     public ResultModel getSelectList(Long careerId) {
-        List<Map<String, Object>> list = ninCareerCourseService.getSelectList(careerId);
+        List<UserCourseBo> list = ninCareerCourseService.getSelectList(careerId);
         return ResultModel.ok(list);
     }
 

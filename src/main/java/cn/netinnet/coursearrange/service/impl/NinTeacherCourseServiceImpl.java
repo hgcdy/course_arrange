@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.bo.UserCourseBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinCourse;
@@ -13,7 +14,6 @@ import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.service.INinTeacherCourseService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
-import cn.netinnet.coursearrange.util.Utils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -44,9 +43,8 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
     private NinHouseMapper ninHouseMapper;
 
     @Override
-    public List<Map<String, Object>> getSelectList(Long teacherId) {
-        List<Map<String, Object>> list = ninTeacherCourseMapper.getSelectList(teacherId);
-        Utils.conversion(list);
+    public List<UserCourseBo> getSelectList(Long teacherId) {
+        List<UserCourseBo> list = ninTeacherCourseMapper.getSelectList(teacherId);
         return list;
     }
 

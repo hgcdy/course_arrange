@@ -1,6 +1,8 @@
 package cn.netinnet.coursearrange.mapper;
 
+import cn.netinnet.coursearrange.bo.NinClassBo;
 import cn.netinnet.coursearrange.entity.NinClass;
+import cn.netinnet.coursearrange.entity.NinCourse;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -64,7 +66,7 @@ public interface NinClassMapper extends BaseMapper<NinClass> {
      * 学院专业班级列表
      * @return
      */
-    List<Map<String, Object>> collegeCareerClassList();
+    List<NinClassBo> collegeCareerClassList();
 
     /**
      * 根据条件获取班级列表
@@ -90,5 +92,12 @@ public interface NinClassMapper extends BaseMapper<NinClass> {
      * @return
      */
     int alterBatchCourseNum(@Param("list") List<Map<String, Object>> list);
+
+    /**
+     * 根据班级id获取该班级选择的课程
+     * @param classId
+     * @return
+     */
+    List<NinCourse> getCourseList(Long classId);
 
 }

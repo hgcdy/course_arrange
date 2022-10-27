@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.bo.UserCourseBo;
 import cn.netinnet.coursearrange.entity.NinCareerCourse;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinCareerCourseMapper;
@@ -37,9 +38,8 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
     private NinClassMapper ninClassMapper;
 
     @Override
-    public List<Map<String, Object>> getSelectList(Long careerId) {
-        List<Map<String, Object>> list = ninCareerCourseMapper.getSelectList(careerId);
-        Utils.conversion(list);
+    public List<UserCourseBo> getSelectList(Long careerId) {
+        List<UserCourseBo> list = ninCareerCourseMapper.getSelectList(careerId);
         return list;
     }
 

@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.controller;
 
 
+import cn.netinnet.coursearrange.bo.UserCourseBo;
 import cn.netinnet.coursearrange.entity.NinStudentCourse;
 import cn.netinnet.coursearrange.entity.UserInfo;
 import cn.netinnet.coursearrange.model.ResultModel;
@@ -59,7 +60,7 @@ public class NinStudentCourseController {
      */
     @PostMapping("/getSelectList")
     public ResultModel getSelectList(Long studentId){
-        List<List<Map<String, Object>>> selectList = ninStudentCourseService.getSelectList(studentId);
+        List<List<UserCourseBo>> selectList = ninStudentCourseService.getSelectList(studentId);
         return ResultModel.ok(selectList);
     }
 

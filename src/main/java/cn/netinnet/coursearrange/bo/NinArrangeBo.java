@@ -1,5 +1,7 @@
 package cn.netinnet.coursearrange.bo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,11 +16,13 @@ public class NinArrangeBo{
     /**
      * 排课记录id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
      * 专业id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long careerId;
 
     /**
@@ -29,6 +33,7 @@ public class NinArrangeBo{
     /**
      * 班级id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long classId;
 
     /**

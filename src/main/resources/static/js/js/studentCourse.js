@@ -1,6 +1,6 @@
 require(['../config'], function () {
     require(['jquery', 'util', 'bootstrapBundle'], function ($, util) {
-        const STR = ["courseName", "houseType", "must","courseTime", "startTime", "endTime", "weekTime", "week", "pitchNum"];
+        const STR = ["courseName", "houseType", "must","courseTime", "startTime", "endTime", "weekTime", "cnWeek", "cnPitchNum"];
         query();
 
         //新增

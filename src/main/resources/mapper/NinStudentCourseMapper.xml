@@ -20,9 +20,9 @@
         id, student_id, course_id, take_class_id, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
-    <select id="getSelectList" resultType="java.util.Map">
+    <select id="getSelectList" resultType="cn.netinnet.coursearrange.bo.UserCourseBo">
         SELECT nin_student_course.id AS id,
-               student_id AS studentId,
+               student_id,
                nin_student_course.course_id AS courseId,
                nin_course.course_name AS courseName,
                nin_course.house_type AS houseType,

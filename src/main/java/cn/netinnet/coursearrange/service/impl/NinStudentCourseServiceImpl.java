@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.bo.UserCourseBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
@@ -43,14 +44,16 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
     private NinCareerCourseMapper ninCareerCourseMapper;
 
     @Override
-    public List<List<Map<String, Object>>> getSelectList(Long studentId) {
+    public List<List<UserCourseBo>> getSelectList(Long studentId) {
         Long classId = ninStudentMapper.selectById(studentId).getClassId();
-        List<Map<String, Object>> list1 = ninStudentCourseMapper.getSelectList(studentId);
+        List<UserCourseBo> list1 = ninStudentCourseMapper.getSelectList(studentId).stream().map(i -> {
+            i.setCnWeek(Utils.cnWeek(i.getWeek()));
+            i.setCnPitchNum(Utils.cnPitchNum(i.getPitchNum()));
+            return i;
+        }).collect(Collectors.toList());
         Long careerId = ninClassMapper.selectById(classId).getCareerId();
-        List<Map<String, Object>> list2 = ninCareerCourseMapper.getSelectList(careerId);
-        Utils.conversion(list1);
-        Utils.conversion(list2);
-        return new ArrayList<List<Map<String, Object>>>(){{
+        List<UserCourseBo> list2 = ninCareerCourseMapper.getSelectList(careerId);
+        return new ArrayList<List<UserCourseBo>>(){{
             add(list1);
             add(list2);
         }};

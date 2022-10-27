@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service;
 
+import cn.netinnet.coursearrange.bo.UserCourseBo;
 import cn.netinnet.coursearrange.entity.NinCareerCourse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -21,7 +22,7 @@ public interface INinCareerCourseService extends IService<NinCareerCourse> {
      * @param careerId
      * @return
      */
-    List<Map<String, Object>> getSelectList(Long careerId);
+    List<UserCourseBo> getSelectList(Long careerId);
 
     /**
      * 批量添加课程

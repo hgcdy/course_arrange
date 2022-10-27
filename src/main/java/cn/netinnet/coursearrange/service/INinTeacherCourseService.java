@@ -1,10 +1,10 @@
 package cn.netinnet.coursearrange.service;
 
+import cn.netinnet.coursearrange.bo.UserCourseBo;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -21,7 +21,7 @@ public interface INinTeacherCourseService extends IService<NinTeacherCourse> {
      * @param teacherId
      * @return
      */
-    List<Map<String, Object>> getSelectList(Long teacherId);
+    List<UserCourseBo> getSelectList(Long teacherId);
 
     /**
      * 单个新增
