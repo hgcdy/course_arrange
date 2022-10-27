@@ -2,6 +2,7 @@ package cn.netinnet.coursearrange.controller;
 
 
 import cn.netinnet.coursearrange.bo.ArrangeBo;
+import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinStudent;
@@ -150,7 +151,7 @@ public class NinArrangeController {
      */
     @PostMapping("/nin-arrange/getLeisure")
     public ResultModel getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly) {
-        Map<String, List<Map<String, Object>>> leisure = ninArrangeService.getLeisure(teacherId, classIds, houseId, houseType, seatMin, seatMax, weekly);
+        Map<String, List<HouseBo>> leisure = ninArrangeService.getLeisure(teacherId, classIds, houseId, houseType, seatMin, seatMax, weekly);
         return ResultModel.ok(leisure);
     }
 

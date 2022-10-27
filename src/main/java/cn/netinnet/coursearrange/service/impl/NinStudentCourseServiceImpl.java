@@ -8,7 +8,7 @@ import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
-import cn.netinnet.coursearrange.util.Utils;
+import cn.netinnet.coursearrange.util.CnUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +47,8 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
     public List<List<ContactCourseBo>> getSelectList(Long studentId) {
         Long classId = ninStudentMapper.selectById(studentId).getClassId();
         List<ContactCourseBo> list1 = ninStudentCourseMapper.getSelectList(studentId).stream().map(i -> {
-            i.setCnWeek(Utils.cnWeek(i.getWeek()));
-            i.setCnPitchNum(Utils.cnPitchNum(i.getPitchNum()));
+            i.setCnWeek(CnUtil.cnWeek(i.getWeek()));
+            i.setCnPitchNum(CnUtil.cnPitchNum(i.getPitchNum()));
             return i;
         }).collect(Collectors.toList());
         Long careerId = ninClassMapper.selectById(classId).getCareerId();

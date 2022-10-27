@@ -1,11 +1,13 @@
 package cn.netinnet.coursearrange;
 
+import cn.netinnet.coursearrange.entity.NinClass;
 import cn.netinnet.coursearrange.mapper.NinArrangeMapper;
 import cn.netinnet.coursearrange.mapper.NinClassMapper;
 import cn.netinnet.coursearrange.mapper.NinCourseMapper;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
 import cn.netinnet.coursearrange.util.MD5;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +31,15 @@ class CourseArrangeApplicationTests {
 
     @Test
     void contextLoads() {
+
+        List<NinClass> ninClasses = ninClassMapper.selectList(new QueryWrapper<>());
+        ArrayList<NinClass> ninClasses1 = new ArrayList<>();
+        ninClasses1.addAll(ninClasses);
+        ninClasses1.remove(0);
+        System.out.println("");
+
+
+
     }
 
 

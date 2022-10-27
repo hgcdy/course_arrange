@@ -1,12 +1,13 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.entity.NinHouse;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinHouseMapper;
 import cn.netinnet.coursearrange.service.INinHouseService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
-import cn.netinnet.coursearrange.util.Utils;
+import cn.netinnet.coursearrange.util.CnUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -36,9 +38,13 @@ public class NinHouseServiceImpl extends ServiceImpl<NinHouseMapper, NinHouse> i
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size,  String houseName, Integer houseType, Integer firstSeat, Integer tailSeat) {
         PageHelper.startPage(page, size);
-        List<Map<String, Object>> list = ninHouseMapper.getSelectList(houseName, houseType, firstSeat, tailSeat);
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
-        Utils.conversion(pageInfo.getList());
+        List<HouseBo> list = ninHouseMapper.getSelectList(houseName, houseType, firstSeat, tailSeat).stream().map(i -> {
+            if (i.getHouseType() != null) {
+                i.setCnHouseType(CnUtil.cnHouse(i.getHouseType()));
+            }
+            return i;
+        }).collect(Collectors.toList());
+        PageInfo<HouseBo> pageInfo = new PageInfo<>(list);
         HashMap<String, Object> map = new HashMap<>();
         map.put("list", pageInfo.getList());
         map.put("total", pageInfo.getTotal());

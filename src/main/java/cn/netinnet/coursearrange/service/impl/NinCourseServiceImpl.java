@@ -10,7 +10,7 @@ import cn.netinnet.coursearrange.service.INinCourseService;
 import cn.netinnet.coursearrange.service.INinSettingService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
-import cn.netinnet.coursearrange.util.Utils;
+import cn.netinnet.coursearrange.util.CnUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -59,10 +59,10 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         PageHelper.startPage(page, size);
         List<CourseBo> list = ninCourseMapper.getSelectList(ninCourse).stream().map(i -> {
             if (i.getMust() != null) {
-                i.setCnMust(Utils.cnMust(i.getMust()));
+                i.setCnMust(CnUtil.cnMust(i.getMust()));
             }
             if (i.getHouseType() != null) {
-                i.setCnHouseType(Utils.cnHouse(i.getHouseType()));
+                i.setCnHouseType(CnUtil.cnHouse(i.getHouseType()));
             }
             return i;
         }).collect(Collectors.toList());

@@ -158,40 +158,7 @@
         ORDER BY nin_arrange.career_id, courseName, className, week, pitchNum
     </select>
 
-<!--    <select id="getSelectNull">-->
-<!--        SELECT-->
-<!--            nin_arrange.id AS id,-->
-<!--            career_name AS careerName,-->
-<!--            IFNULL((SELECT class_name FROM nin_class WHERE nin_class.id = nin_arrange.class_id),-->
-<!--                   (SELECT GROUP_CONCAT(class_name SEPARATOR ';')-->
-<!--                    FROM nin_teach_class, nin_class-->
-<!--                    WHERE nin_arrange.teach_class_id = nin_teach_class.teach_class_id-->
-<!--                      AND nin_teach_class.class_id = nin_class.id))-->
-<!--                           AS className,-->
-<!--            teacher_name AS teacherName,-->
-<!--            teacher_id AS teacherId,-->
-<!--            course_name AS courseName,-->
-<!--            house_name AS houseName,-->
-<!--            house_id AS houseId,-->
-<!--            nin_arrange.must AS must,-->
-<!--            weekly,-->
-<!--            nin_arrange.start_time AS startTime,-->
-<!--            nin_arrange.end_time AS endTime,-->
-<!--            week,-->
-<!--            pitch_num AS pitchNum-->
-<!--        FROM (((nin_arrange LEFT JOIN nin_teacher ON nin_arrange.teacher_id = nin_teacher.id)-->
-<!--            LEFT JOIN nin_house ON nin_arrange.house_id = nin_house.id)-->
-<!--            INNER JOIN nin_course ON nin_arrange.course_id = nin_course.id)-->
-<!--                 INNER JOIN nin_career On nin_arrange.career_id = nin_career.id-->
-<!--        WHERE (nin_arrange.teacher_id IS NULL-->
-<!--           OR nin_arrange.house_id IS NULL-->
-<!--           OR nin_arrange.weekly IS NULL-->
-<!--           OR nin_arrange.week IS NULL-->
-<!--           OR nin_arrange.pitch_num IS NULL)-->
-<!--           <if test="must != null">-->
-<!--                AND nin_arrange.must = #{must}-->
-<!--           </if>-->
-<!--    </select>-->
+
 
     <select id="getAvailable" resultType="cn.netinnet.coursearrange.entity.NinArrange">
         SELECT COUNT(1)

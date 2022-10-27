@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -50,13 +49,6 @@ public interface NinArrangeMapper extends BaseMapper<NinArrange> {
      */
     List<ArrangeBo> getSelectList(ArrangeBo bo);
 
-
-//    /**
-//     * 返回字段有为空的数据
-//     * @param must
-//     * @return
-//     */
-//    List<Map<String, Object>> getSelectNull(@Param("must") Integer must);
 
     /**
      * 返回可选资源

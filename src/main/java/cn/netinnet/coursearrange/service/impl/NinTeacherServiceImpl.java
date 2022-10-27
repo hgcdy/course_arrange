@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.bo.TeacherBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
@@ -45,11 +46,8 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
     public Map<String, Object> getPageSelectList(Integer page, Integer size, String teacherName) {
         HashMap<String, Object> map = new HashMap<>();
         PageHelper.startPage(page, size);
-        List<Map<String, Object>> list = ninTeacherMapper.getSelectList(teacherName).stream().map(i -> {
-            i.put("id", i.get("id").toString());
-            return i;
-        }).collect(Collectors.toList());
-        PageInfo<Map<String, Object>> pageInfo = new PageInfo<>(list);
+        List<TeacherBo> list = ninTeacherMapper.getSelectList(teacherName);
+        PageInfo<TeacherBo> pageInfo = new PageInfo<>(list);
         map.put("list", pageInfo.getList());
         map.put("total", pageInfo.getTotal());
         return map;

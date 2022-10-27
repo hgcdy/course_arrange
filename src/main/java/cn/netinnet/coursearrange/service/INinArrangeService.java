@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.service;
 
 import cn.netinnet.coursearrange.bo.ArrangeBo;
+import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -50,7 +51,7 @@ public interface INinArrangeService extends IService<NinArrange> {
      * @param weekly
      * @return
      */
-    Map<String, List<Map<String, Object>>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin,Integer seatMax, Integer weekly);
+    Map<String, List<HouseBo>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly);
 
     /**
      * 添加·排课信息

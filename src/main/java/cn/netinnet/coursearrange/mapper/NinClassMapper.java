@@ -28,11 +28,6 @@ public interface NinClassMapper extends BaseMapper<NinClass> {
      */
     List<ClassBo> getSelectList(@Param("college") String college, @Param("careerId") Long careerId, @Param("className") String className);
 
-    /**
-     * 专业列表
-     * @return
-     */
-    List<String> careerList();
 
     /**
      * 根据班级id列表批量给课程数量+1

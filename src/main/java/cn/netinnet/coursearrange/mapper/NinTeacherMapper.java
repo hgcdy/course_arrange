@@ -1,12 +1,12 @@
 package cn.netinnet.coursearrange.mapper;
 
+import cn.netinnet.coursearrange.bo.TeacherBo;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -24,7 +24,7 @@ public interface NinTeacherMapper extends BaseMapper<NinTeacher> {
      * @param teacherName
      * @return
      */
-    List<Map<String, Object>> getSelectList(String teacherName);
+    List<TeacherBo> getSelectList(String teacherName);
 
     /**
      * 根据课程查询教师

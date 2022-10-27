@@ -7,7 +7,7 @@ require(['../config'], function () {
         var houseType = null;
         var firstSeat = null;
         var tailSeat = null;
-        const STR = ["houseName", "houseType", "seat"];
+        const STR = ["houseName", "cnHouseType", "seat"];
         query();
 
         //下拉框

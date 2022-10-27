@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.mapper;
 
+import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.entity.NinHouse;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -27,6 +28,6 @@ public interface NinHouseMapper extends BaseMapper<NinHouse> {
      * @param tailSeat 座位（max）
      * @return
      */
-    List<Map<String, Object>> getSelectList(@Param("houseName") String houseName, @Param("houseType")Integer houseType, @Param("firstSeat")Integer firstSeat, @Param("tailSeat")Integer tailSeat);
+    List<HouseBo> getSelectList(@Param("houseName") String houseName, @Param("houseType")Integer houseType, @Param("firstSeat")Integer firstSeat, @Param("tailSeat")Integer tailSeat);
 
 }

@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.ArrangeBo;
+import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
@@ -9,7 +10,7 @@ import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.util.ExcelUtils;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
-import cn.netinnet.coursearrange.util.Utils;
+import cn.netinnet.coursearrange.util.CnUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -527,8 +528,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
     @Override
-    public Map<String, List<Map<String, Object>>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly) {
-        List<Map<String, Object>> ninHouseArrayList = new ArrayList<>();
+    public Map<String, List<HouseBo>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly) {
+        List<HouseBo> ninHouseArrayList = new ArrayList<>();
 
         //如果无限制座位，那么以班级人数上限为准
         if (seatMax == null && seatMin == null) {
@@ -539,7 +540,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
         //根据座位，类型查询教室
         ninHouseArrayList = ninHouseMapper.getSelectList(null, houseType, seatMin, seatMax);
-        Utils.conversion(ninHouseArrayList);
 
         //如果没有符合条件的教室
         if (ninHouseArrayList != null && ninHouseArrayList.size() != 0) {
@@ -565,14 +565,14 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //去除这个时间有使用的教室
 
         //<星期节数, List<教室Map>>
-        Map<String, List<Map<String, Object>>> hashMap = new HashMap<>();
+        Map<String, List<HouseBo>> hashMap = new HashMap<>();
 
         //遍历时间
         for (int i = 1; i <= 7; i++) {
             ok:
             for (int j = 1; j <= ApplicationConstant.DAY_PITCH_NUM; j++) {
 
-                ArrayList<Map<String, Object>> houseList = new ArrayList<>();
+                ArrayList<HouseBo> houseList = new ArrayList<>();
                 houseList.addAll(ninHouseArrayList);
 
                 List<Long> teachClassIdList = null;
@@ -607,7 +607,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
                         //删除houseList里面出现的
                         for (int k = 0; k < houseList.size(); k++) {
-                            if (houseList.get(k) != null && houseList.get(k).get("id").equals(String.valueOf(arrange.getHouseId()))) {
+                            if (houseList.get(k) != null && houseList.get(k).getId().equals(arrange.getHouseId())) {
                                 houseList.set(k, null);
                             }
                         }
@@ -689,16 +689,16 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         PageHelper.startPage(page, size);
         List<ArrangeBo> list = ninArrangeMapper.getSelectList(bo).stream().map(i -> {
             if (i.getWeek() != null) {
-                i.setCnWeek(Utils.cnWeek(i.getWeek()));
+                i.setCnWeek(CnUtil.cnWeek(i.getWeek()));
             }
             if (i.getPitchNum() != null) {
-                i.setCnPitchNum(Utils.cnPitchNum(i.getPitchNum()));
+                i.setCnPitchNum(CnUtil.cnPitchNum(i.getPitchNum()));
             }
             if (i.getMust() != null) {
-                i.setCnMust(Utils.cnMust(i.getMust()));
+                i.setCnMust(CnUtil.cnMust(i.getMust()));
             }
             if (i.getWeekly() != null) {
-                i.setCnWeekly(Utils.cnWeekly(i.getWeekly()));
+                i.setCnWeekly(CnUtil.cnWeekly(i.getWeekly()));
             }
             return i;
         }).collect(Collectors.toList());
@@ -834,7 +834,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         String[] headers = new String[len], fields = new String[len];
 
         for (int i = 0; i < 8; i++) {
-            headers[i] = Utils.cnWeek(i);//{"", "星期一", "星期二", ..}
+            headers[i] = CnUtil.cnWeek(i);//{"", "星期一", "星期二", ..}
             fields[i] = "" + i;//{"pitchNum", "1", "2", ..}
         }
         fields[0] = "pitchNum";
@@ -844,7 +844,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         JSONArray array = new JSONArray();
         for (int i = 0; i < ApplicationConstant.DAY_PITCH_NUM; i++) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("pitchNum", Utils.cnPitchNum(i + 1));
+            jsonObject.put("pitchNum", CnUtil.cnPitchNum(i + 1));
             array.add(jsonObject);
         }
         for (Map.Entry<String, String> map: info.entrySet()) {
