@@ -18,20 +18,12 @@ import java.util.List;
  */
 @Mapper
 public interface NinStudentMapper extends BaseMapper<NinStudent> {
-
     /**
      * 分页条件查询
-     * @param careerIds
-     * @param classId
-     * @param studentName
-     * @return
      */
     List<StudentBo> getSelectList(@Param("careerIds") List<Long> careerIds, @Param("classId") Long classId, @Param("studentName") String studentName);
-
     /**
-     * 批量删除学生
-     * @param studentIds
-     * @return
+     * 根据学生id列表批量删除学生
      */
     int delBatchStudent(@Param("list") List<Long> studentIds);
 }

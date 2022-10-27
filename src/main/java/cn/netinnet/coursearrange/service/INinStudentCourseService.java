@@ -15,26 +15,17 @@ import java.util.List;
  * @since 2022-08-18
  */
 public interface INinStudentCourseService extends IService<NinStudentCourse> {
-
     /**
      * 查询
-     * @param studentId
-     * @return
      */
     List<List<ContactCourseBo>> getSelectList(Long studentId);
-
     /**
      * 添加
-     * @param ninStudentCourse
-     * @return
      */
     int addSingle(NinStudentCourse ninStudentCourse);
 
     /**
      * 删除
-     * @param id
-     * @return
      */
     int delSingle(Long id);
-
 }

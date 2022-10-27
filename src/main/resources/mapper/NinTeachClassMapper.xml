@@ -27,13 +27,6 @@
         </foreach>
     </insert>
 
-<!--     根据班级id获取教学班列表 -->
-    <select id="getTeachClassIdList" resultType="java.lang.Long">
-        SELECT teach_class_id
-        FROM nin_teach_class
-        WHERE class_id = #{classId}
-    </select>
-
     <!--     根据班级id列表获取教学班列表 -->
     <select id="getBatchTeachClassIdList" resultType="java.lang.Long">
         SELECT DISTINCT teach_class_id

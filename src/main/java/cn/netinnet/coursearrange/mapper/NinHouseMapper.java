@@ -19,9 +19,8 @@ import java.util.Map;
  */
 @Mapper
 public interface NinHouseMapper extends BaseMapper<NinHouse> {
-
     /**
-     * 教师查询
+     * 教室查询
      * @param houseName 模糊查询教室名称
      * @param houseType 查询教室类型
      * @param firstSeat 座位范围（min）
@@ -29,5 +28,4 @@ public interface NinHouseMapper extends BaseMapper<NinHouse> {
      * @return
      */
     List<HouseBo> getSelectList(@Param("houseName") String houseName, @Param("houseType")Integer houseType, @Param("firstSeat")Integer firstSeat, @Param("tailSeat")Integer tailSeat);
-
 }

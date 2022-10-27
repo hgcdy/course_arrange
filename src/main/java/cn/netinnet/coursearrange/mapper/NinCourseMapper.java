@@ -17,20 +17,12 @@ import java.util.List;
  */
 @Mapper
 public interface NinCourseMapper extends BaseMapper<NinCourse> {
-
     /**
      * 课程查询
-     * @param ninCourse
-     * @return
      */
     List<CourseBo> getSelectList(NinCourse ninCourse);
-
-
     /**
-     * 去除被选的选修课程后的全部课程
+     * 获取去除被选的选修课程后的全部课程
      */
     List<NinCourse> reSelectCourse();
-
-
-
 }

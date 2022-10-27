@@ -19,22 +19,12 @@ import java.util.List;
  */
 @Mapper
 public interface NinSettingMapper extends BaseMapper<NinSetting> {
-
     /**
      * 条件查询
-     * @param userType
-     * @param courseName
-     * @return
      */
     List<SettingBo> getSelectList(@Param("userType") String userType, @Param("courseName") String courseName);
-
     /**
      * 修改
-     * @param settingIdList
-     * @param openState
-     * @param openTime
-     * @param closeTime
      */
     void alterBatch(@Param("list") List<Long> settingIdList, @Param("openState") Integer openState, @Param("openTime") LocalDateTime openTime, @Param("closeTime") LocalDateTime closeTime);
-
 }

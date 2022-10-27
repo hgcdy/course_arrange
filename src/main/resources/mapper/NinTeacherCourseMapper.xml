@@ -19,18 +19,14 @@
         id, teacher_id, course_id, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
-
     <select id="getSelectList" resultType="cn.netinnet.coursearrange.bo.ContactCourseBo">
         SELECT nin_teacher_course.id AS id, teacher_id,
                nin_teacher_course.course_id AS courseId,
                nin_course.course_name AS courseName,
                house_type, must, course_time,
                start_time, end_time, week_time
-        FROM nin_teacher_course, nin_course
-        WHERE nin_teacher_course.del_flag = 0
-        AND nin_teacher_course.course_id = nin_course.id
-        AND nin_teacher_course.teacher_id = #{teacherId}
+        FROM nin_teacher_course INNER JOIN nin_course ON nin_teacher_course.course_id = nin_course.id
+        WHERE nin_teacher_course.teacher_id = #{teacherId}
     </select>
-
 
 </mapper>

@@ -104,7 +104,7 @@
         </where>
     </select>
 
-
+    <!--符合条件的排课信息列表-->
     <select id="getSelectList" parameterType="cn.netinnet.coursearrange.bo.ArrangeBo" resultType="cn.netinnet.coursearrange.bo.ArrangeBo">
         SELECT
         nin_arrange.id AS id,
@@ -158,31 +158,7 @@
         ORDER BY nin_arrange.career_id, courseName, className, week, pitchNum
     </select>
 
-
-
-    <select id="getAvailable" resultType="cn.netinnet.coursearrange.entity.NinArrange">
-        SELECT COUNT(1)
-        FROM nin_arrange
-        <where>
-            <if test="week != null">
-                ADN week = #{week}
-            </if>
-            <if test="pitchNum != null">
-                ADN pitch_num = #{pitchNum}
-            </if>
-            <if test="teacherId != null or houseId != null">
-            (
-                <if test="teacherId != null">
-                    OR teacher_id = #{teacherId}
-                </if>
-                <if test="houseId != null">
-                    OR house_id = #{houseId}
-                </if>
-            )
-            </if>
-        </where>
-    </select>
-
+    <!--判断是否存在冲突的记录-->
     <select id="getArrangeVerify" resultType="java.lang.Integer">
         SELECT COUNT(1)
         FROM nin_arrange INNER JOIN nin_teach_class ON nin_arrange.teach_class_id = nin_teach_class.teach_class_id
@@ -199,7 +175,4 @@
             </foreach>
             )
     </select>
-
-
-
 </mapper>

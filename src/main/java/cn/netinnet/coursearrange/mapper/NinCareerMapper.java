@@ -16,32 +16,20 @@ import java.util.List;
  */
 @Mapper
 public interface NinCareerMapper extends BaseMapper<NinCareer> {
-
     /**
      * 获取专业列表
-     * @param college
-     * @return
      */
     List<NinCareer> getNinCareerList(String college);
-
     /**
      * 获取学院列表
-     * @return
      */
     List<String> getCollegeList();
-
     /**
      * 该班级数量+1
-     * @param id
      */
     void addClassNum(Long id);
-
     /**
      * 该班级数量+1
-     * @param id
      */
     void subClassNum(Long id);
-
-
-
 }

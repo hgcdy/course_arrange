@@ -94,7 +94,6 @@ public class NinClassController {
         return ResultModel.ok(stringMapMap);
     }
 
-
     /**
      * 新增班级
      *
@@ -158,7 +157,4 @@ public class NinClassController {
         }
         return ResultModel.error(412, "修改失败");
     }
-
-
-
 }

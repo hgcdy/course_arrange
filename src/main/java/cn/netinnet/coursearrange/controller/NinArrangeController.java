@@ -105,7 +105,9 @@ public class NinArrangeController {
         return modelAndView;
     }
 
-    //自动排课
+    /**
+     * 自动排课
+     */
     @GetMapping("/nin-arrange/arrange")
     public ResultModel arrange() {
         ninArrangeService.arrange();
@@ -114,8 +116,6 @@ public class NinArrangeController {
 
     /**
      * 清空记录
-     *
-     * @return
      */
     @GetMapping("nin-arrange/empty")
     public ResultModel empty() {
@@ -125,11 +125,7 @@ public class NinArrangeController {
 
     /**
      * 获取课程表的信息
-     * @param classId
-     * @param teacherId
-     * @param studentId
-     * @param count
-     * @return
+     * @return 12（星期一第二节课） -> 课程信息（String）
      */
     @PostMapping("/nin-arrange/getInfo")
     public ResultModel getInfo(Long classId, Long teacherId, Long studentId, Integer count) {

@@ -18,26 +18,16 @@ import java.util.List;
  */
 @Mapper
 public interface NinStudentCourseMapper extends BaseMapper<NinStudentCourse> {
-
     /**
      * 根据学生id批量删除
-     * @param studentIdList
-     * @return
      */
     int delBatchStudentId(@Param("list") List<Long> studentIdList);
-
     /**
      * 根据学生id批量获取
-     * @param studentIdList
-     * @return
      */
     List<NinStudentCourse> getStudentIds(@Param("list") List<Long> studentIdList);
-
     /**
      * 查询
-     * @param Student
-     * @return
      */
     List<ContactCourseBo> getSelectList(Long Student);
-
 }

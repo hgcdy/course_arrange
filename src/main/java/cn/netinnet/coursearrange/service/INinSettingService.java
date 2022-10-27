@@ -16,26 +16,12 @@ import java.util.List;
  * @since 2022-10-19
  */
 public interface INinSettingService extends IService<NinSetting> {
-
     /**
      * 条件查询
-     * @param userType
-     * @param state
-     * @param courseName
-     * @return
      */
     List<SettingBo> getSelectList(String userType, String state, String courseName);
-
     /**
      * 修改设置
-     * @param settingIds
-     * @param openState
-     * @param openTime
-     * @param closeTime
-     * @return
      */
     ResultModel alterBatch(String settingIds, Integer openState, String openTime, String closeTime);
-
-
-
 }

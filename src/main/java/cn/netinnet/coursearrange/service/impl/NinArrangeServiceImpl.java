@@ -438,7 +438,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 //查询如果为空，则为必修班级
                 longs.remove(0);
                 //根据班级获取教学班id列表
-                longs = ninTeachClassMapper.getTeachClassIdList(classId);
+                longs = ninTeachClassMapper.getBatchTeachClassIdList(new ArrayList<Long>(){{add(classId);}});
                 info = ninArrangeMapper.getInfo(null, longs, null);
             }
         } else if (studentId != null) {
@@ -457,7 +457,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             //获取学生的行政班id
             NinStudent ninStudent = ninStudentMapper.selectById(studentId);
             //根据行政班id获取教学班id列表
-            List<Long> teachClassIdList = ninTeachClassMapper.getTeachClassIdList(ninStudent.getClassId());
+            List<Long> teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(new ArrayList<Long>(){{add(ninStudent.getClassId());}});
             if (classIdList.size() == 0) {
                 classIdList = null;
             }

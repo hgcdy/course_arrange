@@ -101,7 +101,4 @@ public class LoginController {
         String token = JWTUtil.sign(userInfo);
         return ResultModel.ok(token);
     }
-
-
-
 }

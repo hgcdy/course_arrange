@@ -17,14 +17,8 @@ import java.util.List;
  */
 @Mapper
 public interface NinTeacherCourseMapper extends BaseMapper<NinTeacherCourse> {
-
     /**
      * 查询
-     * @param teacherId
-     * @return
      */
     List<ContactCourseBo> getSelectList(Long teacherId);
-
-
-
 }

@@ -17,25 +17,12 @@ import java.util.List;
  */
 @Mapper
 public interface NinTeachClassMapper extends BaseMapper<NinTeachClass> {
-
     /**
      * 批量添加教学班记录
-     * @param ninTeachClassList
      */
     void addBatch(@Param("list") List<NinTeachClass> ninTeachClassList);
-
     /**
-     * 根据班级id获取
-     * @param classId
-     * @return
-     */
-    List<Long> getTeachClassIdList(@Param("classId") Long classId);
-
-    /**
-     * 根据班级id列表获取
-     * @param classIdList
-     * @return
+     * 根据班级id列表获取教学班id列表
      */
     List<Long> getBatchTeachClassIdList(@Param("list") List<Long> classIdList);
-
 }

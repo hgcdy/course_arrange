@@ -15,28 +15,16 @@ import java.util.List;
  * @since 2022-09-08
  */
 public interface INinCareerCourseService extends IService<NinCareerCourse> {
-
     /**
      * 条件查询
-     * @param careerId
-     * @return
      */
     List<ContactCourseBo> getSelectList(Long careerId);
-
     /**
      * 批量添加课程
-     * @param careerIdList
-     * @param courseIdList
      */
     void addBatchCourse(List<Long> careerIdList, List<Long> courseIdList);
-
     /**
      * 根据id删除
-     * @param id
-     * @return
      */
     int delCareerCourse(Long id);
-
-
-
 }

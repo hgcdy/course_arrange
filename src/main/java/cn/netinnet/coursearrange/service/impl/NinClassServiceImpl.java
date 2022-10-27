@@ -131,7 +131,6 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
         }
     }
 
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delById(Long id) {
