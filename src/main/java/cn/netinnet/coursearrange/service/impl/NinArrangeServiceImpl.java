@@ -7,10 +7,10 @@ import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinArrangeService;
+import cn.netinnet.coursearrange.util.CnUtil;
 import cn.netinnet.coursearrange.util.ExcelUtils;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
-import cn.netinnet.coursearrange.util.CnUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -438,7 +438,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 //查询如果为空，则为必修班级
                 longs.remove(0);
                 //根据班级获取教学班id列表
-                longs = ninTeachClassMapper.getBatchTeachClassIdList(new ArrayList<Long>(){{add(classId);}});
+                longs = ninTeachClassMapper.getBatchTeachClassIdList(new ArrayList<Long>() {{
+                    add(classId);
+                }});
                 info = ninArrangeMapper.getInfo(null, longs, null);
             }
         } else if (studentId != null) {
@@ -457,7 +459,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             //获取学生的行政班id
             NinStudent ninStudent = ninStudentMapper.selectById(studentId);
             //根据行政班id获取教学班id列表
-            List<Long> teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(new ArrayList<Long>(){{add(ninStudent.getClassId());}});
+            List<Long> teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(new ArrayList<Long>() {{
+                add(ninStudent.getClassId());
+            }});
             if (classIdList.size() == 0) {
                 classIdList = null;
             }
@@ -481,10 +485,10 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     continue;
                 }
                 //count在开始结束范围内
-                if ((Integer) bo.getEndTime() < count) {
+                if (bo.getEndTime() < count) {
                     continue;
                 }
-                if ((Integer) bo.getStartTime() > count) {
+                if (bo.getStartTime() > count) {
                     continue;
                 }
 
@@ -687,7 +691,10 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
 
         PageHelper.startPage(page, size);
-        List<ArrangeBo> list = ninArrangeMapper.getSelectList(bo).stream().map(i -> {
+        List<ArrangeBo> list = ninArrangeMapper.getSelectList(bo);
+        PageInfo<ArrangeBo> pageInfo = new PageInfo<>(list);
+
+        pageInfo.getList().stream().forEach(i -> {
             if (i.getWeek() != null) {
                 i.setCnWeek(CnUtil.cnWeek(i.getWeek()));
             }
@@ -700,9 +707,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             if (i.getWeekly() != null) {
                 i.setCnWeekly(CnUtil.cnWeekly(i.getWeekly()));
             }
-            return i;
-        }).collect(Collectors.toList());
-        PageInfo<ArrangeBo> pageInfo = new PageInfo<>(list);
+        });
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("list", pageInfo.getList());
@@ -821,19 +826,22 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
     @Override
-    public void exportCourseForm(String type, Long id, HttpServletRequest request, HttpServletResponse response) {
+    public void exportCourseForm(String type, Long id, Integer count, HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> info = null;
         String name = null;
+        if (!(count > 0 && count <= 20)) {
+            count = null;
+        }
         //根据type和id获取排课记录列表和id代表的角色名称
         if (type.equals("class")) {
             name = ninClassMapper.selectById(id).getClassName();
-            info = getInfo(id, null, null, null);
+            info = getInfo(id, null, null, count);
         } else if (type.equals("teacher")) {
-            name  = ninTeacherMapper.selectById(id).getTeacherName();
-            info = getInfo(null, id, null, null);
+            name = ninTeacherMapper.selectById(id).getTeacherName();
+            info = getInfo(null, id, null, count);
         } else if (type.equals("student")) {
             name = ninStudentMapper.selectById(id).getStudentName();
-            info = getInfo(null, null, id, null);
+            info = getInfo(null, null, id, count);
         }
         int len = 8;
         //表头名称，值代表的变量名
@@ -852,14 +860,20 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             jsonObject.put("pitchNum", CnUtil.cnPitchNum(i + 1));
             array.add(jsonObject);
         }
-        for (Map.Entry<String, String> map: info.entrySet()) {
+        for (Map.Entry<String, String> map : info.entrySet()) {
             String[] split = map.getKey().split("");
             int i = Integer.valueOf(split[0]).intValue();
             int j = Integer.valueOf(split[1]).intValue();
             ((JSONObject) array.get(j - 1)).put("" + i, map.getValue());
         }
 
-        String fileName = name + "-课程表.xls";
+        String fileName;
+        if (count != null) {
+            fileName = name + "-第" + CnUtil.cnNum(count) + "周课程表.xls";
+        } else {
+            fileName = name + "-学期课程表.xls";
+        }
+
         response.setContentType("application/octet-stream");
         response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
         try {

@@ -57,16 +57,18 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size, NinCourse ninCourse) {
         PageHelper.startPage(page, size);
-        List<CourseBo> list = ninCourseMapper.getSelectList(ninCourse).stream().map(i -> {
+        List<CourseBo> list = ninCourseMapper.getSelectList(ninCourse);
+        PageInfo<CourseBo> pageInfo = new PageInfo<>(list);
+
+        pageInfo.getList().stream().forEach(i -> {
             if (i.getMust() != null) {
                 i.setCnMust(CnUtil.cnMust(i.getMust()));
             }
             if (i.getHouseType() != null) {
                 i.setCnHouseType(CnUtil.cnHouse(i.getHouseType()));
             }
-            return i;
-        }).collect(Collectors.toList());
-        PageInfo<CourseBo> pageInfo = new PageInfo<>(list);
+        });
+
         HashMap<String, Object> map = new HashMap<>();
         map.put("list", pageInfo.getList());
         map.put("total", pageInfo.getTotal());

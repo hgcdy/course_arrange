@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.mapper;
 import cn.netinnet.coursearrange.entity.NinCareer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public interface NinCareerMapper extends BaseMapper<NinCareer> {
     /**
      * 获取专业列表
      */
-    List<NinCareer> getNinCareerList(String college);
+    List<NinCareer> getNinCareerList(@Param("college") String college);
     /**
      * 获取学院列表
      */
@@ -27,9 +28,9 @@ public interface NinCareerMapper extends BaseMapper<NinCareer> {
     /**
      * 该班级数量+1
      */
-    void addClassNum(Long id);
+    void addClassNum(@Param("id") Long id);
     /**
      * 该班级数量+1
      */
-    void subClassNum(Long id);
+    void subClassNum(@Param("id") Long id);
 }

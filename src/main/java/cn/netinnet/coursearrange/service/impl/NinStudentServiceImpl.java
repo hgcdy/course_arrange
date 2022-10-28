@@ -126,13 +126,14 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delById(Long id) {
+        NinStudent ninStudent = ninStudentMapper.selectById(id);
         int i = ninStudentMapper.deleteById(id);
         //删除学生-课程表记录
         ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
             setStudentId(id);
         }}));
         //班级人数-1
-        ninClassMapper.subPeopleNum(id);
+        ninClassMapper.subPeopleNum(ninStudent.getClassId());
         return i;
     }
 

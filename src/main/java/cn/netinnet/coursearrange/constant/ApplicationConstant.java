@@ -19,6 +19,7 @@ public class ApplicationConstant {
     public static String TYPE_ADMIN = "admin";
     public static String TYPE_TEACHER = "teacher";
     public static String TYPE_STUDENT = "student";
+    public static String TYPE_CLASS = "class";
 
     //选修课默认的时间  {4,3} -> 周四第三节课
     public static int[][] TASK_COURSE_TIME = {{4, 3}, {4, 4}, {5, 3}, {5, 4}};
@@ -30,8 +31,6 @@ public class ApplicationConstant {
     public static int STUDENT_COURSE_NUM = 2;
     //一天的课程数
     public static int DAY_PITCH_NUM = 5;
-
-
 
 
     @Value("${project.admin.name}")

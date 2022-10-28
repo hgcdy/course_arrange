@@ -39,10 +39,12 @@ public interface NinArrangeMapper extends BaseMapper<NinArrange> {
     /**
      * 删除教师选课时的置空
      */
-    void updateNullById(Long id);
+    void updateNullById(@Param("id") Long id);
     /**
      * 判断是否可以插入 返回数大于0即不可插入
      * @param weekly 第几周（sql里表示0每周，1-单周，2-双周）
      */
-    Integer getArrangeVerify(@Param("list") List<Long> classIdList, Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId);
+    Integer getArrangeVerify(@Param("list") List<Long> classIdList, @Param("weekly") Integer weekly,
+                             @Param("week") Integer week, @Param("pitchNum") Integer pitchNum,
+                             @Param("houseId") Long houseId, @Param("teacherId") Long teacherId);
 }

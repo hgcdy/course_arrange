@@ -6,6 +6,7 @@ import cn.netinnet.coursearrange.mapper.NinClassMapper;
 import cn.netinnet.coursearrange.mapper.NinCourseMapper;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
+import cn.netinnet.coursearrange.util.CnUtil;
 import cn.netinnet.coursearrange.util.MD5;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.junit.jupiter.api.Test;
@@ -31,12 +32,9 @@ class CourseArrangeApplicationTests {
 
     @Test
     void contextLoads() {
-
-        List<NinClass> ninClasses = ninClassMapper.selectList(new QueryWrapper<>());
-        ArrayList<NinClass> ninClasses1 = new ArrayList<>();
-        ninClasses1.addAll(ninClasses);
-        ninClasses1.remove(0);
-        System.out.println("");
+        for (int i = 0; i <= 100; i++) {
+            System.out.println(CnUtil.cnNum(i));
+        }
 
 
 

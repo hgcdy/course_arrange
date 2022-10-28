@@ -134,7 +134,7 @@ td {
 }
 
 
-#input1, #week, #pitchNum{
+#input1, #week, #pitchNum, #count{
     height: 100%;
     border-left: 0px;
     border-top: 0px;

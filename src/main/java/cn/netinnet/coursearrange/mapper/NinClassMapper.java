@@ -23,7 +23,9 @@ public interface NinClassMapper extends BaseMapper<NinClass> {
     /**
      * 条件查询列表
      */
-    List<ClassBo> getSelectList(@Param("college") String college, @Param("careerId") Long careerId, @Param("className") String className);
+    List<ClassBo> getSelectList(@Param("college") String college,
+                                @Param("careerId") Long careerId,
+                                @Param("className") String className);
     /**
      * 根据班级id列表批量给课程数量+1
      */
@@ -47,11 +49,14 @@ public interface NinClassMapper extends BaseMapper<NinClass> {
     /**
      * 根据条件获取班级列表
      */
-    List<ClassBo> getClassList(@Param("college") String college, @Param("careerId") Long careerId);
+    List<ClassBo> getClassList(@Param("college") String college,
+                               @Param("careerId") Long careerId);
     /**
-     * 批量人数-1
+     * 批量修改班级的课程记录
+     * @param list 减少时，courseNum为负
+     * [{careerId:xx,courseNum:1},{careerId:xx,courseNum:-1}]
      */
-    int subBatchPeopleNum(List<NinClass> ninClassList);
+    int alterBatchPeopleNum(@Param("list") List<Map<String, Object>> list);
     /**
      * 批量修改班级的课程记录
      * @param list 减少时，courseNum为负

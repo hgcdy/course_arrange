@@ -114,13 +114,7 @@
         WHERE id = #{id}
     </update>
 
-    <update id="subBatchPeopleNum">
-        UPDATE nin_class
-        SET people_num = #{peopleNum}
-        WHERE id = #{id}
-    </update>
-
-
+    <!--批量修改班级的课程数量-->
     <update id="alterBatchCourseNum" parameterType="java.util.List">
         UPDATE nin_class
         SET course_num = CASE
@@ -134,6 +128,25 @@
             (
             <foreach collection="list" index="index" item="item"  separator=",">
                 #{item.careerId}
+            </foreach>
+            )
+        </if>
+    </update>
+
+    <!--批量修改班级的人数-->
+    <update id="alterBatchPeopleNum">
+        UPDATE nin_class
+        SET people_num = CASE
+        id
+        <if test="list != null">
+            <foreach collection="list" index="index" item="item" >
+                WHEN #{item.classId} THEN people_num  + #{item.peopleNum}
+            </foreach>
+            END
+            WHERE id IN
+            (
+            <foreach collection="list" index="index" item="item"  separator=",">
+                #{item.classId}
             </foreach>
             )
         </if>

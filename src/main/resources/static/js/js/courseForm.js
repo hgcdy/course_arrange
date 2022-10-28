@@ -1,6 +1,8 @@
 require(['../config'], function () {
     require(['jquery', 'util', 'bootstrapBundle'], function ($, util) {
 
+        var count = null;
+
         if (classId == "null") {
             classId = null;
         }
@@ -11,34 +13,45 @@ require(['../config'], function () {
             teacherId = null;
         }
 
+        query();
 
-        $.ajax({
-            url: "/nin-arrange/getInfo",
-            dataType: "json",
-            type: "post",
-            data: {
-                weekly: null,
-                classId: classId,
-                studentId: studentId,
-                teacherId: teacherId
-            },
-            success: function (data) {
-                if (data.code == 200) {
-                    var map = data.data;
-                    if ($.isEmptyObject(map)){
-                        $("td").text("暂无安排");
-                    } else {
-                        for (const mapKey in map) {
-                            var strings = mapKey.split("");
-                            var i = strings[0];
-                            var j = strings[1];
-                            $($($("tr")[j]).find("*")[i]).text(map[mapKey]);
+        //周次下拉
+        $("#count").change(function(){
+            count = $(this).val();
+            query();
+        });
+
+        function query() {
+            $("td").text("");
+            $.ajax({
+                url: "/nin-arrange/getInfo",
+                dataType: "json",
+                type: "post",
+                data: {
+                    count: count,
+                    classId: classId,
+                    studentId: studentId,
+                    teacherId: teacherId
+                },
+                success: function (data) {
+                    if (data.code == 200) {
+                        var map = data.data;
+                        if ($.isEmptyObject(map)){
+                            $("td").text("暂无安排");
+                        } else {
+                            for (const mapKey in map) {
+                                var strings = mapKey.split("");
+                                var i = strings[0];
+                                var j = strings[1];
+                                $($($("tr")[j]).find("*")[i]).text(map[mapKey]);
+                            }
                         }
                     }
-                }
 
-            }
-        })
+                }
+            })
+        }
+
 
 
         //选课
@@ -80,7 +93,7 @@ require(['../config'], function () {
             }
             var xhr = new XMLHttpRequest();
             xhr.withCredentials = true;//为请求添加Cookie
-            xhr.open('GET', '/exportCourseForm?id='+ typeId + "&type=" + type, true); // 也可以使用POST方式，根据接口
+            xhr.open('GET', '/exportCourseForm?id='+ typeId + "&type=" + type + "&count=" + count, true); // 也可以使用POST方式，根据接口
             // xhr.send("id=" + typeId + "&type=" + type );
             // xhr.setRequestHeader('content-type', 'application/json');
             xhr.setRequestHeader('content-type', 'application/octet-stream');

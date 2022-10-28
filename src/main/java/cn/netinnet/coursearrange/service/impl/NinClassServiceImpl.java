@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -40,8 +37,6 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     private NinCareerMapper ninCareerMapper;
     @Autowired
     private NinCourseMapper ninCourseMapper;
-    @Autowired
-    private NinCareerCourseMapper ninCareerCourseMapper;
     @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
     @Autowired
@@ -137,7 +132,6 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
         NinClass ninClass = ninClassMapper.selectById(id);
         if (ninClass.getCareerId() == 0) {
             //选修班级
-
             //删除学生选课信息
             ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
                 setTakeClassId(ninClass.getId());
@@ -181,18 +175,17 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
                 List<NinStudentCourse> ninStudentCourseList = ninStudentCourseMapper.getStudentIds(studentIds);
                 if (ninStudentCourseList != null && ninStudentCourseList.size() != 0) {
                     Map<Long, Long> map = ninStudentCourseList.stream().map(NinStudentCourse::getTakeClassId).collect(Collectors.groupingBy(i -> i, Collectors.counting()));
-                    //获取选修班级id列表
-                    ArrayList<Long> takeClassIds = new ArrayList<>(map.size());
+
+                    ArrayList<Map<String, Object>> maps = new ArrayList<>();
                     for (Map.Entry<Long, Long> m : map.entrySet()) {
-                        takeClassIds.add(m.getKey());
+                        HashMap<String, Object> map1 = new HashMap<>();
+                        map1.put("classId", m.getKey());
+                        map1.put("peopleNum", 0 - (m.getValue().intValue()));
+                        maps.add(map1);
                     }
-                    //获取班级列表
-                    List<NinClass> ninClasses = ninClassMapper.selectBatchIds(takeClassIds);
-                    for (NinClass clazz : ninClasses) {
-                        clazz.setPeopleNum(clazz.getPeopleNum() - map.get(clazz.getId()).intValue());
-                    }
+
                     //3.批量选修班人数减掉
-                    ninClassMapper.subBatchPeopleNum(ninClasses);
+                    ninClassMapper.alterBatchPeopleNum(maps);
                     //4.批量删除学生选课表
                     ninStudentCourseMapper.delBatchStudentId(studentIds);
                 }

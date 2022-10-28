@@ -49,107 +49,36 @@ public class CnUtil {
     }
 
     public static String cnWeek(int week) {
-        String str;
-        switch (week) {
-            case 1:
-                str = "星期一";
-                break;
-            case 2:
-                str = "星期二";
-                break;
-            case 3:
-                str = "星期三";
-                break;
-            case 4:
-                str = "星期四";
-                break;
-            case 5:
-                str = "星期五";
-                break;
-            case 6:
-                str = "星期六";
-                break;
-            case 7:
-                str = "星期日";
-                break;
-            default:
-                str = "";
+        if (week > 0 && week < 7) {
+            return "星期" + cnNum(week);
+        } else if (week == 7) {
+            return "星期日";
+        } else {
+            return "";
         }
-        return str;
     }
 
     public static String cnPitchNum(int pitchNum) {
-        String str;
-        switch (pitchNum) {
-            case 1:
-                str = "第一节";
-                break;
-            case 2:
-                str = "第二节";
-                break;
-            case 3:
-                str = "第三节";
-                break;
-            case 4:
-                str = "第四节";
-                break;
-            case 5:
-                str = "第五节";
-                break;
-            case 6:
-                str = "第六节";
-                break;
-            case 7:
-                str = "第七节";
-                break;
-            case 8:
-                str = "第八节";
-                break;
-            case 9:
-                str = "第九节";
-                break;
-            default:
-                str = "";
+        if (pitchNum > 0){
+            return "第" + cnNum(pitchNum) + "节";
+        } else {
+            return "";
         }
-        return str;
+
     }
 
     public static String cnNum(int num) {
-        String str;
-        switch (num) {
-            case 0:
-                str = "零";
-                break;
-            case 1:
-                str = "一";
-                break;
-            case 2:
-                str = "二";
-                break;
-            case 3:
-                str = "三";
-                break;
-            case 4:
-                str = "四";
-                break;
-            case 5:
-                str = "五";
-                break;
-            case 6:
-                str = "六";
-                break;
-            case 7:
-                str = "七";
-                break;
-            case 8:
-                str = "八";
-                break;
-            case 9:
-                str = "九";
-                break;
-            default:
-                str = "";
+        String[] arr = {"零","一","二","三","四","五","六","七","八","九","十"};
+        if (num >= 0 && num <= 10) {
+            return arr[num];
+        } else if (num > 10 && num < 20) {
+            return "十" + arr[num - 10];
+        } else if (num < 100 && num % 10 == 0) {
+            return arr[num / 10] + "十";
+        } else if (num < 100) {
+            return arr[num / 10] + "十" + arr[num % 10];
+        } else {
+            return "";
         }
-        return str;
     }
 }

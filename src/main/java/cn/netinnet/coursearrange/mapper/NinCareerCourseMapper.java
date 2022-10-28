@@ -21,7 +21,7 @@ public interface NinCareerCourseMapper extends BaseMapper<NinCareerCourse> {
     /**
      * 条件查询
      */
-    List<ContactCourseBo> getSelectList(Long careerId);
+    List<ContactCourseBo> getSelectList(@Param("careerId") Long careerId);
     /**
      * 多专业多课程批量添加
      */

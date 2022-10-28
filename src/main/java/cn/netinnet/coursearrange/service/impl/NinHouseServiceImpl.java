@@ -38,13 +38,15 @@ public class NinHouseServiceImpl extends ServiceImpl<NinHouseMapper, NinHouse> i
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size,  String houseName, Integer houseType, Integer firstSeat, Integer tailSeat) {
         PageHelper.startPage(page, size);
-        List<HouseBo> list = ninHouseMapper.getSelectList(houseName, houseType, firstSeat, tailSeat).stream().map(i -> {
+        List<HouseBo> list = ninHouseMapper.getSelectList(houseName, houseType, firstSeat, tailSeat);
+        PageInfo<HouseBo> pageInfo = new PageInfo<>(list);
+
+        pageInfo.getList().stream().forEach(i -> {
             if (i.getHouseType() != null) {
                 i.setCnHouseType(CnUtil.cnHouse(i.getHouseType()));
             }
-            return i;
-        }).collect(Collectors.toList());
-        PageInfo<HouseBo> pageInfo = new PageInfo<>(list);
+        });
+
         HashMap<String, Object> map = new HashMap<>();
         map.put("list", pageInfo.getList());
         map.put("total", pageInfo.getTotal());

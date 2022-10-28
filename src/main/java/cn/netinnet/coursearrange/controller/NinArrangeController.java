@@ -151,17 +151,9 @@ public class NinArrangeController {
         return ResultModel.ok(leisure);
     }
 
-
     /**
      * 添加排课记录（教室申请）
-     * @param weekly
-     * @param week
-     * @param pitchNum
-     * @param houseId
-     * @param teacherId
-     * @param courseId
-     * @param classIdList
-     * @return
+     * @param weekly 第几周
      */
     @PostMapping("/nin-arrange/addArrange")
     public ResultModel addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList) {
@@ -172,24 +164,16 @@ public class NinArrangeController {
         return ResultModel.error(412, "操作失败");
     }
 
-
     /**
      * 条件分页查询
-     * @param bo
-     * @param page
-     * @param size
-     * @return
      */
     @PostMapping("/nin-arrange/getPageSelectList")
     public ResultModel getPageSelectList(ArrangeBo bo, Integer page, Integer size) {
         return ResultModel.ok(ninArrangeService.getPageSelectList(bo, page, size));
     }
 
-
     /**
      * 根据id删除排课记录
-     * @param id
-     * @return
      */
     @PostMapping("nin-arrange/delArrange")
     public ResultModel delArrange(Long id) {
@@ -200,11 +184,8 @@ public class NinArrangeController {
         return ResultModel.error(412, "删除失败");
     }
 
-
     /**
      * 编辑排课记录（未使用）
-     * @param arrange
-     * @return
      */
     @PostMapping("nin-arrange/alterArrange")
     public ResultModel alterArrange(NinArrange arrange) {
@@ -218,8 +199,6 @@ public class NinArrangeController {
 
     /**
      * 根据课程id获取可选教师教师及时间（未使用）
-     *
-     * @return
      */
     @PostMapping("nin-arrange/getTeacherHouseORTime")
     public ResultModel getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId) {
@@ -227,21 +206,17 @@ public class NinArrangeController {
         return ResultModel.ok(arrangeBo);
     }
 
-
     /**
      * 导出课程表
-     * @param type
-     * @param id
-     * @param request
-     * @param response
-     * @return
-     * @throws ParseException
+     * @param type 用户类型
+     * @param id id
      */
     @GetMapping("/exportCourseForm")
-    public ResultModel exportCourseForm(String type, Long id, HttpServletRequest request, HttpServletResponse response) throws ParseException {
-        ninArrangeService.exportCourseForm(type, id, request, response);
+    public ResultModel exportCourseForm(String type, Long id, Integer count,  HttpServletRequest request, HttpServletResponse response) throws ParseException {
+        ninArrangeService.exportCourseForm(type, id, count, request, response);
         return ResultModel.ok();
     }
+
 
     //跳转班级课程页面
     @GetMapping("nin-class-course")
