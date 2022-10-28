@@ -19,12 +19,13 @@ public class ApplicationConstant {
     public static String TYPE_ADMIN = "admin";
     public static String TYPE_TEACHER = "teacher";
     public static String TYPE_STUDENT = "student";
-    public static String TYPE_CLASS = "class";
 
     //选修课默认的时间  {4,3} -> 周四第三节课
     public static int[][] TASK_COURSE_TIME = {{4, 3}, {4, 4}, {5, 3}, {5, 4}};
     //班级人数上限
     public static int CLASS_PEOPLE_NUM = 50;
+    //专业(班级)选课数量上限
+    public static int CAREER_COURSE_NUM = 10;
     //教师选课数量上限
     public static int TEACHER_COURSE_NUM = 2;
     //学生选课数量上限

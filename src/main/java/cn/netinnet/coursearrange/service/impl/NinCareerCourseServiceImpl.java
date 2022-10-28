@@ -1,6 +1,8 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.bo.ClassBo;
 import cn.netinnet.coursearrange.bo.ContactCourseBo;
+import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinCareerCourse;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinCareerCourseMapper;
@@ -84,6 +86,12 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
         if (ninCareerCourseArrayList != null && ninCareerCourseArrayList.size() != 0) {
             //插入新的专业选课记录
             ninCareerCourseMapper.addBatchCourse(ninCareerCourseArrayList);
+
+            //查询专业的课程数量
+            List<ClassBo> bos = ninCareerCourseMapper.getCourseNum().stream().filter(i -> i.getCourseNum() > ApplicationConstant.CAREER_COURSE_NUM).collect(Collectors.toList());
+            if (bos != null && bos.size() > 0) {
+                throw new ServiceException(412, bos.get(0).getCareerName() + "专业的课程数量将超出上限");
+            }
 
             //班级课程数量
             Map<Long, List<NinCareerCourse>> collect1 = ninCareerCourseArrayList.stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId));

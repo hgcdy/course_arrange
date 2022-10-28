@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.mapper;
 
+import cn.netinnet.coursearrange.bo.ClassBo;
 import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.entity.NinCareerCourse;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -7,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -26,4 +28,8 @@ public interface NinCareerCourseMapper extends BaseMapper<NinCareerCourse> {
      * 多专业多课程批量添加
      */
     void addBatchCourse(@Param("list") List<NinCareerCourse> ninCareerCourseList);
+    /**
+     * 返回每个专业的课程数量
+     */
+    List<ClassBo> getCourseNum();
 }

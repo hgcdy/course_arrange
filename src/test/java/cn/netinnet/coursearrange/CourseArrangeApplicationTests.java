@@ -32,9 +32,6 @@ class CourseArrangeApplicationTests {
 
     @Test
     void contextLoads() {
-        for (int i = 0; i <= 100; i++) {
-            System.out.println(CnUtil.cnNum(i));
-        }
 
 
 
