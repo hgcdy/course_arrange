@@ -8,6 +8,7 @@ import cn.netinnet.coursearrange.mapper.NinCareerMapper;
 import cn.netinnet.coursearrange.service.INinCareerService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -37,24 +38,22 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
 
     @Override
     public List<String> getCollegeList() {
-        return ninCareerMapper.getCollegeList();
+        List<NinCareer> ninCareers = ninCareerMapper.selectList(new QueryWrapper<NinCareer>().select("distinct college").eq("id", -1));
+        return ninCareers.stream().map(NinCareer::getCollege).collect(Collectors.toList());
     }
 
     @Override
     public List<NinCareer> getNinCareerList(String college) {
-        if (StringUtils.isBlank(college)) {
+        if (StringUtils.isBlank(college))
             college = null;
-        }
         List<NinCareer> ninCareerList = ninCareerMapper.getNinCareerList(college);
         return ninCareerList;
     }
 
     @Override
     public Map<String, List<NinCareer>> getCollegeCareerList() {
-        List<NinCareer> ninCareers = ninCareerMapper.selectList(new QueryWrapper<>());
         //根据学院分组
-        Map<String, List<NinCareer>> collect = ninCareers.stream().filter(ninCareer -> !ninCareer.getCollege().equals("选修")).collect(Collectors.groupingBy(NinCareer::getCollege));
-        return collect;
+        return list().stream().filter(ninCareer -> !ninCareer.getCollege().equals("选修")).collect(Collectors.groupingBy(NinCareer::getCollege));
     }
 
     @Override

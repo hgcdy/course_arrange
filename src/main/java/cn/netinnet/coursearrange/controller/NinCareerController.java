@@ -58,8 +58,6 @@ public class NinCareerController {
         return ResultModel.ok(ninCareerService.getCollegeCareerList());
     }
 
-
-
     /**
      * 增加专业
      * @param ninCareer

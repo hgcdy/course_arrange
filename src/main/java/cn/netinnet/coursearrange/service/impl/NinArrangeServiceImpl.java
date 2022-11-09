@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.function.Function;
@@ -877,7 +878,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         response.setContentType("application/octet-stream");
         response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
         try {
-            response.setHeader("Content-Disposition", URLEncoder.encode(fileName, "UTF-8"));
+            response.setHeader("Content-Disposition", /*"attachment;filename=" + */URLEncoder.encode(fileName, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -889,6 +890,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
 
     }
+
+
 
     /**
      * maxNum分成minNum份，使每份之间的差最小
@@ -983,5 +986,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
         return true;
     }
+
 }
 

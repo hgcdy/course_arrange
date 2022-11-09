@@ -30,13 +30,6 @@
         </if>
     </select>
 
-    <!--获取学院列表-->
-    <select id="getCollegeList" resultType="java.lang.String">
-        SELECT DISTINCT college
-        FROM nin_career
-        WHERE id != -1
-    </select>
-
     <!-- 班级数量+1 -->
     <update id="addClassNum">
          UPDATE nin_career

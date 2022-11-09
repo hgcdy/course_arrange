@@ -22,10 +22,6 @@ public interface NinCareerMapper extends BaseMapper<NinCareer> {
      */
     List<NinCareer> getNinCareerList(@Param("college") String college);
     /**
-     * 获取学院列表
-     */
-    List<String> getCollegeList();
-    /**
      * 该班级数量+1
      */
     void addClassNum(@Param("id") Long id);

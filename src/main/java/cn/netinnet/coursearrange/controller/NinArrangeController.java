@@ -217,7 +217,6 @@ public class NinArrangeController {
         return ResultModel.ok();
     }
 
-
     //跳转班级课程页面
     @GetMapping("nin-class-course")
     public ModelAndView gotoView(Long classId) {
