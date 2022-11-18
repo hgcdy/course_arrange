@@ -54,7 +54,7 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
             setTeacherId(ninTeacherCourse.getTeacherId());
         }}));
         if (ninTeacherCourses.size() >= ApplicationConstant.TEACHER_COURSE_NUM){
-            throw new ServiceException(412, "该教师选课户数已经上限");
+            throw new ServiceException(412, "该教师选课数量已经上限");
         }
 
         for (NinTeacherCourse ntc: ninTeacherCourses) {

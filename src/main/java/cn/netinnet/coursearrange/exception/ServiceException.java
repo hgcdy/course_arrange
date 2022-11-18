@@ -1,5 +1,7 @@
 package cn.netinnet.coursearrange.exception;
 
+import cn.netinnet.coursearrange.enums.ResultEnum;
+
 public class ServiceException extends RuntimeException {
 
     /**
@@ -15,6 +17,11 @@ public class ServiceException extends RuntimeException {
     public ServiceException(int code, String msg) {
         this.code = code;
         this.msg = msg;
+    }
+
+    public ServiceException(ResultEnum resultEnum) {
+        this.code = resultEnum.getCode();
+        this.msg = resultEnum.getMsg();
     }
 
     public ServiceException(Exception e, String errorInfo) {

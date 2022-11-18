@@ -4,6 +4,7 @@ import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.enums.ResultEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinArrangeService;
@@ -763,13 +764,13 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         if (teacherId == null && houseId == null) {
             //返回教师列表和教室列表
             if (courseId == null) {
-                throw new ServiceException(412, "课程id不为空");
+                throw new ServiceException(ResultEnum.formatMsg(ResultEnum.NOT_NULL, "课程id"));
             }
             List<NinTeacherCourse> ninTeacherCourses = ninTeacherCourseMapper.selectList(new QueryWrapper<>(new NinTeacherCourse() {{
                 setCourseId(courseId);
             }}));
             if (ninTeacherCourses == null || ninTeacherCourses.size() == 0) {
-                throw new ServiceException(412, "没有教师选择该课程");
+                throw new ServiceException(ResultEnum.formatMsg(ResultEnum.NOT_SELECT, "教师", "这门课程"));
             }
             Map<Long, String> teacherMap = ninTeacherMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.toMap(NinTeacher::getId, NinTeacher::getTeacherName));
 

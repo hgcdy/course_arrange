@@ -9,8 +9,6 @@ import java.io.Serializable;
 
 /**
  * ajax返回数据模型
- *
- * @author Zhenglm
  */
 public class ResultModel implements Serializable {
 
