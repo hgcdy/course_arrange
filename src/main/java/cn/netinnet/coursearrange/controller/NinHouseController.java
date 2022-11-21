@@ -2,7 +2,8 @@ package cn.netinnet.coursearrange.controller;
 
 
 import cn.netinnet.coursearrange.entity.NinHouse;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.enums.ResultEnum;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.service.INinHouseService;
 import com.sun.istack.internal.NotNull;
 import org.apache.shiro.authz.annotation.Logical;
@@ -47,11 +48,11 @@ public class NinHouseController {
      * @return
      */
     @PostMapping("/getPageSelectList")
-    public ResultModel getSelectPageList(@RequestParam(value = "page", defaultValue = "1") Integer page,
+    public ResultEntry getSelectPageList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          String houseName, Integer houseType, Integer firstSeat, Integer tailSeat){
         Map<String, Object> map = ninHouseService.getPageSelectList(page, size, houseName, houseType, firstSeat, tailSeat);
-        return ResultModel.ok(map);
+        return ResultEntry.ok(map);
     }
 
     /**
@@ -60,12 +61,12 @@ public class NinHouseController {
      * @return
      */
     @PostMapping("/addHouse")
-    public ResultModel addHouse(NinHouse ninHouse){
+    public ResultEntry addHouse(NinHouse ninHouse){
         int i = ninHouseService.addSingle(ninHouse);
         if (i > 0){
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "新增失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -74,12 +75,12 @@ public class NinHouseController {
      * @return
      */
     @PostMapping("/delHouse")
-    public ResultModel delHouse(Long id){
+    public ResultEntry delHouse(Long id){
         int i = ninHouseService.delById(id);
         if (i > 0){
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "删除失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -88,12 +89,12 @@ public class NinHouseController {
      * @return
      */
     @PostMapping("/alterHouse")
-    public ResultModel alterHouse(NinHouse ninHouse){
+    public ResultEntry alterHouse(NinHouse ninHouse){
         int i = ninHouseService.alterSingle(ninHouse);
         if (i > 0){
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "修改失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -102,8 +103,8 @@ public class NinHouseController {
      * @return
      */
     @GetMapping("/getHouseById")
-    public ResultModel getHouseById(@NotNull Long id){
-        return ResultModel.ok(ninHouseService.getHouseById(id));
+    public ResultEntry getHouseById(@NotNull Long id){
+        return ResultEntry.ok(ninHouseService.getHouseById(id));
     }
 
 }

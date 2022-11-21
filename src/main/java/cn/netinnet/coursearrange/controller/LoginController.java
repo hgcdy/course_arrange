@@ -5,7 +5,8 @@ import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.UserInfo;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.enums.ResultEnum;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.service.INinStudentService;
 import cn.netinnet.coursearrange.service.INinTeacherService;
 import com.sun.istack.internal.NotNull;
@@ -59,11 +60,11 @@ public class LoginController {
 
     //管理员登录
     @PostMapping("/login/admin")
-    public ResultModel adminLogin(@NotNull String code, @NotNull String password) {
+    public ResultEntry adminLogin(@NotNull String code, @NotNull String password) {
         if (!code.equals(ApplicationConstant.ADMIN_CODE)) {
-            return ResultModel.error(412, "账号错误");
+            return ResultEntry.error(ResultEnum.CODE_NOT_EXIST);
         } else if (!password.equals(ApplicationConstant.ADMIN_PASSWORD)) {
-            return ResultModel.error(412, "密码错误");
+            return ResultEntry.error(ResultEnum.PW_ERROR);
         }
         UserInfo userInfo = new UserInfo();
         userInfo.setUserId(1L);
@@ -71,12 +72,12 @@ public class LoginController {
         userInfo.setUserName(ApplicationConstant.ADMIN_NAME);
         userInfo.setUserType(ApplicationConstant.TYPE_ADMIN);
         String token = JWTUtil.sign(userInfo);
-        return ResultModel.ok(token);
+        return ResultEntry.ok(token);
     }
 
     //学生登录
     @PostMapping("/login/student")
-    public ResultModel studentLogin(@NotNull String code, @NotNull String password) {
+    public ResultEntry studentLogin(@NotNull String code, @NotNull String password) {
         NinStudent ninStudent = ninStudentService.verify(code, password);
 
         UserInfo userInfo = new UserInfo();
@@ -85,12 +86,12 @@ public class LoginController {
         userInfo.setUserName(ninStudent.getStudentName());
         userInfo.setUserType(ApplicationConstant.TYPE_STUDENT);
         String token = JWTUtil.sign(userInfo);
-        return ResultModel.ok(token);
+        return ResultEntry.ok(token);
     }
 
     //教师登录
     @PostMapping("/login/teacher")
-    public ResultModel teacherLogin(@NotNull String code, @NotNull String password) {
+    public ResultEntry teacherLogin(@NotNull String code, @NotNull String password) {
 
         NinTeacher ninTeacher = ninTeacherService.verify(code, password);
         UserInfo userInfo = new UserInfo();
@@ -99,6 +100,6 @@ public class LoginController {
         userInfo.setUserName(ninTeacher.getTeacherName());
         userInfo.setUserType(ApplicationConstant.TYPE_TEACHER);
         String token = JWTUtil.sign(userInfo);
-        return ResultModel.ok(token);
+        return ResultEntry.ok(token);
     }
 }

@@ -2,6 +2,7 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.entity.NinHouse;
+import cn.netinnet.coursearrange.enums.ResultEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinHouseMapper;
 import cn.netinnet.coursearrange.service.INinHouseService;
@@ -59,7 +60,7 @@ public class NinHouseServiceImpl extends ServiceImpl<NinHouseMapper, NinHouse> i
                 new QueryWrapper<NinHouse>()
                         .eq("house_name", ninHouse.getHouseName()));
         if (integer > 0) {
-            throw new ServiceException(412, "重名");
+            throw new ServiceException(ResultEnum.DUPLICATION_NAME);
         }
         ninHouse.setId(IDUtil.getID());
         ninHouse.setCreateUserId(UserUtil.getUserInfo().getUserId());
@@ -79,7 +80,7 @@ public class NinHouseServiceImpl extends ServiceImpl<NinHouseMapper, NinHouse> i
                         .eq("house_name", ninHouse.getHouseName())
                         .ne("id", ninHouse.getId()));
         if (integer > 0) {
-            throw new ServiceException(412, "重名");
+            throw new ServiceException(ResultEnum.DUPLICATION_NAME);
         }
         ninHouse.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninHouseMapper.updateById(ninHouse);

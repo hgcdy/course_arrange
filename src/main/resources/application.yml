@@ -4,7 +4,11 @@ spring:
     username: root
     password: 1234
     url: jdbc:mysql://127.0.0.1:3306/course_arrange_v3
-
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    timeout: 3600
+    database: 6
   thymeleaf:
     cache: false
     prefix: classpath:/templates/

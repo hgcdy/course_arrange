@@ -818,10 +818,10 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
         }
         if (teacherId == null && houseId != null) {
-            throw new ServiceException(412, "请选择教师");
+            throw new ServiceException(ResultEnum.formatMsg(ResultEnum.SELECT, "教师"));
         }
         if (teacherId != null && houseId == null) {
-            throw new ServiceException(412, "请选择教室");
+            throw new ServiceException(ResultEnum.formatMsg(ResultEnum.SELECT, "教室"));
         }
 
         return list;

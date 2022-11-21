@@ -2,6 +2,7 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.entity.NinCareer;
 import cn.netinnet.coursearrange.entity.NinCareerCourse;
+import cn.netinnet.coursearrange.enums.ResultEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinCareerCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinCareerMapper;
@@ -67,7 +68,7 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
         if (integer == 0) {
             return ninCareerMapper.insert(ninCareer);
         } else {
-            throw new ServiceException(412, "重名");
+            throw new ServiceException(ResultEnum.DUPLICATION_NAME);
         }
     }
 

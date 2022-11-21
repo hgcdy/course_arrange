@@ -7,9 +7,10 @@ import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.enums.ResultEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.mapper.NinStudentMapper;
-import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.util.UserUtil;
 import org.apache.shiro.authz.annotation.Logical;
@@ -70,7 +71,7 @@ public class NinArrangeController {
             modelAndView.addObject("studentId", String.valueOf(userInfo.getUserId()));
             return modelAndView;
         }
-        throw new ServiceException(412, "接口错误");
+        throw new ServiceException(ResultEnum.POET_ERROR);
     }
     @GetMapping("/class-course-form")
     public ModelAndView classCourseForm() {
@@ -81,7 +82,7 @@ public class NinArrangeController {
             modelAndView.addObject("classId", String.valueOf(ninStudent.getClassId()));
             return modelAndView;
         }
-        throw new ServiceException(412, "接口错误");
+        throw new ServiceException(ResultEnum.POET_ERROR);
     }
     @GetMapping("/tea-course-form")
     public ModelAndView teaCourseForm() {
@@ -91,7 +92,7 @@ public class NinArrangeController {
             modelAndView.addObject("teacherId", String.valueOf(userInfo.getUserId()));
             return modelAndView;
         }
-        throw new ServiceException(412, "接口错误");
+        throw new ServiceException(ResultEnum.POET_ERROR);
     }
 
     //跳转教室申请页面
@@ -109,18 +110,18 @@ public class NinArrangeController {
      * 自动排课
      */
     @GetMapping("/nin-arrange/arrange")
-    public ResultModel arrange() {
+    public ResultEntry arrange() {
         ninArrangeService.arrange();
-        return ResultModel.ok();
+        return ResultEntry.ok();
     }
 
     /**
      * 清空记录
      */
     @GetMapping("nin-arrange/empty")
-    public ResultModel empty() {
+    public ResultEntry empty() {
         ninArrangeService.empty();
-        return ResultModel.ok();
+        return ResultEntry.ok();
     }
 
     /**
@@ -128,9 +129,9 @@ public class NinArrangeController {
      * @return 12（星期一第二节课） -> 课程信息（String）
      */
     @PostMapping("/nin-arrange/getInfo")
-    public ResultModel getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
+    public ResultEntry getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
         Map<String, String> info = ninArrangeService.getInfo(classId, teacherId, studentId, count);
-        return ResultModel.ok(info);
+        return ResultEntry.ok(info);
     }
 
     /**
@@ -146,9 +147,9 @@ public class NinArrangeController {
      * @return
      */
     @PostMapping("/nin-arrange/getLeisure")
-    public ResultModel getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly) {
+    public ResultEntry getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly) {
         Map<String, List<HouseBo>> leisure = ninArrangeService.getLeisure(teacherId, classIds, houseId, houseType, seatMin, seatMax, weekly);
-        return ResultModel.ok(leisure);
+        return ResultEntry.ok(leisure);
     }
 
     /**
@@ -156,44 +157,44 @@ public class NinArrangeController {
      * @param weekly 第几周
      */
     @PostMapping("/nin-arrange/addArrange")
-    public ResultModel addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList) {
+    public ResultEntry addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList) {
         int i = ninArrangeService.addArrange(weekly, week, pitchNum, houseId, teacherId, courseId, classIdList);
         if (i > 0) {
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "操作失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
      * 条件分页查询
      */
     @PostMapping("/nin-arrange/getPageSelectList")
-    public ResultModel getPageSelectList(ArrangeBo bo, Integer page, Integer size) {
-        return ResultModel.ok(ninArrangeService.getPageSelectList(bo, page, size));
+    public ResultEntry getPageSelectList(ArrangeBo bo, Integer page, Integer size) {
+        return ResultEntry.ok(ninArrangeService.getPageSelectList(bo, page, size));
     }
 
     /**
      * 根据id删除排课记录
      */
     @PostMapping("nin-arrange/delArrange")
-    public ResultModel delArrange(Long id) {
+    public ResultEntry delArrange(Long id) {
         int i = ninArrangeService.delArrange(id);
         if (i > 0) {
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "删除失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
      * 编辑排课记录（未使用）
      */
     @PostMapping("nin-arrange/alterArrange")
-    public ResultModel alterArrange(NinArrange arrange) {
+    public ResultEntry alterArrange(NinArrange arrange) {
         int i = ninArrangeService.alterArrange(arrange);
         if (i > 0) {
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "编辑失败");
+        return ResultEntry.error(412, "编辑失败");
     }
 
 
@@ -201,9 +202,9 @@ public class NinArrangeController {
      * 根据课程id获取可选教师教师及时间（未使用）
      */
     @PostMapping("nin-arrange/getTeacherHouseORTime")
-    public ResultModel getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId) {
+    public ResultEntry getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId) {
         List arrangeBo = ninArrangeService.getTeacherHouseORTime(courseId, teacherId, houseId);
-        return ResultModel.ok(arrangeBo);
+        return ResultEntry.ok(arrangeBo);
     }
 
     /**
@@ -212,9 +213,9 @@ public class NinArrangeController {
      * @param id id
      */
     @GetMapping("/exportCourseForm")
-    public ResultModel exportCourseForm(String type, Long id, Integer count,  HttpServletRequest request, HttpServletResponse response) throws ParseException {
+    public ResultEntry exportCourseForm(String type, Long id, Integer count,  HttpServletRequest request, HttpServletResponse response) throws ParseException {
         ninArrangeService.exportCourseForm(type, id, count, request, response);
-        return ResultModel.ok();
+        return ResultEntry.ok();
     }
 
     //跳转班级课程页面

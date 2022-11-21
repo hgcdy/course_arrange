@@ -4,6 +4,7 @@ import cn.netinnet.coursearrange.bo.ClassBo;
 import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinCareerCourse;
+import cn.netinnet.coursearrange.enums.ResultEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinCareerCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinClassMapper;
@@ -48,10 +49,10 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
     @Transactional(rollbackFor = Exception.class)
     public void addBatchCourse(List<Long> careerIdList, List<Long> courseIdList) {
         if (careerIdList == null || careerIdList.size() == 0) {
-            throw new ServiceException(412, "请选择专业");
+            throw new ServiceException(ResultEnum.formatMsg(ResultEnum.SELECT, "专业"));
         }
         if (courseIdList == null ||courseIdList.size() == 0) {
-            throw new ServiceException(412, "请选择课程");
+            throw new ServiceException(ResultEnum.formatMsg(ResultEnum.SELECT, "课程"));
         }
 
         //重复验证

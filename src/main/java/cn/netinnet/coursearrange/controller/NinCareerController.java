@@ -2,12 +2,11 @@ package cn.netinnet.coursearrange.controller;
 
 
 import cn.netinnet.coursearrange.entity.NinCareer;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.service.INinCareerService;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,8 +33,8 @@ public class NinCareerController {
      * @return
      */
     @PostMapping("getCollegeList")
-    public ResultModel getCollege() {
-        return ResultModel.ok(ninCareerService.getCollegeList());
+    public ResultEntry getCollege() {
+        return ResultEntry.ok(ninCareerService.getCollegeList());
     }
 
     /**
@@ -44,8 +43,8 @@ public class NinCareerController {
      * @return
      */
     @PostMapping("getCareerList")
-    public ResultModel getCareer(String college) {
-        return ResultModel.ok(ninCareerService.getNinCareerList(college));
+    public ResultEntry getCareer(String college) {
+        return ResultEntry.ok(ninCareerService.getNinCareerList(college));
     }
 
 
@@ -54,8 +53,8 @@ public class NinCareerController {
      * @return
      */
     @PostMapping("getCollegeCareerList")
-    public ResultModel getCollegeCareerList() {
-        return ResultModel.ok(ninCareerService.getCollegeCareerList());
+    public ResultEntry getCollegeCareerList() {
+        return ResultEntry.ok(ninCareerService.getCollegeCareerList());
     }
 
     /**
@@ -64,8 +63,8 @@ public class NinCareerController {
      * @return
      */
     @PostMapping("addCareer")
-    public ResultModel addCareer(NinCareer ninCareer) {
-        return ResultModel.ok(ninCareerService.addSingle(ninCareer));
+    public ResultEntry addCareer(NinCareer ninCareer) {
+        return ResultEntry.ok(ninCareerService.addSingle(ninCareer));
     }
 
     /**
@@ -74,8 +73,8 @@ public class NinCareerController {
      * @return
      */
     @PostMapping("delCareer")
-    public ResultModel delCareer(Long id) {
-        return ResultModel.ok(ninCareerService.delById(id));
+    public ResultEntry delCareer(Long id) {
+        return ResultEntry.ok(ninCareerService.delById(id));
     }
 
     /**
@@ -84,8 +83,8 @@ public class NinCareerController {
      * @return
      */
     @PostMapping("alterCareer")
-    public ResultModel alterCareer(NinCareer ninCareer) {
-        return ResultModel.ok(ninCareerService.alterSingle(ninCareer));
+    public ResultEntry alterCareer(NinCareer ninCareer) {
+        return ResultEntry.ok(ninCareerService.alterSingle(ninCareer));
     }
 
 

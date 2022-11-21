@@ -4,7 +4,8 @@ package cn.netinnet.coursearrange.controller;
 import cn.netinnet.coursearrange.bo.ClassBo;
 import cn.netinnet.coursearrange.entity.NinClass;
 import cn.netinnet.coursearrange.entity.NinCourse;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.enums.ResultEnum;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.service.INinClassService;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -51,12 +52,12 @@ public class NinClassController {
      * @return
      */
     @PostMapping("/getPageSelectList")
-    public ResultModel getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
+    public ResultEntry getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          Long careerId, String college, String className) {
         Map<String, Object> map = ninClassService.getPageSelectList(page, size, college, careerId, className);
 
-        return ResultModel.ok(map);
+        return ResultEntry.ok(map);
     }
 
     /**
@@ -66,9 +67,9 @@ public class NinClassController {
      * @return
      */
     @PostMapping("/getCourseList")
-    public ResultModel getCourseList(Long classId) {
+    public ResultEntry getCourseList(Long classId) {
         List<NinCourse> list = ninClassService.getCourseList(classId);
-        return ResultModel.ok(list);
+        return ResultEntry.ok(list);
     }
 
     /**
@@ -78,8 +79,8 @@ public class NinClassController {
      * @return
      */
     @PostMapping("/getClassList")
-    public ResultModel getClassList(String college, Long careerId) {
-        return ResultModel.ok(ninClassService.getClassList(college, careerId));
+    public ResultEntry getClassList(String college, Long careerId) {
+        return ResultEntry.ok(ninClassService.getClassList(college, careerId));
     }
 
 
@@ -89,9 +90,9 @@ public class NinClassController {
      * @return
      */
     @GetMapping("collegeCareerClassList")
-    public ResultModel collegeCareerClassList() {
+    public ResultEntry collegeCareerClassList() {
         Map<String, Map<String, List<ClassBo>>> stringMapMap = ninClassService.collegeCareerClassList();
-        return ResultModel.ok(stringMapMap);
+        return ResultEntry.ok(stringMapMap);
     }
 
     /**
@@ -102,12 +103,12 @@ public class NinClassController {
      */
     @PostMapping("/addClass")
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
-    public ResultModel addClass(NinClass ninClass) {
+    public ResultEntry addClass(NinClass ninClass) {
         int i = ninClassService.addSingle(ninClass);
         if (i > 0) {
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "新增失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -118,12 +119,12 @@ public class NinClassController {
      */
     @PostMapping("/delClass")
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
-    public ResultModel delClass(Long id) {
+    public ResultEntry delClass(Long id) {
         int i = ninClassService.delById(id);
         if (i > 0) {
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "删除失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -134,12 +135,12 @@ public class NinClassController {
      */
     @PostMapping("/delClassStudent")
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
-    public ResultModel delClassStudent(Long id) {
+    public ResultEntry delClassStudent(Long id) {
         int i = ninClassService.delBatchStudent(id);
         if (i > 0) {
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "删除失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -150,11 +151,11 @@ public class NinClassController {
      */
     @PostMapping("/alterClass")
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
-    public ResultModel alterClass(NinClass ninClass) {
+    public ResultEntry alterClass(NinClass ninClass) {
         int i = ninClassService.alterSingle(ninClass);
         if (i > 0) {
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "修改失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 }

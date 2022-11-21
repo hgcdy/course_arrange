@@ -2,7 +2,8 @@ package cn.netinnet.coursearrange.controller;
 
 
 import cn.netinnet.coursearrange.entity.NinStudent;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.enums.ResultEnum;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.service.INinStudentService;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -43,11 +44,11 @@ public class NinStudentController {
      * @return
      */
     @PostMapping("/getPageSelectList")
-    public ResultModel getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
+    public ResultEntry getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          String college, Long careerId, Long classId, String studentName){
         Map<String, Object> map = ninStudentService.getPageSelectList(page, size, college, careerId, classId, studentName);
-        return ResultModel.ok(map);
+        return ResultEntry.ok(map);
     }
 
 
@@ -57,12 +58,12 @@ public class NinStudentController {
      * @return
      */
     @PostMapping("/addStudent")
-    public ResultModel addStudent(NinStudent ninStudent){
+    public ResultEntry addStudent(NinStudent ninStudent){
         int i = ninStudentService.addSingle(ninStudent);
         if (i > 0){
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "新增失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -71,12 +72,12 @@ public class NinStudentController {
      * @return
      */
     @PostMapping("/delStudent")
-    public ResultModel delStudent(Long id){
+    public ResultEntry delStudent(Long id){
         int i = ninStudentService.delById(id);
         if (i > 0){
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "删除失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
 
@@ -87,12 +88,12 @@ public class NinStudentController {
      * @return
      */
     @PostMapping("alterStudent")
-    public ResultModel alterStudent(NinStudent ninStudent){
+    public ResultEntry alterStudent(NinStudent ninStudent){
         int i = ninStudentService.alterSingle(ninStudent);
         if (i > 0){
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "修改失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -101,13 +102,13 @@ public class NinStudentController {
      * @return
      */
     @GetMapping("/getStudentById")
-    public ResultModel getStudentById(Long id){
-        return ResultModel.ok(ninStudentService.getStudentById(id));
+    public ResultEntry getStudentById(Long id){
+        return ResultEntry.ok(ninStudentService.getStudentById(id));
     }
 
     @RequiresRoles(value = {"student"}, logical = Logical.OR)
     @GetMapping("/getStuUserInfo")
-    public ResultModel getStuUserInfo(Long id) {
+    public ResultEntry getStuUserInfo(Long id) {
         return null;
     }
 
@@ -120,7 +121,7 @@ public class NinStudentController {
      */
     @RequiresRoles(value = {"student"}, logical = Logical.OR)
     @PostMapping("/alterStuPassword")
-    public ResultModel alterPassword(String code, String oldPassword, String newPassword){
+    public ResultEntry alterPassword(String code, String oldPassword, String newPassword){
         return ninStudentService.alterPassword(code, oldPassword, newPassword);
     }
 

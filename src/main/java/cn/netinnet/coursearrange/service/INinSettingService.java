@@ -2,7 +2,7 @@ package cn.netinnet.coursearrange.service;
 
 import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.entity.NinSetting;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -23,5 +23,5 @@ public interface INinSettingService extends IService<NinSetting> {
     /**
      * 修改设置
      */
-    ResultModel alterBatch(String settingIds, Integer openState, String openTime, String closeTime);
+    ResultEntry alterBatch(String settingIds, Integer openState, String openTime, String closeTime);
 }

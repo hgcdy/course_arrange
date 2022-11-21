@@ -2,7 +2,7 @@ package cn.netinnet.coursearrange.controller;
 
 
 import cn.netinnet.coursearrange.bo.SettingBo;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.service.INinSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,9 +43,9 @@ public class NinSettingController {
      * @return
      */
     @GetMapping("/getSelectList")
-    public ResultModel getSelectList(String userType, String state, String courseName) {
+    public ResultEntry getSelectList(String userType, String state, String courseName) {
         List<SettingBo> list = ninSettingService.getSelectList(userType, state , courseName);
-        return ResultModel.ok(list);
+        return ResultEntry.ok(list);
     }
 
     /**
@@ -57,7 +57,7 @@ public class NinSettingController {
      * @return
      */
     @PostMapping("/alterBatch")
-    public ResultModel alterBatch(String settingIds, Integer openState, String openTime, String closeTime) {
+    public ResultEntry alterBatch(String settingIds, Integer openState, String openTime, String closeTime) {
             return ninSettingService.alterBatch(settingIds, openState, openTime, closeTime);
     }
 

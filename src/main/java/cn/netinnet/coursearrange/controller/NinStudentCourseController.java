@@ -4,7 +4,8 @@ package cn.netinnet.coursearrange.controller;
 import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.entity.NinStudentCourse;
 import cn.netinnet.coursearrange.entity.UserInfo;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.enums.ResultEnum;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
 import cn.netinnet.coursearrange.util.UserUtil;
 import org.apache.shiro.authz.annotation.Logical;
@@ -58,9 +59,9 @@ public class NinStudentCourseController {
      * @return
      */
     @PostMapping("/getSelectList")
-    public ResultModel getSelectList(Long studentId){
+    public ResultEntry getSelectList(Long studentId){
         List<List<ContactCourseBo>> selectList = ninStudentCourseService.getSelectList(studentId);
-        return ResultModel.ok(selectList);
+        return ResultEntry.ok(selectList);
     }
 
     /**
@@ -69,12 +70,12 @@ public class NinStudentCourseController {
      * @return
      */
     @PostMapping("/addStudentCourse")
-    public ResultModel addStudent(NinStudentCourse ninStudentCourse){
+    public ResultEntry addStudent(NinStudentCourse ninStudentCourse){
         int i = ninStudentCourseService.addSingle(ninStudentCourse);
         if (i > 0) {
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "新增失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -83,12 +84,12 @@ public class NinStudentCourseController {
      * @return
      */
     @PostMapping("/delStudentCourse")
-    public ResultModel delStudent(Long id){
+    public ResultEntry delStudent(Long id){
         int i = ninStudentCourseService.delSingle(id);
         if (i > 0){
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "删除失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
 

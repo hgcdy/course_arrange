@@ -3,8 +3,8 @@ package cn.netinnet.coursearrange.service.impl;
 import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.exception.ServiceException;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.mapper.NinSettingMapper;
-import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinSettingService;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -63,7 +63,7 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
     }
 
     @Override
-    public ResultModel alterBatch(String settingIds, Integer openState, String openTime, String closeTime) {
+    public ResultEntry alterBatch(String settingIds, Integer openState, String openTime, String closeTime) {
         List<Long> settingIdList = JSON.parseArray(settingIds, Long.class);
 
         if (settingIdList != null && settingIdList.size() != 0) {
@@ -75,7 +75,7 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
             } else {
                 ninSettingMapper.alterBatch(settingIdList, openState, null, null);
             }
-            return ResultModel.ok();
+            return ResultEntry.ok();
         } else {
             throw new ServiceException(412, "请选择课程！");
         }

@@ -4,7 +4,8 @@ package cn.netinnet.coursearrange.controller;
 import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import cn.netinnet.coursearrange.entity.UserInfo;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.enums.ResultEnum;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.service.INinTeacherCourseService;
 import cn.netinnet.coursearrange.util.UserUtil;
 import org.apache.shiro.authz.annotation.Logical;
@@ -54,9 +55,9 @@ public class NinTeacherCourseController {
      * @return
      */
     @PostMapping("/getSelectList")
-    public ResultModel getSelectList(Long teacherId){
+    public ResultEntry getSelectList(Long teacherId){
         List<ContactCourseBo> list = ninTeacherCourseService.getSelectList(teacherId);
-        return ResultModel.ok(list);
+        return ResultEntry.ok(list);
     }
 
     /**
@@ -65,12 +66,12 @@ public class NinTeacherCourseController {
      * @return
      */
     @PostMapping("/addTeacherCourse")
-    public ResultModel addTeacherCourse(NinTeacherCourse ninTeacherCourse){
+    public ResultEntry addTeacherCourse(NinTeacherCourse ninTeacherCourse){
         int i = ninTeacherCourseService.addSingle(ninTeacherCourse);
         if (i > 0){
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "新增失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -79,12 +80,12 @@ public class NinTeacherCourseController {
      * @return
      */
     @PostMapping("/delTeacherCourse")
-    public ResultModel delTeacherCourse(Long id){
+    public ResultEntry delTeacherCourse(Long id){
         int i = ninTeacherCourseService.delById(id);
         if (i > 0){
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "删除失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
 }

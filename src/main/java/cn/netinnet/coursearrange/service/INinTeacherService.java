@@ -1,7 +1,7 @@
 package cn.netinnet.coursearrange.service;
 
 import cn.netinnet.coursearrange.entity.NinTeacher;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -47,5 +47,5 @@ public interface INinTeacherService extends IService<NinTeacher> {
     /**
      * 学生修改密码
      */
-    ResultModel alterPassword(String code, String oldPassword, String newPassword);
+    ResultEntry alterPassword(String code, String oldPassword, String newPassword);
 }

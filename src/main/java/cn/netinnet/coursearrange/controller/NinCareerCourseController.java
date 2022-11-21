@@ -2,7 +2,8 @@ package cn.netinnet.coursearrange.controller;
 
 
 import cn.netinnet.coursearrange.bo.ContactCourseBo;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.enums.ResultEnum;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.service.INinCareerCourseService;
 import com.alibaba.fastjson.JSON;
 import org.apache.shiro.authz.annotation.Logical;
@@ -36,9 +37,9 @@ public class NinCareerCourseController {
      * @return
      */
     @PostMapping("/getSelectList")
-    public ResultModel getSelectList(Long careerId) {
+    public ResultEntry getSelectList(Long careerId) {
         List<ContactCourseBo> list = ninCareerCourseService.getSelectList(careerId);
-        return ResultModel.ok(list);
+        return ResultEntry.ok(list);
     }
 
     /**
@@ -48,11 +49,11 @@ public class NinCareerCourseController {
      * @return
      */
     @PostMapping("/addBatchCourse")
-    public ResultModel addBatchCourse(String careerIds, String courseIds) {
+    public ResultEntry addBatchCourse(String careerIds, String courseIds) {
         List<Long> careerIdList = JSON.parseArray(careerIds, Long.class);
         List<Long> courseIdList = JSON.parseArray(courseIds, Long.class);
         ninCareerCourseService.addBatchCourse(careerIdList, courseIdList);
-        return ResultModel.ok();
+        return ResultEntry.ok();
     }
 
     /**
@@ -61,12 +62,12 @@ public class NinCareerCourseController {
      * @return
      */
     @PostMapping("/delCareerCourse")
-    public ResultModel delCareerCourse(Long id) {
+    public ResultEntry delCareerCourse(Long id) {
         int i = ninCareerCourseService.delCareerCourse(id);
         if (i > 0) {
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "删除失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
 

@@ -2,7 +2,8 @@ package cn.netinnet.coursearrange.controller;
 
 
 import cn.netinnet.coursearrange.entity.NinCourse;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.enums.ResultEnum;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.service.INinCourseService;
 import com.sun.istack.internal.NotNull;
 import org.apache.shiro.authz.annotation.Logical;
@@ -44,17 +45,17 @@ public class NinCourseController {
      * @return
      */
     @PostMapping("/getPageSelectList")
-    public ResultModel getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
+    public ResultEntry getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          NinCourse ninCourse){
         Map<String, Object> map = ninCourseService.getPageSelectList(page, size, ninCourse);
-        return ResultModel.ok(map);
+        return ResultEntry.ok(map);
     }
 
     //根据id获取课程信息
     @PostMapping("/getCourseById")
-    public ResultModel getCourseById(Long id){
-        return ResultModel.ok(ninCourseService.getCourseById(id));
+    public ResultEntry getCourseById(Long id){
+        return ResultEntry.ok(ninCourseService.getCourseById(id));
     }
 
     /**
@@ -64,12 +65,12 @@ public class NinCourseController {
      */
     @PostMapping("/addCourse")
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
-    public ResultModel addCourse(NinCourse ninCourse){
+    public ResultEntry addCourse(NinCourse ninCourse){
         int i = ninCourseService.addSingle(ninCourse);
         if (i > 0){
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "新增失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -79,12 +80,12 @@ public class NinCourseController {
      */
     @PostMapping("/delCourse")
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
-    public ResultModel delCourse(@NotNull Long id){
+    public ResultEntry delCourse(@NotNull Long id){
         int i = ninCourseService.delById(id);
         if (i > 0){
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "删除失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -94,12 +95,12 @@ public class NinCourseController {
      */
     @PostMapping("/alterCourse")
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
-    public ResultModel alterCourse(NinCourse ninCourse){
+    public ResultEntry alterCourse(NinCourse ninCourse){
         int i = ninCourseService.alterSingle(ninCourse);
         if (i > 0){
-            return ResultModel.ok();
+            return ResultEntry.ok();
         }
-        return ResultModel.error(412, "修改失败");
+        return ResultEntry.error(ResultEnum.FAILURE);
     }
 
     /**
@@ -109,9 +110,9 @@ public class NinCourseController {
      * @return
      */
     @PostMapping("/getSelectCourseList")
-    public ResultModel getSelectCourseList(Integer sign){
+    public ResultEntry getSelectCourseList(Integer sign){
         List<NinCourse> courseList = ninCourseService.getSelectCourseList(sign);
-        return ResultModel.ok(courseList);
+        return ResultEntry.ok(courseList);
     }
 
     /**
@@ -122,8 +123,8 @@ public class NinCourseController {
      * @return
      */
     @PostMapping("/getSelectApplyList")
-    public ResultModel getSelectApplyList(Long teacherId, Long houseId, String classIdList) {
-        return ResultModel.ok(ninCourseService.getSelectApplyList(teacherId, houseId, classIdList));
+    public ResultEntry getSelectApplyList(Long teacherId, Long houseId, String classIdList) {
+        return ResultEntry.ok(ninCourseService.getSelectApplyList(teacherId, houseId, classIdList));
     }
 
 }

@@ -7,6 +7,9 @@ public enum ResultEnum {
 
     CODE_NOT_EXIST(-1001, "账号不存在"),
     PW_ERROR(-1002, "密码错误"),
+    POET_ERROR(-1003, "接口错误"),
+    PW_VERIFY(-1004, "密码需大于六位"),
+    DUPLICATION_NAME(-1005, "重名"),
 
     EXIST(-2001, "【%s】已经存在"),
     NOT_EXIST(-2002, "【%s】不存在"),
@@ -14,6 +17,8 @@ public enum ResultEnum {
     COURSE_LIMIT(-2004, "【%s】所选课程已达上限"),
     NOT_NULL(-2005, "【%s】不为空"),
     NOT_SELECT(-2006, "没有【%s】选择【%s】"),
+    SELECT(-2007, "请选择【%s】"),
+
 
 
     ;

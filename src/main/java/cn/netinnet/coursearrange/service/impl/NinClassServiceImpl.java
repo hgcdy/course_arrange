@@ -2,6 +2,7 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.ClassBo;
 import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.enums.ResultEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinClassService;
@@ -85,7 +86,7 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
                 new QueryWrapper<NinClass>()
                         .eq("class_name", ninClass.getClassName()));
         if (integer > 0) {
-            throw new ServiceException(412, "重名");
+            throw new ServiceException(ResultEnum.DUPLICATION_NAME);
         }
 
         ninCareerMapper.addClassNum(ninClass.getCareerId());
@@ -209,7 +210,7 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
                         .eq("class_name", ninClass.getClassName())
                         .ne("id", ninClass.getId()));
         if (integer > 0) {
-            throw new ServiceException(412, "重名");
+            throw new ServiceException(ResultEnum.DUPLICATION_NAME);
         }
         NinClass ninClass1 = ninClassMapper.selectById(ninClass.getId());
         //如果修改所属的专业

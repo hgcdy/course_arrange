@@ -4,6 +4,7 @@ import cn.netinnet.coursearrange.bo.CourseBo;
 import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.enums.ResultEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinCourseService;
@@ -89,7 +90,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
                 new QueryWrapper<NinCourse>()
                         .eq("course_name", ninCourse.getCourseName()));
         if (integer > 0) {
-            throw new ServiceException(412, "重名");
+            throw new ServiceException(ResultEnum.DUPLICATION_NAME);
         }
 
         if (ninCourse.getHouseType() != 3 && ninCourse.getHouseType() != 4) {
@@ -225,7 +226,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
                         .eq("course_name", ninCourse.getCourseName())
                         .ne("id", ninCourse.getId()));
         if (i > 0) {
-            throw new ServiceException(412, "重名");
+            throw new ServiceException(ResultEnum.DUPLICATION_NAME);
         }
 
         ninCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());

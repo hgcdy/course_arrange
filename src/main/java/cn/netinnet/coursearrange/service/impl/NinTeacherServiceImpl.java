@@ -6,10 +6,11 @@ import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.enums.ResultEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
+import cn.netinnet.coursearrange.global.ResultEntry;
 import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
-import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinTeacherService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.MD5;
@@ -61,7 +62,7 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
                 new QueryWrapper<NinTeacher>()
                         .eq("teacher_code", ninTeacher.getTeacherCode()));
         if (integer > 0) {
-            throw new ServiceException(412, "重名");
+            throw new ServiceException(ResultEnum.DUPLICATION_NAME);
         }
 
         String password = ninTeacher.getTeacherPassword();
@@ -100,7 +101,7 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
                         .ne("id", ninTeacher.getId())
                         .eq("teacher_code", ninTeacher.getTeacherCode()));
         if (integer > 0) {
-            throw new ServiceException(412, "重名");
+            throw new ServiceException(ResultEnum.DUPLICATION_NAME);
         }
 
         String password = ninTeacher.getTeacherPassword();
@@ -153,7 +154,7 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
     }
 
     @Override
-    public ResultModel alterPassword(String code, String oldPassword, String newPassword) {
+    public ResultEntry alterPassword(String code, String oldPassword, String newPassword) {
         if (newPassword != null) {
             if (newPassword.length() < 6) {
                 throw new ServiceException(412, "密码需大于六位数");
@@ -169,12 +170,12 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
             if (ninTeacher.getTeacherPassword().equals(MD5.getMD5Encode(oldPassword))) {
                 ninTeacher.setTeacherPassword(MD5.getMD5Encode(newPassword));
                 ninTeacherMapper.updateById(ninTeacher);
-                return ResultModel.ok();
+                return ResultEntry.ok();
             } else {
-                return ResultModel.error(412, "旧密码验证错误");
+                return ResultEntry.error(412, "旧密码验证错误");
             }
         } else {
-            return ResultModel.error(412, "新密码和旧密码一致");
+            return ResultEntry.error(412, "新密码和旧密码一致");
         }
     }
 }
