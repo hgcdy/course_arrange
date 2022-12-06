@@ -6,9 +6,6 @@
     <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{css/index.css}" rel="stylesheet">
     <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/index},defer=true"></script>
-    <script th:inline="javascript">
-
-    </script>
 </head>
 <body>
 <div>
@@ -18,7 +15,8 @@
             <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                 <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
                     <h3>课程自动排课系统</h3>
-                </a>
+                </a>&nbsp;&nbsp;
+                <h5 id="navigation"></h5>
                 <div class="text-end" style="position: absolute;right: 0">
                     <button type="button" class="btn btn-outline-light me-5">logout</button>
                 </div>
@@ -99,7 +97,6 @@
         <iframe th:src="@{welcome}" frameborder="0"></iframe>
     </div>
 </div>
-
 
 
 <!--提示-->

@@ -6,6 +6,7 @@ require(['../config'], function () {
         var teacherName = null;
         const STR = ["teacherName", "teacherCode", "courseName"];
         query();
+        util.navPath("/用户管理/教师管理");
 
         //查询按钮
         $("#query").click(function () {

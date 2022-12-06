@@ -9,6 +9,7 @@ require(['../config'], function () {
         var tailSeat = null;
         const STR = ["houseName", "cnHouseType", "seat"];
         query();
+        util.navPath('/资源管理/教室管理');
 
         //下拉框
         $("#dropupHouseTypeButton").next("ul").find("a").click(function () {

@@ -5,10 +5,10 @@ require(['../config'], function () {
         var total = 0;
         var college = null;
         var careerId = null;
-        var careerName = null;
         var className = null;
         const STR = ["college", "careerName", "className", "peopleNum", "courseNum"];
         query();
+        util.navPath('/用户管理/班级管理');
 
 
         //学院选择下拉框

@@ -9,7 +9,7 @@ require(['../config'], function () {
         var classId = null;
         const STR = ["college", "careerName", "className", "studentName", "studentCode"];
         query();
-
+        util.navPath("/用户管理/学生管理");
 
         //学院选择下拉框
         $("#dropupCollegeButton").click(function () {

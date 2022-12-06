@@ -8,6 +8,7 @@ require(['../config'], function () {
         var must = null;
         const STR = ["courseName", "cnHouseType", "cnMust", "courseTime", "startTime", "endTime", "weekTime", "maxClassNum"];
         query();
+        util.navPath('/资源管理/课程管理');
 
         //下拉框
         $("#dropupHouseTypeButton").next("ul").find("a").click(function () {

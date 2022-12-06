@@ -1,5 +1,12 @@
 define(function () {
 
+    var navPath = function (obj) {
+        var topWindow = $(window.parent.document);
+        var $iframe = topWindow.find('#navigation');
+        //一共两种方法，你可以选择其中一种来使用
+        $iframe.text(obj);
+    }
+
     /**
      * 查询
      * @param num 编号 该页第一个的序号
@@ -155,6 +162,7 @@ define(function () {
         popup: popup,
         hint: hint,
         timeString: timeString,
-        turn: turn
+        turn: turn,
+        navPath: navPath
     };
 });

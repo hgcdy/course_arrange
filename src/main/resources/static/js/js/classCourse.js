@@ -2,6 +2,7 @@ require(['../config'], function () {
     require(['jquery', 'util', 'bootstrapBundle'], function ($, util) {
         const STR = ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime"];
         query();
+        util.navPath('/用户管理/班级管理/详情');
 
         // 获取数据
         function query() {

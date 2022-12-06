@@ -5,6 +5,7 @@ require(['../config'], function () {
         var courseName = null;
         const STR = ["courseName", "state", "openTime", "closeTime"];
         query();
+        util.navPath("/设置/选课时间设置");
 
         //状态下拉框
         $("#dropupStateTypeButton").next("ul").find("a").click(function () {
