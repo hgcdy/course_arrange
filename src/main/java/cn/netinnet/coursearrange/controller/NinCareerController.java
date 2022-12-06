@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 
 /**
@@ -28,6 +29,16 @@ public class NinCareerController {
 
     @Autowired
     private INinCareerService ninCareerService;
+
+    /**
+     * 跳转班级页面
+     * @return
+     */
+    @GetMapping("")
+    public ModelAndView gotoView() {
+        return new ModelAndView("view/careerView");
+    }
+
 
     /**
      * 获取学院名称列表

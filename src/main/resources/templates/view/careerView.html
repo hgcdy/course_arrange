@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{css/chunk.css}" rel="stylesheet">
+    <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/career},defer=true"></script>
+    <script th:inline="javascript">
+
+    </script>
+</head>
+<body>
+    <div id="chunk-main">
+        <div class="chunk-card">
+            <div class="chunk-card-head">学院</div>
+            <div class="chunk-card-body"></div>
+            <div class="chunk-card-foot">
+                <input type="text" placeholder="添加学院" >
+                <button type="button" class="btn btn-info">&nbsp;十&nbsp;</button>
+            </div>
+        </div>
+        <div class="chunk-card" style="left: 35%;">
+            <div class="chunk-card-head">专业</div>
+            <div class="chunk-card-body"></div>
+            <div class="chunk-card-foot">
+                <input type="text" placeholder="添加专业">
+                <button type="button" class="btn btn-info">&nbsp;十&nbsp;</button>
+            </div>
+        </div>
+        <div class="chunk-card" style="left: 65%">
+            <div class="chunk-card-head">班级</div>
+            <div class="chunk-card-body"></div>
+            <div class="chunk-card-foot">
+                <input type="text" placeholder="添加班级">
+                <button type="button" class="btn btn-info">&nbsp;十&nbsp;</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
