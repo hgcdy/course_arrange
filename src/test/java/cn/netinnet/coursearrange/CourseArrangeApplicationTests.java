@@ -38,11 +38,6 @@ class CourseArrangeApplicationTests {
     @Test
     void contextLoads() {
 
-        LambdaQueryWrapper<NinArrange> eq = new LambdaQueryWrapper<NinArrange>().eq(NinArrange::getCareerId, null);
-        List<NinArrange> ninArranges = ninArrangeMapper.selectList(eq);
-
-        System.out.println("");
-
 
     }
 
