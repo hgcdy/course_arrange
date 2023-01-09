@@ -30,8 +30,8 @@ require(['../config'], function () {
                         },
                         success: function (data) {
                             if (data.code == 200) {
-                                var newToken = data.data;
-                                util.setToken(newToken);
+                                var token = data.data;
+                                util.setToken(token);
                                 window.location.href = "index?type="+ val +"&token=" + newToken;
                             } else {
                                 util.hint(data.msg);

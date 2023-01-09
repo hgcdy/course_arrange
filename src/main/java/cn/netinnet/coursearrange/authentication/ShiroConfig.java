@@ -1,6 +1,5 @@
 package cn.netinnet.coursearrange.authentication;
 
-
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;

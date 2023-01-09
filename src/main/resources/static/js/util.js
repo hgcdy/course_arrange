@@ -177,5 +177,5 @@ define(function () {
         navPath: navPath,
         setToken: setToken,
         getToken: getToken
-    };
+};
 });
