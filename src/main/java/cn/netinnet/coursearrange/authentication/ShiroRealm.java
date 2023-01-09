@@ -48,7 +48,7 @@ public class ShiroRealm extends AuthorizingRealm {
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
 
-        System.out.println("-----开始身份验证-----");
+//        System.out.println("-----开始身份验证-----");
         //从token中获取信息
         String token = ((JWTToken) authenticationToken).getToken();
 
@@ -68,7 +68,7 @@ public class ShiroRealm extends AuthorizingRealm {
         }
 
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(userInfo, token, getName());
-        System.out.println("-----身份验证成功-----");
+//        System.out.println("-----身份验证成功-----");
 
         return info;
     }

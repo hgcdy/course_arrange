@@ -53,7 +53,7 @@ public class JWTUtil {
             Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
             JWTVerifier verifier = JWT.require(algorithm).build();
             verifier.verify(token);
-            System.out.println("token校验成功");
+//            System.out.println("token校验成功");
             return true;
         } catch (TokenExpiredException e) {
             System.out.println("token已过期");

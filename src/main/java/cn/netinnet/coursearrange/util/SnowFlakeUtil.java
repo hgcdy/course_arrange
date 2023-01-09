@@ -97,7 +97,7 @@ public class SnowFlakeUtil {
      */
     public synchronized long nextId() {
         long currentTimeMillis = System.currentTimeMillis();
-        System.out.println(currentTimeMillis);
+//        System.out.println(currentTimeMillis);
         // 当前时间小于上一次生成id使用的时间，可能出现服务器时钟回拨问题
         if (currentTimeMillis < lastTimeMillis) {
             throw new RuntimeException(

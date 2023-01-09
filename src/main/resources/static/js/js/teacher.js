@@ -1,5 +1,10 @@
 require(['../config'], function () {
     require(['jquery', 'util', 'bootstrapBundle'], function ($, util) {
+        $.ajaxSetup({ //发送请求前触发
+            beforeSend: function (xhr) { //可以设置自定义标头
+                xhr.setRequestHeader('token', util.getToken());
+            }
+        });
         var page = 1;
         var size = 10;
         var total = 0;

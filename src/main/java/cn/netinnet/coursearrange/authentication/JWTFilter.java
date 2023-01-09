@@ -12,6 +12,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Component
 public class JWTFilter extends BasicHttpAuthenticationFilter {
@@ -22,9 +24,14 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
 
         //获取token
-        HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
-        String jwtToken = JWTUtil.getToken(httpServletRequest);
-        String url = httpServletRequest.getServletPath();
+        HttpServletRequest httpRequest = WebUtils.toHttp(request);
+        String jwtToken = JWTUtil.getToken(httpRequest);
+
+        String url = httpRequest.getServletPath();//url
+        String host = httpRequest.getRemoteHost();//主机名
+        int port = httpRequest.getRemotePort();//端口号
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");//时间格式化
+        System.out.println(sdf.format(new Date()) + " 请求用户: " + host + ":" + port + " 请求接口: " + url);
         if (jwtToken != null) {
             try {
                 executeLogin(request, response);

@@ -1,5 +1,16 @@
 define(function () {
 
+    var setToken = function (token) {
+        // 保存
+        sessionStorage.setItem('token', token);
+    }
+
+    var getToken = function () {
+        // 获取
+        var token = sessionStorage.getItem('token');
+        return token;
+    }
+
     var navPath = function (obj) {
         var topWindow = $(window.parent.document);
         var $iframe = topWindow.find('#navigation');
@@ -163,6 +174,8 @@ define(function () {
         hint: hint,
         timeString: timeString,
         turn: turn,
-        navPath: navPath
+        navPath: navPath,
+        setToken: setToken,
+        getToken: getToken
     };
 });

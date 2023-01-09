@@ -30,7 +30,9 @@ require(['../config'], function () {
                         },
                         success: function (data) {
                             if (data.code == 200) {
-                                window.location.href = "index?type="+ val +"&token=" + data.data;
+                                var newToken = data.data;
+                                util.setToken(newToken);
+                                window.location.href = "index?type="+ val +"&token=" + newToken;
                             } else {
                                 util.hint(data.msg);
                             }
@@ -43,9 +45,5 @@ require(['../config'], function () {
                 util.hint("请输入账号！");
             }
         };
-
-
-
-
     })
 })
