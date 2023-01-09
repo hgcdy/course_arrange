@@ -66,7 +66,7 @@ public class LoginController {
             return ResultModel.error(412, "密码错误");
         }
         UserInfo userInfo = new UserInfo();
-        userInfo.setUserId(1L);
+        userInfo.setUserId(ApplicationConstant.ADMIN_ID);
         userInfo.setUserCode(ApplicationConstant.ADMIN_CODE);
         userInfo.setUserName(ApplicationConstant.ADMIN_NAME);
         userInfo.setUserType(ApplicationConstant.TYPE_ADMIN);

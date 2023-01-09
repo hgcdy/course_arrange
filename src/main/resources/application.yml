@@ -16,14 +16,14 @@ mybatis:
 
 #项目配置
 project:
-  #管理员信息
+  #管理员信息(id,名称,账号,密码)
   admin:
-    #名称
+    id: 100000000000000000
     name: admin
-    #账号
     code: admin
-    #密码
-    password: 1234
+    password: 123456
+
+
 
 
 

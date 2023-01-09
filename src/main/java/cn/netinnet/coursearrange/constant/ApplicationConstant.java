@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @PropertySource("classpath:/application.yml")
 public class ApplicationConstant {
 
+    public static Long ADMIN_ID;
     //管理员账号
     public static String ADMIN_NAME;
     //管理员账号
@@ -33,6 +34,11 @@ public class ApplicationConstant {
     //一天的课程数
     public static int DAY_PITCH_NUM = 5;
 
+
+    @Value("${project.admin.id}")
+    public void setAdminName(Long adminId) {
+        ApplicationConstant.ADMIN_ID = adminId;
+    }
 
     @Value("${project.admin.name}")
     public void setAdminName(String adminName) {
