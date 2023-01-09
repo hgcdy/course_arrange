@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.bo;
 
+import cn.netinnet.coursearrange.entity.NinSetting;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
@@ -9,21 +10,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class SettingBo {
-
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long id;
-
-    /**
-     * 开放的课程id
-     */
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long courseId;
-
-    /**
-     * 用户类型
-     */
-    private String userType;
+public class SettingBo extends NinSetting {
 
     /**
      * 课程名称
@@ -31,20 +18,7 @@ public class SettingBo {
     private String courseName;
 
     /**
-     * 开放状态序号 0-开放，1-不开放，2-定时
+     * 开放状态（中文）
      */
-    private Integer openState;
-
     private String state;
-
-    /**
-     * 开放时间
-     */
-    private String openTime;
-
-    /**
-     * 结束时间
-     */
-    private String closeTime;
-
 }

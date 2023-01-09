@@ -1,19 +1,26 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.Task.SettingTask;
 import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.entity.NinSetting;
+import cn.netinnet.coursearrange.enums.OpenStateEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinSettingMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinSettingService;
+import cn.netinnet.coursearrange.util.QuartzManager;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 /**
  * <p>
@@ -28,56 +35,78 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
 
     @Autowired
     private NinSettingMapper ninSettingMapper;
+    @Autowired
+    private QuartzManager quartzManager;
 
 
     @Override
-    public List<SettingBo> getSelectList(String userType, String state, String courseName) {
-        List<SettingBo> result = ninSettingMapper.getSelectList(userType, courseName);
-//                .stream().map(bo -> {
-//            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//            String openTime = bo.getOpenTime();
-//            String closeTime = bo.getCloseTime();
-//            LocalDateTime dateTime = LocalDateTime.now();
-//            int i = bo.getOpenState();
-//            if (i == 0) {
-//                bo.setState("开放中");
-//            } else if (i == 1){
-//                bo.setState("未开放");
-//            } else if (i == 2) {
-//                boolean after = dateTime.isAfter(LocalDateTime.parse(openTime, dtf));
-//                boolean after1 = dateTime.isAfter(LocalDateTime.parse(closeTime, dtf));
-//                if (!after) {
-//                    bo.setState("未开放");
-//                } else if (after && !after1){
-//                    bo.setState("开放中");
-//                } else {
-//                    bo.setState("已结束");
-//                }
-//            }
-//            return bo;
-//        }).collect(Collectors.toList());
-        if (state != null && !state.equals("")) {
-            result = result.stream().filter(i -> i.getState().equals(state)).collect(Collectors.toList());
-        }
+    public List<SettingBo> getSelectList(String userType, Integer openState, String courseName) {
+        List<SettingBo> result = ninSettingMapper.getSelectList(userType, openState, courseName);
+        result.forEach(bo -> {
+            OpenStateEnum openStateEnum = OpenStateEnum.codeOfKey(bo.getOpenState());
+            bo.setState(openStateEnum.getName());
+        });
         return result;
     }
 
     @Override
-    public ResultModel alterBatch(String settingIds, Integer openState, String openTime, String closeTime) {
+    public ResultModel alterBatch(String settingIds, String openTime, String closeTime) {
         List<Long> settingIdList = JSON.parseArray(settingIds, Long.class);
 
         if (settingIdList != null && settingIdList.size() != 0) {
-            if (openState == 2) {
-                if (LocalDateTime.parse(openTime).isAfter(LocalDateTime.parse(closeTime))) {
-                    throw new ServiceException(412, "开始时间大于结束时间,请重试");
-                }
-                ninSettingMapper.alterBatch(settingIdList, openState, LocalDateTime.parse(openTime), LocalDateTime.parse(closeTime));
-            } else {
-                ninSettingMapper.alterBatch(settingIdList, openState, null, null);
+            LocalDateTime openDate = LocalDateTime.parse(openTime);
+            LocalDateTime closeDate = LocalDateTime.parse(closeTime);
+            if (openDate.isAfter(closeDate)) {
+                throw new ServiceException(412, "开始时间大于结束时间,请重试");
             }
+            LocalDateTime nowDate = LocalDateTime.now();
+            int openState;
+            if (openDate.isAfter(nowDate)) {
+                openState = 0;
+            } else if (nowDate.isAfter(closeDate)) {
+                openState = 2;
+            } else {
+                openState = 1;
+            }
+            ninSettingMapper.alterBatch(settingIdList, openState, openDate, closeDate);
+            List<NinSetting> ninSettings = ninSettingMapper.selectList(new LambdaQueryWrapper<NinSetting>()
+                    .select(NinSetting::getId, NinSetting::getUserType, NinSetting::getOpenState,
+                            NinSetting::getOpenTime, NinSetting::getCloseTime)
+                    .in(NinSetting::getId, settingIdList));
+            addTimer(ninSettings);
             return ResultModel.ok();
         } else {
             throw new ServiceException(412, "请选择课程！");
+        }
+    }
+
+    @Override
+    public void addTimer(List<NinSetting> ninSettingList) {
+        if (ninSettingList != null && !ninSettingList.isEmpty()) {
+            ninSettingList.forEach(setting -> {
+                Calendar calendar = Calendar.getInstance();
+                LocalDateTime openTime = setting.getOpenTime();
+                LocalDateTime closeTime = setting.getCloseTime();
+                Integer openState = setting.getOpenState();
+
+                String idStr = setting.getId().toString();
+                String userType = setting.getUserType();
+                if (openState == 2) {
+                    quartzManager.removeJob(idStr, userType, idStr, userType);
+                } else {
+                    if (openState == 0) {
+                        Date openDate = Date.from(openTime.atZone(ZoneId.systemDefault()).toInstant());
+                        calendar.setTime(openDate);
+                    } else {
+                        Date closeDate = Date.from(closeTime.atZone(ZoneId.systemDefault()).toInstant());
+                        calendar.setTime(closeDate);
+                    }
+                    StringBuffer buffer = new StringBuffer();
+                    buffer.append(calendar.get(Calendar.SECOND)).append(" ").append(calendar.get(Calendar.MINUTE)).append(" ").append(calendar.get(Calendar.HOUR_OF_DAY)).append(" ")
+                            .append(calendar.get(Calendar.DATE)).append(" ").append(calendar.get(Calendar.MONTH) + 1).append(" ? ").append(calendar.get(Calendar.YEAR));
+                    quartzManager.modifyJobTime(idStr, userType, idStr, userType, SettingTask.class, buffer.toString(), setting);
+                }
+            });
         }
     }
 

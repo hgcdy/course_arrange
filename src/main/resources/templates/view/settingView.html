@@ -30,17 +30,15 @@
             状态
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropupStateTypeButton" data-code="">
-            <li><a class="dropdown-item" href="javaScript:void(0)" >开放中</a></li>
-            <li><a class="dropdown-item" href="javaScript:void(0)" >未开放</a></li>
-            <li><a class="dropdown-item" href="javaScript:void(0)" >已结束</a></li>
+            <li><a class="dropdown-item" href="javaScript:void(0)" open-state="0">未开放</a></li>
+            <li><a class="dropdown-item" href="javaScript:void(0)" open-state="1">开放中</a></li>
+            <li><a class="dropdown-item" href="javaScript:void(0)" open-state="2">已结束</a></li>
         </ul>
     </span>&nbsp;&nbsp;
     <span>
         <button type="button" class="btn btn-info" id="query">查询</button>
         <button type="button" class="btn btn-info" id="reset">重置</button>
-        <button type="button" class="btn btn-info" id="disparkBatch" data-openState=0>批量开放</button>
-        <button type="button" class="btn btn-info" id="finishBatch" data-openState=1>批量结束</button>
-        <button type="button" class="btn btn-info" id="timingBatch" data-openState=2>批量定时开放</button>
+        <button type="button" class="btn btn-info" id="timingBatch">批量修改</button>
     </span>
 </div>
 

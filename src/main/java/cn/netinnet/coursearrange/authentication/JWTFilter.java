@@ -5,6 +5,8 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -18,6 +20,7 @@ import java.util.Date;
 @Component
 public class JWTFilter extends BasicHttpAuthenticationFilter {
 
+    private static Logger LOGGER = LoggerFactory.getLogger(JWTFilter.class);
 
     @SneakyThrows
     @Override
@@ -30,8 +33,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         String url = httpRequest.getServletPath();//url
         String host = httpRequest.getRemoteHost();//主机名
         int port = httpRequest.getRemotePort();//端口号
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");//时间格式化
-        System.out.println(sdf.format(new Date()) + " 请求用户: " + host + ":" + port + " 请求接口: " + url);
+        LOGGER.info("请求用户: " + host + ":" + port + " 请求接口: " + url);
         if (jwtToken != null) {
             try {
                 executeLogin(request, response);

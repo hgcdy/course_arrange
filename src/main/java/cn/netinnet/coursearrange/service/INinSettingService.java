@@ -19,9 +19,11 @@ public interface INinSettingService extends IService<NinSetting> {
     /**
      * 条件查询
      */
-    List<SettingBo> getSelectList(String userType, String state, String courseName);
+    List<SettingBo> getSelectList(String userType, Integer openState, String courseName);
     /**
      * 修改设置
      */
-    ResultModel alterBatch(String settingIds, Integer openState, String openTime, String closeTime);
+    ResultModel alterBatch(String settingIds, String openTime, String closeTime);
+
+    void addTimer(List<NinSetting> ninSettingList);
 }

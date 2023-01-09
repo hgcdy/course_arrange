@@ -118,7 +118,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         ninSetting.setId(IDUtil.getID());
         ninSetting.setCourseId(ninCourse.getId());
         ninSetting.setUserType(ApplicationConstant.TYPE_TEACHER);
-        ninSetting.setOpenState(1);
+        ninSetting.setOpenState(0);
         ninSetting.setCreateUserId(userId);
         ninSetting.setModifyUserId(userId);
         ninSettingMapper.insert(ninSetting);
@@ -249,7 +249,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         }
 
         if (!userType.equals(ApplicationConstant.TYPE_ADMIN)) {
-            Map<Long, SettingBo> boMap = ninSettingService.getSelectList(userType, "开放中", null).stream().collect(Collectors.toMap(SettingBo::getCourseId, Function.identity()));
+            Map<Long, SettingBo> boMap = ninSettingService.getSelectList(userType, 1, null).stream().collect(Collectors.toMap(SettingBo::getCourseId, Function.identity()));
             courseList = courseList.stream().filter(i -> boMap.get(i.getId()) != null).collect(Collectors.toList());
 
         }

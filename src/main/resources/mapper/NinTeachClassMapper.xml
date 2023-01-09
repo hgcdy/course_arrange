@@ -4,8 +4,10 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="cn.netinnet.coursearrange.entity.NinTeachClass">
+        <id column="id" property="id" />
         <result column="teach_class_id" property="teachClassId" />
         <result column="class_id" property="classId" />
+        <result column="class_name" property="className" />
         <result column="del_flag" property="delFlag" />
         <result column="create_time" property="createTime" />
         <result column="create_user_id" property="createUserId" />
@@ -15,15 +17,15 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        teach_class_id, class_id, del_flag, create_time, create_user_id, modify_time, modify_user_id
+        id, teach_class_id, class_id, className, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
     <insert id="addBatch" parameterType="cn.netinnet.coursearrange.entity.NinTeachClass">
         INSERT INTO
-        nin_teach_class(teach_class_id, class_id, create_user_id, modify_user_id)
+        nin_teach_class(id, teach_class_id, class_id, class_name, create_user_id, modify_user_id)
         VALUES
         <foreach collection="list" index="index" item="item" separator=",">
-            (#{item.teachClassId}, #{item.classId}, #{item.createUserId}, #{item.modifyUserId})
+            (#{item.id}, #{item.teachClassId}, #{item.classId}, #{item.className}, #{item.createUserId}, #{item.modifyUserId})
         </foreach>
     </insert>
 

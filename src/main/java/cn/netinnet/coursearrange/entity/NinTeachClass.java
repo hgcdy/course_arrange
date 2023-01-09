@@ -1,5 +1,7 @@
 package cn.netinnet.coursearrange.entity;
 
+import cn.netinnet.coursearrange.util.IDUtil;
+import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -28,6 +30,12 @@ public class NinTeachClass implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 关联id
+     */
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
+
+    /**
      * 教学班id
      */
     @TableField("teach_class_id")
@@ -40,6 +48,13 @@ public class NinTeachClass implements Serializable {
     @TableField("class_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long classId;
+
+    /**
+     * 班级名称
+     */
+    @TableField("class_name")
+    private String className;
+
 
     /**
      * 逻辑删除标识
@@ -71,5 +86,16 @@ public class NinTeachClass implements Serializable {
     @TableField("modify_user_id")
     private Long modifyUserId;
 
+    public NinTeachClass() {
+    }
 
+    public NinTeachClass(Long teachClassId, Long classId, String className) {
+        this.setId(IDUtil.getID());
+        this.teachClassId = teachClassId;
+        this.classId = classId;
+        this.className = className;
+        Long userId = UserUtil.getUserInfo().getUserId();
+        this.setModifyUserId(userId);
+        this.setCreateUserId(userId);
+    }
 }

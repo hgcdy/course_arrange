@@ -22,7 +22,7 @@ public interface NinSettingMapper extends BaseMapper<NinSetting> {
     /**
      * 条件查询
      */
-    List<SettingBo> getSelectList(@Param("userType") String userType, @Param("courseName") String courseName);
+    List<SettingBo> getSelectList(@Param("userType") String userType, @Param("openState") Integer openState, @Param("courseName") String courseName);
     /**
      * 修改
      */

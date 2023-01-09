@@ -38,27 +38,26 @@ public class NinSettingController {
     /**
      * 根据条件获取设置信息
      * @param userType
-     * @param state
+     * @param openState
      * @param courseName
      * @return
      */
     @GetMapping("/getSelectList")
-    public ResultModel getSelectList(String userType, String state, String courseName) {
-        List<SettingBo> list = ninSettingService.getSelectList(userType, state , courseName);
+    public ResultModel getSelectList(String userType, Integer openState, String courseName) {
+        List<SettingBo> list = ninSettingService.getSelectList(userType, openState , courseName);
         return ResultModel.ok(list);
     }
 
     /**
      * 修改开放选课
      * @param settingIds
-     * @param openState
      * @param openTime
      * @param closeTime
      * @return
      */
     @PostMapping("/alterBatch")
-    public ResultModel alterBatch(String settingIds, Integer openState, String openTime, String closeTime) {
-            return ninSettingService.alterBatch(settingIds, openState, openTime, closeTime);
+    public ResultModel alterBatch(String settingIds, String openTime, String closeTime) {
+            return ninSettingService.alterBatch(settingIds, openTime, closeTime);
     }
 
 

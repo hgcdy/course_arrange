@@ -156,16 +156,14 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
                     Long[] teachClasses = new Long[ints.length];
                     for (int j = 0, count = 0; j < ints.length; j++) {
-                        long id = IDUtil.getID();
+                        long TeachClassId = IDUtil.getID();
                         for (int k = 0; k < ints[j]; k++, count++) {
-                            NinTeachClass ninTeachClass = new NinTeachClass();
-                            ninTeachClass.setTeachClassId(id);
-                            ninTeachClass.setClassId(ninClasses.get(count).getId());
-                            ninTeachClass.setCreateUserId(UserUtil.getUserInfo().getUserId());
-                            ninTeachClass.setModifyUserId(UserUtil.getUserInfo().getUserId());
+                            Long classId = ninClasses.get(count).getId();
+                            String className = ninClasses.get(count).getClassName();
+                            NinTeachClass ninTeachClass = new NinTeachClass(TeachClassId, classId, className);
                             ninTeachClasses.add(ninTeachClass);
                         }
-                        teachClasses[j] = id;
+                        teachClasses[j] = TeachClassId;
                     }
                     teachClassMap.put(maxClassNum, teachClasses);
                 }

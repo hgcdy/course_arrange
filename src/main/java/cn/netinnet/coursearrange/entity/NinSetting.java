@@ -47,7 +47,7 @@ public class NinSetting implements Serializable {
     private String userType;
 
     /**
-     * 开放状态 0-开放，1-不开放，2-定时
+     * 开放状态 0-未开放，1-开放中，2-已结束
      */
     @TableField("open_state")
     private Integer openState;
