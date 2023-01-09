@@ -8,10 +8,7 @@ import cn.netinnet.coursearrange.enums.ResultEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinArrangeService;
-import cn.netinnet.coursearrange.util.CnUtil;
-import cn.netinnet.coursearrange.util.ExcelUtils;
-import cn.netinnet.coursearrange.util.IDUtil;
-import cn.netinnet.coursearrange.util.UserUtil;
+import cn.netinnet.coursearrange.util.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -20,6 +17,8 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +44,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArrange> implements INinArrangeService {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(NinArrangeServiceImpl.class);
 
     @Autowired
     private NinArrangeMapper ninArrangeMapper;
@@ -411,7 +412,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             }
         }
         long newData = System.currentTimeMillis();
-        System.out.println("----排课结束,用时" + (newData - oldData) + "毫秒----");
+        LOGGER.info("排课结束, 用时" + (newData - oldData) + "毫秒");
+
 
     }
 

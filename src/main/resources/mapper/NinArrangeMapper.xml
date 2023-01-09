@@ -111,9 +111,8 @@
         career_name, course_name AS courseName,
         IFNULL((SELECT class_name FROM nin_class WHERE nin_class.id = nin_arrange.class_id),
                 (SELECT GROUP_CONCAT(class_name SEPARATOR ';')
-                    FROM nin_teach_class, nin_class
-                    WHERE nin_arrange.teach_class_id = nin_teach_class.teach_class_id
-                    AND nin_teach_class.class_id = nin_class.id))
+                    FROM nin_teach_class
+                    WHERE nin_arrange.teach_class_id = nin_teach_class.teach_class_id))
         AS className,
         IFNULL(teacher_name, "暂无") AS teacherName,
         IFNULL(house_name, "暂无") AS houseName,

@@ -2,10 +2,8 @@ package cn.netinnet.coursearrange.init;
 
 import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.enums.OpenStateEnum;
-import cn.netinnet.coursearrange.mapper.NinSettingMapper;
 import cn.netinnet.coursearrange.service.INinSettingService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
