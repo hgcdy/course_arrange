@@ -23,7 +23,7 @@ public interface INinSettingService extends IService<NinSetting> {
     /**
      * 修改设置
      */
-    ResultModel alterBatch(String settingIds, String openTime, String closeTime);
+    ResultModel alterBatch(String settingIds, String userType, String openTime, String closeTime);
 
     void addTimer(List<NinSetting> ninSettingList);
 }

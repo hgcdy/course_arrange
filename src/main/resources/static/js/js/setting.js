@@ -6,7 +6,6 @@ require(['../config'], function () {
             }
         });
         var userType = "teacher";
-        var state = null;
         var courseName = null;
         var openState = null;
         const STR = ["courseName", "state", "openTime", "closeTime"];
@@ -132,6 +131,7 @@ require(['../config'], function () {
                        data: {
                            settingIds: settingIds,
                            openState: openState,
+                           userType: userType,
                            openTime: record.openTime,
                            closeTime: record.closeTime
                        },

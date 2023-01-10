@@ -7,6 +7,7 @@ import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinStudentMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
@@ -15,10 +16,7 @@ import cn.netinnet.coursearrange.util.UserUtil;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,33 +59,21 @@ public class NinArrangeController {
         return modelAndView;
     }
 
-    //学生教师课程表
-    @GetMapping("/stu-course-form")
-    public ModelAndView stuCourseForm() {
+    @GetMapping("/courseForm/{type}")
+    public ModelAndView getCourseForm(@PathVariable String type) {
         UserInfo userInfo = UserUtil.getUserInfo();
-        if (userInfo.getUserType().equals(ApplicationConstant.TYPE_STUDENT)) {
-            ModelAndView modelAndView = new ModelAndView("view/courseFormView_1");
-            modelAndView.addObject("studentId", String.valueOf(userInfo.getUserId()));
-            return modelAndView;
-        }
-        throw new ServiceException(412, "接口错误");
-    }
-    @GetMapping("/class-course-form")
-    public ModelAndView classCourseForm() {
-        UserInfo userInfo = UserUtil.getUserInfo();
-        if (userInfo.getUserType().equals(ApplicationConstant.TYPE_STUDENT)) {
-            NinStudent ninStudent = ninStudentMapper.selectById(userInfo.getUserId());
-            ModelAndView modelAndView = new ModelAndView("view/CourseFormView_1");
-            modelAndView.addObject("classId", String.valueOf(ninStudent.getClassId()));
-            return modelAndView;
-        }
-        throw new ServiceException(412, "接口错误");
-    }
-    @GetMapping("/tea-course-form")
-    public ModelAndView teaCourseForm() {
-        UserInfo userInfo = UserUtil.getUserInfo();
-        if (userInfo.getUserType().equals(ApplicationConstant.TYPE_TEACHER)) {
-            ModelAndView modelAndView = new ModelAndView("view/courseFormView_1");
+        String userType = userInfo.getUserType();
+        ModelAndView modelAndView = new ModelAndView("view/courseFormView_1");
+        if (userType.equals(ApplicationConstant.TYPE_STUDENT)) {
+            if ("stu".equals(type)) {
+                modelAndView.addObject("studentId", String.valueOf(userInfo.getUserId()));
+                return modelAndView;
+            } else if ("class".equals(type)) {
+                NinStudent ninStudent = ninStudentMapper.selectById(userInfo.getUserId());
+                modelAndView.addObject("classId", String.valueOf(ninStudent.getClassId()));
+                return modelAndView;
+            }
+        } else if (userType.equals(ApplicationConstant.TYPE_TEACHER)) {
             modelAndView.addObject("teacherId", String.valueOf(userInfo.getUserId()));
             return modelAndView;
         }

@@ -56,8 +56,8 @@ public class NinSettingController {
      * @return
      */
     @PostMapping("/alterBatch")
-    public ResultModel alterBatch(String settingIds, String openTime, String closeTime) {
-            return ninSettingService.alterBatch(settingIds, openTime, closeTime);
+    public ResultModel alterBatch(String settingIds, String userType, String openTime, String closeTime) {
+            return ninSettingService.alterBatch(settingIds, userType, openTime, closeTime);
     }
 
 

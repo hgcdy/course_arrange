@@ -50,7 +50,7 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
     }
 
     @Override
-    public ResultModel alterBatch(String settingIds, String openTime, String closeTime) {
+    public ResultModel alterBatch(String settingIds, String userType, String openTime, String closeTime) {
         List<Long> settingIdList = JSON.parseArray(settingIds, Long.class);
 
         if (settingIdList != null && settingIdList.size() != 0) {
