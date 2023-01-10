@@ -82,7 +82,6 @@ public class NinClassController {
         return ResultModel.ok(ninClassService.getClassList(college, careerId));
     }
 
-
     /**
      * 班级列表，按学院专业分组
      *

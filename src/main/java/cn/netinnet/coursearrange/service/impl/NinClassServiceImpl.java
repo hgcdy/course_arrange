@@ -7,6 +7,7 @@ import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinClassService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -67,7 +68,6 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
         List<ClassBo> list = ninClassMapper.getClassList(college, careerId);
         return list;
     }
-
 
     @Override
     public Map<String, Map<String, List<ClassBo>>> collegeCareerClassList() {

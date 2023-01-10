@@ -5,17 +5,35 @@ require(['../config'], function () {
                 xhr.setRequestHeader('token', util.getToken());
             }
         });
+        var college = null;
+        var careerId = null;
 
+        query();
+
+        // 获取数据
+        function query() {
+            $.ajax({
+                url: "nin-career/getCollegeList",
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    if (data.code == 200) {
+                        var $chunkElement = $(".chunk-card")[0];
+                        item($($chunkElement), data.data);
+                    } else {
+                        util.hint(data.msg)
+                    }
+                }
+            })
+        }
 
 
         function item(obj, list) {
             for (const item in list) {
 
 
+
             }
-
         }
-
-
     })
 })
