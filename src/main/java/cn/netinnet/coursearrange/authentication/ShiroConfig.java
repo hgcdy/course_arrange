@@ -8,6 +8,8 @@ import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSource
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,6 +19,10 @@ import java.util.Map;
 
 @Configuration
 public class ShiroConfig {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(ShiroConfig.class);
+
+
     /**
      * 创建自定义的验证规则
      *
@@ -88,8 +94,6 @@ public class ShiroConfig {
         authMap.put("/js/**", "anon");
         authMap.put("/img/**", "anon");
 
-
-//        authMap.put("/index", "authc");
         // 在 Shiro过滤器链上加入 JWTFilter
         LinkedHashMap<String, Filter> filterMap = new LinkedHashMap<>();
         filterMap.put("jwt", new JWTFilter());
@@ -99,7 +103,7 @@ public class ShiroConfig {
         authMap.put("/**", "jwt,authc");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(authMap);
-        System.out.println("---------------shirofactory创建成功");
+        LOGGER.info("-----shiro factory创建成功-----");
         return shiroFilterFactoryBean;
     }
 

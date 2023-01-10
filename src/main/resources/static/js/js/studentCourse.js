@@ -108,7 +108,7 @@ require(['../config'], function () {
 
         //返回
         $("#back").click(function (){
-            window.location.href = "nin-student";
+            window.location.href = "nin-student?token=" + util.getToken();
         })
 
         $("#details").click(function (){
@@ -117,7 +117,7 @@ require(['../config'], function () {
 
         //课程表
         $("#formButton").click(function (){
-            var str = "nin-arrange/courseForm?studentId=" + studentId + "&type=student";
+            var str = "nin-arrange/courseForm?studentId=" + studentId + "&type=student&token=" + util.getToken();
             window.location.href = str;
         })
 

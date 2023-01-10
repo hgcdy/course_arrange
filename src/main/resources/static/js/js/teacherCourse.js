@@ -100,7 +100,7 @@ require(['../config'], function () {
 
         //返回
         $("#back").click(function (){
-            window.location.href = "nin-teacher";
+            window.location.href = "nin-teacher?token=" + util.getToken();
         })
 
         $("#details").click(function (){
@@ -110,7 +110,7 @@ require(['../config'], function () {
         //课程表
         $("#formButton").click(function (){
             // var str = "nin-arrange/courseForm?teacherId=" + teacherId + "&path=nin-teacher-course?teacherId=" + teacherId;
-            var str = "nin-arrange/courseForm?teacherId=" + teacherId + "&type=teacher";
+            var str = "nin-arrange/courseForm?teacherId=" + teacherId + "&type=teacher&token=" + util.getToken();
             window.location.href = str;
         })
 

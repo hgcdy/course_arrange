@@ -1,9 +1,12 @@
 package cn.netinnet.coursearrange.init;
 
+import cn.netinnet.coursearrange.authentication.ShiroConfig;
 import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.enums.OpenStateEnum;
 import cn.netinnet.coursearrange.service.INinSettingService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -16,6 +19,8 @@ import java.util.List;
 @Component
 @Order(1)
 public class SettingInit implements CommandLineRunner {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(CommandLineRunner.class);
 
     @Autowired
     private INinSettingService ninSettingService;
@@ -49,5 +54,7 @@ public class SettingInit implements CommandLineRunner {
             ninSettingService.updateBatchById(updateSettingList);
         }
         ninSettingService.addTimer(ninSettings);
+        LOGGER.info("-----定时器Quartz启动完成-----");
+        LOGGER.info("-----课程自动排课系统启动完成-----");
     }
 }

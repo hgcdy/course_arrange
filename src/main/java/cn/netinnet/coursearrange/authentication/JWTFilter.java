@@ -7,7 +7,9 @@ import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.ServletRequest;
@@ -20,6 +22,16 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 
     private static Logger LOGGER = LoggerFactory.getLogger(JWTFilter.class);
 
+    // 后端免认证接口 url
+    public static String anonUrl;
+    // 静态变量通过set方法注入
+    @Value("${project.shiro.anonUrl}")
+    public void setAnonUrl(String anonUrl) {
+        JWTFilter.anonUrl = anonUrl;
+    }
+    // 匹配url路径
+    private AntPathMatcher pathMatcher = new AntPathMatcher();
+
     @SneakyThrows
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
@@ -31,7 +43,14 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         String url = httpRequest.getServletPath();//url
         String host = httpRequest.getRemoteHost();//主机名
         int port = httpRequest.getRemotePort();//端口号
-        LOGGER.info("请求用户: " + host + ":" + port + " 请求接口: " + url);
+
+        if ("0:0:0:0:0:0:0:1".equals(host)) {
+            host = "127.0.0.1";
+        }
+
+        LOGGER.info("请求用户: " + host + ":" + port);
+        LOGGER.info("请求接口: " + url);
+
         if (jwtToken != null) {
             try {
                 executeLogin(request, response);
@@ -39,9 +58,16 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             } catch (Exception e) {
                 return false;
             }
+        } else {
+            String[] anonUrls = anonUrl.split(",");
+            // 匹配是否为后端免认证接口
+            for (String anonUrl : anonUrls) {
+                if (pathMatcher.match(anonUrl, url)) {
+                    return true;
+                }
+            }
         }
-        return true;
-        //如果是登录等免认证跳过
+        return false;
     }
 
 

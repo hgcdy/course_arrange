@@ -126,7 +126,7 @@ require(['../config'], function () {
                             //详情
                             $(".details").click(function () {
                                 var id = $(this).parent().parent().children("th").attr("data-id");
-                                window.location.href = "nin-class-course?classId=" + id;
+                                window.location.href = "nin-class-course?classId=" + id + "&token=" + util.getToken();
                             })
                         } else {
                             if (page > 1) {

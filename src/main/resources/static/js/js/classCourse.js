@@ -33,7 +33,7 @@ require(['../config'], function () {
 
         //返回
         $("#back").click(function (){
-            window.location.href = "nin-class";
+            window.location.href = "nin-class?token=" + util.getToken();
         })
 
         $("#details").click(function (){
@@ -42,7 +42,7 @@ require(['../config'], function () {
 
         //课程表
         $("#formButton").click(function (){
-            var str = "nin-arrange/courseForm?classId=" + classId + "&type=class";
+            var str = "nin-arrange/courseForm?classId=" + classId + "&type=class&token=" + util.getToken();
             window.location.href = str;
         })
 

@@ -8,7 +8,7 @@ require(['../config'], function () {
 
         //退出登录
         $("header button").click(function () {
-            window.location.href = "logout";
+            window.location.href = "logout?token=" + util.getToken();
         })
 
         /**
@@ -16,6 +16,7 @@ require(['../config'], function () {
          */
         $("#menu a").click(function () {
             var path = $(this).attr("data-html");
+            path = path + "?token=" + util.getToken();
             $("iframe").attr("src", path);
             $("#popup").css("display", "none");
             $("#popup").find("table").empty();

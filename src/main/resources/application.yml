@@ -16,6 +16,9 @@ mybatis:
 
 #项目配置
 project:
+  shiro:
+    #免认证端口
+    anonUrl: /,/login,/login/**,/logout,/nin-career
   #管理员信息(id,名称,账号,密码)
   admin:
     id: 100000000000000000

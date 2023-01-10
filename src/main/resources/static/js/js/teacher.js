@@ -53,7 +53,7 @@ require(['../config'], function () {
                             //详情
                             $(".details").click(function (){
                                 var id = $(this).parent().parent().children("th").attr("data-id");
-                                window.location.href = "nin-teacher-course?teacherId=" + id;
+                                window.location.href = "nin-teacher-course?teacherId=" + id + "&token=" + util.getToken();
                             })
 
                         } else {

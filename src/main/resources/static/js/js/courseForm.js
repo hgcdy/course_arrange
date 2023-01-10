@@ -69,14 +69,16 @@ require(['../config'], function () {
             } else if (type == "student") {
                 typeId = studentId;
             }
-            window.location.href = "http://localhost:8080/nin-" + type +"-course?" + type + "Id=" + typeId;
+            var str = "nin-" + type +"-course?" + type + "Id=" + typeId + "&token=" + util.getToken();
+            window.location.href = str;
         })
         $("#formButton").click(function (){
             window.location.href = window.location.href;
         })
         //返回
         $("#back").click(function (){
-            window.location.href = "http://localhost:8080/nin-" + type;
+            var str = "nin-" + type + "?token=" + util.getToken();
+            window.location.href = str;
         })
 
         //课程表导出
@@ -98,7 +100,7 @@ require(['../config'], function () {
             }
             var xhr = new XMLHttpRequest();
             xhr.withCredentials = true;//为请求添加Cookie
-            xhr.open('GET', '/exportCourseForm?id='+ typeId + "&type=" + type + "&count=" + count, true); // 也可以使用POST方式，根据接口
+            xhr.open('GET', '/exportCourseForm?id='+ typeId + "&type=" + type + "&count=" + count + "&token=" + util.getToken(), true); // 也可以使用POST方式，根据接口
             // xhr.send("id=" + typeId + "&type=" + type );
             // xhr.setRequestHeader('content-type', 'application/json');
             xhr.setRequestHeader('content-type', 'application/octet-stream');

@@ -32,7 +32,7 @@ require(['../config'], function () {
                             if (data.code == 200) {
                                 var token = data.data;
                                 util.setToken(token);
-                                window.location.href = "index?type="+ val +"&token=" + newToken;
+                                window.location.href = "index?type="+ val +"&token=" + token;
                             } else {
                                 util.hint(data.msg);
                             }
