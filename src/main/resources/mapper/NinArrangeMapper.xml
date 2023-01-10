@@ -30,11 +30,14 @@
         id, career_id, class_id, teacher_id, teach_class_id, course_id, house_id, must, weekly, start_time, end_time, week, pitch_num, people_num, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
+    <sql id="Base_List">
+        id, career_id, class_id, teacher_id, teach_class_id, course_id, house_id, must, weekly, start_time, end_time, week, pitch_num, people_num, create_user_id, modify_user_id
+    </sql>
+
     <!-- 批量添加 -->
     <insert id="addBatch" parameterType="cn.netinnet.coursearrange.entity.NinArrange">
         INSERT INTO
-        nin_arrange(id, career_id, class_id, teacher_id, teach_class_id, course_id, house_id, must, weekly,
-                    start_time, end_time, week, pitch_num, people_num, create_user_id, modify_user_id)
+        nin_arrange(<include refid="Base_List"/>)
         VALUES
         <foreach collection="list" index="index" item="item" separator=",">
             (#{item.id}, #{item.careerId}, #{item.classId}, #{item.teacherId}, #{item.teachClassId},
@@ -54,20 +57,15 @@
         WHERE id = #{id}
     </update>
 
-    <!--清空-->
-    <delete id="empty">
-        DELETE FROM nin_arrange
-        WHERE career_id != 0
-    </delete>
-
     <!-- 条件查询课表信息 -->
     <select id="getInfo" resultType="cn.netinnet.coursearrange.bo.ArrangeBo">
         SELECT career_id AS careerId,
-        IFNULL((SELECT class_name FROM nin_class WHERE nin_class.id = nin_arrange.class_id),
-        (SELECT GROUP_CONCAT(class_name SEPARATOR ';')
-        FROM nin_teach_class
-        WHERE nin_arrange.teach_class_id = nin_teach_class.teach_class_id))
-        AS className,
+        IF(nin_arrange.must = 0,
+            (SELECT class_name FROM nin_class WHERE nin_class.id = nin_arrange.class_id),
+            (SELECT GROUP_CONCAT(class_name SEPARATOR ';')
+                FROM nin_teach_class
+                WHERE nin_arrange.teach_class_id = nin_teach_class.teach_class_id))
+            AS className,
         teacher_name, course_name, house_name,
         nin_arrange.must AS must,
         weekly,

@@ -115,8 +115,7 @@ public class NinArrangeController {
      */
     @PostMapping("/nin-arrange/getInfo")
     public ResultModel getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
-        Map<String, String> info = ninArrangeService.getInfo(classId, teacherId, studentId, count);
-        return ResultModel.ok(info);
+        return ResultModel.ok(ninArrangeService.getInfo(classId, teacherId, studentId, count));
     }
 
     /**

@@ -35,6 +35,15 @@ class CourseArrangeApplicationTests {
     @Autowired
     private NinArrangeMapper ninArrangeMapper;
 
+    /**
+     * 1、学院专业增删改查和专业批量选课页面
+     * 2、优化排课代码
+     * 3、优化sql代码
+     * 4、限制排课前需要教师选完课程，开放学生选课需要排课后
+     * 5、教室申请重做
+     * 6、申请教室管理员同意添加
+     */
+
     @Test
     void contextLoads() {
 

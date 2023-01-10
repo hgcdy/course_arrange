@@ -31,7 +31,7 @@ public interface INinArrangeService extends IService<NinArrange> {
      * 获取课程表信息
      * @param count 周次（为空则获取整个学期的课程表）
      */
-    Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer count);
+    Map<String, StringBuffer> getInfo(Long classId, Long teacherId, Long studentId, Integer count);
     /**
      * 补课-获取空闲资源（教室申请）
      */

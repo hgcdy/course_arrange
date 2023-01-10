@@ -23,10 +23,6 @@ public interface NinArrangeMapper extends BaseMapper<NinArrange> {
      */
     void addBatch(@Param("list") List<NinArrange> ninArrangeList);
     /**
-     * 清空记录
-     */
-    void empty();
-    /**
      * 符合条件的课程表信息
      */
     List<ArrangeBo> getInfo(@Param("classIdList") List<Long> classIdList,

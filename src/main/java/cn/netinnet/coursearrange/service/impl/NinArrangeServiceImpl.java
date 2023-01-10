@@ -12,6 +12,7 @@ import cn.netinnet.coursearrange.util.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -419,117 +420,141 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Override
     public void empty() {
-        ninArrangeMapper.empty();
+        //删除arrange表
+        ninArrangeMapper.delete(new LambdaQueryWrapper<NinArrange>().ne(NinArrange::getCareerId, 0));
+        //删除教学班表
         ninTeachClassMapper.delete(new QueryWrapper<>());
     }
 
     @Override
-    public Map<String, String> getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
+    public Map<String, StringBuffer> getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
         List<ArrangeBo> info = new ArrayList<>();
-
         //根据不同的id获取排课记录信息
         if (teacherId != null) {
             //教师
             info = ninArrangeMapper.getInfo(null, null, teacherId);
         } else if (classId != null) {
-            //如果是选修班级
-            List<Long> longs = new ArrayList<>();
-            longs.add(classId);
-            info = ninArrangeMapper.getInfo(longs, null, null);
-            if (info.size() == 0) {
-                //查询如果为空，则为必修班级
-                longs.remove(0);
-                //根据班级获取教学班id列表
-                longs = ninTeachClassMapper.getBatchTeachClassIdList(new ArrayList<Long>() {{
-                    add(classId);
-                }});
-                info = ninArrangeMapper.getInfo(null, longs, null);
+            NinClass ninClass = ninClassMapper.selectById(classId);
+            if (ninClass.getCareerId() == 0) {
+                //如果是选修班级
+                info = ninArrangeMapper.getInfo(Collections.singletonList(classId), null, null);
+            } else {
+                List<Long> teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(Collections.singletonList(classId));
+                info = ninArrangeMapper.getInfo(null, teachClassIdList, null);
             }
         } else if (studentId != null) {
             //学生
             //获取学生选课记录
-            List<Long> classIdList = new ArrayList<>();
-            List<NinStudentCourse> ninStudentCourses = ninStudentCourseMapper.selectList(new QueryWrapper<>(new NinStudentCourse() {{
-                setStudentId(getStudentId());
-            }}));
-            //选课记录不为空，获取其选课班级id
-            if (ninStudentCourses != null && ninStudentCourses.size() != 0) {
-                for (NinStudentCourse nsc : ninStudentCourses) {
-                    classIdList.add(nsc.getTakeClassId());
-                }
-            }
+            List<NinStudentCourse> ninStudentCourses = ninStudentCourseMapper.selectList(new LambdaQueryWrapper<NinStudentCourse>()
+                    .select(NinStudentCourse::getTakeClassId).eq(NinStudentCourse::getStudentId, studentId));
+
+            List<Long> classIdList = ninStudentCourses.stream().map(NinStudentCourse::getTakeClassId).collect(Collectors.toList());
+
             //获取学生的行政班id
             NinStudent ninStudent = ninStudentMapper.selectById(studentId);
             //根据行政班id获取教学班id列表
-            List<Long> teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(new ArrayList<Long>() {{
-                add(ninStudent.getClassId());
-            }});
-            if (classIdList.size() == 0) {
+            List<Long> teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(Collections.singletonList(ninStudent.getClassId()));
+
+            if (classIdList.isEmpty())
                 classIdList = null;
-            }
-            if (teachClassIdList.size() == 0) {
+            if (teachClassIdList.isEmpty())
                 teachClassIdList = null;
-            }
+
             info = ninArrangeMapper.getInfo(classIdList, teachClassIdList, null);
         }
 
         //存放最终结果  星期一第二节（"12"） -> 信息字符串
-        HashMap<String, String> hashMap = new HashMap<>();
+        HashMap<String, StringBuffer> hashMap = new HashMap<>();
 
-        //count 查询某一周的课表 空则表示整个学期
-        if (count != null) {
-            for (ArrangeBo bo : info) {
+        for (ArrangeBo bo : info) {
+            StringBuffer str = new StringBuffer();
+            if (count != null) {
                 //单双周
-                if (count % 2 == 0 && bo.getWeekly() == 1) {//课程记录为单周，但count为双，跳过
+                if (count % 2 == 0 && bo.getWeekly() == 1)//课程记录为单周，但count为双，跳过
                     continue;
-                }
-                if (count % 2 == 1 && bo.getWeekly() == 2) {//课程记录为双周，但count为单，跳过
+                if (count % 2 == 1 && bo.getWeekly() == 2)//课程记录为双周，但count为单，跳过
                     continue;
-                }
                 //count在开始结束范围内
-                if (bo.getEndTime() < count) {
+                if (bo.getEndTime() < count)
                     continue;
-                }
-                if (bo.getStartTime() > count) {
+                if (bo.getStartTime() > count)
                     continue;
-                }
-
-                String key = "" + bo.getWeek() + bo.getPitchNum();
-
-                String value = "" + bo.getCourseName() + "/" + bo.getHouseName() + "/" + bo.getTeacherName() + "/" + bo.getClassName();
-
-                hashMap.put(key, value);
-            }
-        } else {
-            for (ArrangeBo bo : info) {
-
-                if (bo.getWeekly() == null) {//为空，即没有时间，跳过
-                    continue;
-                }
-
-                String key = "" + bo.getWeek() + bo.getPitchNum();
-
-                String str = bo.getStartTime() + "-" + bo.getEndTime() + "周";
+            } else {
+                str.append(bo.getStartTime()).append("-").append(bo.getEndTime()).append("周");
                 if (bo.getWeek() == 1) {
-                    str = str + "(单)";
+                    str.append("(单)/");
                 } else if (bo.getWeek() == 2) {
-                    str = str + "(双)";
+                    str.append("(双)/");
                 }
+            }
+            String key = "" + bo.getWeek() + bo.getPitchNum();
+            StringBuffer value = new StringBuffer();
+            value.append(bo.getCourseName()).append("/").append(str).append(bo.getHouseName()).append("/")
+                    .append(bo.getTeacherName()).append("/").append(bo.getClassName()).append("/")
+                    .append(bo.getMust() == 1 ? "必修" : "选修").append(bo.getCareerId() == -1 ? "(补课)" : "");
 
-                String value = "" + bo.getCourseName() + "/" + str + "/" + bo.getHouseName() + "/" + bo.getTeacherName() + "/" + bo.getClassName() + "/" + (bo.getMust() == 1 ? "必修" : "选修");
-
-                if (bo.getCareerId() == -1) {
-                    value += "(补课)";
-                }
-
-                //同一节要上两种课(选修和必修或单双周)
-                if (hashMap.get(key) == null) {
-                    hashMap.put(key, value);
-                } else {
-                    hashMap.put(key, hashMap.get(key) + "##" + value);
-                }
+            //同一节要上两种课(选修和必修或单双周)
+            if (hashMap.get(key) == null) {
+                hashMap.put(key, value);
+            } else {
+                hashMap.put(key, hashMap.get(key).append("##").append(value));
             }
         }
+
+        //count 查询某一周的课表 空则表示整个学期
+//        if (count != null) {
+//            for (ArrangeBo bo : info) {
+//                //单双周
+//                if (count % 2 == 0 && bo.getWeekly() == 1) {//课程记录为单周，但count为双，跳过
+//                    continue;
+//                }
+//                if (count % 2 == 1 && bo.getWeekly() == 2) {//课程记录为双周，但count为单，跳过
+//                    continue;
+//                }
+//                //count在开始结束范围内
+//                if (bo.getEndTime() < count) {
+//                    continue;
+//                }
+//                if (bo.getStartTime() > count) {
+//                    continue;
+//                }
+//
+//                String key = "" + bo.getWeek() + bo.getPitchNum();
+//
+//                String value = "" + bo.getCourseName() + "/" + bo.getHouseName() + "/" + bo.getTeacherName() + "/" + bo.getClassName();
+//
+//                hashMap.put(key, value);
+//            }
+//        } else {
+//            for (ArrangeBo bo : info) {
+//
+//                if (bo.getWeekly() == null) {//为空，即没有时间，跳过
+//                    continue;
+//                }
+//
+//                String key = "" + bo.getWeek() + bo.getPitchNum();
+//
+//                String str = bo.getStartTime() + "-" + bo.getEndTime() + "周";
+//                if (bo.getWeek() == 1) {
+//                    str = str + "(单)";
+//                } else if (bo.getWeek() == 2) {
+//                    str = str + "(双)";
+//                }
+//
+//                String value = "" + bo.getCourseName() + "/" + str + "/" + bo.getHouseName() + "/" + bo.getTeacherName() + "/" + bo.getClassName() + "/" + (bo.getMust() == 1 ? "必修" : "选修");
+//
+//                if (bo.getCareerId() == -1) {
+//                    value += "(补课)";
+//                }
+//
+//                //同一节要上两种课(选修和必修或单双周)
+//                if (hashMap.get(key) == null) {
+//                    hashMap.put(key, value);
+//                } else {
+//                    hashMap.put(key, hashMap.get(key) + "##" + value);
+//                }
+//            }
+//        }
         return hashMap;
     }
 
@@ -829,7 +854,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Override
     public void exportCourseForm(String type, Long id, Integer count, HttpServletRequest request, HttpServletResponse response) {
-        Map<String, String> info = null;
+        Map<String, StringBuffer> info = null;
         String name = null;
         if (!(count > 0 && count <= 20)) {
             count = null;
@@ -862,7 +887,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             jsonObject.put("pitchNum", CnUtil.cnPitchNum(i + 1));
             array.add(jsonObject);
         }
-        for (Map.Entry<String, String> map : info.entrySet()) {
+        for (Map.Entry<String, StringBuffer> map : info.entrySet()) {
             String[] split = map.getKey().split("");
             int i = Integer.valueOf(split[0]).intValue();
             int j = Integer.valueOf(split[1]).intValue();
@@ -891,8 +916,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
 
     }
-
-
 
     /**
      * maxNum分成minNum份，使每份之间的差最小
