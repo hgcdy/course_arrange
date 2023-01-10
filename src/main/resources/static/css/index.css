@@ -154,6 +154,10 @@ body {
     overflow-y: auto;
 }
 
+.scrollarea::-webkit-scrollbar{
+    display: none;
+}
+
 .fw-semibold {
     font-weight: 600;
 }

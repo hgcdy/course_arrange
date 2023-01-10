@@ -28,9 +28,14 @@ div {
 
 .chunk-card-body {
     position: absolute;
+    overflow: auto;
     top: 10%;
     height: 80%;
     width: 100%;
+}
+
+.chunk-card-body::-webkit-scrollbar{
+    display: none;
 }
 
 .chunk-card-foot {
@@ -55,6 +60,26 @@ div {
     height: 70%;
     width: 15%;
 }
+
+.chunk-card-body .item {
+    position: absolute;
+    height: 10%;
+    width: 100%;
+}
+
+.item .img {
+    width: 110px;
+    position: absolute;
+    right: 0;
+    height: 100%;
+}
+
+.item img {
+    width: 30px;
+    height: 30px;
+}
+
+
 
 
 

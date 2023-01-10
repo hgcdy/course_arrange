@@ -6,6 +6,9 @@ body {
     height: 77.5%;
     overflow: auto;
 }
+#form ::-webkit-scrollbar{
+    display: none;
+}
 
 #page-div {
     height: 5%;
