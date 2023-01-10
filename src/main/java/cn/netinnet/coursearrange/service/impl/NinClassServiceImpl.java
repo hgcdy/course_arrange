@@ -60,7 +60,8 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
 
     @Override
     public List<NinCourse> getCourseList(Long classId) {
-        return ninClassMapper.getCourseList(classId);
+        NinClass ninClass = ninClassMapper.selectById(classId);
+        return ninClassMapper.getCourseList(classId, ninClass.getCareerId());
     }
 
     @Override

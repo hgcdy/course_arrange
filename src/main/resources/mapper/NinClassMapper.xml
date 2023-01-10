@@ -70,14 +70,19 @@
     </select>
 
     <select id="getCourseList" resultType="cn.netinnet.coursearrange.entity.NinCourse">
-        SELECT nin_course.*
-        FROM  (nin_class INNER JOIN nin_career_course ON nin_class.career_id = nin_career_course.career_id)
-            INNER JOIN nin_course ON nin_career_course.course_id = nin_course.id
-        WHERE nin_class.id = #{classId}
-        UNION ALL
-        SELECT nin_course.*
-        FROM nin_arrange INNER JOIN nin_course ON nin_arrange.course_id = nin_course.id
-        WHERE nin_arrange.class_id = #{classId}
+        <choose>
+            <when test="careerId == 0">
+                SELECT nin_course.*
+                FROM nin_arrange INNER JOIN nin_course ON nin_arrange.course_id = nin_course.id
+                WHERE nin_arrange.class_id = #{classId}
+            </when>
+            <otherwise>
+                SELECT nin_course.*
+                FROM  (nin_class INNER JOIN nin_career_course ON nin_class.career_id = nin_career_course.career_id)
+                INNER JOIN nin_course ON nin_career_course.course_id = nin_course.id
+                WHERE nin_class.id = #{classId}
+            </otherwise>
+        </choose>
     </select>
 
     <!-- 班级课程数量+1 -->
@@ -121,7 +126,7 @@
         career_id
         <if test="list != null">
             <foreach collection="list" index="index" item="item" >
-                WHEN #{item.careerId} THEN course_num  + #{item.courseNum}
+                WHEN #{item.careerId} THEN course_num + #{item.courseNum}
             </foreach>
             END
             WHERE career_id IN

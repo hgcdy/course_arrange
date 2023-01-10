@@ -66,5 +66,5 @@ public interface NinClassMapper extends BaseMapper<NinClass> {
     /**
      * 根据班级id获取该班级选择的课程
      */
-    List<NinCourse> getCourseList(Long classId);
+    List<NinCourse> getCourseList(Long classId, Long careerId);
 }

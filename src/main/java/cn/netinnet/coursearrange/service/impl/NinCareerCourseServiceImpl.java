@@ -83,13 +83,13 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
                 ninCareerCourseArrayList.add(ninCareerCourse);
             }
         }
-        if (ninCareerCourseArrayList != null && ninCareerCourseArrayList.size() != 0) {
+        if (ninCareerCourseArrayList.size() != 0) {
             //插入新的专业选课记录
-            ninCareerCourseMapper.addBatchCourse(ninCareerCourseArrayList);
+            saveBatch(ninCareerCourseArrayList);
 
             //查询专业的课程数量
             List<ClassBo> bos = ninCareerCourseMapper.getCourseNum().stream().filter(i -> i.getCourseNum() > ApplicationConstant.CAREER_COURSE_NUM).collect(Collectors.toList());
-            if (bos != null && bos.size() > 0) {
+            if (bos.size() > 0) {
                 throw new ServiceException(412, bos.get(0).getCareerName() + "专业的课程数量将超出上限");
             }
 
