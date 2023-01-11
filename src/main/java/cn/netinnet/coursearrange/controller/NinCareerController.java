@@ -4,6 +4,8 @@ package cn.netinnet.coursearrange.controller;
 import cn.netinnet.coursearrange.entity.NinCareer;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinCareerService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +99,19 @@ public class NinCareerController {
     @PostMapping("alterCareer")
     public ResultModel alterCareer(NinCareer ninCareer) {
         return ResultModel.ok(ninCareerService.alterSingle(ninCareer));
+    }
+
+    @PostMapping("alterCollege")
+    public ResultModel alterCollege(String oldCollege, String newCollege) {
+        int count = ninCareerService.count(new LambdaQueryWrapper<NinCareer>().eq(NinCareer::getCollege, newCollege));
+        if (count == 0) {
+            ninCareerService.update(new LambdaUpdateWrapper<NinCareer>()
+                    .eq(NinCareer::getCollege, oldCollege)
+                    .set(NinCareer::getCollege, newCollege));
+            return ResultModel.ok();
+        } else {
+            return ResultModel.error(412, "重名");
+        }
     }
 
 

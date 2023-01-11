@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.authentication;
 
+import cn.netinnet.coursearrange.CourseArrangeApplication;
 import lombok.SneakyThrows;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.subject.Subject;
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class JWTFilter extends BasicHttpAuthenticationFilter {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(JWTFilter.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(CourseArrangeApplication.class);
 
     // 后端免认证接口 url
     public static String anonUrl;
@@ -44,11 +45,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         String host = httpRequest.getRemoteHost();//主机名
         int port = httpRequest.getRemotePort();//端口号
 
-        if ("0:0:0:0:0:0:0:1".equals(host)) {
-            host = "127.0.0.1";
-        }
-
-        LOGGER.info("请求用户: " + host + ":" + port);
+        LOGGER.info("请求用户: " + ("0:0:0:0:0:0:0:1".equals(host) ? "127.0.0.1" : host) + ":" + port);
         LOGGER.info("请求接口: " + url);
 
         if (jwtToken != null) {
