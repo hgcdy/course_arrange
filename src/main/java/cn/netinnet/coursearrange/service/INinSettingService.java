@@ -24,6 +24,8 @@ public interface INinSettingService extends IService<NinSetting> {
      * 修改设置
      */
     ResultModel alterBatch(String settingIds, String userType, String openTime, String closeTime);
-
+    /**
+     * 添加或更新quartz定时器任务
+     */
     void addTimer(List<NinSetting> ninSettingList);
 }

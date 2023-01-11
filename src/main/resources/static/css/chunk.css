@@ -1,6 +1,6 @@
-div {
-    border: 1px solid #000000;
-}
+/*div {*/
+/*    border: 1px solid #dddddd;*/
+/*}*/
 
 
 #chunk-main {
@@ -9,6 +9,7 @@ div {
     right: 1%;
     left: 1%;
     bottom: 1%;
+    border: 1px solid #dddddd;
 }
 
 .chunk-card {
@@ -17,6 +18,7 @@ div {
     left: 5%;
     width: 25%;
     height: 80%;
+    border: 1px solid #dddddd;
 }
 
 .chunk-card-head {
@@ -24,6 +26,7 @@ div {
     top: 0;
     width: 100%;
     height: 10%;
+    border: 1px solid #dddddd;
 }
 
 .chunk-card-body {
@@ -32,6 +35,7 @@ div {
     top: 10%;
     height: 80%;
     width: 100%;
+    border: 1px solid #dddddd;
 }
 
 .chunk-card-body::-webkit-scrollbar{
@@ -43,6 +47,7 @@ div {
     bottom: 0;
     width: 100%;
     height: 10%;
+    border: 1px solid #dddddd;
 }
 
 .chunk-card-foot input {
@@ -51,6 +56,7 @@ div {
     top: 15%;
     height: 70%;
     width: 70%;
+    border: 1px solid #dddddd;
 }
 
 .chunk-card-foot button {
@@ -59,19 +65,24 @@ div {
     top: 15%;
     height: 70%;
     width: 15%;
+    border: 1px solid #dddddd;
 }
 
 .chunk-card-body .item {
-    position: absolute;
-    height: 10%;
-    width: 100%;
+    margin: 2%;
+    /*position: absolute;*/
+    height: 50px;
+    width: 96%;
+    border: 1px solid #dddddd;
 }
 
 .item .img {
-    width: 110px;
+    width:fit-content;
     position: absolute;
-    right: 0;
-    height: 100%;
+    right: 3%;
+    height: 50px;
+    display: flex;
+    align-items: center
 }
 
 .item img {
@@ -79,10 +90,16 @@ div {
     height: 30px;
 }
 
+.item .text {
+    line-height:50px;
+    position: absolute;
+    height: 50px;
+    text-indent: 15px;
+}
 
 
 
 
 
-
+/*border: 1px solid #1dc072;*/
 

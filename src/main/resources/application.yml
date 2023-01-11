@@ -16,6 +16,7 @@ mybatis:
 
 #项目配置
 project:
+  projectName: 课程自动排课系统
   shiro:
     #免认证端口
     anonUrl: /,/login,/login/**,/logout,/nin-career

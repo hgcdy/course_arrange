@@ -38,7 +38,7 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
 
     @Override
     public List<String> getCollegeList() {
-        List<NinCareer> ninCareers = ninCareerMapper.selectList(new QueryWrapper<NinCareer>().select("distinct college").eq("id", -1));
+        List<NinCareer> ninCareers = ninCareerMapper.selectList(new QueryWrapper<NinCareer>().select("distinct college").ne("id", -1));
         return ninCareers.stream().map(NinCareer::getCollege).collect(Collectors.toList());
     }
 
