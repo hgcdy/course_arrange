@@ -4,7 +4,9 @@ import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.enums.OpenStateEnum;
 import cn.netinnet.coursearrange.enums.ResultEnum;
+import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinArrangeService;
@@ -29,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.function.Function;
@@ -76,6 +77,20 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void arrange() {
+
+        Integer courseCount = ninCourseMapper.selectCount(new QueryWrapper<NinCourse>());
+        Integer selectCount = ninTeacherCourseMapper.selectCount(new QueryWrapper<NinTeacherCourse>().select("DISTINCT course_id"));
+        if (courseCount > selectCount) {
+            throw new ServiceException(412, "尚有课程还未选择，不能进行排课");
+        }
+
+        Integer settingCount = ninSettingMapper.selectCount(new LambdaQueryWrapper<NinSetting>()
+                .eq(NinSetting::getUserType, UserTypeEnum.TEACHER.getName())
+                .eq(NinSetting::getOpenState, OpenStateEnum.OPEN.getCode()));
+        if (settingCount != 0) {
+            throw new ServiceException(412, "排课前请先关闭教师选课通道");
+        }
+
 
         long oldData = System.currentTimeMillis();
         //获取选修的排课记录

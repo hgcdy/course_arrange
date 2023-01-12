@@ -2,11 +2,14 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.Task.SettingTask;
 import cn.netinnet.coursearrange.bo.SettingBo;
+import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.enums.OpenStateEnum;
+import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinSettingMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.service.INinSettingService;
 import cn.netinnet.coursearrange.util.QuartzManager;
 import com.alibaba.fastjson.JSON;
@@ -36,6 +39,8 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
     @Autowired
     private NinSettingMapper ninSettingMapper;
     @Autowired
+    private INinArrangeService ninArrangeService;
+    @Autowired
     private QuartzManager quartzManager;
 
 
@@ -51,6 +56,16 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
 
     @Override
     public ResultModel alterBatch(String settingIds, String userType, String openTime, String closeTime) {
+        //todo 暂时保留
+        if (UserTypeEnum.STUDENT.getName().equals(userType)) {
+            NinArrange one = ninArrangeService.getOne(new LambdaQueryWrapper<NinArrange>()
+                    .ne(NinArrange::getCareerId, 0)
+                    .ne(NinArrange::getCareerId, -1), false);
+            if (one == null) {
+                throw new ServiceException(412, "请在排课后再开放学生选课通道");
+            }
+        }
+
         List<Long> settingIdList = JSON.parseArray(settingIds, Long.class);
 
         if (settingIdList != null && settingIdList.size() != 0) {
