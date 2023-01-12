@@ -9,8 +9,12 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import org.apache.shiro.authc.ExpiredCredentialsException;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 public class JWTUtil {
@@ -23,7 +27,7 @@ public class JWTUtil {
      * @return
      */
     public static String sign(UserInfo userInfo) {
-        Date date = new Date(System.currentTimeMillis() + 30 * 60 * 1000);
+        Date date = new Date(System.currentTimeMillis() + 3 * 60 * 60 * 1000);
         Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
         return JWT.create()
                 .withClaim("userInfo", JSON.toJSONString(userInfo))
@@ -57,6 +61,7 @@ public class JWTUtil {
             return true;
         } catch (TokenExpiredException e) {
             System.out.println("token已过期");
+
             //return false;
             throw new ExpiredCredentialsException(e.getMessage());
         } catch (Exception e) {
