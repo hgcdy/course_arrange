@@ -58,7 +58,6 @@ require(['../config'], function () {
         }
 
 
-
         //选课
         $("#details").click(function () {
             var typeId = null;

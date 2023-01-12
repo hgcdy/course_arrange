@@ -6,6 +6,8 @@ require(['../config'], function () {
             }
         });
 
+        util.navPath('/用户管理/专业管理');
+
         query();
 
         //所有课程按钮

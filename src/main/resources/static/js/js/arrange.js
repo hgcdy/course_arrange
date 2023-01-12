@@ -18,6 +18,8 @@ require(['../config'], function () {
         query();
         const STR = ["careerName", "className", "teacherName", "courseName", "houseName", "cnMust", "cnWeekly", "startTime", "endTime", "cnWeek", "cnPitchNum"];
 
+        util.navPath('/排课管理/排课');
+
         //排课
         $("#arrange").click(function (){
             $.ajax({

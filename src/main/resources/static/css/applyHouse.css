@@ -1,0 +1,93 @@
+
+
+#main {
+    position: absolute;
+    top: 1%;
+    right: 1%;
+    left: 1%;
+    bottom: 1%;
+    border: 1px solid #dddddd;
+}
+
+#unselected {
+    position: absolute;
+    height: 100%;
+    width: 85%;
+    border: 1px solid #dddddd;
+}
+
+#apply-nav {
+    position: absolute;
+    height: 5%;
+    width: 100%;
+}
+
+#apply-nav div {
+    position: absolute;
+    height: 100%;
+    width: 10%;
+    border: 1px solid #dddddd;
+    font-size: 20px;
+    text-align: center;
+}
+
+.apply-body {
+    position: absolute;
+    height: 30%;
+    width: 100%;
+    overflow: auto;
+    border: 1px solid #dddddd;
+}
+
+.apply-body::-webkit-scrollbar{
+    display: none;
+}
+
+.items {
+    height: 40px;
+    width: 100%;
+    display: flex;
+    font-size: 20px;
+    line-height: 40px;
+    text-indent:10px
+}
+
+.item {
+    height: 30px;
+    width: 15%;
+    margin: 5px;
+    font-size: 20px;
+    line-height: 30px;
+    text-align: center;
+    background-color: #c1d6cc;
+}
+
+#unselected button {
+    position: absolute;
+    height: 5%;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
+#selected {
+    position: absolute;
+    right: 0;
+    height: 100%;
+    width: 15%;
+    overflow: auto;
+
+}
+
+#selected::-webkit-scrollbar{
+    display: none;
+}
+
+#selected div {
+    height: 35px;
+    width: 100%;
+    border: 1px solid #dddddd;
+    font-size: 20px;
+    line-height: 35px;
+    text-align: center;
+}

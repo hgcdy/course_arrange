@@ -1,200 +1,39 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<!--补课-->
 <head>
     <meta charset="UTF-8">
     <title>title</title>
-    <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-    <link th:href="@{css/style.css}" rel="stylesheet">
     <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/applyHouse},defer=true"></script>
+    <link th:href="@{css/applyHouse.css}" rel="stylesheet">
     <script th:inline="javascript">
-        var $$$teacherId = [[${teacherId}]];
+
     </script>
 </head>
 <body>
-<!--检索查询-->
-<div class="border-bottom" style="height: 7%;">
-    <!--    <span>-->
-    <!--        教室名称:-->
-    <!--        <input type="text" id="houseName">-->
-    <!--    </span>&nbsp;&nbsp;-->
-    <span>
-        <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupHouseTypeButton"
-                data-bs-toggle="dropdown" aria-expanded="false">
-            教室类型
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dropupHouseTypeButton" data-code="">
-            <li><a class="dropdown-item" href="javaScript:void(0)" data-code="0">普通教室</a></li>
-            <li><a class="dropdown-item" href="javaScript:void(0)" data-code="1">机房</a></li>
-            <li><a class="dropdown-item" href="javaScript:void(0)" data-code="2">实验室</a></li>
-        </ul>
-    </span>&nbsp;&nbsp;
-    <span>
-        <button class="btn btn-secondary dropdown-toggle dropupButton" type="button" id="dropupTeacherButton"
-                data-bs-toggle="dropdown" aria-expanded="false">
-            * 教师
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dropupTeacherButton" data-code="">
-
-        </ul>
-    </span>&nbsp;&nbsp;
-    <span>
-        <button class="btn btn-secondary dropupButton" type="button" id="dropupClassButton">
-            * 班级
-            <!--            弹窗多选-->
-        </button>
-    </span>&nbsp;&nbsp;
-    <span>
-        教室座位数:
-        <input type="number" min="0" max="200" id="seat1" style="width: 70px;">
-        —
-        <input type="number" min="0" max="200" id="seat2" style="width: 70px;">
-    </span>&nbsp;&nbsp;
-    <span>
-        * 周次
-        <input type="number" max="20" min="1" value="1" id="weekly">
-    </span>
-
-
-    <span>
-        <button type="button" class="btn btn-info" id="query">查询</button>
-        <button type="button" class="btn btn-info" id="reset">重置</button>
-    </span>
+<div id="main">
+    <div id="unselected">
+        <div id="apply-nav">
+            <div id="nav-class" style="left: 0">班级</div>
+            <div id="nav-house" style="left: 10%">教室</div>
+            <div id="nav-teacher" style="left: 20%">教师</div>
+            <div id="nav-course" style="left: 30%">课程</div>
+            <div id="nav-time" style="left: 40%">日期</div>
+        </div>
+        <div class="apply-body" style="top: 5%"></div>
+        <div class="apply-body" style="top: 35%"></div>
+        <div class="apply-body" style="top: 65%"></div>
+        <button>确定</button>
+    </div>
+    <div id="selected">
+        <div id="class">班级</div>
+        <div id="house">教室</div>
+        <div id="teacher">教师</div>
+        <div id="course">课程</div>
+        <div id="time">日期</div>
+    </div>
 </div>
 
 
-<div class="border-bottom" style="height: 3%;">
-    操作流程: 选择条件(带* 为必填项) -> 查询 -> 点击右侧时间表 -> 左侧教室教室列表 -> 选择课程 -> 确定申请
-</div>
 
-<div id="house-select" class="border-bottom">
-    <table class="table table-sm table-bordered" style="table-layout: fixed">
-        <thead>
-        <tr>
-            <th>教室</th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-</div>
-<div id="time-form">
-    <!--        时间表-->
-    <table class="table table-sm table-bordered" style="table-layout: fixed">
-        <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">星期一</th>
-            <th scope="col">星期二</th>
-            <th scope="col">星期三</th>
-            <th scope="col">星期四</th>
-            <th scope="col">星期五</th>
-            <th scope="col">星期六</th>
-            <th scope="col">星期日</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <th scope="row">第一节课</th>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <th scope="row">第二节课</th>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <th scope="row">第三节课</th>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <th scope="row">第四节课</th>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <th scope="row">第五节课</th>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
-<div id="apply" class="border-bottom">
-    <!--    申请-->
-    <table class="table table-sm table-bordered" style="table-layout: fixed;">
-        <tr>
-            <td>时间</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>教室</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>教师</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>班级</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>课程</td>
-            <td>
-                <input type="button" value="选择课程" id="input1">
-            </td>
-        </tr>
-    </table>
-    <button  type="button" class="btn btn-info" id="affirm-apply">确定申请</button>
-</div>
-
-<div id="classWindow">
-    <!--    班级选择弹窗-->
-    <table class="table table-sm table-bordered" style="table-layout: fixed">
-        <thead>
-        <tr>
-            <th scope="col">班级选择</th>
-            <th colspan='4'></th>
-            <th>
-                <button style="width: 100%;" type="button" class="btn btn-info" id="confirm">确定</button>
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-
-        </tbody>
-    </table>
-
-
-</div>
 </body>
 </html>
