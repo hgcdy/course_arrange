@@ -11,10 +11,22 @@ define(function () {
         return token;
     }
 
+    var setDetailInfo = function (detailId, type) {
+        sessionStorage.setItem('detailId', detailId);
+        sessionStorage.setItem('type', type);
+    }
+
+    var getDetailInfo = function () {
+        var detailId = sessionStorage.getItem('detailId');
+        var type = sessionStorage.getItem('type');
+        return type + "id=" + detailId;
+    }
+
+
+
     var navPath = function (obj) {
         var topWindow = $(window.parent.document);
         var $iframe = topWindow.find('#navigation');
-        //一共两种方法，你可以选择其中一种来使用
         $iframe.text(obj);
     }
 

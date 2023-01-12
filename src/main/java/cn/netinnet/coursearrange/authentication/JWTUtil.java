@@ -27,7 +27,7 @@ public class JWTUtil {
      * @return
      */
     public static String sign(UserInfo userInfo) {
-        Date date = new Date(System.currentTimeMillis() + 3 * 60 * 60 * 1000);
+        Date date = new Date(System.currentTimeMillis() + 4 * 60 * 60 * 1000);
         Algorithm algorithm = Algorithm.HMAC256(SECRET_KEY);
         return JWT.create()
                 .withClaim("userInfo", JSON.toJSONString(userInfo))
@@ -61,8 +61,6 @@ public class JWTUtil {
             return true;
         } catch (TokenExpiredException e) {
             System.out.println("token已过期");
-
-            //return false;
             throw new ExpiredCredentialsException(e.getMessage());
         } catch (Exception e) {
             System.out.println("token校验失败");
