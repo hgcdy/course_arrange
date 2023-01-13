@@ -27,6 +27,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.expression.Lists;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -532,17 +533,17 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
         List<Long> teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(classIdList);
 
-        LambdaQueryWrapper<NinArrange> wrapper = new QueryWrapper<NinArrange>().select("weekly start_time end_time week pitch_num").lambda();
+        LambdaQueryWrapper<NinArrange> wrapper = new QueryWrapper<NinArrange>().select("DISTINCT weekly start_time end_time week pitch_num").lambda();
         wrapper.in(NinArrange::getTeachClassId, teachClassIdList)
                 .or().eq(NinArrange::getHouseId, houseId)
                 .or().eq(NinArrange::getTeacherId, teacherId);
         List<NinArrange> ninArrangeList = ninArrangeMapper.selectList(wrapper);
 
-
-
-
         return null;
     }
+
+
+
 
     @Override
     public int addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList) {

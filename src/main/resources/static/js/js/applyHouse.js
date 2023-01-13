@@ -35,9 +35,50 @@ require(['../config'], function () {
         })
 
         $("#unselected button").click(function () {
+            var classIdList = getIdList($("#class"));
+            if (classIdList === "[]") {
+                util.hint("请选择班级");
+            }
+            var houseId = $("#house").next().attr("data-id");
+            if (houseId === undefined) {
+                util.hint("请选择教室");
+            }
+            var teacherId = $("#teacher").next().attr("data-id");
+            if (teacherId === undefined) {
+                util.hint("请选择教师");
+            }
+            var courseId = $("#course").next().attr("data-id");
+            if (courseId === undefined) {
+                util.hint("请选择课程");
+            }
+            var weeklyList = getIdList($("#weekly"));
+            if (classIdList === "[]") {
+                util.hint("请选择周次");
+            }
+            var weekList = getIdList($("#week"));
+            if (classIdList === "[]") {
+                util.hint("请选择星期");
+            }
+
+            //todo 返回时间接口
 
         })
 
+
+        function getIdList(obj) {
+            var nextAll = $(obj).nextAll();
+            var str = "[";
+            for (const key in nextAll) {
+                var id = $(nextAll[key]).attr("data-id");
+                if (id !== undefined) {
+                    str = str + id + ",";
+                } else {
+                    break;
+                }
+            }
+            str = str + "]";
+            return str;
+        }
 
         function getClass() {
             var $apply = $(".apply-body:first");
@@ -198,7 +239,6 @@ require(['../config'], function () {
 
         function getTime() {
             var list = Array();
-            list.push({"id": 0, "name": "不限"});
             for (let i = 1; i <= 20; i++) {
                 list.push({"id": i, "name": "第" + util.turn(i) + "周"});
             }
@@ -210,7 +250,6 @@ require(['../config'], function () {
             })
 
             var list1 = Array();
-            list1.push({"id": 0, "name": "不限"});
             for (let i = 1; i <= 6; i++) {
                 list1.push({"id": i, "name": "星期" + util.turn(i)});
             }
@@ -221,8 +260,6 @@ require(['../config'], function () {
             $apply1.find(".item").click(function () {
                 selectedItem($(this).attr("data-id"), $(this).text(), "#week");
             })
-
-
         }
 
         //items块标题
@@ -248,13 +285,34 @@ require(['../config'], function () {
         }
         //item块选中
         function selectedItem(id, name, type) {
+            var nextAll = $(type).nextAll();
+
+            if (type === "#house" || type === "#teacher" || type === "#course") {
+                var attr1 = $(nextAll[0]).attr("data-id");
+                if (attr1 !== undefined) {
+                    if (attr1 === id) {
+                        util.hint("教室、教师、课程不可多选");
+                        return;
+                    }
+                    $(nextAll[0]).remove();
+                }
+            } else {
+                for (const key in nextAll) {
+                    var attr2 = $(nextAll[key]).attr("data-id");
+                    if (attr2 !== undefined) {
+                        if (id === attr2) {
+                            return;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
             var img = $("<img src='../../img/alter.png'>").click(function () {
                 $(this).parent().remove();
             });
             var $1 = $("<div></div>").text(name).attr("data-id", id).append(img);
             $(type).after($1);
         }
-
-
     })
 })
