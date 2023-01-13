@@ -31,21 +31,11 @@ public class NinTeacherCourseController {
     @Autowired
     private INinTeacherCourseService ninTeacherCourseService;
 
+
     //跳转教师-课程页面
     @GetMapping("")
-    public ModelAndView gotoTeacherCourse(Long teacherId){
-        ModelAndView modelAndView = new ModelAndView();
-        if (teacherId == null) {
-            UserInfo userInfo = UserUtil.getUserInfo();
-            if (userInfo.getUserType().equals("teacher")) {
-                teacherId = userInfo.getUserId();
-                modelAndView = new ModelAndView("viewTea/teacherCourseView");
-            }
-        } else {
-            modelAndView = new ModelAndView("view/teacherCourseView");
-        }
-        modelAndView.addObject("teacherId", String.valueOf(teacherId));
-        return modelAndView;
+    public ModelAndView gotoTeacherCourse(){
+        return new ModelAndView("view/teacherCourseView");
     }
 
     /**

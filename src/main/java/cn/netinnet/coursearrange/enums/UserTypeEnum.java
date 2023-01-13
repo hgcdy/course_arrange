@@ -3,7 +3,9 @@ package cn.netinnet.coursearrange.enums;
 public enum UserTypeEnum {
     ADMIN(0, "admin"),
     STUDENT(1, "student"),
-    TEACHER(2, "teacher");
+    TEACHER(2, "teacher"),
+
+    CLAZZ(-1, "class");
 
     private int code;
     private String name;

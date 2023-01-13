@@ -7,12 +7,6 @@
     <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet">
     <script th:src="@{/js/require.js}" th:attr="data-main=@{/js/js/courseForm},defer=true"></script>
-    <script th:inline="javascript">
-        var classId = [[${classId}]];
-        var studentId = [[${studentId}]];
-        var teacherId = [[${teacherId}]];
-        var type = [[${type}]];
-    </script>
 </head>
 
 <body>
@@ -23,7 +17,7 @@
     <button type="button" class="btn btn-info" id="formButton">课程表</button>
     <button type="button" class="btn" id="exportForm">课程表导出</button>
     <select name="" id="count" style="">
-        <option value="">学期</option>
+        <option value=0>学期</option>
         <option value=1>第一周</option>
         <option value=2>第二周</option>
         <option value=3>第三周</option>

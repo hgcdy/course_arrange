@@ -83,7 +83,7 @@ require(['../config'], function () {
                 dataType: "json",
                 type: "post",
                 data: {
-                    teacherId: teacherId
+                    teacherId: util.getDetailId()
                 },
                 success: function (data) {
                     if (data.code == 200) {
@@ -109,9 +109,7 @@ require(['../config'], function () {
 
         //课程表
         $("#formButton").click(function (){
-            // var str = "nin-arrange/courseForm?teacherId=" + teacherId + "&path=nin-teacher-course?teacherId=" + teacherId;
-            var str = "nin-arrange/courseForm?teacherId=" + teacherId + "&type=teacher&token=" + util.getToken();
-            window.location.href = str;
+            window.location.href = "nin-arrange/courseForm?token=" + util.getToken();
         })
 
     })

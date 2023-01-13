@@ -81,7 +81,7 @@ require(['../config'], function () {
                 dataType: "json",
                 type: "post",
                 data: {
-                    studentId: studentId
+                    studentId: util.getDetailId()
                 },
                 success: function (data) {
                     if (data.code == 200) {
@@ -117,8 +117,7 @@ require(['../config'], function () {
 
         //课程表
         $("#formButton").click(function (){
-            var str = "nin-arrange/courseForm?studentId=" + studentId + "&type=student&token=" + util.getToken();
-            window.location.href = str;
+            window.location.href = "nin-arrange/courseForm?token=" + util.getToken();
         })
 
     })

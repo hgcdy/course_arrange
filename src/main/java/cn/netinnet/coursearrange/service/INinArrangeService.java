@@ -58,7 +58,7 @@ public interface INinArrangeService extends IService<NinArrange> {
      List<Object> getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId);
     /**
      * 导出，
-     * @param type 0-班级， 1-教师， 2-学生
+     * @param type class-班级， teacher-教师， student-学生
      */
      void exportCourseForm(String type, Long id, Integer count, HttpServletRequest request, HttpServletResponse response);
 }

@@ -48,15 +48,11 @@ public class NinArrangeController {
         return new ModelAndView("view/arrangeView");
     }
 
+
     //跳转各管理的页面的课程表
     @GetMapping("/nin-arrange/courseForm")
-    public ModelAndView gotoFormView(Long classId, Long studentId, Long teacherId, String type) {
-        ModelAndView modelAndView = new ModelAndView("view/courseFormView");
-        modelAndView.addObject("classId", String.valueOf(classId));
-        modelAndView.addObject("studentId", String.valueOf(studentId));
-        modelAndView.addObject("teacherId", String.valueOf(teacherId));
-        modelAndView.addObject("type", type);
-        return modelAndView;
+    public ModelAndView gotoFormView() {
+        return new ModelAndView("view/courseFormView");
     }
 
     @GetMapping("/courseForm/{type}")
@@ -202,11 +198,10 @@ public class NinArrangeController {
         return ResultModel.ok();
     }
 
+
     //跳转班级课程页面
     @GetMapping("nin-class-course")
-    public ModelAndView gotoView(Long classId) {
-        ModelAndView modelAndView = new ModelAndView("view/classCourseView");
-        modelAndView.addObject("classId", String.valueOf(classId));
-        return modelAndView;
+    public ModelAndView gotoClassCourse() {
+        return new ModelAndView("view/classCourseView");
     }
 }

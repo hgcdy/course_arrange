@@ -6,16 +6,16 @@ require(['../config'], function () {
             }
         });
 
-        var count = null;
+        var count = 0;
 
-        if (classId == "null") {
-            classId = null;
-        }
-        if (studentId == "null") {
-            studentId = null;
-        }
-        if (teacherId == "null") {
-            teacherId = null;
+
+
+        function getDetail() {
+            var detailType = util.getDetailType();
+            var detailId = util.getDetailId();
+            var map = new Map;
+            map.set(detailType, detailId);
+            return map;
         }
 
         query();
@@ -28,15 +28,16 @@ require(['../config'], function () {
 
         function query() {
             $("td").text("");
+            var detail = getDetail();
             $.ajax({
                 url: "/nin-arrange/getInfo",
                 dataType: "json",
                 type: "post",
                 data: {
                     count: count,
-                    classId: classId,
-                    studentId: studentId,
-                    teacherId: teacherId
+                    classId: detail.get("class"),
+                    studentId: detail.get("student"),
+                    teacherId: detail.get("teacher")
                 },
                 success: function (data) {
                     if (data.code == 200) {
@@ -60,24 +61,15 @@ require(['../config'], function () {
 
         //选课
         $("#details").click(function () {
-            var typeId = null;
-            if (type == "teacher") {
-                typeId = teacherId;
-            } else if (type == "class") {
-                typeId = classId;
-            } else if (type == "student") {
-                typeId = studentId;
-            }
-            var str = "nin-" + type +"-course?" + type + "Id=" + typeId + "&token=" + util.getToken();
-            window.location.href = str;
+            var type = util.getDetailType();
+            window.location.href = "http://" + window.location.host + "/nin-" + type + "-course?token=" + util.getToken();
         })
         $("#formButton").click(function (){
             window.location.href = window.location.href;
         })
         //返回
         $("#back").click(function (){
-            var str = "nin-" + type + "?token=" + util.getToken();
-            window.location.href = str;
+            window.location.href = "http://" + window.location.host + "/nin-" + util.getDetailType() + "?token=" + util.getToken();
         })
 
         //课程表导出
@@ -89,17 +81,11 @@ require(['../config'], function () {
         function isExport(){
             var subData ={};
             subData.year =new Date().getFullYear();
-            var typeId = null;
-            if (type == "teacher") {
-                typeId = teacherId;
-            } else if (type == "class") {
-                typeId = classId;
-            } else if (type == "student") {
-                typeId = studentId;
-            }
+
+
             var xhr = new XMLHttpRequest();
             xhr.withCredentials = true;//为请求添加Cookie
-            xhr.open('GET', '/exportCourseForm?id='+ typeId + "&type=" + type + "&count=" + count + "&token=" + util.getToken(), true); // 也可以使用POST方式，根据接口
+            xhr.open('GET', '/exportCourseForm?id='+ util.getDetailId() + "&type=" + util.getDetailType() + "&count=" + count + "&token=" + util.getToken(), true); // 也可以使用POST方式，根据接口
             // xhr.send("id=" + typeId + "&type=" + type );
             // xhr.setRequestHeader('content-type', 'application/json');
             xhr.setRequestHeader('content-type', 'application/octet-stream');

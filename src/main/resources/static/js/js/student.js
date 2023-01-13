@@ -177,7 +177,8 @@ require(['../config'], function () {
                             //详情
                             $(".details").click(function () {
                                 var id = $(this).parent().parent().children("th").attr("data-id");
-                                window.location.href = "nin-student-course?studentId=" + id + "&token=" + util.getToken();
+                                util.setDetailInfo(id, "student");
+                                window.location.href = "nin-student-course?token=" + util.getToken();
                             })
 
                         } else {

@@ -31,25 +31,13 @@ public class NinStudentCourseController {
     @Autowired
     private INinStudentCourseService ninStudentCourseService;
 
+
     /**
      * 跳转学生-课程页面
-     * @param studentId
-     * @return
      */
     @GetMapping("")
-    public ModelAndView gotoView(Long studentId){
-        ModelAndView modelAndView = new ModelAndView();
-        if (studentId == null) {
-            UserInfo userInfo = UserUtil.getUserInfo();
-            if (userInfo.getUserType().equals("student")) {
-                studentId = userInfo.getUserId();
-                modelAndView = new ModelAndView("viewStu/studentCourseView");
-            }
-        } else {
-            modelAndView = new ModelAndView("view/studentCourseView");
-        }
-        modelAndView.addObject("studentId", String.valueOf(studentId));
-        return modelAndView;
+    public ModelAndView gotoStudentCourse(){
+        return new ModelAndView("view/studentCourseView");
     }
 
     /**

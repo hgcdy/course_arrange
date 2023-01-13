@@ -483,7 +483,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
         for (ArrangeBo bo : info) {
             StringBuffer str = new StringBuffer();
-            if (count != null) {
+            if (count != null && count != 0) {
                 //单双周
                 if (count % 2 == 0 && bo.getWeekly() == 1)//课程记录为单周，但count为双，跳过
                     continue;
@@ -516,60 +516,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             }
         }
 
-        //count 查询某一周的课表 空则表示整个学期
-//        if (count != null) {
-//            for (ArrangeBo bo : info) {
-//                //单双周
-//                if (count % 2 == 0 && bo.getWeekly() == 1) {//课程记录为单周，但count为双，跳过
-//                    continue;
-//                }
-//                if (count % 2 == 1 && bo.getWeekly() == 2) {//课程记录为双周，但count为单，跳过
-//                    continue;
-//                }
-//                //count在开始结束范围内
-//                if (bo.getEndTime() < count) {
-//                    continue;
-//                }
-//                if (bo.getStartTime() > count) {
-//                    continue;
-//                }
-//
-//                String key = "" + bo.getWeek() + bo.getPitchNum();
-//
-//                String value = "" + bo.getCourseName() + "/" + bo.getHouseName() + "/" + bo.getTeacherName() + "/" + bo.getClassName();
-//
-//                hashMap.put(key, value);
-//            }
-//        } else {
-//            for (ArrangeBo bo : info) {
-//
-//                if (bo.getWeekly() == null) {//为空，即没有时间，跳过
-//                    continue;
-//                }
-//
-//                String key = "" + bo.getWeek() + bo.getPitchNum();
-//
-//                String str = bo.getStartTime() + "-" + bo.getEndTime() + "周";
-//                if (bo.getWeek() == 1) {
-//                    str = str + "(单)";
-//                } else if (bo.getWeek() == 2) {
-//                    str = str + "(双)";
-//                }
-//
-//                String value = "" + bo.getCourseName() + "/" + str + "/" + bo.getHouseName() + "/" + bo.getTeacherName() + "/" + bo.getClassName() + "/" + (bo.getMust() == 1 ? "必修" : "选修");
-//
-//                if (bo.getCareerId() == -1) {
-//                    value += "(补课)";
-//                }
-//
-//                //同一节要上两种课(选修和必修或单双周)
-//                if (hashMap.get(key) == null) {
-//                    hashMap.put(key, value);
-//                } else {
-//                    hashMap.put(key, hashMap.get(key) + "##" + value);
-//                }
-//            }
-//        }
         return hashMap;
     }
 
@@ -875,13 +821,13 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             count = null;
         }
         //根据type和id获取排课记录列表和id代表的角色名称
-        if (type.equals("class")) {
+        if (type.equals(UserTypeEnum.CLAZZ.getName())) {
             name = ninClassMapper.selectById(id).getClassName();
             info = getInfo(id, null, null, count);
-        } else if (type.equals("teacher")) {
+        } else if (type.equals(UserTypeEnum.TEACHER.getName())) {
             name = ninTeacherMapper.selectById(id).getTeacherName();
             info = getInfo(null, id, null, count);
-        } else if (type.equals("student")) {
+        } else if (type.equals(UserTypeEnum.STUDENT.getName())) {
             name = ninStudentMapper.selectById(id).getStudentName();
             info = getInfo(null, null, id, count);
         }
