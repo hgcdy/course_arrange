@@ -25,7 +25,9 @@ project:
     id: 100000000000000000
     name: admin
     code: admin
-    password: 123456
+    #密码为123456
+    password: e10adc3949ba59abbe56e057f20f883e
+
 
 
 

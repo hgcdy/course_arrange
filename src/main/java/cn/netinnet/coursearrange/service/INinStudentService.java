@@ -37,10 +37,7 @@ public interface INinStudentService extends IService<NinStudent> {
      * 根据id查询单条记录
      */
     NinStudent getStudentById(Long id);
-    /**
-     * 学生用户登录
-     */
-    NinStudent verify(String code, String password);
+
     /**
      * 学生修改密码
      */

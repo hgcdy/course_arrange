@@ -176,22 +176,6 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
     }
 
     @Override
-    public NinStudent verify(String code, String password) {
-        NinStudent ninStudent = ninStudentMapper.selectOne(new QueryWrapper<>(new NinStudent() {{
-            setStudentCode(code);
-        }}));
-        if (ninStudent != null) {
-            if (ninStudent.getStudentPassword().equals(MD5.getMD5Encode(password))) {
-                return ninStudent;
-            } else {
-                throw new ServiceException(412, "密码错误");
-            }
-        } else {
-            throw new ServiceException(412, "账号不存在");
-        }
-    }
-
-    @Override
     public ResultModel alterPassword(String code, String oldPassword, String newPassword) {
         if (newPassword != null) {
             if (newPassword.length() < 6) {

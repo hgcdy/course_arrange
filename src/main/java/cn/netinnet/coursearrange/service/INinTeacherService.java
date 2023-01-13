@@ -36,10 +36,7 @@ public interface INinTeacherService extends IService<NinTeacher> {
      * 根据id获取单条记录
      */
     NinTeacher getTeacherById(Long id);
-    /**
-     * 教师登录验证
-     */
-    NinTeacher verify(String code, String password);
+
     /**
      * 获取所有教师
      */

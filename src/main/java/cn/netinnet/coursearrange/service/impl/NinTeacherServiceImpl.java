@@ -125,22 +125,6 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
 
 
     @Override
-    public NinTeacher verify(String code, String password) {
-        NinTeacher ninTeacher = ninTeacherMapper.selectOne(new QueryWrapper<>(new NinTeacher() {{
-            setTeacherCode(code);
-        }}));
-        if (ninTeacher != null) {
-            if (ninTeacher.getTeacherPassword().equals(MD5.getMD5Encode(password))) {
-                return ninTeacher;
-            } else {
-                throw new ServiceException(412, "密码错误");
-            }
-        } else {
-            throw new ServiceException(412, "账号不存在");
-        }
-    }
-
-    @Override
     public List<NinTeacher> getTeaAll() {
         UserInfo userInfo = UserUtil.getUserInfo();
         if (userInfo.equals(ApplicationConstant.TYPE_TEACHER)) {

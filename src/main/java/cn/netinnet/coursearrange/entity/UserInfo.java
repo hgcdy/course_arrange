@@ -1,7 +1,10 @@
 package cn.netinnet.coursearrange.entity;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
+@Data
 public class UserInfo implements Serializable {
 
     /**
@@ -27,35 +30,10 @@ public class UserInfo implements Serializable {
     public UserInfo() {
     }
 
-    public Long getUserId() {
-        return UserId;
-    }
-
-    public void setUserId(Long userId) {
+    public UserInfo(Long userId, String userName, String userCode, String userType) {
         UserId = userId;
-    }
-
-    public String getUserName() {
-        return UserName;
-    }
-
-    public void setUserName(String userName) {
         UserName = userName;
-    }
-
-    public String getUserCode() {
-        return UserCode;
-    }
-
-    public void setUserCode(String userCode) {
         UserCode = userCode;
-    }
-
-    public String getUserType() {
-        return UserType;
-    }
-
-    public void setUserType(String userType) {
         UserType = userType;
     }
 
