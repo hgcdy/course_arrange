@@ -3,10 +3,8 @@ package cn.netinnet.coursearrange.controller;
 
 import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
-import cn.netinnet.coursearrange.entity.UserInfo;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinTeacherCourseService;
-import cn.netinnet.coursearrange.util.UserUtil;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;

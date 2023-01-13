@@ -1,7 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
-import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.UserInfo;
@@ -12,7 +11,6 @@ import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
 import cn.netinnet.coursearrange.service.ILoginService;
 import cn.netinnet.coursearrange.util.MD5;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

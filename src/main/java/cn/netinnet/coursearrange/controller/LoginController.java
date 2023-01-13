@@ -2,13 +2,9 @@ package cn.netinnet.coursearrange.controller;
 
 import cn.netinnet.coursearrange.authentication.JWTUtil;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
-import cn.netinnet.coursearrange.entity.NinStudent;
-import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.UserInfo;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.ILoginService;
-import cn.netinnet.coursearrange.service.INinStudentService;
-import cn.netinnet.coursearrange.service.INinTeacherService;
 import com.sun.istack.internal.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,19 +35,17 @@ public class LoginController {
     public ModelAndView welcome() {return new ModelAndView("welcome");}
 
     //判断登录用户类型
-    @GetMapping("/index")
-    public ModelAndView index(String type) {
-        ModelAndView modelAndView = null;
+    @GetMapping("/index/{type}")
+    public ModelAndView index(@PathVariable String type) {
+        String path = "login";
         if (type.equals(ApplicationConstant.TYPE_ADMIN)) {
-            modelAndView = new ModelAndView("index");
+            path = "index";
         } else if (type.equals(ApplicationConstant.TYPE_STUDENT)) {
-            modelAndView = new ModelAndView("viewStu/indexStu");
+            path = "viewStu/indexStu";
         } else if (type.equals(ApplicationConstant.TYPE_TEACHER)) {
-            modelAndView = new ModelAndView("viewTea/indexTea");
-        } else {
-            modelAndView = new ModelAndView("login");
+            path = "viewTea/indexTea";
         }
-        return modelAndView;
+        return new ModelAndView(path);
     }
 
     @PostMapping("/login/{type}")
