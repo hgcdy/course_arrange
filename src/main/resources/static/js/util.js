@@ -16,13 +16,12 @@ define(function () {
         sessionStorage.setItem('type', type);
     }
 
-    var getDetailInfo = function () {
-        var detailId = sessionStorage.getItem('detailId');
-        var type = sessionStorage.getItem('type');
-        return type + "id=" + detailId;
+    var getDetailId = function () {
+        return sessionStorage.getItem('detailId');
     }
-
-
+    var getDetailType = function () {
+        return sessionStorage.getItem('type');
+    }
 
     var navPath = function (obj) {
         var topWindow = $(window.parent.document);
@@ -181,13 +180,27 @@ define(function () {
 
 
     return {
+        //表格
         createForm: createForm,
+        //弹窗
         popup: popup,
+        //报错弹幕
         hint: hint,
+        //时间转中文字符串
         timeString: timeString,
+        //数字转大写数字
         turn: turn,
+        //导航栏信息
         navPath: navPath,
+        //token缓存
         setToken: setToken,
-        getToken: getToken
+        //获取token
+        getToken: getToken,
+        //详情缓存
+        setDetailInfo: setDetailInfo,
+        //获取详情的id
+        getDetailId: getDetailId,
+        //获取详情的类型
+        getDetailType: getDetailType
 };
 });
