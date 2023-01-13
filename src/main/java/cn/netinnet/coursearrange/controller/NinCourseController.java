@@ -115,19 +115,7 @@ public class NinCourseController {
     }
 
     /**
-     * 教室申请-获取可选课程
-     * @param teacherId
-     * @param classIdList
-     * @param houseId
-     * @return
-     */
-    @PostMapping("/getSelectApplyList")
-    public ResultModel getSelectApplyList(Long teacherId, Long houseId, String classIdList) {
-        return ResultModel.ok(ninCourseService.getSelectApplyList(teacherId, houseId, classIdList));
-    }
-
-    /**
-     * 获取全部的课程
+     * 获取全部课程
      * @return
      */
     @GetMapping("/getCourseAll")

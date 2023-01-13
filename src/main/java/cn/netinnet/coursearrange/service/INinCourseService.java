@@ -40,10 +40,6 @@ public interface INinCourseService extends IService<NinCourse> {
      * @param sign 0-选修，1-必修，null或其他全选
      */
     List<NinCourse> getSelectCourseList(Integer sign);
-    /**
-     * 教室申请的课程选择
-     */
-    List<NinCourse> getSelectApplyList(Long teacher, Long houseId, String classIdList);
 
     /**
      * 获取全部课程

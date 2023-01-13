@@ -34,11 +34,6 @@ public interface INinArrangeService extends IService<NinArrange> {
      */
     Map<String, StringBuffer> getInfo(Long classId, Long teacherId, Long studentId, Integer count);
     /**
-     * 补课-获取空闲资源（教室申请）
-     */
-    Map<String, List<HouseBo>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly);
-
-    /**
      * 补课，获取时间
      * @param bo
      * @return
@@ -57,14 +52,6 @@ public interface INinArrangeService extends IService<NinArrange> {
      * 根据id删除排课记录
      */
     int delArrange(Long id);
-    /**
-     * 修改排课记录
-     */
-    int alterArrange(NinArrange arrange);
-    /**
-     * 根据课程id获取可选教室教师或根据教室教师获取时间
-     */
-     List<Object> getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId);
     /**
      * 导出，
      * @param type class-班级， teacher-教师， student-学生

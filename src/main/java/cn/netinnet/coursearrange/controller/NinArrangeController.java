@@ -114,26 +114,10 @@ public class NinArrangeController {
         return ResultModel.ok(ninArrangeService.getInfo(classId, teacherId, studentId, count));
     }
 
-    /**
-     * 补课-获取空闲资源（教室申请）
-     *
-     * @param teacherId 教师id
-     * @param classIds  班级id列表
-     * @param houseId   教室id
-     * @param houseType 教室类型
-     * @param seatMin   座位
-     * @param seatMax   座位
-     * @param weekly    周次
-     * @return
-     */
-    @PostMapping("/nin-arrange/getLeisure")
-    public ResultModel getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly) {
-        Map<String, List<HouseBo>> leisure = ninArrangeService.getLeisure(teacherId, classIds, houseId, houseType, seatMin, seatMax, weekly);
-        return ResultModel.ok(leisure);
-    }
 
     @PostMapping("nin-arrange/getHouseApplyTime")
     public ResultModel getHouseApplyTime(HouseApplyBo bo) {
+        //todo
         ninArrangeService.getHouseApplyTime(bo);
         return null;
     }
@@ -170,28 +154,6 @@ public class NinArrangeController {
             return ResultModel.ok();
         }
         return ResultModel.error(412, "删除失败");
-    }
-
-    /**
-     * 编辑排课记录（未使用）
-     */
-    @PostMapping("nin-arrange/alterArrange")
-    public ResultModel alterArrange(NinArrange arrange) {
-        int i = ninArrangeService.alterArrange(arrange);
-        if (i > 0) {
-            return ResultModel.ok();
-        }
-        return ResultModel.error(412, "编辑失败");
-    }
-
-
-    /**
-     * 根据课程id获取可选教师教师及时间（未使用）
-     */
-    @PostMapping("nin-arrange/getTeacherHouseORTime")
-    public ResultModel getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId) {
-        List arrangeBo = ninArrangeService.getTeacherHouseORTime(courseId, teacherId, houseId);
-        return ResultModel.ok(arrangeBo);
     }
 
     /**

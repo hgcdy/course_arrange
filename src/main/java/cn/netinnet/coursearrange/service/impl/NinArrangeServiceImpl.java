@@ -521,102 +521,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
     @Override
-    public Map<String, List<HouseBo>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly) {
-        List<HouseBo> ninHouseArrayList = new ArrayList<>();
-
-        //如果无限制座位，那么以班级人数上限为准
-        if (seatMax == null && seatMin == null) {
-            if (!StringUtils.isBlank(classIds)) {
-                List<Long> classIdList = JSON.parseArray(classIds, Long.class);
-                seatMin = classIdList.size() * ApplicationConstant.CLASS_PEOPLE_NUM;
-            }
-        }
-        //根据座位，类型查询教室
-        ninHouseArrayList = ninHouseMapper.getSelectList(null, houseType, seatMin, seatMax);
-
-        //如果没有符合条件的教室
-        if (ninHouseArrayList != null && ninHouseArrayList.size() != 0) {
-        } else {
-            throw new ServiceException(412, "无符合条件的教室");
-        }
-
-        //获取符合条件的教室列表之后
-        //获得排课列表
-        List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<>());
-
-        //当weekly为单数时，去除双周的记录，保留每周都上课和单周上课的记录
-        Integer w;
-        if (weekly % 2 == 1) {
-            w = 2;
-        } else {
-            w = 1;
-        }
-        //筛选，在开始结束范围内
-        List<NinArrange> ninArrangeList = ninArranges.stream().filter(i -> i.getWeekly() != w).filter(i -> i.getStartTime() <= weekly).filter(i -> i.getEndTime() >= weekly).collect(Collectors.toList());
-
-        //把这个时间的排课找出，如果有教师和班级，排课表中存在，则去除这个时间
-        //去除这个时间有使用的教室
-
-        //<星期节数, List<教室Map>>
-        Map<String, List<HouseBo>> hashMap = new HashMap<>();
-
-        //遍历时间
-        for (int i = 1; i <= 7; i++) {
-            ok:
-            for (int j = 1; j <= ApplicationConstant.DAY_PITCH_NUM; j++) {
-
-                ArrayList<HouseBo> houseList = new ArrayList<>();
-                houseList.addAll(ninHouseArrayList);
-
-                List<Long> teachClassIdList = null;
-                //判断教师和班级
-                if (!StringUtils.isBlank(classIds)) {
-                    List<Long> classIdList = JSON.parseArray(classIds, Long.class);
-                    //获取教学班列表
-                    teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(classIdList);
-                }
-
-                for (NinArrange arrange : ninArrangeList) {
-                    //一样的时间里
-                    if (arrange.getWeek() == i && arrange.getPitchNum() == j) {
-
-                        if (teachClassIdList != null) {
-                            //输入条件有班级，且排课存在班级的
-                            if (teachClassIdList.contains(arrange.getTeachClassId())) {
-                                //那么该时间就不能使用
-                                continue ok;
-
-                            }
-                        }
-
-                        if (teacherId != null) {
-                            //输入条件有教师，且排课中有教师
-                            if (teacherId.equals(arrange.getTeacherId())) {
-                                //该时间不能使用
-                                continue ok;
-
-                            }
-                        }
-
-                        //删除houseList里面出现的
-                        for (int k = 0; k < houseList.size(); k++) {
-                            if (houseList.get(k) != null && houseList.get(k).getId().equals(arrange.getHouseId())) {
-                                houseList.set(k, null);
-                            }
-                        }
-                    }
-                }
-
-                houseList.removeIf(Objects::isNull);
-                if (houseList.size() != 0 && houseList != null) {
-                    hashMap.put("" + i + j, houseList);
-                }
-            }
-        }
-        return hashMap;
-    }
-
-    @Override
     public List<String> getHouseApplyTime(HouseApplyBo bo) {
         //todo 非空校验，暂留
         List<Long> classIdList = JSON.parseArray(bo.getClassIdList(), Long.class);
@@ -639,8 +543,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
         return null;
     }
-
-
 
     @Override
     public int addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList) {
@@ -761,83 +663,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             }}));
         }
         return ninArrangeMapper.deleteById(id);
-    }
-
-    @Override
-    public int alterArrange(NinArrange arrange) {
-        arrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
-        return ninArrangeMapper.updateById(arrange);
-    }
-
-    @Override
-    public List<Object> getTeacherHouseORTime(Long courseId, Long teacherId, Long houseId) {
-
-        List<Object> list = new ArrayList<>();
-
-        if (teacherId == null && houseId == null) {
-            //返回教师列表和教室列表
-            if (courseId == null) {
-                throw new ServiceException(ResultEnum.formatMsg(ResultEnum.NOT_NULL, "课程id"));
-            }
-            List<NinTeacherCourse> ninTeacherCourses = ninTeacherCourseMapper.selectList(new QueryWrapper<>(new NinTeacherCourse() {{
-                setCourseId(courseId);
-            }}));
-            if (ninTeacherCourses == null || ninTeacherCourses.size() == 0) {
-                throw new ServiceException(ResultEnum.formatMsg(ResultEnum.NOT_SELECT, "教师", "这门课程"));
-            }
-            Map<Long, String> teacherMap = ninTeacherMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.toMap(NinTeacher::getId, NinTeacher::getTeacherName));
-
-            //教师列表
-            List<Map<String, Object>> teacherList = new ArrayList<>();
-            for (NinTeacherCourse ntc : ninTeacherCourses) {
-                HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("teacherId", ntc.getTeacherId());
-                hashMap.put("teacherName", teacherMap.get(ntc.getTeacherId()));
-                teacherList.add(hashMap);
-            }
-
-            List<NinHouse> ninHouses = ninHouseMapper.selectList(new QueryWrapper<>(new NinHouse() {{
-                setHouseType(ninCourseMapper.selectById(courseId).getHouseType());
-            }}));
-            List<Map<String, Object>> houseList = ninHouses.stream().map(i -> {
-                HashMap<String, Object> hashMap = new HashMap<>();
-                hashMap.put("houseId", i.getId());
-                hashMap.put("houseName", i.getHouseName());
-                return hashMap;
-            }).collect(Collectors.toList());
-
-            list.add(teacherList);
-            list.add(houseList);
-
-        }
-        if (teacherId != null && houseId != null) {
-            //返回时间列表
-            List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<NinArrange>().eq("teacher_id", teacherId).or().eq("house_id", houseId));
-            List<String> timeList = ninArranges.stream().map(i -> {
-                String str = "" + i.getWeek() + i.getPitchNum();
-                return str;
-            }).collect(Collectors.toList());
-            for (int i = 1; i <= 7; i++) {
-                ok:
-                for (int j = 1; j <= ApplicationConstant.DAY_PITCH_NUM; j++) {
-                    for (String s : timeList) {
-                        if (s.equals("" + i + j)) {
-                            continue ok;
-                        }
-                    }
-                    list.add("" + i + j);
-                }
-            }
-
-        }
-        if (teacherId == null && houseId != null) {
-            throw new ServiceException(412, "请选择教师");
-        }
-        if (teacherId != null && houseId == null) {
-            throw new ServiceException(412, "请选择教室");
-        }
-
-        return list;
     }
 
     @Override
