@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.ArrangeBo;
+import cn.netinnet.coursearrange.bo.HouseApplyBo;
 import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
@@ -614,6 +615,32 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         }
         return hashMap;
     }
+
+    @Override
+    public List<String> getHouseApplyTime(HouseApplyBo bo) {
+        //todo 非空校验，暂留
+        List<Long> classIdList = JSON.parseArray(bo.getClassIdList(), Long.class);
+        Long houseId = bo.getHouseId();
+        Long teacherId = bo.getTeacherId();
+        Long courseId = bo.getCourseId(); //-1为其他用途
+        List<Integer> weeklyList = JSON.parseArray(bo.getWeeklyList(), Integer.class); //0则为不限
+        List<Integer> weekList = JSON.parseArray(bo.getWeekList(), Integer.class); //0则为不限
+
+        List<Long> teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(classIdList);
+
+        LambdaQueryWrapper<NinArrange> wrapper = new QueryWrapper<NinArrange>().select("weekly start_time end_time week pitch_num").lambda();
+        wrapper.in(NinArrange::getTeachClassId, teachClassIdList)
+                .or().eq(NinArrange::getHouseId, houseId)
+                .or().eq(NinArrange::getTeacherId, teacherId);
+        List<NinArrange> ninArrangeList = ninArrangeMapper.selectList(wrapper);
+
+
+
+
+        return null;
+    }
+
+
 
     @Override
     public int addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList) {

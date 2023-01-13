@@ -13,6 +13,7 @@ import cn.netinnet.coursearrange.service.INinTeacherService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.MD5;
 import cn.netinnet.coursearrange.util.UserUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -125,13 +126,14 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
     @Override
     public List<NinTeacher> getTeaAll() {
         UserInfo userInfo = UserUtil.getUserInfo();
+
+        LambdaQueryWrapper<NinTeacher> wrapper = new LambdaQueryWrapper<NinTeacher>()
+                .select(NinTeacher::getId, NinTeacher::getTeacherName);
         if (userInfo.getUserType().equals(UserTypeEnum.TEACHER.getName())) {
-            return new ArrayList<NinTeacher>(){{
-                add(ninTeacherMapper.selectById(userInfo.getUserId()));
-            }};
-        } else {
-            return ninTeacherMapper.selectList(new QueryWrapper<>());
+            wrapper.eq(NinTeacher::getId, userInfo.getUserId());
         }
+        return ninTeacherMapper.selectList(wrapper);
+
     }
 
     @Override

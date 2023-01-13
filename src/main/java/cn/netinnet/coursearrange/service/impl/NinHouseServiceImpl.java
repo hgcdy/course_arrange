@@ -8,6 +8,7 @@ import cn.netinnet.coursearrange.service.INinHouseService;
 import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import cn.netinnet.coursearrange.util.CnUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -88,5 +89,13 @@ public class NinHouseServiceImpl extends ServiceImpl<NinHouseMapper, NinHouse> i
     @Override
     public NinHouse getHouseById(Long id) {
         return ninHouseMapper.selectById(id);
+    }
+
+    @Override
+    public List<NinHouse> getHouseByType(Integer houseType) {
+        List<NinHouse> ninHouses = ninHouseMapper.selectList(new LambdaQueryWrapper<NinHouse>()
+                .select(NinHouse::getId, NinHouse::getHouseName)
+                .eq(houseType != -1, NinHouse::getHouseType, houseType));
+        return ninHouses;
     }
 }

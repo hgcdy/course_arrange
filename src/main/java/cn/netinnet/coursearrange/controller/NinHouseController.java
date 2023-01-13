@@ -106,4 +106,12 @@ public class NinHouseController {
         return ResultModel.ok(ninHouseService.getHouseById(id));
     }
 
+    /**
+     * 根据类型查询教室
+     */
+    @PostMapping("/getHouseByType")
+    public ResultModel getHouseByType(Integer houseType) {
+        return ResultModel.ok(ninHouseService.getHouseByType(houseType));
+    }
+
 }

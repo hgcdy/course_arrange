@@ -13,6 +13,8 @@ require(['../config'], function () {
             $("#apply-nav div").css("border", "");
             $(this).css("border", "1px solid #1dc072");
             var attr = $(this).attr("id");
+            $(".apply-body:first").empty();
+            $(".apply-body:eq(1)").empty();
             switch(attr) {
                 case "nav-class":
                     getClass();
@@ -32,35 +34,25 @@ require(['../config'], function () {
             }
         })
 
+        $("#unselected button").click(function () {
+
+        })
+
+
         function getClass() {
             var $apply = $(".apply-body:first");
-            $apply.empty();
             $.ajax({
                 url: "nin-career/getCollegeCareerList",
                 dataType: "json",
                 type: "post",
                 success: function (data) {
                     if (data.code == 200) {
-                        var items = $("<div class='items'></div>").text("--学院专业--");
-                        $apply.append(items);
+                        createItemsText($apply, "--学院专业--");
                         var map = data.data;
                         for (const key in map) {
-                            var items1 = $("<div class='items'></div>").text(key);
-                            $apply.append(items1);
+                            createItemsText($apply, key);
                             var list = map[key];
-                            var len = list.length;
-
-                            var items2 = $("<div class='items'></div>");
-                            for (let i = 0; i < len; i++) {
-                                var id = list[i].id;
-                                var careerName = list[i].careerName;
-                                var item = $("<div class='item'></div>").text(careerName).attr("data-id", id);
-                                items2.append(item);
-                                if ((i + 1) % 6 === 0 || i === len - 1) {
-                                    $apply.append(items2);
-                                    items2 = $("<div class='items'></div>");
-                                }
-                            }
+                            createItem($apply, list, ["id", "careerName"])
                         }
 
                         //点击专业展示班级
@@ -77,27 +69,13 @@ require(['../config'], function () {
                                 success: function (data) {
                                     if (data.code == 200) {
                                         $apply1.empty();
-                                        var items = $("<div class='items'></div>").text("--班级--");
-                                        $apply1.append(items);
+                                        createItemsText($apply1, "--班级--");
                                         var list = data.data;
-                                        var len = list.length;
-                                        var items = $("<div class='items'></div>");
-                                        for (let i = 0; i < len; i++) {
-                                            var id = list[i].classId;
-                                            var className = list[i].className;
-                                            var item = $("<div class='item'></div>").text(className).attr("data-id", id);
-                                            items.append(item);
-                                            if ((i + 1) % 6 === 0 || i === len - 1) {
-                                                $apply1.append(items);
-                                                items = $("<div class='items'></div>");
-                                            }
-                                        }
+                                        createItem($apply1, list, ["classId", "className"]);
 
                                         //点击班级选中
                                         $apply1.find(".item").click(function () {
-                                            var classId = $(this).attr("data-id");
-                                            var className = $(this).text();
-                                            selectedItem(classId, className, "#class");
+                                            selectedItem($(this).attr("data-id"), $(this).text(), "#class");
                                         })
                                         
                                     } else {
@@ -113,9 +91,167 @@ require(['../config'], function () {
             })
         }
 
+        function getHouse() {
+            var list = Array();
+            list.push({"type": -1, "name": "全部"});
+            list.push({"type": 0, "name": "平台教室"});
+            list.push({"type": 1, "name": "机房"});
+            list.push({"type": 2, "name": "实验室"});
+            list.push({"type": 3, "name": "课外"});
+            list.push({"type": 4, "name": "网课"});
 
+            var $apply = $(".apply-body:first");
+            createItemsText($apply, "--教室类型--");
+            createItem($apply, list, ["type", "name"]);
+
+            //点击类型展示教室
+            $(".apply-body:first").find(".item").click(function () {
+                var houseType = $(this).attr("data-id");
+                var $apply1 = $(".apply-body:eq(1)");
+                $.ajax({
+                    url: "nin-house/getHouseByType",
+                    dataType: "json",
+                    type: "post",
+                    data: {
+                        houseType: houseType
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            $apply1.empty();
+                            createItemsText($apply1, "--教室--");
+                            var list = data.data;
+                            createItem($apply1, list, ["id", "houseName"]);
+
+                            //点击教室选中
+                            $apply1.find(".item").click(function () {
+                                selectedItem($(this).attr("data-id"), $(this).text(), "#house");
+                            })
+
+                        } else {
+                            util.hint(data.msg);
+                        }
+                    }
+                })
+            })
+        }
+
+        function getTeacher() {
+            createItemsText($(".apply-body:first"), "--暂无分类--");
+            var $apply1 = $(".apply-body:eq(1)");
+            $.ajax({
+                url: "nin-teacher/getTeaAll",
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    if (data.code == 200) {
+                        $apply1.empty();
+                        createItemsText($apply1, "--教师--");
+                        var list = data.data;
+                        createItem($apply1, list, ["id", "teacherName"]);
+                        //点击教师选中
+                        $apply1.find(".item").click(function () {
+                            selectedItem($(this).attr("data-id"), $(this).text(), "#teacher");
+                        })
+                    } else {
+                        util.hint(data.msg);
+                    }
+                }
+            })
+        }
+
+        function getCourse() {
+            var list = Array();
+            list.push({"type": 0, "name": "补课"});
+            list.push({"type": -1, "name": "其他用途"});
+            var $apply = $(".apply-body:first");
+            createItemsText($apply, "--教室用途--");
+            createItem($apply, list, ["type", "name"]);
+
+            $(".apply-body:first").find(".item:first").click(function () {
+                var $apply1 = $(".apply-body:eq(1)");
+                $.ajax({
+                    url: "nin-course/getCourseAll",
+                    dataType: "json",
+                    type: "get",
+                    success: function (data) {
+                        if (data.code == 200) {
+                            $apply1.empty();
+                            createItemsText($apply1, "--课程--");
+                            var list = data.data;
+                            createItem($apply1, list, ["id", "courseName"]);
+                            //点击课程选中
+                            $apply1.find(".item").click(function () {
+                                selectedItem($(this).attr("data-id"), $(this).text(), "#course");
+                            })
+                        } else {
+                            util.hint(data.msg);
+                        }
+                    }
+                })
+            })
+            $apply.find(".item:last").click(function () {
+                selectedItem($(this).attr("data-id"), $(this).text(), "#course");
+            })
+
+
+        }
+
+        function getTime() {
+            var list = Array();
+            list.push({"id": 0, "name": "不限"});
+            for (let i = 1; i <= 20; i++) {
+                list.push({"id": i, "name": "第" + util.turn(i) + "周"});
+            }
+            var $apply = $(".apply-body:first");
+            createItemsText($apply, "--周次--");
+            createItem($apply, list, ["id", "name"]);
+            $apply.find(".item").click(function () {
+                selectedItem($(this).attr("data-id"), $(this).text(), "#weekly");
+            })
+
+            var list1 = Array();
+            list1.push({"id": 0, "name": "不限"});
+            for (let i = 1; i <= 6; i++) {
+                list1.push({"id": i, "name": "星期" + util.turn(i)});
+            }
+            list1.push({"id": 7, "name": "星期日"});
+            var $apply1 = $(".apply-body:eq(1)");
+            createItemsText($apply1, "--星期--");
+            createItem($apply1, list1, ["id", "name"]);
+            $apply1.find(".item").click(function () {
+                selectedItem($(this).attr("data-id"), $(this).text(), "#week");
+            })
+
+
+        }
+
+        //items块标题
+        function createItemsText(obj, text) {
+            var items = $("<div class='items'></div>").text(text);
+            $(obj).append(items);
+        }
+        //生成item块列表
+        function createItem(obj, list, paramNames) {
+            var len = list.length;
+
+            var items = $("<div class='items'></div>");
+            for (let i = 0; i < len; i++) {
+                var id = list[i][paramNames[0]];
+                var name = list[i][paramNames[1]];
+                var item = $("<div class='item'></div>").text(name).attr("data-id", id);
+                items.append(item);
+                if ((i + 1) % 6 === 0 || i === len - 1) {
+                    $(obj).append(items);
+                    items = $("<div class='items'></div>");
+                }
+            }
+        }
+        //item块选中
         function selectedItem(id, name, type) {
-            var $1 = $("<div></div>").text(name).attr("data-id", id);
+            var img = $("<img src='../../img/alter.png'>").click(function () {
+                $(this).parent().remove();
+            });
+            var $1 = $("<div></div>").text(name).attr("data-id", id).append(img);
             $(type).after($1);
         }
 

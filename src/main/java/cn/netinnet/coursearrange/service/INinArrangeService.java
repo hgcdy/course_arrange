@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.service;
 
 import cn.netinnet.coursearrange.bo.ArrangeBo;
+import cn.netinnet.coursearrange.bo.HouseApplyBo;
 import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -36,6 +37,14 @@ public interface INinArrangeService extends IService<NinArrange> {
      * 补课-获取空闲资源（教室申请）
      */
     Map<String, List<HouseBo>> getLeisure(Long teacherId, String classIds, Long houseId, Integer houseType, Integer seatMin, Integer seatMax, Integer weekly);
+
+    /**
+     * 补课，获取时间
+     * @param bo
+     * @return
+     */
+    List<String> getHouseApplyTime(HouseApplyBo bo);
+
     /**
      * 添加·排课信息
      */

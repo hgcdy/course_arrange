@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.service;
 import cn.netinnet.coursearrange.entity.NinHouse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,4 +35,8 @@ public interface INinHouseService extends IService<NinHouse> {
      * 单条查询
      */
     NinHouse getHouseById(Long id);
+    /**
+     * 根据类型查询教室
+     */
+    List<NinHouse> getHouseByType(Integer houseType);
 }

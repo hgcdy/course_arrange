@@ -44,4 +44,10 @@ public interface INinCourseService extends IService<NinCourse> {
      * 教室申请的课程选择
      */
     List<NinCourse> getSelectApplyList(Long teacher, Long houseId, String classIdList);
+
+    /**
+     * 获取全部课程
+     * @return
+     */
+    List<NinCourse> getCourseAll();
 }

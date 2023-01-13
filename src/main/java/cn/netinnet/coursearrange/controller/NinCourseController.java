@@ -126,4 +126,13 @@ public class NinCourseController {
         return ResultModel.ok(ninCourseService.getSelectApplyList(teacherId, houseId, classIdList));
     }
 
+    /**
+     * 获取全部的课程
+     * @return
+     */
+    @GetMapping("/getCourseAll")
+    public ResultModel getCourseAll() {
+        return ResultModel.ok(ninCourseService.getCourseAll());
+    }
+
 }

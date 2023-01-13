@@ -35,8 +35,8 @@ public class LoginController {
     public ModelAndView welcome() {return new ModelAndView("welcome");}
 
     //判断登录用户类型
-    @GetMapping("/index/{type}")
-    public ModelAndView index(@PathVariable String type) {
+    @GetMapping("/index")
+    public ModelAndView index(String type) {
         String path = "login";
         if (type.equals(UserTypeEnum.ADMIN.getName())) {
             path = "index";

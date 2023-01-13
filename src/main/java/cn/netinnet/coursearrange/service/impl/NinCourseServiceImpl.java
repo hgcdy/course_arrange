@@ -12,6 +12,7 @@ import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import cn.netinnet.coursearrange.util.CnUtil;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
@@ -336,5 +337,12 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         }
 
         return ninCourses;
+    }
+
+    @Override
+    public List<NinCourse> getCourseAll() {
+        List<NinCourse> courseList = ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>()
+                .select(NinCourse::getId, NinCourse::getCourseName));
+        return courseList;
     }
 }

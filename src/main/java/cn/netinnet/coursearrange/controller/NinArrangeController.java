@@ -2,6 +2,7 @@ package cn.netinnet.coursearrange.controller;
 
 
 import cn.netinnet.coursearrange.bo.ArrangeBo;
+import cn.netinnet.coursearrange.bo.HouseApplyBo;
 import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinStudent;
@@ -130,6 +131,13 @@ public class NinArrangeController {
         Map<String, List<HouseBo>> leisure = ninArrangeService.getLeisure(teacherId, classIds, houseId, houseType, seatMin, seatMax, weekly);
         return ResultModel.ok(leisure);
     }
+
+    @PostMapping("nin-arrange/getHouseApplyTime")
+    public ResultModel getHouseApplyTime(HouseApplyBo bo) {
+        ninArrangeService.getHouseApplyTime(bo);
+        return null;
+    }
+
 
     /**
      * 添加排课记录（教室申请）
