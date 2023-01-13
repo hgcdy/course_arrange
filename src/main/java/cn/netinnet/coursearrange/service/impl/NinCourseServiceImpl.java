@@ -2,8 +2,8 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.CourseBo;
 import cn.netinnet.coursearrange.bo.SettingBo;
-import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinCourseService;
@@ -117,7 +117,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         NinSetting ninSetting = new NinSetting();
         ninSetting.setId(IDUtil.getID());
         ninSetting.setCourseId(ninCourse.getId());
-        ninSetting.setUserType(ApplicationConstant.TYPE_TEACHER);
+        ninSetting.setUserType(UserTypeEnum.TEACHER.getName());
         ninSetting.setOpenState(0);
         ninSetting.setCreateUserId(userId);
         ninSetting.setModifyUserId(userId);
@@ -152,7 +152,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
 
             //生成学生权限记录
             ninSetting.setId(IDUtil.getID());
-            ninSetting.setUserType(ApplicationConstant.TYPE_STUDENT);
+            ninSetting.setUserType(UserTypeEnum.STUDENT.getName());
             ninSettingMapper.insert(ninSetting);
         }
         return i;
@@ -248,7 +248,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             courseList = ninCourseMapper.reSelectCourse();
         }
 
-        if (!userType.equals(ApplicationConstant.TYPE_ADMIN)) {
+        if (!userType.equals(UserTypeEnum.ADMIN.getName())) {
             Map<Long, SettingBo> boMap = ninSettingService.getSelectList(userType, 1, null).stream().collect(Collectors.toMap(SettingBo::getCourseId, Function.identity()));
             courseList = courseList.stream().filter(i -> boMap.get(i.getId()) != null).collect(Collectors.toList());
 

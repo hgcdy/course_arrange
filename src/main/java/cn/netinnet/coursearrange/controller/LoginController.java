@@ -1,8 +1,8 @@
 package cn.netinnet.coursearrange.controller;
 
 import cn.netinnet.coursearrange.authentication.JWTUtil;
-import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.ILoginService;
 import com.sun.istack.internal.NotNull;
@@ -38,11 +38,11 @@ public class LoginController {
     @GetMapping("/index/{type}")
     public ModelAndView index(@PathVariable String type) {
         String path = "login";
-        if (type.equals(ApplicationConstant.TYPE_ADMIN)) {
+        if (type.equals(UserTypeEnum.ADMIN.getName())) {
             path = "index";
-        } else if (type.equals(ApplicationConstant.TYPE_STUDENT)) {
+        } else if (type.equals(UserTypeEnum.STUDENT.getName())) {
             path = "viewStu/indexStu";
-        } else if (type.equals(ApplicationConstant.TYPE_TEACHER)) {
+        } else if (type.equals(UserTypeEnum.TEACHER.getName())) {
             path = "viewTea/indexTea";
         }
         return new ModelAndView(path);

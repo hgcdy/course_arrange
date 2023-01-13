@@ -1,11 +1,10 @@
 package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.TeacherBo;
-import cn.netinnet.coursearrange.constant.ApplicationConstant;
-import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
@@ -27,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -127,7 +125,7 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
     @Override
     public List<NinTeacher> getTeaAll() {
         UserInfo userInfo = UserUtil.getUserInfo();
-        if (userInfo.equals(ApplicationConstant.TYPE_TEACHER)) {
+        if (userInfo.getUserType().equals(UserTypeEnum.TEACHER.getName())) {
             return new ArrayList<NinTeacher>(){{
                 add(ninTeacherMapper.selectById(userInfo.getUserId()));
             }};

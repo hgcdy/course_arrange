@@ -3,10 +3,10 @@ package cn.netinnet.coursearrange.controller;
 
 import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseBo;
-import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinStudentMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
@@ -59,7 +59,7 @@ public class NinArrangeController {
         UserInfo userInfo = UserUtil.getUserInfo();
         String userType = userInfo.getUserType();
         ModelAndView modelAndView = new ModelAndView("view/courseFormView_1");
-        if (userType.equals(ApplicationConstant.TYPE_STUDENT)) {
+        if (userType.equals(UserTypeEnum.STUDENT.getName())) {
             if ("stu".equals(type)) {
                 modelAndView.addObject("studentId", String.valueOf(userInfo.getUserId()));
                 return modelAndView;
@@ -68,7 +68,7 @@ public class NinArrangeController {
                 modelAndView.addObject("classId", String.valueOf(ninStudent.getClassId()));
                 return modelAndView;
             }
-        } else if (userType.equals(ApplicationConstant.TYPE_TEACHER)) {
+        } else if (userType.equals(UserTypeEnum.TEACHER.getName())) {
             modelAndView.addObject("teacherId", String.valueOf(userInfo.getUserId()));
             return modelAndView;
         }
@@ -80,7 +80,7 @@ public class NinArrangeController {
     public ModelAndView gotoApplyHouseView() {
         ModelAndView modelAndView = new ModelAndView("view/applyHouseView");
         UserInfo userInfo = UserUtil.getUserInfo();
-        if (userInfo.getUserType().equals(ApplicationConstant.TYPE_TEACHER)) {
+        if (userInfo.getUserType().equals(UserTypeEnum.TEACHER.getName())) {
             modelAndView.addObject("teacherId", userInfo.getUserId().toString());
         }
         return modelAndView;
