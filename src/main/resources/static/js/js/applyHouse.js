@@ -34,35 +34,111 @@ require(['../config'], function () {
             }
         })
 
-        $("#unselected button").click(function () {
+        $("#selected button").click(function () {
             var classIdList = getIdList($("#class"));
             if (classIdList === "[]") {
                 util.hint("请选择班级");
+                return;
             }
             var houseId = $("#house").next().attr("data-id");
             if (houseId === undefined) {
                 util.hint("请选择教室");
+                return;
             }
             var teacherId = $("#teacher").next().attr("data-id");
             if (teacherId === undefined) {
                 util.hint("请选择教师");
+                return;
             }
             var courseId = $("#course").next().attr("data-id");
             if (courseId === undefined) {
                 util.hint("请选择课程");
+                return;
             }
             var weeklyList = getIdList($("#weekly"));
-            if (classIdList === "[]") {
+            if (weeklyList === "[]") {
                 util.hint("请选择周次");
+                return;
             }
             var weekList = getIdList($("#week"));
-            if (classIdList === "[]") {
-                util.hint("请选择星期");
+            if (weekList === "[]") {
+                weekList = "[1,2,3,4,5,6,7]";
             }
 
-            //todo 返回时间接口
+            $.ajax({
+                url: "nin-arrange/getHouseApplyTime",
+                dataType: "json",
+                type: "post",
+                data: {
+                    classIdList: classIdList,
+                    houseId: houseId,
+                    teacherId: teacherId,
+                    courseId: courseId,
+                    weeklyList: weeklyList,
+                    weekList: weekList
+                },
+                success: function (data) {
+                    if (data.code == 200) {
 
+                        var $apply = $(".apply-body:last");
+                        $apply.empty();
+                        createItemsText($apply, "--可选时间--");
+
+                        var list = Array();
+
+                        var list1 = data.data;
+                        var len = list1.length;
+                        var weekly = null;
+                        var week = null;
+                        for (let i = 0; i < len; i++) {
+                            var time = list1[i].split("#");
+                            if (time[0] !== weekly || time[1] !== week) {
+                                var timeString = util.timeString(time[0], time[1]);
+                                createItem($apply, list, ["id", "name"]);
+                                createItemsText($apply, timeString);
+                                list = Array();
+                            }
+                            list.push({"type": list1[i], "name": "第" + util.turn(time[2]) + "节课"});
+                            if (i === len - 1) {
+                                createItem($apply, list, ["id", "name"]);
+                            }
+                            weekly = time[0];
+                            week = time[1];
+                        }
+
+
+                        $(".apply-body:last .item").click(function () {
+                            var attr = $(this).attr("data-id");
+                            var time = attr.split("#");
+                            $.ajax({
+                                url: "nin-arrange/addArrange",
+                                dataType: "json",
+                                type: "post",
+                                data: {
+                                    classIdList: classIdList,
+                                    houseId: houseId,
+                                    teacherId: teacherId,
+                                    courseId: courseId,
+                                    weekly: time[0],
+                                    week: time[1],
+                                    pitchNum: time[2]
+                                },
+                                success: function (data) {
+                                    if (data.code == 200) {
+                                        $(".apply-body:last").empty();
+                                    }
+                                    util.hint(data.msg);
+                                }
+                            })
+                        })
+
+                    } else {
+                        util.hint(data.msg);
+                    }
+                }
+            })
         })
+
 
 
         function getIdList(obj) {
@@ -277,7 +353,7 @@ require(['../config'], function () {
                 var name = list[i][paramNames[1]];
                 var item = $("<div class='item'></div>").text(name).attr("data-id", id);
                 items.append(item);
-                if ((i + 1) % 6 === 0 || i === len - 1) {
+                if ((i + 1) % 5 === 0 || i === len - 1) {
                     $(obj).append(items);
                     items = $("<div class='items'></div>");
                 }

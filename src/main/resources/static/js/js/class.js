@@ -257,7 +257,6 @@ require(['../config'], function () {
         //删除
         function del(id) {
             var $tr = $("<tr><td colspan='2'>删除班级会将与该班级有关的所有信息一起删除</td>></tr>");
-            // $("#module", window.parent.document).find("table").append($tr);
             util.popup([$tr], [], function () {
 
                 $.ajax({

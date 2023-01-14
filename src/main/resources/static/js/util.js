@@ -137,15 +137,14 @@ define(function () {
     }
 
 
-    var timeString = function (weekly, week, pitchNum) {
-        var x,y,z;
+    var timeString = function (weekly, week) {
+        var x,y;
         x = turn(parseInt(weekly));
         y = turn(parseInt(week));
-        z = turn(parseInt(pitchNum));
         if (week == "7") {
             y = "日"
         }
-        var str = "第"+ x +"周星期"+ y +"第"+ z +"节课";
+        var str = "第"+ x +"周星期"+ y;
         return str;
     }
 

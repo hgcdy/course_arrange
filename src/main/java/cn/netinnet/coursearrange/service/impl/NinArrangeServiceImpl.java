@@ -523,27 +523,66 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Override
     public List<String> getHouseApplyTime(HouseApplyBo bo) {
-        //todo 非空校验，暂留
         List<Long> classIdList = JSON.parseArray(bo.getClassIdList(), Long.class);
         Long houseId = bo.getHouseId();
         Long teacherId = bo.getTeacherId();
         Long courseId = bo.getCourseId(); //-1为其他用途
-        List<Integer> weeklyList = JSON.parseArray(bo.getWeeklyList(), Integer.class); //0则为不限
-        List<Integer> weekList = JSON.parseArray(bo.getWeekList(), Integer.class); //0则为不限
+        List<Integer> weeklyList = JSON.parseArray(bo.getWeeklyList(), Integer.class);
+        List<Integer> weekList = JSON.parseArray(bo.getWeekList(), Integer.class);
+
+        List<String> arrayList = new ArrayList<>();
+        int len = weeklyList.size();
+        int len1 = weekList.isEmpty() ? 7 : weekList.size();
+        for (int i = 0; i < len; i++) {
+            int weekly = weeklyList.get(i);
+            for (int j = 0; j < len1; j++) {
+                int week = weekList.get(j);
+                for (int k = 1; k <= ApplicationConstant.DAY_PITCH_NUM; k++) {
+                    arrayList.add(weekly + "#" + week + "#" + k);
+                }
+            }
+        }
+
 
         List<Long> teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(classIdList);
 
-        LambdaQueryWrapper<NinArrange> wrapper = new QueryWrapper<NinArrange>().select("DISTINCT weekly start_time end_time week pitch_num").lambda();
+        LambdaQueryWrapper<NinArrange> wrapper = new QueryWrapper<NinArrange>().select("DISTINCT weekly, start_time, end_time, week, pitch_num").lambda();
         wrapper.in(NinArrange::getTeachClassId, teachClassIdList)
                 .or().eq(NinArrange::getHouseId, houseId)
                 .or().eq(NinArrange::getTeacherId, teacherId);
         List<NinArrange> ninArrangeList = ninArrangeMapper.selectList(wrapper);
 
-        return null;
+        Map<Integer, Map<Integer, List<NinArrange>>> map = ninArrangeList.stream().collect(Collectors.groupingBy(NinArrange::getPitchNum, Collectors.groupingBy(NinArrange::getWeek)));
+
+        for (Map.Entry<Integer, Map<Integer, List<NinArrange>>> map1: map.entrySet()){
+            Integer key = map1.getKey();
+            Map<Integer, List<NinArrange>> value = map1.getValue();
+            for (Map.Entry<Integer, List<NinArrange>> map2 : value.entrySet()) {
+                Integer key1 = map2.getKey();
+                List<NinArrange> value1 = map2.getValue();
+
+                HashSet<Integer> set = new HashSet<>();
+                for (NinArrange arrange : value1) {
+                    Integer startTime = arrange.getStartTime();
+                    Integer endTime = arrange.getEndTime();
+                    Integer weekly = arrange.getWeekly();
+                    int sign = weekly == 0 ? 1 : 2;
+                    for (int i = startTime; i <= endTime; i+=sign) {
+                        set.add(i);
+                    }
+                }
+
+                weeklyList.stream().filter(set::contains).forEach(i -> {
+                    String str = i + "#" + key1 + "#" + key;
+                    arrayList.remove(str);
+                });
+
+            }
+
+        }
+
+        return arrayList;
     }
-
-
-
 
     @Override
     public int addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList) {
@@ -585,7 +624,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         arrange.setStartTime(weekly);
         arrange.setEndTime(weekly);
         arrange.setPeopleNum(classIds.size() * ApplicationConstant.CLASS_PEOPLE_NUM);
-        arrange.setMust(ninCourseMapper.selectById(courseId).getMust());
+        arrange.setMust(courseId != -1 ? ninCourseMapper.selectById(courseId).getMust() : 1);
         arrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
         arrange.setCreateUserId(UserUtil.getUserInfo().getUserId());
         return ninArrangeMapper.insert(arrange);

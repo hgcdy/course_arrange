@@ -115,11 +115,16 @@ public class NinArrangeController {
     }
 
 
+
+
+    /**
+     * 返回可申请的时间
+     * @param bo
+     * @return
+     */
     @PostMapping("nin-arrange/getHouseApplyTime")
     public ResultModel getHouseApplyTime(HouseApplyBo bo) {
-        //todo
-        ninArrangeService.getHouseApplyTime(bo);
-        return null;
+        return ResultModel.ok(ninArrangeService.getHouseApplyTime(bo));
     }
 
 
