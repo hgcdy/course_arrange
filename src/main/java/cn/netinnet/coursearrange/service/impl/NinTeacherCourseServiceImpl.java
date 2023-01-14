@@ -12,8 +12,6 @@ import cn.netinnet.coursearrange.mapper.NinCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinHouseMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.service.INinTeacherCourseService;
-import cn.netinnet.coursearrange.util.IDUtil;
-import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,9 +116,6 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
             }
         }
 
-        ninTeacherCourse.setId(IDUtil.getID());
-        ninTeacherCourse.setCreateUserId(UserUtil.getUserInfo().getUserId());
-        ninTeacherCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninTeacherCourseMapper.insert(ninTeacherCourse);
     }
 

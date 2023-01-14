@@ -1,15 +1,11 @@
 package cn.netinnet.coursearrange.service.impl;
 
-import cn.netinnet.coursearrange.bo.ClassBo;
 import cn.netinnet.coursearrange.bo.ContactCourseBo;
-import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinCareerCourse;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinCareerCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinClassMapper;
 import cn.netinnet.coursearrange.service.INinCareerCourseService;
-import cn.netinnet.coursearrange.util.IDUtil;
-import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,21 +73,12 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
                 NinCareerCourse ninCareerCourse = new NinCareerCourse();
                 ninCareerCourse.setCareerId(careerId);
                 ninCareerCourse.setCourseId(courseId);
-                ninCareerCourse.setId(IDUtil.getID());
-                ninCareerCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
-                ninCareerCourse.setCreateUserId(UserUtil.getUserInfo().getUserId());
                 ninCareerCourseArrayList.add(ninCareerCourse);
             }
         }
         if (ninCareerCourseArrayList.size() != 0) {
             //插入新的专业选课记录
             saveBatch(ninCareerCourseArrayList);
-
-            //查询专业的课程数量
-            List<ClassBo> bos = ninCareerCourseMapper.getCourseNum().stream().filter(i -> i.getCourseNum() > ApplicationConstant.CAREER_COURSE_NUM).collect(Collectors.toList());
-            if (bos.size() > 0) {
-                throw new ServiceException(412, bos.get(0).getCareerName() + "专业的课程数量将超出上限");
-            }
 
             //班级课程数量
             Map<Long, List<NinCareerCourse>> collect1 = ninCareerCourseArrayList.stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId));

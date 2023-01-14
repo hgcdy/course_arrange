@@ -6,8 +6,6 @@ import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
-import cn.netinnet.coursearrange.util.IDUtil;
-import cn.netinnet.coursearrange.util.UserUtil;
 import cn.netinnet.coursearrange.util.CnUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -108,9 +106,6 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
         //班级人数+1
         ninClassMapper.addPeopleNum(classId);
 
-        ninStudentCourse.setId(IDUtil.getID());
-        ninStudentCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
-        ninStudentCourse.setCreateUserId(UserUtil.getUserInfo().getUserId());
         //选修教学班id
         ninStudentCourse.setTakeClassId(classId);
 

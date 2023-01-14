@@ -6,8 +6,6 @@ import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinCareerCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinCareerMapper;
 import cn.netinnet.coursearrange.service.INinCareerService;
-import cn.netinnet.coursearrange.util.IDUtil;
-import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
@@ -59,9 +57,6 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
 
     @Override
     public int addSingle(NinCareer ninCareer) {
-        ninCareer.setId(IDUtil.getID());
-        ninCareer.setCreateUserId(UserUtil.getUserInfo().getUserId());
-        ninCareer.setModifyUserId(UserUtil.getUserInfo().getUserId());
         Integer integer = ninCareerMapper.selectCount(new QueryWrapper<>(new NinCareer() {{
             setCareerName(ninCareer.getCareerName());
         }}));
@@ -89,7 +84,6 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
 
     @Override
     public int alterSingle(NinCareer ninCareer) {
-        ninCareer.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninCareerMapper.updateById(ninCareer);
     }
 }

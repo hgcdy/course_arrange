@@ -10,7 +10,6 @@ import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinTeacherService;
-import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.MD5;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -23,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,9 +72,6 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
             ninTeacher.setTeacherPassword(MD5.getMD5Encode(ninTeacher.getTeacherPassword()));
         }
 
-        ninTeacher.setId(IDUtil.getID());
-        ninTeacher.setCreateUserId(UserUtil.getUserInfo().getUserId());
-        ninTeacher.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninTeacherMapper.insert(ninTeacher);
     }
 
@@ -113,7 +108,6 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
             ninTeacher.setTeacherPassword(MD5.getMD5Encode(ninTeacher.getTeacherPassword()));
         }
 
-        ninTeacher.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninTeacherMapper.updateById(ninTeacher);
     }
 

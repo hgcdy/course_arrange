@@ -5,8 +5,6 @@ import cn.netinnet.coursearrange.entity.NinHouse;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinHouseMapper;
 import cn.netinnet.coursearrange.service.INinHouseService;
-import cn.netinnet.coursearrange.util.IDUtil;
-import cn.netinnet.coursearrange.util.UserUtil;
 import cn.netinnet.coursearrange.util.CnUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -56,15 +54,10 @@ public class NinHouseServiceImpl extends ServiceImpl<NinHouseMapper, NinHouse> i
 
     @Override
     public int addSingle(NinHouse ninHouse) {
-        Integer integer = ninHouseMapper.selectCount(
-                new QueryWrapper<NinHouse>()
-                        .eq("house_name", ninHouse.getHouseName()));
-        if (integer > 0) {
+        int count = count(new LambdaQueryWrapper<NinHouse>().eq(NinHouse::getHouseName, ninHouse.getHouseName()));
+        if (count > 0) {
             throw new ServiceException(412, "重名");
         }
-        ninHouse.setId(IDUtil.getID());
-        ninHouse.setCreateUserId(UserUtil.getUserInfo().getUserId());
-        ninHouse.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninHouseMapper.insert(ninHouse);
     }
 
@@ -82,7 +75,6 @@ public class NinHouseServiceImpl extends ServiceImpl<NinHouseMapper, NinHouse> i
         if (integer > 0) {
             throw new ServiceException(412, "重名");
         }
-        ninHouse.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninHouseMapper.updateById(ninHouse);
     }
 

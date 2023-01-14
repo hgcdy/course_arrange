@@ -23,15 +23,10 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("nin_class")
-public class NinClass implements Serializable {
+public class NinClass extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 班级id
-     */
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long id;
 
     /**
      * 专业id
@@ -57,36 +52,6 @@ public class NinClass implements Serializable {
      */
     @TableField("course_num")
     private Integer courseNum;
-
-    /**
-     * 逻辑删除标识
-     */
-    @TableField("del_flag")
-    private Integer delFlag;
-
-    /**
-     * 创建时间
-     */
-    @TableField("create_time")
-    private LocalDateTime createTime;
-
-    /**
-     * 创建人id
-     */
-    @TableField("create_user_id")
-    private Long createUserId;
-
-    /**
-     * 更新时间
-     */
-    @TableField("modify_time")
-    private LocalDateTime modifyTime;
-
-    /**
-     * 修改人id
-     */
-    @TableField("modify_user_id")
-    private Long modifyUserId;
 
 
 }

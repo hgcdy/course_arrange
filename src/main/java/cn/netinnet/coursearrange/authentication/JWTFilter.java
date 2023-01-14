@@ -45,8 +45,9 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         String host = httpRequest.getRemoteHost();//主机名
         int port = httpRequest.getRemotePort();//端口号
 
-        LOGGER.info("请求用户: " + ("0:0:0:0:0:0:0:1".equals(host) ? "127.0.0.1" : host) + ":" + port);
-        LOGGER.info("请求接口: " + url);
+        String format = "请求用户: %s:%s, 请求接口: %s";
+        LOGGER.info(String.format(format, ("0:0:0:0:0:0:0:1".equals(host) ? "127.0.0.1" : host), port, url));
+
 
         if (jwtToken != null) {
             try {

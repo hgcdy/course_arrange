@@ -45,7 +45,7 @@ require(['../config'], function () {
                 //打开事件
                 socket.onopen = function() {
                     console.log("websocket已打开");
-                    socket.send("这是来自客户端的消息" + location.href + new Date());
+                    // socket.send("这是来自客户端的消息" + location.href + new Date());
                 };
                 //获得消息事件
                 socket.onmessage = function(msg) {

@@ -1,6 +1,8 @@
 package cn.netinnet.coursearrange.enums;
 
 public enum MsgEnum {
+    ADD_COURSE(1, "管理员已为您所在的班级添加[%s]课程"),
+    DEL_COURSE(2, "管理员将[%s]课程从您所在的班级移除")
     ;
 
 
@@ -28,9 +30,7 @@ public enum MsgEnum {
         this.msg = msg;
     }
 
-    public static MsgEnum formatMsg(MsgEnum e, Object... obj){
-        String m = String.format(e.getMsg(), obj);
-        e.setMsg(m);
-        return e;
+    public static String formatMsg(MsgEnum e, Object... obj){
+        return String.format(e.getMsg(), obj);
     }
 }

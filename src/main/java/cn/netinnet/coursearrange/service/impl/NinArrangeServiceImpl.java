@@ -2,11 +2,9 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
-import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.enums.OpenStateEnum;
-import cn.netinnet.coursearrange.enums.ResultEnum;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
@@ -17,7 +15,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -27,7 +24,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.expression.Lists;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -175,14 +171,18 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
                     Long[] teachClasses = new Long[ints.length];
                     for (int j = 0, count = 0; j < ints.length; j++) {
-                        long TeachClassId = IDUtil.getID();
+                        long teachClassId = IDUtil.getID();
                         for (int k = 0; k < ints[j]; k++, count++) {
                             Long classId = ninClasses.get(count).getId();
                             String className = ninClasses.get(count).getClassName();
-                            NinTeachClass ninTeachClass = new NinTeachClass(TeachClassId, classId, className);
+                            NinTeachClass ninTeachClass = new NinTeachClass();
+                            ninTeachClass.setTeachClassId(teachClassId);
+                            ninTeachClass.setClassId(classId);
+                            ninTeachClass.setClassName(className);
+
                             ninTeachClasses.add(ninTeachClass);
                         }
-                        teachClasses[j] = TeachClassId;
+                        teachClasses[j] = teachClassId;
                     }
                     teachClassMap.put(maxClassNum, teachClasses);
                 }
@@ -205,9 +205,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     //人数
                     Map<Long, List<NinTeachClass>> longListNinTeachClassMap = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
                     ninArrange.setPeopleNum(longListNinTeachClassMap.get(longs[i]).size() * ApplicationConstant.CLASS_PEOPLE_NUM);
-                    //创建修改者id
-                    ninArrange.setCreateUserId(UserUtil.getUserInfo().getUserId());
-                    ninArrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
 
                     ninArrangeArrayList.add(ninArrange);
                 }
@@ -604,15 +601,12 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             NinTeachClass ninTeachClass = new NinTeachClass();
             ninTeachClass.setTeachClassId(teachClassId);
             ninTeachClass.setClassId(classId);
-            ninTeachClass.setModifyUserId(UserUtil.getUserInfo().getUserId());
-            ninTeachClass.setCreateUserId(UserUtil.getUserInfo().getUserId());
             ninTeachClasses.add(ninTeachClass);
         }
         ninTeachClassMapper.addBatch(ninTeachClasses);
 
         //添加排课记录
         NinArrange arrange = new NinArrange();
-        arrange.setId(IDUtil.getID());
         arrange.setCareerId(-1L);
         arrange.setTeachClassId(teachClassId);
         arrange.setTeacherId(teacherId);
@@ -625,8 +619,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         arrange.setEndTime(weekly);
         arrange.setPeopleNum(classIds.size() * ApplicationConstant.CLASS_PEOPLE_NUM);
         arrange.setMust(courseId != -1 ? ninCourseMapper.selectById(courseId).getMust() : 1);
-        arrange.setModifyUserId(UserUtil.getUserInfo().getUserId());
-        arrange.setCreateUserId(UserUtil.getUserInfo().getUserId());
         return ninArrangeMapper.insert(arrange);
     }
 

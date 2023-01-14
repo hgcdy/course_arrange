@@ -8,10 +8,8 @@ import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinCourseService;
 import cn.netinnet.coursearrange.service.INinSettingService;
-import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import cn.netinnet.coursearrange.util.CnUtil;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -107,38 +105,26 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             }
         }
 
-        Long userId = UserUtil.getUserInfo().getUserId();
-
-        ninCourse.setId(IDUtil.getID());
-        ninCourse.setCreateUserId(userId);
-        ninCourse.setModifyUserId(userId);
         int i = ninCourseMapper.insert(ninCourse);
 
         //教师权限记录
         NinSetting ninSetting = new NinSetting();
-        ninSetting.setId(IDUtil.getID());
         ninSetting.setCourseId(ninCourse.getId());
         ninSetting.setUserType(UserTypeEnum.TEACHER.getName());
         ninSetting.setOpenState(0);
-        ninSetting.setCreateUserId(userId);
-        ninSetting.setModifyUserId(userId);
         ninSettingMapper.insert(ninSetting);
 
         //如果是选修课程
         if (ninCourse.getMust() == 0) {
             //生成选修教学班
             NinClass ninClass = new NinClass();
-            ninClass.setId(IDUtil.getID());
             ninClass.setCareerId(0L);
             ninClass.setClassName(ninCourse.getCourseName() + "选修班");
             ninClass.setCourseNum(1);
-            ninClass.setCreateUserId(userId);
-            ninClass.setModifyUserId(userId);
             ninClassMapper.insert(ninClass);
 
             //生成Arrange
             NinArrange arrange = new NinArrange();
-            arrange.setId(IDUtil.getID());
             arrange.setCareerId(0L);
             arrange.setClassId(ninClass.getId());
             arrange.setCourseId(ninCourse.getId());
@@ -147,12 +133,9 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             arrange.setStartTime(ninCourse.getStartTime() != null ? ninCourse.getStartTime() : 1);
             arrange.setEndTime(ninCourse.getEndTime() != null ? ninCourse.getEndTime() : 16);
             arrange.setPeopleNum(0);
-            arrange.setModifyUserId(userId);
-            arrange.setCreateUserId(userId);
             ninArrangeMapper.insert(arrange);
 
             //生成学生权限记录
-            ninSetting.setId(IDUtil.getID());
             ninSetting.setUserType(UserTypeEnum.STUDENT.getName());
             ninSettingMapper.insert(ninSetting);
         }
@@ -229,7 +212,6 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             throw new ServiceException(412, "重名");
         }
 
-        ninCourse.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninCourseMapper.updateById(ninCourse);
     }
 

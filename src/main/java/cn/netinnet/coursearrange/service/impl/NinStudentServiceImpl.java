@@ -13,9 +13,7 @@ import cn.netinnet.coursearrange.mapper.NinStudentCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinStudentMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinStudentService;
-import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.MD5;
-import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -41,8 +39,6 @@ import java.util.stream.Collectors;
  */
 @Service
 public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStudent> implements INinStudentService {
-
-
 
     @Autowired
     private NinStudentMapper ninStudentMapper;
@@ -114,10 +110,6 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
             ninStudent.setStudentPassword(MD5.getMD5Encode(ninStudent.getStudentPassword()));
         }
 
-        //主键id，创建者id和修改者id
-        ninStudent.setId(IDUtil.getID());
-        ninStudent.setCreateUserId(UserUtil.getUserInfo().getUserId());
-        ninStudent.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninStudentMapper.insert(ninStudent);
     }
 
@@ -164,8 +156,6 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
             ninStudent.setStudentPassword(MD5.getMD5Encode(ninStudent.getStudentPassword()));
         }
 
-
-        ninStudent.setModifyUserId(UserUtil.getUserInfo().getUserId());
         return ninStudentMapper.updateById(ninStudent);
     }
 
