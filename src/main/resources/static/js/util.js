@@ -1,14 +1,23 @@
 define(function () {
 
+    var set = function (key, value) {
+        //保存到缓存中
+        sessionStorage.setItem(key, value);
+    }
+
+    var get = function (key) {
+        //从缓存中获取
+        return sessionStorage.getItem(key);
+    }
+
     var setToken = function (token) {
-        // 保存
-        sessionStorage.setItem('token', token);
+        // 保存token
+        set('token', token);
     }
 
     var getToken = function () {
-        // 获取
-        var token = sessionStorage.getItem('token');
-        return token;
+        // 获取token
+        return get("token");
     }
 
     var setDetailInfo = function (detailId, type) {
@@ -69,7 +78,6 @@ define(function () {
             $tbody.append($tr);
         }
     }
-
 
     /**
      *
@@ -136,7 +144,6 @@ define(function () {
         }, 1000)
     }
 
-
     var timeString = function (weekly, week) {
         var x,y;
         x = turn(parseInt(weekly));
@@ -176,8 +183,6 @@ define(function () {
     }
 
 
-
-
     return {
         //表格
         createForm: createForm,
@@ -191,15 +196,13 @@ define(function () {
         turn: turn,
         //导航栏信息
         navPath: navPath,
+        //缓存
+        set: set,
+        //从缓存获取
+        get: get,
         //token缓存
         setToken: setToken,
         //获取token
         getToken: getToken,
-        //详情缓存
-        setDetailInfo: setDetailInfo,
-        //获取详情的id
-        getDetailId: getDetailId,
-        //获取详情的类型
-        getDetailType: getDetailType
 };
 });

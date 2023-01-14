@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.netinnet.coursearrange.mapper.NinMessageMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="cn.netinnet.coursearrange.entity.NinMessage">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="class_id" property="classId" />
+        <result column="is_read" property="isRead" />
+        <result column="msg" property="msg" />
+        <result column="del_flag" property="delFlag" />
+        <result column="create_time" property="createTime" />
+        <result column="create_user_id" property="createUserId" />
+        <result column="modify_time" property="modifyTime" />
+        <result column="modify_user_id" property="modifyUserId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, class_id, is_read, msg, del_flag, create_time, create_user_id, modify_time, modify_user_id
+    </sql>
+
+</mapper>

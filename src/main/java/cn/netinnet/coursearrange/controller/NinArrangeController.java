@@ -4,6 +4,7 @@ package cn.netinnet.coursearrange.controller;
 import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
 import cn.netinnet.coursearrange.bo.HouseBo;
+import cn.netinnet.coursearrange.config.WebSocketServer;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.UserInfo;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -100,8 +102,9 @@ public class NinArrangeController {
      * 清空记录
      */
     @GetMapping("nin-arrange/empty")
-    public ResultModel empty() {
+    public ResultModel empty() throws IOException {
         ninArrangeService.empty();
+        WebSocketServer.sendInfo("清除", "100000000000000000");
         return ResultModel.ok();
     }
 

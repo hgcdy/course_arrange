@@ -16,7 +16,7 @@ require(['../config'], function () {
                 dataType: "json",
                 type: "post",
                 data: {
-                    classId: util.getDetailId()
+                    classId: util.get("detailId")
                 },
                 success: function (data) {
                     if (data.code == 200) {
