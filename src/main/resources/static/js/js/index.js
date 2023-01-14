@@ -34,7 +34,7 @@ require(['../config'], function () {
                 //实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
                 //等同于socket = new WebSocket("ws://localhost:8888/xxxx/im/25");
                 //var socketUrl="${request.contextPath}/im/"+$("#userId").val();
-                var socketUrl="http://localhost:8080/imserver/" + util.get("userId");
+                var socketUrl="http://localhost:8080/imserver/" + util.getCache("userId");
                 socketUrl=socketUrl.replace("https","ws").replace("http","ws");
                 console.log(socketUrl);
                 if(socket!=null){
@@ -50,16 +50,17 @@ require(['../config'], function () {
                 //获得消息事件
                 socket.onmessage = function(msg) {
                     console.log(msg.data);
+                    // util.hint("您有一条新消息！");
                     //发现消息进入    开始处理前端触发逻辑
                 };
                 //关闭事件
-                // socket.onclose = function() {
-                //     console.log("websocket已关闭");
-                // };
+                socket.onclose = function() {
+                    console.log("websocket已关闭");
+                };
                 //发生了错误事件
-                // socket.onerror = function() {
-                //     console.log("websocket发生了错误");
-                // }
+                socket.onerror = function() {
+                    console.log("websocket发生了错误");
+                }
             }
         }
         function sendMessage() {

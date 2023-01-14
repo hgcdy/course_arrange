@@ -126,8 +126,8 @@ require(['../config'], function () {
                             //详情
                             $(".details").click(function () {
                                 var id = $(this).parent().parent().children("th").attr("data-id");
-                                util.set("detailId", id);
-                                util.set("type", "class");
+                                util.setCache("detailId", id);
+                                util.setCache("type", "class");
                                 window.location.href = "nin-class-course?token=" + util.getToken();
                             })
                         } else {

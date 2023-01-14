@@ -11,8 +11,8 @@ require(['../config'], function () {
 
 
         function getDetail() {
-            var detailType = util.get("type");
-            var detailId = util.util.get("detailId");
+            var detailType = util.getCache("type");
+            var detailId = util.getCache("detailId");
             var map = new Map;
             map.set(detailType, detailId);
             return map;
@@ -61,7 +61,7 @@ require(['../config'], function () {
 
         //选课
         $("#details").click(function () {
-            var type = util.get("type");
+            var type = util.getCache("type");
             window.location.href = "http://" + window.location.host + "/nin-" + type + "-course?token=" + util.getToken();
         })
         $("#formButton").click(function (){
@@ -69,7 +69,7 @@ require(['../config'], function () {
         })
         //返回
         $("#back").click(function (){
-            window.location.href = "http://" + window.location.host + "/nin-" + util.get("type") + "?token=" + util.getToken();
+            window.location.href = "http://" + window.location.host + "/nin-" + util.getCache("type") + "?token=" + util.getToken();
         })
 
         //课程表导出
@@ -85,7 +85,7 @@ require(['../config'], function () {
 
             var xhr = new XMLHttpRequest();
             xhr.withCredentials = true;//为请求添加Cookie
-            xhr.open('GET', '/exportCourseForm?id='+ util.get("detailId") + "&type=" + util.get("type") + "&count=" + count + "&token=" + util.getToken(), true); // 也可以使用POST方式，根据接口
+            xhr.open('GET', '/exportCourseForm?id='+ util.getCache("detailId") + "&type=" + util.getCache("type") + "&count=" + count + "&token=" + util.getToken(), true); // 也可以使用POST方式，根据接口
             // xhr.send("id=" + typeId + "&type=" + type );
             // xhr.setRequestHeader('content-type', 'application/json');
             xhr.setRequestHeader('content-type', 'application/octet-stream');

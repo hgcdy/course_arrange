@@ -1,23 +1,23 @@
 define(function () {
 
-    var set = function (key, value) {
+    var setCache = function (key, value) {
         //保存到缓存中
         sessionStorage.setItem(key, value);
     }
 
-    var get = function (key) {
+    var getCache = function (key) {
         //从缓存中获取
         return sessionStorage.getItem(key);
     }
 
     var setToken = function (token) {
         // 保存token
-        set('token', token);
+        setCache('token', token);
     }
 
     var getToken = function () {
         // 获取token
-        return get("token");
+        return getCache("token");
     }
 
     var setDetailInfo = function (detailId, type) {
@@ -197,9 +197,9 @@ define(function () {
         //导航栏信息
         navPath: navPath,
         //缓存
-        set: set,
+        setCache: setCache,
         //从缓存获取
-        get: get,
+        getCache: getCache,
         //token缓存
         setToken: setToken,
         //获取token

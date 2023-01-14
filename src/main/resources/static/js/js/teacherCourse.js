@@ -83,7 +83,7 @@ require(['../config'], function () {
                 dataType: "json",
                 type: "post",
                 data: {
-                    teacherId: util.get("detailId")
+                    teacherId: util.getCache("detailId")
                 },
                 success: function (data) {
                     if (data.code == 200) {
