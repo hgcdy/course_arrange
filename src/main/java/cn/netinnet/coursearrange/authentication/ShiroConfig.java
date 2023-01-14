@@ -87,6 +87,7 @@ public class ShiroConfig {
         authMap.put("/login/**", "anon");
         authMap.put("/logout", "logout");
         authMap.put("/welcome", "anon");
+        authMap.put("/druid/**", "anon");
 
         authMap.put("/favicon.ico", "anon");
         authMap.put("/bootstrap/**", "anon");

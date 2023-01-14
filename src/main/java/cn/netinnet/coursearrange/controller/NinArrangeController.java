@@ -114,9 +114,6 @@ public class NinArrangeController {
         return ResultModel.ok(ninArrangeService.getInfo(classId, teacherId, studentId, count));
     }
 
-
-
-
     /**
      * 返回可申请的时间
      * @param bo
@@ -126,7 +123,6 @@ public class NinArrangeController {
     public ResultModel getHouseApplyTime(HouseApplyBo bo) {
         return ResultModel.ok(ninArrangeService.getHouseApplyTime(bo));
     }
-
 
     /**
      * 添加排课记录（教室申请）
