@@ -1,4 +1,4 @@
-package cn.netinnet.coursearrange.entity;
+package cn.netinnet.coursearrange.domain;
 
 import lombok.Data;
 

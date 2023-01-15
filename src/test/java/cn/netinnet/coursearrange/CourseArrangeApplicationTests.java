@@ -57,7 +57,6 @@ class CourseArrangeApplicationTests {
      * 确认后，返回给教师
      */
 
-
     /**
      * WebSocket
      * 定时器，管理员设置，用户选课

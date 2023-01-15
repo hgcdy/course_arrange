@@ -48,17 +48,18 @@ define(function () {
             socket.onopen = function() {
                 console.log("websocket已打开");
                 var obj = {
-                    "code": -1,
-                    "msg": "xxx",
-                    "data": {
-                        "userId": getCache("userId")
-                    }
+                    "userId": getCache("userId"),
+                    "content": "xxx",
+                    "sendDate": new Date()
                 }
                 socket.send(JSON.stringify(obj));
             };
             //获得消息事件
-            socket.onmessage = function(msg) {
-                console.log(msg.data);
+            socket.onmessage = function(event) {
+                console.log(event.data);
+                var message = JSON.parse(event.data);
+                console.log(message.content);
+                console.log(message["content"]);
                 // util.hint("您有一条新消息！");
                 //发现消息进入    开始处理前端触发逻辑
             };
@@ -78,6 +79,7 @@ define(function () {
      * @param obj
      */
     var sendMessage = function(obj) {
+
         if(typeof(WebSocket) == "undefined") {
             console.log("您的浏览器不支持WebSocket");
         }else {

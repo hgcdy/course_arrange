@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.authentication;
 
-import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.domain.UserInfo;
 import com.alibaba.fastjson.JSON;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -9,12 +9,8 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import org.apache.shiro.authc.ExpiredCredentialsException;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 public class JWTUtil {

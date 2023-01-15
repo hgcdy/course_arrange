@@ -1,7 +1,7 @@
 package cn.netinnet.coursearrange.config;
 
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
-import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.domain.UserInfo;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.extern.slf4j.Slf4j;

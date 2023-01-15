@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.util;
 
-import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.domain.UserInfo;
 import org.apache.shiro.SecurityUtils;
 
 public class UserUtil {

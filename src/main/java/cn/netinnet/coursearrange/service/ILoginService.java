@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.service;
 
-import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.domain.UserInfo;
 
 public interface ILoginService {
 

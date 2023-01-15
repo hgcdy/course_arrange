@@ -1,7 +1,7 @@
 package cn.netinnet.coursearrange.entity;
 
+import cn.netinnet.coursearrange.domain.BaseEntity;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;

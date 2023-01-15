@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.authentication;
 
-import cn.netinnet.coursearrange.entity.UserInfo;
+import cn.netinnet.coursearrange.domain.UserInfo;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;

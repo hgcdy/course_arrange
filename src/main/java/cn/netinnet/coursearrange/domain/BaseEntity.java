@@ -1,4 +1,4 @@
-package cn.netinnet.coursearrange.entity;
+package cn.netinnet.coursearrange.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.FieldFill;
