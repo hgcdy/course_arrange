@@ -16,6 +16,8 @@ require(['../config'], function () {
         util.navPath('/用户管理/班级管理');
 
 
+
+
         //学院选择下拉框
         $("#dropupCollegeButton").click(function () {
             //重置专业选择

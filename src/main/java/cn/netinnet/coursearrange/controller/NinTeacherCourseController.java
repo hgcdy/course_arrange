@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * <p>
@@ -29,6 +31,7 @@ public class NinTeacherCourseController {
     @Autowired
     private INinTeacherCourseService ninTeacherCourseService;
 
+    Lock lock = new ReentrantLock();
 
     //跳转教师-课程页面
     @GetMapping("")
@@ -54,11 +57,16 @@ public class NinTeacherCourseController {
      */
     @PostMapping("/addTeacherCourse")
     public ResultModel addTeacherCourse(NinTeacherCourse ninTeacherCourse){
-        int i = ninTeacherCourseService.addSingle(ninTeacherCourse);
-        if (i > 0){
-            return ResultModel.ok();
+        try {
+            lock.lock();
+            int i = ninTeacherCourseService.addSingle(ninTeacherCourse);
+            if (i > 0){
+                return ResultModel.ok();
+            }
+            return ResultModel.error(412, "新增失败");
+        } finally {
+            lock.unlock();
         }
-        return ResultModel.error(412, "新增失败");
     }
 
     /**
@@ -68,11 +76,16 @@ public class NinTeacherCourseController {
      */
     @PostMapping("/delTeacherCourse")
     public ResultModel delTeacherCourse(Long id){
-        int i = ninTeacherCourseService.delById(id);
-        if (i > 0){
-            return ResultModel.ok();
+        try {
+            lock.lock();
+            int i = ninTeacherCourseService.delById(id);
+            if (i > 0){
+                return ResultModel.ok();
+            }
+            return ResultModel.error(412, "删除失败");
+        } finally {
+            lock.unlock();
         }
-        return ResultModel.error(412, "删除失败");
     }
 
 }

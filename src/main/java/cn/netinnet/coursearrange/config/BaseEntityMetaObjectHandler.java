@@ -1,9 +1,12 @@
 package cn.netinnet.coursearrange.config;
 
+import cn.netinnet.coursearrange.constant.ApplicationConstant;
+import cn.netinnet.coursearrange.entity.UserInfo;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
+import org.apache.shiro.UnavailableSecurityManagerException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -27,7 +30,15 @@ public class BaseEntityMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         log.debug("start update fill ....");
-        Long userId = UserUtil.getUserInfo().getUserId();
+//        Long userId = UserUtil.getUserInfo().getUserId();
+        UserInfo userInfo;
+        Long userId;
+        try {
+            userInfo = UserUtil.getUserInfo();
+            userId = userInfo.getUserId();
+        } catch (UnavailableSecurityManagerException e) {
+            userId = ApplicationConstant.ADMIN_ID;
+        }
         this.strictInsertFill(metaObject, "modifyUserId",Long.class, userId);
         this.strictInsertFill(metaObject, "modifyTime", LocalDateTime.class, LocalDateTime.now());
     }

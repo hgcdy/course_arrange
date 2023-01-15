@@ -2,23 +2,19 @@ package cn.netinnet.coursearrange.config;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+
+import cn.netinnet.coursearrange.model.ResultModel;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Component;
 
 
-
-/**
- * @author zhengkai.blog.csdn.net
- */
 @ServerEndpoint("/imserver/{userId}")
 @Component
 @Slf4j
@@ -37,7 +33,7 @@ public class WebSocketServer {
     /**
      * 连接建立成功调用的方法*/
     @OnOpen
-    public void onOpen(Session session,@PathParam("userId") String userId) {
+    public void onOpen(Session session, @PathParam("userId") String userId) {
         this.session = session;
         this.userId=userId;
         if(webSocketMap.containsKey(userId)){
@@ -50,12 +46,10 @@ public class WebSocketServer {
             addOnlineCount();
             //在线数加1
         }
-
         log.info("用户连接: "+userId+", 当前在线人数为:" + getOnlineCount());
-
         try {
-            sendMessage("连接成功");
-        } catch (IOException e) {
+            sendMessage(ResultModel.ok());
+        } catch (IOException | EncodeException e) {
             log.error("用户:"+userId+",网络异常!!!!!!");
         }
     }
@@ -79,7 +73,7 @@ public class WebSocketServer {
      * @param message 客户端发送过来的消息*/
     @OnMessage
     public void onMessage(String message, Session session) {
-        log.info("用户消息:"+userId+",报文:"+message);
+        //log.info("用户消息:"+userId+",报文:"+message);
         //可以群发消息
         //消息保存到数据库、redis
         if(StringUtils.isNotBlank(message)){
@@ -88,7 +82,7 @@ public class WebSocketServer {
 //                JSONObject jsonObject = JSON.parseObject(message);
 //                //追加发送人(防止串改)
 //                jsonObject.put("fromUserId",this.userId);
-//                String toUserId=jsonObject.getString("toUserId");
+//                String toUserId=jsonObject.getString("msg");
 //                //传送给对应toUserId用户的websocket
 //                if(StringUtils.isNotBlank(toUserId)&&webSocketMap.containsKey(toUserId)){
 //                    webSocketMap.get(toUserId).sendMessage(jsonObject.toJSONString());
@@ -112,23 +106,26 @@ public class WebSocketServer {
         log.error("用户错误:"+this.userId+",原因:"+error.getMessage());
         error.printStackTrace();
     }
+
     /**
      * 实现服务器主动推送
      */
-    public void sendMessage(String message) throws IOException {
-        this.session.getBasicRemote().sendText(message);
+    public void sendMessage(Object message) throws IOException, EncodeException {
+        this.session.getBasicRemote().sendObject(message);
     }
-
+//    public void sendMessage(String message) throws IOException {
+//        this.session.getBasicRemote().sendText(message);
+//    }
 
     /**
      * 发送自定义消息
      * */
-    public static void sendInfo(String message,@PathParam("userId") String userId) throws IOException {
-        log.info("发送消息到:"+userId+"，报文:"+message);
+    public static void sendInfo(Object message, @PathParam("userId") String userId) throws IOException, EncodeException {
+        log.info("发送消息到:" + userId + ", 报文:" + message);
         if(StringUtils.isNotBlank(userId)&&webSocketMap.containsKey(userId)){
             webSocketMap.get(userId).sendMessage(message);
         }else{
-            log.error("用户"+userId+",不在线！");
+            log.error("用户" + userId + ",不在线！");
         }
     }
 
@@ -143,4 +140,5 @@ public class WebSocketServer {
     public static synchronized void subOnlineCount() {
         WebSocketServer.onlineCount--;
     }
+
 }

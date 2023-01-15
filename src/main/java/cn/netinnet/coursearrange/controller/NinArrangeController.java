@@ -22,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.websocket.EncodeException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
@@ -102,9 +103,8 @@ public class NinArrangeController {
      * 清空记录
      */
     @GetMapping("nin-arrange/empty")
-    public ResultModel empty() throws IOException {
+    public ResultModel empty() throws IOException, EncodeException {
         ninArrangeService.empty();
-        WebSocketServer.sendInfo("清除", "100000000000000000");
         return ResultModel.ok();
     }
 

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * <p>
@@ -28,6 +30,8 @@ import java.util.List;
 public class NinStudentCourseController {
     @Autowired
     private INinStudentCourseService ninStudentCourseService;
+
+    Lock lock = new ReentrantLock();
 
 
     /**
@@ -56,11 +60,16 @@ public class NinStudentCourseController {
      */
     @PostMapping("/addStudentCourse")
     public ResultModel addStudent(NinStudentCourse ninStudentCourse){
-        int i = ninStudentCourseService.addSingle(ninStudentCourse);
-        if (i > 0) {
-            return ResultModel.ok();
+        try {
+            lock.lock();
+            int i = ninStudentCourseService.addSingle(ninStudentCourse);
+            if (i > 0) {
+                return ResultModel.ok();
+            }
+            return ResultModel.error(412, "新增失败");
+        } finally {
+            lock.unlock();
         }
-        return ResultModel.error(412, "新增失败");
     }
 
     /**
@@ -70,11 +79,16 @@ public class NinStudentCourseController {
      */
     @PostMapping("/delStudentCourse")
     public ResultModel delStudent(Long id){
-        int i = ninStudentCourseService.delSingle(id);
-        if (i > 0){
-            return ResultModel.ok();
+        try {
+            lock.lock();
+            int i = ninStudentCourseService.delSingle(id);
+            if (i > 0){
+                return ResultModel.ok();
+            }
+            return ResultModel.error(412, "删除失败");
+        } finally {
+            lock.unlock();
         }
-        return ResultModel.error(412, "删除失败");
     }
 
 

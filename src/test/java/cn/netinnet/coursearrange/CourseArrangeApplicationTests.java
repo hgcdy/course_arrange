@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange;
 
+import cn.netinnet.coursearrange.config.WebSocketServer;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinClass;
 import cn.netinnet.coursearrange.mapper.NinArrangeMapper;
@@ -48,9 +49,22 @@ class CourseArrangeApplicationTests {
      * 7、util.navPath('/排课管理/教室申请');点击跳转
      */
 
+
+    /**
+     * 管理员修改用户选课，给用户发送消息
+     * 选课开始结束发送消息
+     * 教师申请课程，发送给管理员，等待确认
+     * 确认后，返回给教师
+     */
+
+
+    /**
+     * WebSocket
+     * 定时器，管理员设置，用户选课
+     */
+
     @Test
     void contextLoads() {
-
 
     }
 
