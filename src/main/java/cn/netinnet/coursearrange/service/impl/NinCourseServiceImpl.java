@@ -4,6 +4,7 @@ import cn.netinnet.coursearrange.bo.CourseBo;
 import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.domain.UserInfo;
 import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.enums.HouseTypeEnum;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
@@ -56,11 +57,12 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
 
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size, NinCourse ninCourse) {
+
         PageHelper.startPage(page, size);
         List<CourseBo> list = ninCourseMapper.getSelectList(ninCourse);
         PageInfo<CourseBo> pageInfo = new PageInfo<>(list);
 
-        pageInfo.getList().stream().forEach(i -> {
+        pageInfo.getList().forEach(i -> {
             if (i.getMust() != null) {
                 i.setCnMust(CnUtil.cnMust(i.getMust()));
             }
@@ -85,20 +87,18 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     public int addSingle(NinCourse ninCourse) {
 
         //同名验证
-        Integer integer = ninCourseMapper.selectCount(
-                new QueryWrapper<NinCourse>()
-                        .eq("course_name", ninCourse.getCourseName()));
-        if (integer > 0) {
+        int count = count(new LambdaQueryWrapper<NinCourse>().eq(NinCourse::getCourseName, ninCourse.getCourseName()));
+        if (count > 0) {
             throw new ServiceException(412, "重名");
         }
 
-        if (ninCourse.getHouseType() != 3 && ninCourse.getHouseType() != 4) {
-            List<NinHouse> houses = ninHouseMapper.selectList(new QueryWrapper<>(new NinHouse() {{
-                setHouseType(ninCourse.getHouseType());
-            }})).stream().sorted(Comparator.comparing(NinHouse::getSeat).reversed()).collect(Collectors.toList());
+        if (ninCourse.getHouseType() != HouseTypeEnum.OUTSIDE_CLASS.getCode() &&
+                ninCourse.getHouseType() != HouseTypeEnum.ONLINE_COURSE.getCode()) {
+            List<NinHouse> houses = ninHouseMapper.selectList(new LambdaQueryWrapper<NinHouse>()
+                    .eq(NinHouse::getHouseType, ninCourse.getHouseType()).orderByDesc(NinHouse::getSeat));
             if (houses != null && houses.size() != 0) {
                 List<Integer> list = houses.stream().map(NinHouse::getSeat).filter(i -> i > ninCourse.getMaxClassNum() * 50).collect(Collectors.toList());
-                if (list.size() == 0) {
+                if (list.isEmpty()) {
                     throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的教室");
                 }
             } else {

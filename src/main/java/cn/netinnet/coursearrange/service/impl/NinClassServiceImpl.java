@@ -131,31 +131,32 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
             //删除班级下的所有学生及学生选课信息，同时学生选课对应的选修班级人数-1
 
             //根据班级id获取该班级的学生列表
-            List<NinStudent> ninStudents = ninStudentMapper.selectList(new QueryWrapper<>(new NinStudent() {{
-                setClassId(id);
-            }}));
-            if (ninStudents != null && ninStudents.size() != 0) {
+            List<NinStudent> ninStudents = ninStudentMapper.selectList(new LambdaQueryWrapper<NinStudent>().eq(NinStudent::getClassId, id));
+
+            if (ninStudents != null && !ninStudents.isEmpty()) {
                 //该班级有学生
                 //1.批量删除学生
                 List<Long> studentIds = ninStudents.stream().map(NinStudent::getId).collect(Collectors.toList());
-                ninStudentMapper.delBatchStudent(studentIds);
+                ninStudentMapper.deleteBatchIds(studentIds);
                 //2.学生列表得到选课列表---》  Map<选修班id, 人数>
-                List<NinStudentCourse> ninStudentCourseList = ninStudentCourseMapper.getStudentIds(studentIds);
-                if (ninStudentCourseList != null && ninStudentCourseList.size() != 0) {
+                List<NinStudentCourse> ninStudentCourseList = ninStudentCourseMapper
+                        .selectList(new LambdaQueryWrapper<NinStudentCourse>()
+                                .in(NinStudentCourse::getStudentId, studentIds));
+                if (ninStudentCourseList != null && !ninStudentCourseList.isEmpty()) {
                     Map<Long, Long> map = ninStudentCourseList.stream().map(NinStudentCourse::getTakeClassId).collect(Collectors.groupingBy(i -> i, Collectors.counting()));
 
                     ArrayList<Map<String, Object>> maps = new ArrayList<>();
                     for (Map.Entry<Long, Long> m : map.entrySet()) {
                         HashMap<String, Object> map1 = new HashMap<>();
                         map1.put("classId", m.getKey());
-                        map1.put("peopleNum", 0 - (m.getValue().intValue()));
+                        map1.put("peopleNum", -(m.getValue().intValue()));
                         maps.add(map1);
                     }
 
                     //3.批量选修班人数减掉
                     ninClassMapper.alterBatchPeopleNum(maps);
                     //4.批量删除学生选课表
-                    ninStudentCourseMapper.delBatchStudentId(studentIds);
+                    ninStudentCourseMapper.deleteBatchIds(studentIds);
                 }
             }
         }
@@ -172,18 +173,18 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     @Transactional(rollbackFor = Exception.class)
     public int alterSingle(NinClass ninClass) {
         //同名验证
-        Integer integer = ninClassMapper.selectCount(
-                new QueryWrapper<NinClass>()
-                        .eq("class_name", ninClass.getClassName())
-                        .ne("id", ninClass.getId()));
-        if (integer > 0) {
+        int count = count(new LambdaQueryWrapper<NinClass>()
+                .eq(NinClass::getClassName, ninClass.getClassName())
+                .ne(NinClass::getId, ninClass.getId()));
+
+        if (count > 0) {
             throw new ServiceException(412, "重名");
         }
-        NinClass ninClass1 = ninClassMapper.selectById(ninClass.getId());
+        NinClass ninClassOld = ninClassMapper.selectById(ninClass.getId());
         //如果修改所属的专业
-        if (ninClass1.getCareerId() != ninClass.getCareerId()) {
+        if (!Objects.equals(ninClassOld.getCareerId(), ninClass.getCareerId())) {
             ninCareerMapper.addClassNum(ninClass.getCareerId());
-            ninCareerMapper.subClassNum(ninClass1.getCareerId());
+            ninCareerMapper.subClassNum(ninClassOld.getCareerId());
         }
         return ninClassMapper.updateById(ninClass);
     }
