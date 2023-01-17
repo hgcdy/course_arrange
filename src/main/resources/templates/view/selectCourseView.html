@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>title</title>
+    <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{css/selectCourse.css}" rel="stylesheet">
+    <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/selectCourse},defer=true"></script>
+
+</head>
+<body>
+
+<div class="border-bottom" id="bottom-head" style="height: 5%;"></div>
+
+<div id="chunk-main">
+    <div class="chunk-card">
+        <div class="chunk-card-head">可选课程</div>
+        <div class="chunk-card-body">
+            <div class="item">
+                <div class="text">
+                    高等数学
+                </div>
+                <div class="add">
+                    <a href="javaScript:void(0)">添加</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="chunk-card" style="left: 35%;">
+        <div class="chunk-card-head">已选课程</div>
+        <div class="chunk-card-body">
+            <div class="item">
+                <div class="text">
+                    高等数学
+                </div>
+                <div class="del">
+                    <a href="javaScript:void(0)">删除</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="chunk-card" style="left: 65%">
+        <div class="chunk-card-head">课程信息</div>
+        <div class="chunk-card-body"></div>
+    </div>
+</div>
+
+</body>
+</html>

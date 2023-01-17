@@ -18,8 +18,11 @@ require(['../config'], function () {
             var path = $(this).attr("data-html");
             path = path + "?token=" + util.getToken();
             $("iframe").attr("src", path);
-            $("#popup").css("display", "none");
-            $("#popup").find("table").empty();
+            var attr = $(this).attr("data-type");
+            if (attr !== undefined) {
+                util.setCache("type", attr);
+            }
+            $("#popup").css("display", "none").find("table").empty();
         })
 
         util.openSocket();

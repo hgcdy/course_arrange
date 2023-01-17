@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -155,5 +157,30 @@ public class NinClassController {
             return ResultModel.ok();
         }
         return ResultModel.error(412, "修改失败");
+    }
+
+
+    @PostMapping("/getCourse")
+    public ResultModel getSelectCourse(Long id) {
+        ArrayList<Map<String, Object>> maps = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("id", i);
+            map.put("name", "xx" + i);
+            maps.add(map);
+        }
+        ArrayList<Map<String, Object>> maps1 = new ArrayList<>();
+        for (int i = 0; i > -10 ; i--) {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("id", i);
+            map.put("name", "xx" + i);
+            maps1.add(map);
+        }
+
+        HashMap<String, List> stringListHashMap = new HashMap<>();
+        stringListHashMap.put("selected", maps);
+        stringListHashMap.put("unselected", maps1);
+
+        return ResultModel.ok(stringListHashMap);
     }
 }

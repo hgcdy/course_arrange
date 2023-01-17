@@ -170,6 +170,6 @@ public class NinArrangeController {
     //跳转班级课程页面
     @GetMapping("nin-class-course")
     public ModelAndView gotoClassCourse() {
-        return new ModelAndView("view/classCourseView");
+        return new ModelAndView("view/selectCourseView");
     }
 }

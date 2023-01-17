@@ -1,43 +1,43 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<!--教师选课-->
-<head>
-    <meta charset="UTF-8">
-    <title>title</title>
-    <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-    <link th:href="@{css/style.css}" rel="stylesheet">
-    <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/teacherCourse},defer=true"></script>
-</head>
-<body>
-<div class="border-bottom" style="height: 5%;">
-    <button type="button" class="btn" id="back">返回</button>
-    <button type="button" class="btn btn-info" id="details">选课</button>
-    <button type="button" class="btn" id="formButton">课程表</button>
-</div>
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--&lt;!&ndash;教师选课&ndash;&gt;-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>title</title>-->
+<!--    <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">-->
+<!--    <link th:href="@{css/style.css}" rel="stylesheet">-->
+<!--    <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/teacherCourse},defer=true"></script>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="border-bottom" style="height: 5%;">-->
+<!--    <button type="button" class="btn" id="back">返回</button>-->
+<!--    <button type="button" class="btn btn-info" id="details">选课</button>-->
+<!--    <button type="button" class="btn" id="formButton">课程表</button>-->
+<!--</div>-->
 
-<!--表格展示-->
-<div class="bd-example" id="form">
-    <table class="table table-sm table-bordered" style="table-layout: fixed">
-        <thead>
-        <tr>
-            <th scope="col" width="50px">序号</th>
-            <th scope="col">课程</th>
-            <th scope="col">教室类型</th>
-            <th scope="col">是否选修</th>
-            <th scope="col">课时</th>
-            <th scope="col">开课时间</th>
-            <th scope="col">结课时间</th>
-            <th scope="col">课程周数</th>
-            <th scope="col">
-                操作&nbsp;&nbsp;&nbsp;&nbsp;
-                <button type="button" class="btn btn-info" id="insert">新建</button>
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-</div>
+<!--&lt;!&ndash;表格展示&ndash;&gt;-->
+<!--<div class="bd-example" id="form">-->
+<!--    <table class="table table-sm table-bordered" style="table-layout: fixed">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th scope="col" width="50px">序号</th>-->
+<!--            <th scope="col">课程</th>-->
+<!--            <th scope="col">教室类型</th>-->
+<!--            <th scope="col">是否选修</th>-->
+<!--            <th scope="col">课时</th>-->
+<!--            <th scope="col">开课时间</th>-->
+<!--            <th scope="col">结课时间</th>-->
+<!--            <th scope="col">课程周数</th>-->
+<!--            <th scope="col">-->
+<!--                操作&nbsp;&nbsp;&nbsp;&nbsp;-->
+<!--                <button type="button" class="btn btn-info" id="insert">新建</button>-->
+<!--            </th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        </tbody>-->
+<!--    </table>-->
+<!--</div>-->
 
-</body>
-</html>
+<!--</body>-->
+<!--</html>-->

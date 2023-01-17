@@ -32,8 +32,10 @@ require(['../config'], function () {
                             if (data.code == 200) {
                                 var token = data.data["token"];
                                 var userId = data.data["userId"];
+                                var role = data.data["role"];
                                 util.setToken(token);
                                 util.setCache("userId", userId);
+                                util.setCache("role", role);
                                 window.location.href = "index?type="+ val +"&token=" + token;
                             } else {
                                 util.hint(data.msg);

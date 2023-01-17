@@ -5,6 +5,7 @@ import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinTeacherCourseService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -36,31 +40,46 @@ public class NinTeacherCourseController {
     //跳转教师-课程页面
     @GetMapping("")
     public ModelAndView gotoTeacherCourse(){
-        return new ModelAndView("view/teacherCourseView");
+        return new ModelAndView("view/selectCourseView");
     }
 
-    /**
-     * 查询
-     * @param teacherId
-     * @return
-     */
-    @PostMapping("/getSelectList")
-    public ResultModel getSelectList(Long teacherId){
-        List<ContactCourseBo> list = ninTeacherCourseService.getSelectList(teacherId);
-        return ResultModel.ok(list);
+    @PostMapping("/getCourse")
+    public ResultModel getSelectCourse(Long id) {
+        ArrayList<Map<String, Object>> maps = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("id", i);
+            map.put("name", "xx" + i);
+            maps.add(map);
+        }
+        ArrayList<Map<String, Object>> maps1 = new ArrayList<>();
+        for (int i = 0; i > -10 ; i--) {
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("id", i);
+            map.put("name", "xx" + i);
+            maps1.add(map);
+        }
+
+        HashMap<String, List> stringListHashMap = new HashMap<>();
+        stringListHashMap.put("selected", maps);
+        stringListHashMap.put("unselected", maps1);
+
+        return ResultModel.ok(stringListHashMap);
     }
 
     /**
      * 添加教师-课程记录
-     * @param ninTeacherCourse
      * @return
      */
-    @PostMapping("/addTeacherCourse")
-    public ResultModel addTeacherCourse(NinTeacherCourse ninTeacherCourse){
+    @PostMapping("/addCourse")
+    public ResultModel addTeacherCourse(Long id, Long courseId){
         try {
             lock.lock();
-            int i = ninTeacherCourseService.addSingle(ninTeacherCourse);
-            if (i > 0){
+            boolean save = ninTeacherCourseService.save(new NinTeacherCourse() {{
+                setTeacherId(id);
+                setCourseId(courseId);
+            }});
+            if (save){
                 return ResultModel.ok();
             }
             return ResultModel.error(412, "新增失败");
@@ -74,12 +93,12 @@ public class NinTeacherCourseController {
      * @param id
      * @return
      */
-    @PostMapping("/delTeacherCourse")
-    public ResultModel delTeacherCourse(Long id){
+    @PostMapping("/delCourse")
+    public ResultModel delTeacherCourse(Long id, Long courseId){
         try {
             lock.lock();
-            int i = ninTeacherCourseService.delById(id);
-            if (i > 0){
+            boolean b = ninTeacherCourseService.remove(new LambdaQueryWrapper<NinTeacherCourse>().eq(NinTeacherCourse::getTeacherId, id).eq(NinTeacherCourse::getCourseId, courseId));
+            if (b){
                 return ResultModel.ok();
             }
             return ResultModel.error(412, "删除失败");

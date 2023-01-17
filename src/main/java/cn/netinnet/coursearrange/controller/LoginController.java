@@ -43,9 +43,9 @@ public class LoginController {
         if (type.equals(UserTypeEnum.ADMIN.getName())) {
             path = "index";
         } else if (type.equals(UserTypeEnum.STUDENT.getName())) {
-            path = "viewStu/indexStu";
+            path = "indexStu";
         } else if (type.equals(UserTypeEnum.TEACHER.getName())) {
-            path = "viewTea/indexTea";
+            path = "indexTea";
         }
         return new ModelAndView(path);
     }
@@ -57,6 +57,7 @@ public class LoginController {
         return ResultModel.ok(new HashMap<String, Object>() {{
             put("token", token);
             put("userId", userInfo.getUserId());
+            put("role", userInfo.getUserType());
         }});
     }
 }
