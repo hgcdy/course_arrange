@@ -8,8 +8,6 @@ require(['../config'], function () {
 
         var count = 0;
 
-
-
         function getDetail() {
             var detailType = util.getCache("type");
             var detailId = util.getCache("detailId");

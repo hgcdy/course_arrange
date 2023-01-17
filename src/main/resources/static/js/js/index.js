@@ -21,6 +21,7 @@ require(['../config'], function () {
             var attr = $(this).attr("data-type");
             if (attr !== undefined) {
                 util.setCache("type", attr);
+                util.setCache("detailId", util.getCache("userId"));
             }
             $("#popup").css("display", "none").find("table").empty();
         })

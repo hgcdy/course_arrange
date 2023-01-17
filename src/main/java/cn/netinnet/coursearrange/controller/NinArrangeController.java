@@ -53,26 +53,26 @@ public class NinArrangeController {
         return new ModelAndView("view/courseFormView");
     }
 
-    @GetMapping("/courseForm/{type}")
-    public ModelAndView getCourseForm(@PathVariable String type) {
-        UserInfo userInfo = UserUtil.getUserInfo();
-        String userType = userInfo.getUserType();
-        ModelAndView modelAndView = new ModelAndView("view/courseFormView_1");
-        if (userType.equals(UserTypeEnum.STUDENT.getName())) {
-            if ("stu".equals(type)) {
-                modelAndView.addObject("studentId", String.valueOf(userInfo.getUserId()));
-                return modelAndView;
-            } else if ("class".equals(type)) {
-                NinStudent ninStudent = ninStudentMapper.selectById(userInfo.getUserId());
-                modelAndView.addObject("classId", String.valueOf(ninStudent.getClassId()));
-                return modelAndView;
-            }
-        } else if (userType.equals(UserTypeEnum.TEACHER.getName())) {
-            modelAndView.addObject("teacherId", String.valueOf(userInfo.getUserId()));
-            return modelAndView;
-        }
-        throw new ServiceException(412, "接口错误");
-    }
+//    @GetMapping("/courseForm/{type}")
+//    public ModelAndView getCourseForm(@PathVariable String type) {
+//        UserInfo userInfo = UserUtil.getUserInfo();
+//        String userType = userInfo.getUserType();
+//        ModelAndView modelAndView = new ModelAndView("view/courseFormView");
+//        if (userType.equals(UserTypeEnum.STUDENT.getName())) {
+//            if ("stu".equals(type)) {
+//                modelAndView.addObject("studentId", String.valueOf(userInfo.getUserId()));
+//                return modelAndView;
+//            } else if ("class".equals(type)) {
+//                NinStudent ninStudent = ninStudentMapper.selectById(userInfo.getUserId());
+//                modelAndView.addObject("classId", String.valueOf(ninStudent.getClassId()));
+//                return modelAndView;
+//            }
+//        } else if (userType.equals(UserTypeEnum.TEACHER.getName())) {
+//            modelAndView.addObject("teacherId", String.valueOf(userInfo.getUserId()));
+//            return modelAndView;
+//        }
+//        throw new ServiceException(412, "接口错误");
+//    }
 
     //跳转教室申请页面
     @GetMapping("/applyHouse")
