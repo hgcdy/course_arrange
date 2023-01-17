@@ -8,14 +8,14 @@ import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinStudentMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
-import cn.netinnet.coursearrange.service.ILoginService;
+import cn.netinnet.coursearrange.service.LoginService;
 import cn.netinnet.coursearrange.util.MD5;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LoginServiceImpl implements ILoginService{
+public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private NinTeacherMapper ninTeacherMapper;

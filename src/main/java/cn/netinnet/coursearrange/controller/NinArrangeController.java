@@ -37,8 +37,6 @@ import java.text.ParseException;
 public class NinArrangeController {
     @Autowired
     private INinArrangeService ninArrangeService;
-    @Autowired
-    private NinStudentMapper ninStudentMapper;
 
     //跳转排课页面
     @GetMapping("/nin-arrange")
@@ -46,33 +44,11 @@ public class NinArrangeController {
         return new ModelAndView("view/arrangeView");
     }
 
-
     //跳转各管理的页面的课程表
     @GetMapping("/nin-arrange/courseForm")
     public ModelAndView gotoFormView() {
         return new ModelAndView("view/courseFormView");
     }
-
-//    @GetMapping("/courseForm/{type}")
-//    public ModelAndView getCourseForm(@PathVariable String type) {
-//        UserInfo userInfo = UserUtil.getUserInfo();
-//        String userType = userInfo.getUserType();
-//        ModelAndView modelAndView = new ModelAndView("view/courseFormView");
-//        if (userType.equals(UserTypeEnum.STUDENT.getName())) {
-//            if ("stu".equals(type)) {
-//                modelAndView.addObject("studentId", String.valueOf(userInfo.getUserId()));
-//                return modelAndView;
-//            } else if ("class".equals(type)) {
-//                NinStudent ninStudent = ninStudentMapper.selectById(userInfo.getUserId());
-//                modelAndView.addObject("classId", String.valueOf(ninStudent.getClassId()));
-//                return modelAndView;
-//            }
-//        } else if (userType.equals(UserTypeEnum.TEACHER.getName())) {
-//            modelAndView.addObject("teacherId", String.valueOf(userInfo.getUserId()));
-//            return modelAndView;
-//        }
-//        throw new ServiceException(412, "接口错误");
-//    }
 
     //跳转教室申请页面
     @GetMapping("/applyHouse")

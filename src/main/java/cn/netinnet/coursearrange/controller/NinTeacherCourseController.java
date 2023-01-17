@@ -75,14 +75,11 @@ public class NinTeacherCourseController {
     public ResultModel addTeacherCourse(Long id, Long courseId){
         try {
             lock.lock();
-            boolean save = ninTeacherCourseService.save(new NinTeacherCourse() {{
+            boolean b = ninTeacherCourseService.save(new NinTeacherCourse() {{
                 setTeacherId(id);
                 setCourseId(courseId);
             }});
-            if (save){
-                return ResultModel.ok();
-            }
-            return ResultModel.error(412, "新增失败");
+            return b ? ResultModel.ok() : ResultModel.error(412, "新增失败");
         } finally {
             lock.unlock();
         }
@@ -98,10 +95,7 @@ public class NinTeacherCourseController {
         try {
             lock.lock();
             boolean b = ninTeacherCourseService.remove(new LambdaQueryWrapper<NinTeacherCourse>().eq(NinTeacherCourse::getTeacherId, id).eq(NinTeacherCourse::getCourseId, courseId));
-            if (b){
-                return ResultModel.ok();
-            }
-            return ResultModel.error(412, "删除失败");
+            return b ? ResultModel.ok() : ResultModel.error(412, "删除失败");
         } finally {
             lock.unlock();
         }

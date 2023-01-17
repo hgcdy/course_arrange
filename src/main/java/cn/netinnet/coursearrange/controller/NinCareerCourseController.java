@@ -62,11 +62,7 @@ public class NinCareerCourseController {
      */
     @PostMapping("/delCareerCourse")
     public ResultModel delCareerCourse(Long id) {
-        int i = ninCareerCourseService.delCareerCourse(id);
-        if (i > 0) {
-            return ResultModel.ok();
-        }
-        return ResultModel.error(412, "删除失败");
+        return ninCareerCourseService.removeById(id) ? ResultModel.ok() : ResultModel.error(412, "删除失败");
     }
 
 

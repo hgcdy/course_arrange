@@ -4,7 +4,7 @@ import cn.netinnet.coursearrange.authentication.JWTUtil;
 import cn.netinnet.coursearrange.domain.UserInfo;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.model.ResultModel;
-import cn.netinnet.coursearrange.service.ILoginService;
+import cn.netinnet.coursearrange.service.LoginService;
 import com.sun.istack.internal.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class LoginController {
 
     @Autowired
-    private ILoginService loginService;
+    private LoginService loginService;
 
 
     //跳转登录页面

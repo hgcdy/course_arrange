@@ -2,7 +2,7 @@ package cn.netinnet.coursearrange.service;
 
 import cn.netinnet.coursearrange.domain.UserInfo;
 
-public interface ILoginService {
+public interface LoginService {
 
     /**
      * 登录校验

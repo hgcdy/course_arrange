@@ -28,4 +28,8 @@ public interface INinSettingService extends IService<NinSetting> {
      * 添加或更新quartz定时器任务
      */
     void addTimer(List<NinSetting> ninSettingList);
+    /**
+     * 根据课程id删除setting记录和quartz任务
+     */
+    void delTimerByCourseId(Long courseId);
 }

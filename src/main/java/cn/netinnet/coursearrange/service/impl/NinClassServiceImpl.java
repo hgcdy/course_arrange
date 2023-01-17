@@ -5,11 +5,15 @@ import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinClassService;
+import cn.netinnet.coursearrange.service.INinSettingService;
+import cn.netinnet.coursearrange.util.QuartzManager;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +46,7 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     @Autowired
     private NinArrangeMapper ninArrangeMapper;
     @Autowired
-    private NinSettingMapper ninSettingMapper;
+    private INinSettingService ninSettingService;
 
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size, String college, Long careerId, String className) {
@@ -62,8 +66,15 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     }
 
     @Override
-    public List<ClassBo> getClassList(String college, Long careerId) {
-        List<ClassBo> list = ninClassMapper.getClassList(college, careerId);
+    public List<NinClass> getClassList(String college, Long careerId) {
+        List<Long> careerIdList = null;
+        if (college != null) {
+            List<NinCareer> ninCareers = ninCareerMapper.selectList(new LambdaQueryWrapper<NinCareer>().select(NinCareer::getCareerName).eq(NinCareer::getCollege, college));
+            careerIdList = ninCareers.stream().map(NinCareer::getId).collect(Collectors.toList());
+        } else {
+            careerIdList = Collections.singletonList(careerId);
+        }
+        List<NinClass> list = list(new QueryWrapper<NinClass>().select("id AS classId, career_id, class_name").lambda().in(NinClass::getCareerId, careerIdList));
         return list;
     }
 
@@ -71,91 +82,50 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     public Map<String, Map<String, List<ClassBo>>> collegeCareerClassList() {
         List<ClassBo> list = ninClassMapper.collegeCareerClassList();
         //按学院，专业名称分组
-        Map<String, Map<String, List<ClassBo>>> map = list.stream().collect(Collectors.groupingBy(i -> i.getCollege(), Collectors.groupingBy(i -> i.getCareerName())));
-        return map;
+        return list.stream().collect(Collectors.groupingBy(ClassBo::getCollege, Collectors.groupingBy(ClassBo::getCareerName)));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int addSingle(NinClass ninClass) {
+    public boolean addSingle(NinClass ninClass) {
         //同名验证
-        Integer integer = ninClassMapper.selectCount(
-                new QueryWrapper<NinClass>()
-                        .eq("class_name", ninClass.getClassName()));
-        if (integer > 0) {
+        int count = count(new LambdaQueryWrapper<NinClass>().eq(NinClass::getClassName, ninClass.getClassName()));
+        if (count > 0) {
             throw new ServiceException(412, "重名");
         }
-
         ninCareerMapper.addClassNum(ninClass.getCareerId());
-//        ninClass.setId(IDUtil.getID());
-//        ninClass.setCreateUserId(UserUtil.getUserInfo().getUserId());
-//        ninClass.setModifyUserId(UserUtil.getUserInfo().getUserId());
-        return ninClassMapper.insert(ninClass);
+        return save(ninClass);
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public int delBatchStudent(Long classId) {
-        //选修班级
-        NinClass ninClass = ninClassMapper.selectById(classId);
-        if (ninClass.getCareerId() == 0) {
-            //选修找学生-课程表，对应的记录删除
-            return ninStudentCourseMapper.delete(
-                    new QueryWrapper<>(new NinStudentCourse() {{
-                        setTakeClassId(classId);
-                    }}));
-        } else {
-            List<NinStudent> ninStudents = ninStudentMapper.selectList(new QueryWrapper<>(new NinStudent() {{
-                setClassId(classId);
-            }}));
-
-            //学生id列表
-            List<Long> studentIdList = ninStudents.stream().map(NinStudent::getId).collect(Collectors.toList());
-            if (studentIdList != null && studentIdList.size() != 0) {
-                //根据学生ids删除学生-课程表记录
-                ninStudentCourseMapper.delBatchStudentId(studentIdList);
-            }
-
-            //删除学生
-            return ninStudentMapper.delete(new QueryWrapper<>(new NinStudent() {{
-                setClassId(classId);
-            }}));
-
-        }
-    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delById(Long id) {
-        NinClass ninClass = ninClassMapper.selectById(id);
+        NinClass ninClass = getById(id);
         if (ninClass.getCareerId() == 0) {
             //选修班级
             //删除学生选课信息
-            ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
-                setTakeClassId(ninClass.getId());
-            }}));
+            ninStudentCourseMapper.delete(new LambdaQueryWrapper<NinStudentCourse>()
+                    .eq(NinStudentCourse::getTakeClassId, ninClass.getId()));
 
             //删除课程
-            NinArrange arrange = ninArrangeMapper.selectOne(new QueryWrapper<>(new NinArrange() {{
-                setClassId(ninClass.getId());
-            }}));
+            NinArrange arrange = ninArrangeMapper.selectOne(new LambdaQueryWrapper<NinArrange>()
+                    .eq(NinArrange::getClassId, ninClass.getId()));
+
             Long courseId = arrange.getCourseId();
             ninCourseMapper.deleteById(courseId);
 
-            //删除设置记录
-            ninSettingMapper.delete(new QueryWrapper<>(new NinSetting() {{
-                setCourseId(courseId);
-            }}));
+            //根据课程id删除setting和定时器
+            ninSettingService.delTimerByCourseId(courseId);
 
             //删除教师选课
-            ninTeacherCourseMapper.delete(new QueryWrapper<>(new NinTeacherCourse(){{
-                setCourseId(courseId);
-            }}));
+            ninTeacherCourseMapper.delete(new LambdaQueryWrapper<NinTeacherCourse>()
+                    .eq(NinTeacherCourse::getCourseId, courseId));
+
 
             //删除排课记录
-            ninArrangeMapper.delete(new QueryWrapper<>(new NinArrange(){{
-                setCourseId(courseId);
-            }}));
+            ninArrangeMapper.delete(new LambdaQueryWrapper<NinArrange>()
+                    .eq(NinArrange::getCourseId, courseId));
 
         } else {
             //删除班级下的所有学生及学生选课信息，同时学生选课对应的选修班级人数-1

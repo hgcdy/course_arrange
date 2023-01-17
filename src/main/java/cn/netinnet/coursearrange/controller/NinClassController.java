@@ -104,11 +104,7 @@ public class NinClassController {
     @PostMapping("/addClass")
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel addClass(NinClass ninClass) {
-        int i = ninClassService.addSingle(ninClass);
-        if (i > 0) {
-            return ResultModel.ok();
-        }
-        return ResultModel.error(412, "新增失败");
+        return ninClassService.addSingle(ninClass) ? ResultModel.ok() : ResultModel.error(412, "新增失败");
     }
 
     /**
@@ -127,21 +123,6 @@ public class NinClassController {
         return ResultModel.error(412, "删除失败");
     }
 
-    /**
-     * 删除该班级的学生及记录
-     *
-     * @param id 班级id
-     * @return
-     */
-    @PostMapping("/delClassStudent")
-    @RequiresRoles(value = {"admin"}, logical = Logical.OR)
-    public ResultModel delClassStudent(Long id) {
-        int i = ninClassService.delBatchStudent(id);
-        if (i > 0) {
-            return ResultModel.ok();
-        }
-        return ResultModel.error(412, "删除失败");
-    }
 
     /**
      * 修改班级

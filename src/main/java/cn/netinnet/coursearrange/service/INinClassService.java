@@ -29,7 +29,7 @@ public interface INinClassService extends IService<NinClass> {
     /**
      * 根据条件获取班级列表
      */
-    List<ClassBo> getClassList(String college, Long careerId);
+    List<NinClass> getClassList(String college, Long careerId);
 
     /**
      * 全部的学院专业班级列表
@@ -38,11 +38,7 @@ public interface INinClassService extends IService<NinClass> {
     /**
      * 单个新增
      */
-    int addSingle(NinClass ninClass);
-    /**
-     * 删除该班级的所有学生
-     */
-    int delBatchStudent(Long classId);
+    boolean addSingle(NinClass ninClass);
     /**
      * 单个删除
      */

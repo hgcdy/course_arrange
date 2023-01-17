@@ -57,11 +57,10 @@
         <if test="careerId != null">
             AND career_id = #{careerId}
         </if>
-        ORDER BY college, career_id, class_name
+        ORDER BY college, career_id, class_namenin-arrange/courseForm
     </select>
 
 <!-- 学院专业班级列表 -->
-<!--    //todo ！= 0-->
     <select id="collegeCareerClassList" resultType="cn.netinnet.coursearrange.bo.ClassBo">
         SELECT college, career_name, nin_class.id AS classId, class_name
         FROM nin_class INNER JOIN nin_career ON nin_class.career_id = nin_career.id

@@ -7,6 +7,7 @@ import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.enums.OpenStateEnum;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
+import cn.netinnet.coursearrange.mapper.NinCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinSettingMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
@@ -123,6 +124,18 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
                 }
             });
         }
+    }
+
+    @Override
+    public void delTimerByCourseId(Long courseId) {
+        LambdaQueryWrapper<NinSetting> wrapper = new LambdaQueryWrapper<NinSetting>().eq(NinSetting::getCourseId, courseId);
+        List<NinSetting> ninSettings = list(wrapper);
+        ninSettings.forEach(setting -> {
+            String idStr = setting.getId().toString();
+            String userType = setting.getUserType();
+            quartzManager.removeJob(idStr, userType, idStr, userType);
+        });
+        remove(wrapper);
     }
 
 
