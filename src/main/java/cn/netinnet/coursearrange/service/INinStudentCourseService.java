@@ -5,6 +5,7 @@ import cn.netinnet.coursearrange.entity.NinStudentCourse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -15,17 +16,20 @@ import java.util.List;
  * @since 2022-08-18
  */
 public interface INinStudentCourseService extends IService<NinStudentCourse> {
+
     /**
-     * 查询
+     * 获取学生课程
+     * @param id
+     * @return
      */
-    List<List<ContactCourseBo>> getSelectList(Long studentId);
+    Map<String, List<Map<String, Object>>> getCourse(Long id);
     /**
      * 添加
      */
-    int addSingle(NinStudentCourse ninStudentCourse);
+    int addSingle(Long studentId, Long courseId);
 
     /**
      * 删除
      */
-    int delSingle(Long id);
+    int delSingle(Long studentId, Long courseId);
 }

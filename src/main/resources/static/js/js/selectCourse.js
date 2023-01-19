@@ -47,17 +47,13 @@ require(['../config'], function () {
                 },
                 success: function (data) {
                     if (data.code === 200) {
-                        var selected = data.data.selected;
+                        var selected = data.data.unselected;
                         for (const key in selected) {
-                            var id = selected[key].id;
-                            var name = selected[key].name;
-                            addItem($(".chunk-card-body:eq(0)"), id, name, 1);
+                            addItem($(".chunk-card-body:eq(0)"), selected[key], 1);
                         }
-                        var unselected = data.data.unselected;
+                        var unselected = data.data.selected;
                         for (const key in unselected) {
-                            var id = unselected[key].id;
-                            var name = unselected[key].name;
-                            addItem($(".chunk-card-body:eq(1)"), id, name, -1);
+                            addItem($(".chunk-card-body:eq(1)"), unselected[key], -1);
                         }
 
                         $(".item").click(function () {
@@ -107,12 +103,13 @@ require(['../config'], function () {
          * 添加item
          * sign 1-新增， -1-删除
          */
-        function addItem(obj, id, name, sign) {
+        function addItem(obj, itemInfo, sign) {
+            var id = itemInfo.id;
+            var name = itemInfo.name;
+            var isOk = itemInfo.isOk;
             var $item = $("<div class='item'></div>").attr("data-id", id);
             var $text = $("<div class='text'></div>").text(name);
-            if (type === "class") {
-                $item.append($text);
-            } else {
+            if (isOk) {
                 if (sign === 1) {
                     var $add = "<div class='add'><a href='javaScript:void(0)'>添加</a></div>";
                     $item.append($text, $add);
@@ -120,12 +117,10 @@ require(['../config'], function () {
                     var $del = "<div class='del'><a href='javaScript:void(0)'>删除</a></div>";
                     $item.append($text, $del);
                 }
+            } else {
+                $item.append($text);
             }
             $(obj).append($item);
-        }
-
-        function delItem(obj) {
-            $(obj).parent().remove();
         }
 
         //返回

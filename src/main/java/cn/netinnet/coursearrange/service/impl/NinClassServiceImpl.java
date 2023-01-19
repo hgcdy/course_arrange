@@ -2,8 +2,10 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.ClassBo;
 import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.enums.CourseTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
+import cn.netinnet.coursearrange.service.INinCareerCourseService;
 import cn.netinnet.coursearrange.service.INinClassService;
 import cn.netinnet.coursearrange.service.INinSettingService;
 import cn.netinnet.coursearrange.util.QuartzManager;
@@ -47,6 +49,8 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     private NinArrangeMapper ninArrangeMapper;
     @Autowired
     private INinSettingService ninSettingService;
+    @Autowired
+    private NinCareerCourseMapper ninCareerCourseMapper;
 
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size, String college, Long careerId, String className) {
@@ -59,11 +63,7 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
         return map;
     }
 
-    @Override
-    public List<NinCourse> getCourseList(Long classId) {
-        NinClass ninClass = ninClassMapper.selectById(classId);
-        return ninClassMapper.getCourseList(classId, ninClass.getCareerId());
-    }
+
 
     @Override
     public List<NinClass> getClassList(String college, Long careerId) {
@@ -187,6 +187,32 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
             ninCareerMapper.subClassNum(ninClassOld.getCareerId());
         }
         return ninClassMapper.updateById(ninClass);
+    }
+
+    @Override
+    public Map<String, List<Map<String, Object>>> getCourse(Long id) {
+        NinClass ninClass = getById(id);
+        List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper
+                .selectList(new LambdaQueryWrapper<NinCareerCourse>()
+                        .eq(NinCareerCourse::getCareerId, ninClass.getCareerId()));
+        List<NinCourse> courseList = ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>()
+                .select(NinCourse::getId, NinCourse::getCourseName)
+                .eq(NinCourse::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode()));
+        Map<Long, String> courseMap = courseList.stream().collect(Collectors.toMap(NinCourse::getId, NinCourse::getCourseName));
+        List<Map<String, Object>> selectedList = new ArrayList<>();
+        ninCareerCourses.forEach(i -> {
+            Map<String, Object> map = new HashMap<>();
+            Long courseId = i.getCourseId();
+            map.put("id", courseId);
+            map.put("name", courseMap.get(courseId));
+            map.put("isOk", false);
+            selectedList.add(map);
+        });
+        List<Map<String, Object>> maps = new ArrayList<>();
+        return new HashMap<String, List<Map<String, Object>>>() {{
+            put("selected", selectedList);
+            put("unselected", maps);
+        }};
     }
 
 

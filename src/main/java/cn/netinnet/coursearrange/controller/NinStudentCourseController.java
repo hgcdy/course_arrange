@@ -48,26 +48,7 @@ public class NinStudentCourseController {
 
     @PostMapping("/getCourse")
     public ResultModel getSelectCourse(Long id) {
-        ArrayList<Map<String, Object>> maps = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("id", i);
-            map.put("name", "xx" + i);
-            maps.add(map);
-        }
-        ArrayList<Map<String, Object>> maps1 = new ArrayList<>();
-        for (int i = 0; i > -10 ; i--) {
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("id", i);
-            map.put("name", "xx" + i);
-            maps1.add(map);
-        }
-
-        HashMap<String, List> stringListHashMap = new HashMap<>();
-        stringListHashMap.put("selected", maps);
-        stringListHashMap.put("unselected", maps1);
-
-        return ResultModel.ok(stringListHashMap);
+        return ResultModel.ok(ninStudentCourseService.getCourse(id));
     }
 
     /**
@@ -78,12 +59,8 @@ public class NinStudentCourseController {
     public ResultModel addStudent(Long id, Long courseId){
         try {
             lock.lock();
-            boolean b = ninStudentCourseService.save(new NinStudentCourse() {{
-                setTakeClassId(1L);
-                setStudentId(id);
-                setCourseId(courseId);
-            }});
-            return b ? ResultModel.ok() : ResultModel.error(412, "新增失败");
+            int i = ninStudentCourseService.addSingle(id, courseId);
+            return i > 0 ? ResultModel.ok() : ResultModel.error(412, "新增失败");
         } finally {
             lock.unlock();
         }
@@ -98,8 +75,8 @@ public class NinStudentCourseController {
     public ResultModel delStudent(Long id, Long courseId){
         try {
             lock.lock();
-            boolean b = ninStudentCourseService.remove(new LambdaQueryWrapper<NinStudentCourse>().eq(NinStudentCourse::getStudentId, id).eq(NinStudentCourse::getCourseId, courseId));
-            return b ? ResultModel.ok() : ResultModel.error(412, "删除失败");
+            int i = ninStudentCourseService.delSingle(id, courseId);
+            return i > 0 ? ResultModel.ok() : ResultModel.error(412, "删除失败");
         } finally {
             lock.unlock();
         }

@@ -22,9 +22,9 @@ public interface INinTeacherCourseService extends IService<NinTeacherCourse> {
     /**
      * 单个新增
      */
-    int addSingle(NinTeacherCourse ninTeacherCourse);
+    int addSingle(Long teacherId, Long courseId);
     /**
      * 单个删除
      */
-    int delById(Long id);
+    int delSingle(Long teacherId, Long courseId);
 }

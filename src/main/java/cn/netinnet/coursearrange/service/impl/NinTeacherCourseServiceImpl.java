@@ -12,6 +12,7 @@ import cn.netinnet.coursearrange.mapper.NinCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinHouseMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.service.INinTeacherCourseService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,29 +48,29 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
     }
 
     @Override
-    public int addSingle(NinTeacherCourse ninTeacherCourse) {
+    public int addSingle(Long teacherId, Long courseId) {
         List<NinTeacherCourse> ninTeacherCourses = ninTeacherCourseMapper.selectList(new QueryWrapper<>(new NinTeacherCourse() {{
-            setTeacherId(ninTeacherCourse.getTeacherId());
+            setTeacherId(teacherId);
         }}));
         if (ninTeacherCourses.size() >= ApplicationConstant.TEACHER_COURSE_NUM){
             throw new ServiceException(412, "该教师选课数量已经上限");
         }
 
         for (NinTeacherCourse ntc: ninTeacherCourses) {
-            if (ntc.getCourseId().equals(ninTeacherCourse.getCourseId())){
+            if (ntc.getCourseId().equals(courseId)){
                 throw new ServiceException(412, "该教师已经选择这门课程了");
             }
         }
 
-        NinCourse course = ninCourseMapper.selectById(ninTeacherCourse.getCourseId());
+        NinCourse course = ninCourseMapper.selectById(courseId);
         if (course.getMust() == 0) {
             List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<>(new NinArrange() {{
-                setCourseId(ninTeacherCourse.getCourseId());
+                setCourseId(courseId);
             }}));
             NinArrange arrange = ninArranges.get(0);
 
             //教师
-            arrange.setTeacherId(ninTeacherCourse.getTeacherId());
+            arrange.setTeacherId(teacherId);
 
             List<NinArrange> ninArranges1 = ninArrangeMapper.selectList(new QueryWrapper<>());
             int[][] taskCourseTime = ApplicationConstant.TASK_COURSE_TIME;
@@ -86,7 +87,7 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
                     int size = 1;
                     if (ninArranges1 != null) {
                         List<NinArrange> collect = ninArranges1.stream().filter(i -> {
-                            if (((i.getTeacherId() != null && i.getTeacherId().equals(ninTeacherCourse.getTeacherId()))
+                            if (((i.getTeacherId() != null && i.getTeacherId().equals(teacherId))
                                     || (i.getHouseId() != null && i.getHouseId().equals(houseId)))
                                     && i.getWeek() == time[0]
                                     && i.getPitchNum() == time[1]) {
@@ -115,15 +116,21 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
                 throw new ServiceException(412, "没有合适的教室或时间安排该课程");
             }
         }
+        NinTeacherCourse ninTeacherCourse = new NinTeacherCourse();
+        ninTeacherCourse.setTeacherId(teacherId);
+        ninTeacherCourse.setCourseId(courseId);
 
         return ninTeacherCourseMapper.insert(ninTeacherCourse);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int delById(Long id) {
+    public int delSingle(Long teacherId, Long courseId) {
         //删除教师-课程记录
-        NinTeacherCourse ninTeacherCourse = ninTeacherCourseMapper.selectById(id);
+        NinTeacherCourse ninTeacherCourse = ninTeacherCourseMapper
+                .selectOne(new LambdaQueryWrapper<NinTeacherCourse>()
+                        .eq(NinTeacherCourse::getTeacherId, teacherId)
+                        .eq(NinTeacherCourse::getCourseId, courseId));
         NinArrange ninArrange = ninArrangeMapper.selectOne(new QueryWrapper<>(new NinArrange() {{
             setTeacherId(ninTeacherCourse.getTeacherId());
             setCourseId(ninTeacherCourse.getCourseId());
@@ -132,6 +139,6 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
         if (ninArrange != null && ninArrange.getMust() == 0) {
             ninArrangeMapper.updateNullById(ninArrange.getId());
         }
-        return ninTeacherCourseMapper.deleteById(id);
+        return ninTeacherCourseMapper.deleteById(ninTeacherCourse.getId());
     }
 }

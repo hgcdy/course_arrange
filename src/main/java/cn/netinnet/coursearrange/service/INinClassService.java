@@ -22,10 +22,7 @@ public interface INinClassService extends IService<NinClass> {
      * 分页条件查询
      */
     Map<String, Object> getPageSelectList(Integer page, Integer size, String college, Long careerId, String className);
-    /**
-     * 班级选的课程
-     */
-    List<NinCourse> getCourseList(Long classId);
+
     /**
      * 根据条件获取班级列表
      */
@@ -47,4 +44,11 @@ public interface INinClassService extends IService<NinClass> {
      * 单个修改
      */
     int alterSingle(NinClass ninClass);
+
+    /**
+     * 获取班级的已选课程
+     * @param id
+     * @return
+     */
+    Map<String, List<Map<String, Object>>> getCourse(Long id);
 }

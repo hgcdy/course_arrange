@@ -61,17 +61,6 @@ public class NinClassController {
         return ResultModel.ok(map);
     }
 
-    /**
-     * 班级-课程记录查询
-     * 根据班级查询课程
-     * @param classId
-     * @return
-     */
-    @PostMapping("/getCourseList")
-    public ResultModel getCourseList(Long classId) {
-        List<NinCourse> list = ninClassService.getCourseList(classId);
-        return ResultModel.ok(list);
-    }
 
     /**
      * 获取班级列表
@@ -141,27 +130,13 @@ public class NinClassController {
     }
 
 
+    /**
+     * 班级已课程
+     * @param id
+     * @return
+     */
     @PostMapping("/getCourse")
-    public ResultModel getSelectCourse(Long id) {
-        ArrayList<Map<String, Object>> maps = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("id", i);
-            map.put("name", "xx" + i);
-            maps.add(map);
-        }
-        ArrayList<Map<String, Object>> maps1 = new ArrayList<>();
-        for (int i = 0; i > -10 ; i--) {
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("id", i);
-            map.put("name", "xx" + i);
-            maps1.add(map);
-        }
-
-        HashMap<String, List> stringListHashMap = new HashMap<>();
-        stringListHashMap.put("selected", maps);
-        stringListHashMap.put("unselected", maps1);
-
-        return ResultModel.ok(stringListHashMap);
+    public ResultModel getCourse(Long id) {
+        return ResultModel.ok(ninClassService.getCourse(id));
     }
 }
