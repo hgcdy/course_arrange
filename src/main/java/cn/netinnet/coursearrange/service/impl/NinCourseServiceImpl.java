@@ -79,7 +79,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
 
     @Override
     public NinCourse getCourseById(Long id) {
-        return ninCourseMapper.selectById(id);
+        return getById(id);
     }
 
     @Override

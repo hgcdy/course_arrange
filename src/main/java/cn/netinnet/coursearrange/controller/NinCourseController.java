@@ -52,7 +52,7 @@ public class NinCourseController {
     }
 
     //根据id获取课程信息
-    @PostMapping("/getCourseById")
+    @GetMapping("/getCourseById")
     public ResultModel getCourseById(Long id){
         return ResultModel.ok(ninCourseService.getCourseById(id));
     }
@@ -122,5 +122,6 @@ public class NinCourseController {
     public ResultModel getCourseAll() {
         return ResultModel.ok(ninCourseService.getCourseAll());
     }
+
 
 }

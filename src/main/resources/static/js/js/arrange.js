@@ -97,7 +97,7 @@ require(['../config'], function () {
                         var list = data.data;
                         $("#dropupClassIdButton").next("ul").empty();
                         for (let i = 0; i < list.length; i++) {
-                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].className).attr("class-id", list[i].classId).click(function () {
+                            var $a = $("<a class='dropdown-item' href='javaScript:void(0)'></a>").text(list[i].className).attr("class-id", list[i].id).click(function () {
                                 $("#dropupClassIdButton").text($(this).text()).attr("class-id", $(this).attr("class-id"));
                             });
                             var $li = $("<li></li>").append($a);

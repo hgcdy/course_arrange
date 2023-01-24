@@ -525,7 +525,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         Long teacherId = bo.getTeacherId();
         Long courseId = bo.getCourseId(); //-1为其他用途
         List<Integer> weeklyList = JSON.parseArray(bo.getWeeklyList(), Integer.class);
+        weeklyList = weeklyList.stream().sorted(Comparator.comparing(i -> i)).collect(Collectors.toList());
         List<Integer> weekList = JSON.parseArray(bo.getWeekList(), Integer.class);
+        weekList = weekList.stream().sorted(Comparator.comparing(i -> i)).collect(Collectors.toList());
 
         List<String> arrayList = new ArrayList<>();
         int len = weeklyList.size();
@@ -544,7 +546,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         List<Long> teachClassIdList = ninTeachClassMapper.getBatchTeachClassIdList(classIdList);
 
         LambdaQueryWrapper<NinArrange> wrapper = new QueryWrapper<NinArrange>().select("DISTINCT weekly, start_time, end_time, week, pitch_num").lambda();
-        wrapper.in(NinArrange::getTeachClassId, teachClassIdList)
+        wrapper.in(!teachClassIdList.isEmpty(), NinArrange::getTeachClassId, teachClassIdList)
                 .or().eq(NinArrange::getHouseId, houseId)
                 .or().eq(NinArrange::getTeacherId, teacherId);
         List<NinArrange> ninArrangeList = ninArrangeMapper.selectList(wrapper);
@@ -597,10 +599,14 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //添加教学班记录
         Long teachClassId = IDUtil.getID();
         ArrayList<NinTeachClass> ninTeachClasses = new ArrayList<>();
+        List<NinClass> ninClasses = ninClassMapper.selectList(new LambdaQueryWrapper<NinClass>()
+                .select(NinClass::getId, NinClass::getClassName).in(NinClass::getId, classIds));
+        Map<Long, String> classMap = ninClasses.stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
         for (Long classId : classIds) {
             NinTeachClass ninTeachClass = new NinTeachClass();
             ninTeachClass.setTeachClassId(teachClassId);
             ninTeachClass.setClassId(classId);
+            ninTeachClass.setClassName(classMap.get(classId));
             ninTeachClasses.add(ninTeachClass);
         }
         ninTeachClassMapper.addBatch(ninTeachClasses);

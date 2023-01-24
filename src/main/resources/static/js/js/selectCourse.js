@@ -22,7 +22,7 @@ require(['../config'], function () {
 
         if (role === "admin") {
             var bu1 = '<button type="button" class="btn" id="back">返回</button>';
-            var bu2 = '<button type="button" class="btn btn-info" id="details">选课</button>';
+            var bu2 = '<button type="button" class="btn disabled" id="details">选课</button>';
             var bu3 = '<button type="button" class="btn" id="formButton">课程表</button>';
             $("#bottom-head").append(bu1, bu2, bu3);
         }
@@ -30,7 +30,7 @@ require(['../config'], function () {
         query();
 
         function query() {
-            $(".chunk-card-body").empty();
+            $(".chunk-card-body:lt(2)").empty();
             var url;
             if (type !== "class") {
                 url = "nin-" + type + "-course";
@@ -47,19 +47,50 @@ require(['../config'], function () {
                 },
                 success: function (data) {
                     if (data.code === 200) {
-                        var selected = data.data.unselected;
-                        for (const key in selected) {
-                            addItem($(".chunk-card-body:eq(0)"), selected[key], 1);
-                        }
-                        var unselected = data.data.selected;
+                        var unselected = data.data.unselected;
                         for (const key in unselected) {
-                            addItem($(".chunk-card-body:eq(1)"), unselected[key], -1);
+                            addItem($(".chunk-card-body:eq(0)"), unselected[key], 1);
+                        }
+                        var selected = data.data.selected;
+                        for (const key in selected) {
+                            addItem($(".chunk-card-body:eq(1)"), selected[key], -1);
                         }
 
                         $(".item").click(function () {
                             $(".item").css("border", "");
-                            $(this).css("border", "1px solid #1dc072");
-                            //todo ajax课程查询
+                            $(this).css("border", "2px solid #1dc072");
+                            var id = $(this).attr("data-id");
+                            $.ajax({
+                                url: "nin-course/getCourseById",
+                                dataType: "json",
+                                type: "get",
+                                data: {
+                                    id: id
+                                },
+                                success: function (data) {
+                                    if (data.code === 200) {
+                                        var $td = $("td");
+                                        var record = data.data;
+
+                                        $($td[1]).text(record.courseName);
+                                        var houseType;
+                                        switch (record.houseType) {
+                                            case 0: houseType = "普通教室";break;
+                                            case 1: houseType = "机房";break;
+                                            case 2: houseType = "实验室";break;
+                                            case 3: houseType = "课外";break;
+                                            case 4: houseType = "网课";break;
+                                        }
+                                        $($td[3]).text(houseType);
+                                        $($td[5]).text(record.courseTime);
+                                        $($td[7]).text(record.must === 0 ? "选修" : "必修");
+                                        $($td[9]).text(record.startTime + "-" + record.endTime);
+                                    } else {
+                                        util.hint(data.msg);
+                                    }
+                                    
+                                }
+                            })
                         })
 
                         $(".add").click(function () {
@@ -122,6 +153,8 @@ require(['../config'], function () {
             }
             $(obj).append($item);
         }
+
+
 
         //返回
         $("#back").click(function (){

@@ -1,6 +1,5 @@
 package cn.netinnet.coursearrange.service.impl;
 
-import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinCourse;
@@ -19,7 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -41,10 +43,35 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
     @Autowired
     private NinHouseMapper ninHouseMapper;
 
+
     @Override
-    public List<ContactCourseBo> getSelectList(Long teacherId) {
-        List<ContactCourseBo> list = ninTeacherCourseMapper.getSelectList(teacherId);
-        return list;
+    public Map<String, List<Map<String, Object>>> getCourse(Long id) {
+        List<NinTeacherCourse> list = list(new LambdaQueryWrapper<NinTeacherCourse>()
+                .select(NinTeacherCourse::getCourseId)
+                .eq(NinTeacherCourse::getTeacherId, id));
+        List<Long> selectCourses = list.stream().map(NinTeacherCourse::getCourseId).collect(Collectors.toList());
+        List<NinCourse> courseList = ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>()
+                .select(NinCourse::getId, NinCourse::getCourseName));
+
+        List<Map<String, Object>> selectedList = new ArrayList<>();
+        List<Map<String, Object>> unselectedList = new ArrayList<>();
+
+        courseList.forEach(i -> {
+            Long courseId = i.getId();
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", courseId.toString());
+            map.put("name", i.getCourseName());
+            map.put("isOk", true);//是否可以修改
+            if (selectCourses.contains(courseId)) {
+                selectedList.add(map);
+            } else {
+                unselectedList.add(map);
+            }
+        });
+        Map<String, List<Map<String, Object>>> result = new HashMap<>();
+        result.put("selected", selectedList);
+        result.put("unselected", unselectedList);
+        return result;
     }
 
     @Override

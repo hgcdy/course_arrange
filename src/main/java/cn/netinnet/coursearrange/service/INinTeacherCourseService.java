@@ -5,6 +5,7 @@ import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -15,10 +16,8 @@ import java.util.List;
  * @since 2022-08-18
  */
 public interface INinTeacherCourseService extends IService<NinTeacherCourse> {
-    /**
-     * 查询
-     */
-    List<ContactCourseBo> getSelectList(Long teacherId);
+
+    Map<String, List<Map<String, Object>>> getCourse(Long id);
     /**
      * 单个新增
      */

@@ -13,8 +13,7 @@ require(['../config'], function () {
             $("#apply-nav div").css("border", "");
             $(this).css("border", "1px solid #1dc072");
             var attr = $(this).attr("id");
-            $(".apply-body:first").empty();
-            $(".apply-body:eq(1)").empty();
+            $(".apply-body").empty();
             switch(attr) {
                 case "nav-class":
                     getClass();
@@ -98,7 +97,7 @@ require(['../config'], function () {
                                 createItemsText($apply, timeString);
                                 list = Array();
                             }
-                            list.push({"type": list1[i], "name": "第" + util.turn(time[2]) + "节课"});
+                            list.push({"id": list1[i], "name": "第" + util.turn(time[2]) + "节课"});
                             if (i === len - 1) {
                                 createItem($apply, list, ["id", "name"]);
                             }
@@ -188,7 +187,12 @@ require(['../config'], function () {
                                         $apply1.empty();
                                         createItemsText($apply1, "--班级--");
                                         var list = data.data;
-                                        createItem($apply1, list, ["classId", "className"]);
+                                        if (list.length === 0) {
+                                            createItemsText($apply1, "该专业暂无设置班级");
+                                        }
+                                        createItem($apply1, list, ["id", "className"]);
+
+
 
                                         //点击班级选中
                                         $apply1.find(".item").click(function () {
@@ -367,7 +371,7 @@ require(['../config'], function () {
                 var attr1 = $(nextAll[0]).attr("data-id");
                 if (attr1 !== undefined) {
                     if (attr1 === id) {
-                        util.hint("教室、教师、课程不可多选");
+                        util.hint("请删除后再重新选择！");
                         return;
                     }
                     $(nextAll[0]).remove();
@@ -384,10 +388,10 @@ require(['../config'], function () {
                     }
                 }
             }
-            var img = $("<img src='../../img/alter.png'>").click(function () {
+            var img = $("<img src='../../img/close.png'>").click(function () {
                 $(this).parent().remove();
             });
-            var $1 = $("<div></div>").text(name).attr("data-id", id).append(img);
+            var $1 = $("<div></div>").text(name + "  ").attr("data-id", id).append(img);
             $(type).after($1);
         }
     })

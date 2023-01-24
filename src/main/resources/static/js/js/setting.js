@@ -84,7 +84,7 @@ require(['../config'], function () {
                                 var $td = $("<td></td>").text(data.data[i][STR[j]]);
                                 $tr.append($td);
                             }
-                            var bu = "<button type='button' data-openState='2' class='btn btn-info timing'>设置</button>&nbsp;";
+                            var bu = "<button type='button' data-openState='2' class='btn btn-success timing'>设置</button>&nbsp;";
                             var $td = $("<td></td>");
                             $td.append(bu);
                             $tr.append($td);

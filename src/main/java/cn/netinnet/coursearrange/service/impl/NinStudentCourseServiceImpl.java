@@ -68,7 +68,7 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
         courseList.forEach(i -> {
             Long courseId = i.getId();
             Map<String, Object> map = new HashMap<>();
-            map.put("id", courseId);
+            map.put("id", courseId.toString());
             map.put("name", i.getCourseName());
             map.put("isOk", true);
             if (selectedList.contains(courseId)) {

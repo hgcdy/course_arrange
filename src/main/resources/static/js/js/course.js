@@ -114,7 +114,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-course/getCourseById",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     id: id
                 },

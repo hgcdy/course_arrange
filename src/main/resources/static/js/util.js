@@ -115,9 +115,9 @@ define(function () {
                 var $td = $("<td></td>").text(data[i][strList[j]]);
                 $tr.append($td);
             }
-            var bu1 = "<button type='button' class='btn btn-info delete'>删除</button>&nbsp;";
-            var bu2 = "<button type='button' class='btn btn-info update'>编辑</button>&nbsp;";
-            var bu3 = "<button type='button' class='btn btn-info details'>详情</button>&nbsp;";
+            var bu1 = "<button type='button' class='btn btn-danger delete'>删除</button>&nbsp;";
+            var bu2 = "<button type='button' class='btn btn-warning update'>编辑</button>&nbsp;";
+            var bu3 = "<button type='button' class='btn btn-success details'>详情</button>&nbsp;";
             var $td = $("<td></td>");
             if (count == 1) {
                 $td.append(bu1);
@@ -212,6 +212,9 @@ define(function () {
     }
 
     var turn = function(i) {
+        if (typeof(i) == 'string') {
+            i = parseInt(i);
+        }
         var str;
         switch (i) {
             case 1: str = "一";break;

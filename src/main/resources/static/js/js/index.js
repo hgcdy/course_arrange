@@ -6,6 +6,10 @@ require(['../config'], function () {
             }
         });
 
+        $("h3").parent("a").click(function () {
+            window.location.href = window.location.href;
+        })
+
         //退出登录
         $("header button").click(function () {
             window.location.href = "logout?token=" + util.getToken();

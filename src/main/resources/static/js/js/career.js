@@ -14,7 +14,7 @@ require(['../config'], function () {
         $(".chunk-card-head div:first").click(function () {
             $(".chunk-card-head div:last").css("display", "none");
             $(".chunk-card-head div").css("border", "");
-            $(this).css("border", "1px solid #1dc072");
+            $(this).css("border", "2px solid #1dc072");
             itemCourseAll();
         });
 
@@ -229,7 +229,7 @@ require(['../config'], function () {
                                             }
 
                                             $(".chunk-card-head div").css("border", "");
-                                            $(".chunk-card-head div:last").text(careerName + "已选课程").css("display", "block").css("border", "1px solid #1dc072");
+                                            $(".chunk-card-head div:last").text(careerName + "已选课程").css("display", "block").css("border", "2px solid #1dc072");
 
                                             //专业选择课程删除
                                             $(".chunk-card-body:last .del").click(function () {
@@ -441,21 +441,21 @@ require(['../config'], function () {
             if (sign === 0) {
                 unoptAll(obj);
             }
-            $(obj).css("border", "1px solid #1dc072").attr("data-opt", 1).click(function () {
+            $(obj).css("border", "2px solid #1dc072").attr("data-opt", 1).click(function () {
                 unopt($(this), sign);
             })
         }
 
         //取消
         function unopt(obj, sign) {
-            $(obj).css("border", "1px solid #dddddd").attr("data-opt", null).click(function () {
+            $(obj).css("border", "2px solid #dddddd").attr("data-opt", null).click(function () {
                 opt($(this), sign);
             })
         }
 
         //全部取消
         function unoptAll(obj) {
-            $(obj).parent().children().css("border", "1px solid #dddddd").attr("data-opt", null).click(function () {
+            $(obj).parent().children().css("border", "2px solid #dddddd").attr("data-opt", null).click(function () {
                 opt($(this), 0);
             })
         }
