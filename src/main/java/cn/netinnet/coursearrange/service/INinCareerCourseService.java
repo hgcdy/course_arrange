@@ -26,5 +26,5 @@ public interface INinCareerCourseService extends IService<NinCareerCourse> {
     /**
      * 根据id删除
      */
-    int delCareerCourse(Long id);
+    boolean delCareerCourse(Long id);
 }

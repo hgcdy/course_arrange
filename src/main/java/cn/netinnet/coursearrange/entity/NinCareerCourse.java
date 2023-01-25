@@ -42,4 +42,11 @@ public class NinCareerCourse extends BaseEntity implements Serializable {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long courseId;
 
+    public NinCareerCourse() {
+    }
+
+    public NinCareerCourse(Long careerId, Long courseId) {
+        this.careerId = careerId;
+        this.courseId = courseId;
+    }
 }

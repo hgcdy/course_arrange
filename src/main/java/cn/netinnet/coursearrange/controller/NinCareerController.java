@@ -98,7 +98,8 @@ public class NinCareerController {
      */
     @PostMapping("alterCareer")
     public ResultModel alterCareer(NinCareer ninCareer) {
-        return ResultModel.ok(ninCareerService.alterSingle(ninCareer));
+        ninCareerService.alterSingle(ninCareer);
+        return ResultModel.ok();
     }
 
     @PostMapping("alterCollege")

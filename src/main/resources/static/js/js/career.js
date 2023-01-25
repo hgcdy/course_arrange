@@ -325,43 +325,6 @@ require(['../config'], function () {
 
         }
 
-        //查询专业下的课程
-        function itemCourse(careerId) {
-            var $chunkElement = $(".chunk-card-body:last");
-            $chunkElement.empty();
-
-            $.ajax({
-                url: "nin-career-course/getSelectList",
-                type: "post",
-                dataType: "json",
-                data: {
-                    careerId: careerId
-                },
-                success: function (data) {
-                    if (data.code == 200) {
-                        var list = data.data;
-                        for (let i = 0; i < list.length; i++) {
-                            var item = list[i]["courseName"];
-
-                            var $item = $("<div class='item'></div>");
-                            var $img = $("<div class='img'></div>");
-
-                            var $text = $("<div class='text'></div>").text(item);
-                            var img3 = "<img src='../../img/del.png' class='del'>"; //删除
-
-                            $img.append(img3);
-                            $item.append($text, $img);
-                            $chunkElement.append($item);
-                        }
-
-                    } else {
-                        util.hint(data.msg);
-                    }
-                }
-            })
-
-        }
-
         //查询所有课程（准备添加课程）
         function itemCourseAll() {
             var $chunkElement = $(".chunk-card-body")[2];
@@ -417,7 +380,6 @@ require(['../config'], function () {
             careerIdList = careerIdList + "]";
             return careerIdList;
         }
-
 
         //获取被选中的课程列表
         function getCourseIdList() {

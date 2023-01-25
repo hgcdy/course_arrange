@@ -39,11 +39,11 @@ public interface INinClassService extends IService<NinClass> {
     /**
      * 单个删除
      */
-    int delById(Long id);
+    boolean delById(Long id);
     /**
      * 单个修改
      */
-    int alterSingle(NinClass ninClass);
+    boolean alterSingle(NinClass ninClass);
 
     /**
      * 获取班级的已选课程

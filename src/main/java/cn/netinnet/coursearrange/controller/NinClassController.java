@@ -1,9 +1,7 @@
 package cn.netinnet.coursearrange.controller;
 
 
-import cn.netinnet.coursearrange.bo.ClassBo;
 import cn.netinnet.coursearrange.entity.NinClass;
-import cn.netinnet.coursearrange.entity.NinCourse;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinClassService;
 import org.apache.shiro.authz.annotation.Logical;
@@ -12,9 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,7 +52,6 @@ public class NinClassController {
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          Long careerId, String college, String className) {
         Map<String, Object> map = ninClassService.getPageSelectList(page, size, college, careerId, className);
-
         return ResultModel.ok(map);
     }
 
@@ -80,8 +74,7 @@ public class NinClassController {
      */
     @GetMapping("collegeCareerClassList")
     public ResultModel collegeCareerClassList() {
-        Map<String, Map<String, List<ClassBo>>> stringMapMap = ninClassService.collegeCareerClassList();
-        return ResultModel.ok(stringMapMap);
+        return ResultModel.ok(ninClassService.collegeCareerClassList());
     }
 
     /**
@@ -93,7 +86,11 @@ public class NinClassController {
     @PostMapping("/addClass")
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel addClass(NinClass ninClass) {
-        return ninClassService.addSingle(ninClass) ? ResultModel.ok() : ResultModel.error(412, "新增失败");
+        boolean b = ninClassService.addSingle(ninClass);
+        if (b) {
+            return ResultModel.ok();
+        }
+        return ResultModel.error(412, "新增失败");
     }
 
     /**
@@ -105,8 +102,8 @@ public class NinClassController {
     @PostMapping("/delClass")
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel delClass(Long id) {
-        int i = ninClassService.delById(id);
-        if (i > 0) {
+        boolean b = ninClassService.delById(id);
+        if (b) {
             return ResultModel.ok();
         }
         return ResultModel.error(412, "删除失败");
@@ -122,8 +119,8 @@ public class NinClassController {
     @PostMapping("/alterClass")
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel alterClass(NinClass ninClass) {
-        int i = ninClassService.alterSingle(ninClass);
-        if (i > 0) {
+        boolean b = ninClassService.alterSingle(ninClass);
+        if (b) {
             return ResultModel.ok();
         }
         return ResultModel.error(412, "修改失败");
@@ -131,7 +128,7 @@ public class NinClassController {
 
 
     /**
-     * 班级已课程
+     * 班级已选课程
      * @param id
      * @return
      */

@@ -113,19 +113,17 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
 
     @Override
     public NinTeacher getTeacherById(Long id) {
-        return ninTeacherMapper.selectById(id);
+        return getById(id);
     }
 
 
     @Override
     public List<NinTeacher> getTeaAll() {
         UserInfo userInfo = UserUtil.getUserInfo();
-
         LambdaQueryWrapper<NinTeacher> wrapper = new LambdaQueryWrapper<NinTeacher>()
-                .select(NinTeacher::getId, NinTeacher::getTeacherName);
-        if (userInfo.getUserType().equals(UserTypeEnum.TEACHER.getName())) {
-            wrapper.eq(NinTeacher::getId, userInfo.getUserId());
-        }
+                .select(NinTeacher::getId, NinTeacher::getTeacherName)
+                .eq(userInfo.getUserType().equals(UserTypeEnum.TEACHER.getName()),
+                        NinTeacher::getId, userInfo.getUserId());
         return ninTeacherMapper.selectList(wrapper);
 
     }

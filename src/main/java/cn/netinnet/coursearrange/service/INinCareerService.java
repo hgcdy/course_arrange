@@ -38,5 +38,5 @@ public interface INinCareerService extends IService<NinCareer> {
     /**
      * 单个修改
      */
-    int alterSingle(NinCareer ninCareer);
+    boolean alterSingle(NinCareer ninCareer);
 }

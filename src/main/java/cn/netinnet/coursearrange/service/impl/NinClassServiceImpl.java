@@ -5,17 +5,14 @@ import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.enums.CourseTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
-import cn.netinnet.coursearrange.service.INinCareerCourseService;
 import cn.netinnet.coursearrange.service.INinClassService;
 import cn.netinnet.coursearrange.service.INinSettingService;
-import cn.netinnet.coursearrange.util.QuartzManager;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,7 +97,7 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int delById(Long id) {
+    public boolean delById(Long id) {
         NinClass ninClass = getById(id);
         if (ninClass.getCareerId() == 0) {
             //选修班级
@@ -161,17 +158,15 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
             }
         }
 
-        //删除班级
-        int i = ninClassMapper.deleteById(id);
-
         //专业的班级数量-1
         ninCareerMapper.subClassNum(ninClass.getCareerId());
-        return i;
+        //删除班级
+        return removeById(id);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int alterSingle(NinClass ninClass) {
+    public boolean alterSingle(NinClass ninClass) {
         //同名验证
         int count = count(new LambdaQueryWrapper<NinClass>()
                 .eq(NinClass::getClassName, ninClass.getClassName())
@@ -186,7 +181,7 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
             ninCareerMapper.addClassNum(ninClass.getCareerId());
             ninCareerMapper.subClassNum(ninClassOld.getCareerId());
         }
-        return ninClassMapper.updateById(ninClass);
+        return updateById(ninClass);
     }
 
     @Override

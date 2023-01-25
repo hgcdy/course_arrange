@@ -12,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -43,68 +40,65 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addBatchCourse(List<Long> careerIdList, List<Long> courseIdList) {
-        if (careerIdList == null || careerIdList.size() == 0) {
+        if (careerIdList == null || careerIdList.isEmpty()) {
             throw new ServiceException(412, "请选择专业");
         }
-        if (courseIdList == null ||courseIdList.size() == 0) {
+        if (courseIdList == null ||courseIdList.isEmpty()) {
             throw new ServiceException(412, "请选择课程");
         }
 
+        //结果集
+        ArrayList<NinCareerCourse> ninCareerCourseArrayList = new ArrayList<>();
         //重复验证
         List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper.selectList(new QueryWrapper<>());
-        Map<Long, List<NinCareerCourse>> collect = new HashMap<>();
-        if (ninCareerCourses != null) {
-            collect = ninCareerCourses.stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId));
-        }
 
-        ArrayList<NinCareerCourse> ninCareerCourseArrayList = new ArrayList<>();
         for (Long careerId : careerIdList) {
-            List<NinCareerCourse> careerCourses = collect.get(careerId);
-            //同专业的情况下
-            ok: for (Long courseId : courseIdList) {
-                //如果该专业下，数据库中已经存在该课程,b标记为false,跳出
-                if (careerCourses != null) {
-                    for (NinCareerCourse ncc : careerCourses) {
-                        if (courseId.equals(ncc.getCourseId())) {
-                            continue ok;
-                        }
-                    }
+            for (Long courseId : courseIdList) {
+                NinCareerCourse ninCareerCourse = new NinCareerCourse(careerId, courseId);
+                if (verify(ninCareerCourse, ninCareerCourses)) {
+                    ninCareerCourseArrayList.add(ninCareerCourse);
                 }
-                NinCareerCourse ninCareerCourse = new NinCareerCourse();
-                ninCareerCourse.setCareerId(careerId);
-                ninCareerCourse.setCourseId(courseId);
-                ninCareerCourseArrayList.add(ninCareerCourse);
             }
         }
+
+
         if (ninCareerCourseArrayList.size() != 0) {
             //插入新的专业选课记录
             saveBatch(ninCareerCourseArrayList);
 
             //班级课程数量
-            Map<Long, List<NinCareerCourse>> collect1 = ninCareerCourseArrayList.stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId));
+            Map<Long, List<NinCareerCourse>> courseNumMap = ninCareerCourseArrayList.stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId));
             ArrayList<Map<String, Object>> maps = new ArrayList<>();
-            for (Map.Entry<Long, List<NinCareerCourse>> map: collect1.entrySet()) {
+            for (Map.Entry<Long, List<NinCareerCourse>> map: courseNumMap.entrySet()) {
                 Map<String, Object> m = new HashMap<>();
                 m.put("careerId", map.getKey());
                 m.put("courseNum", map.getValue().size());
                 maps.add(m);
             }
             ninClassMapper.alterBatchCourseNum(maps);
-
         }
+    }
+
+    public boolean verify(NinCareerCourse ninCareerCourse, List<NinCareerCourse> ninCareerCourseList) {
+        for (NinCareerCourse careerCourse : ninCareerCourseList) {
+            if (careerCourse.getCourseId().equals(ninCareerCourse.getCourseId())
+                    && careerCourse.getCareerId().equals(ninCareerCourse.getCareerId())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int delCareerCourse(Long id) {
-        NinCareerCourse ninCareerCourse = ninCareerCourseMapper.selectById(id);
-        ArrayList<Map<String, Object>> maps = new ArrayList<>();
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("careerId", ninCareerCourse.getCareerId());
-        hashMap.put("courseNum", -1);
-        maps.add(hashMap);
-        ninClassMapper.alterBatchCourseNum(maps);
-        return ninCareerCourseMapper.deleteById(id);
+    public boolean delCareerCourse(Long id) {
+        NinCareerCourse ninCareerCourse = getById(id);
+        Map<String, Object> map = new HashMap<String, Object>(){{
+            put("careerId", ninCareerCourse.getCareerId());
+            put("courseNum", -1);
+        }};
+        ninClassMapper.alterBatchCourseNum(Collections.singletonList(map));
+        return removeById(id);
     }
 
 

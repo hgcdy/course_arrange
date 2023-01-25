@@ -31,11 +31,4 @@
         AND nin_career_course.career_id = #{careerId}
     </select>
 
-    <select id="getCourseNum" resultType="cn.netinnet.coursearrange.bo.ClassBo">
-        SELECT career_id, COUNT(1) AS courseNum, career_name
-        FROM nin_career_course INNER JOIN nin_career ON nin_career_course.career_id = nin_career.id
-        GROUP BY career_id
-    </select>
-
-
 </mapper>

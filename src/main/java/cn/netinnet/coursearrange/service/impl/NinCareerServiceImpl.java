@@ -57,33 +57,27 @@ public class NinCareerServiceImpl extends ServiceImpl<NinCareerMapper, NinCareer
 
     @Override
     public int addSingle(NinCareer ninCareer) {
-        Integer integer = ninCareerMapper.selectCount(new QueryWrapper<>(new NinCareer() {{
-            setCareerName(ninCareer.getCareerName());
-        }}));
-        if (integer == 0) {
-            return ninCareerMapper.insert(ninCareer);
-        } else {
+        int count = count(new LambdaQueryWrapper<NinCareer>().eq(NinCareer::getCareerName, ninCareer.getCareerName()));
+        if (count != 0) {
             throw new ServiceException(412, "重名");
         }
+        return ninCareerMapper.insert(ninCareer);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delById(Long id) {
-        NinCareer ninCareer = ninCareerMapper.selectById(id);
+        NinCareer ninCareer = getById(id);
         if (ninCareer.getClassNum() > 0) {
             throw new ServiceException(412, "该专业下存在班级");
         }
-
         //删除专业-课程表
-        ninCareerCourseMapper.delete(new QueryWrapper<>(new NinCareerCourse() {{
-            setCareerId(id);
-        }}));
+        ninCareerCourseMapper.delete(new LambdaQueryWrapper<NinCareerCourse>().eq(NinCareerCourse::getCareerId, id));
         return ninCareerMapper.deleteById(id);
     }
 
     @Override
-    public int alterSingle(NinCareer ninCareer) {
-        return ninCareerMapper.updateById(ninCareer);
+    public boolean alterSingle(NinCareer ninCareer) {
+        return updateById(ninCareer);
     }
 }
