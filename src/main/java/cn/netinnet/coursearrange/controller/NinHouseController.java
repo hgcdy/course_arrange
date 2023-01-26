@@ -75,8 +75,8 @@ public class NinHouseController {
      */
     @PostMapping("/delHouse")
     public ResultModel delHouse(Long id){
-        int i = ninHouseService.delById(id);
-        if (i > 0){
+        boolean b = ninHouseService.delById(id);
+        if (b){
             return ResultModel.ok();
         }
         return ResultModel.error(412, "删除失败");
@@ -89,8 +89,8 @@ public class NinHouseController {
      */
     @PostMapping("/alterHouse")
     public ResultModel alterHouse(NinHouse ninHouse){
-        int i = ninHouseService.alterSingle(ninHouse);
-        if (i > 0){
+        boolean b = ninHouseService.alterSingle(ninHouse);
+        if (b){
             return ResultModel.ok();
         }
         return ResultModel.error(412, "修改失败");

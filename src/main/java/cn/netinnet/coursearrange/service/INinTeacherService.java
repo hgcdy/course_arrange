@@ -23,11 +23,11 @@ public interface INinTeacherService extends IService<NinTeacher> {
     /**
      * 单个新增
      */
-    int addSingle(NinTeacher ninTeacher);
+    boolean addSingle(NinTeacher ninTeacher);
     /**
      * 单个删除
      */
-    int delById(Long id);
+    boolean delById(Long id);
     /**
      * 单个修改
      */

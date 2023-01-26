@@ -2,7 +2,6 @@ package cn.netinnet.coursearrange.service;
 
 import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
-import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import com.baomidou.mybatisplus.extension.service.IService;
 

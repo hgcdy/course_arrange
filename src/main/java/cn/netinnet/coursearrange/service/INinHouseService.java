@@ -26,11 +26,11 @@ public interface INinHouseService extends IService<NinHouse> {
     /**
      * 单个删除
      */
-    int delById(Long id);
+    boolean delById(Long id);
     /**
      * 单个修改
      */
-    int alterSingle(NinHouse ninHouse);
+    boolean alterSingle(NinHouse ninHouse);
     /**
      * 单条查询
      */

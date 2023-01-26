@@ -32,4 +32,13 @@ public enum HouseTypeEnum {
     public void setName(String name) {
         this.name = name;
     }
+
+    public static HouseTypeEnum codeOfKey(int code) {
+        for (HouseTypeEnum e : values()) {
+            if (e.code == code) {
+                return e;
+            }
+        }
+        return null;
+    }
 }

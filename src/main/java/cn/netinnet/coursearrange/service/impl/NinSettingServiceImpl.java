@@ -7,7 +7,6 @@ import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.enums.OpenStateEnum;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
-import cn.netinnet.coursearrange.mapper.NinCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinSettingMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
@@ -59,10 +58,10 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
     public ResultModel alterBatch(String settingIds, String userType, String openTime, String closeTime) {
         //todo 暂时保留
         if (UserTypeEnum.STUDENT.getName().equals(userType)) {
-            NinArrange one = ninArrangeService.getOne(new LambdaQueryWrapper<NinArrange>()
+            NinArrange arrange = ninArrangeService.getOne(new LambdaQueryWrapper<NinArrange>()
                     .ne(NinArrange::getCareerId, 0)
                     .ne(NinArrange::getCareerId, -1), false);
-            if (one == null) {
+            if (arrange == null) {
                 throw new ServiceException(412, "请在排课后再开放学生选课通道");
             }
         }

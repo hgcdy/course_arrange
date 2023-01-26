@@ -34,8 +34,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMapper, NinTeacherCourse> implements INinTeacherCourseService {
-    @Autowired
-    private NinTeacherCourseMapper ninTeacherCourseMapper;
+
     @Autowired
     private NinCourseMapper ninCourseMapper;
     @Autowired
@@ -75,10 +74,8 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
     }
 
     @Override
-    public int addSingle(Long teacherId, Long courseId) {
-        List<NinTeacherCourse> ninTeacherCourses = ninTeacherCourseMapper.selectList(new QueryWrapper<>(new NinTeacherCourse() {{
-            setTeacherId(teacherId);
-        }}));
+    public boolean addSingle(Long teacherId, Long courseId) {
+        List<NinTeacherCourse> ninTeacherCourses = list(new LambdaQueryWrapper<NinTeacherCourse>().eq(NinTeacherCourse::getTeacherId, teacherId));
         if (ninTeacherCourses.size() >= ApplicationConstant.TEACHER_COURSE_NUM){
             throw new ServiceException(412, "该教师选课数量已经上限");
         }
@@ -91,10 +88,8 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
 
         NinCourse course = ninCourseMapper.selectById(courseId);
         if (course.getMust() == 0) {
-            List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<>(new NinArrange() {{
-                setCourseId(courseId);
-            }}));
-            NinArrange arrange = ninArranges.get(0);
+
+            NinArrange arrange = ninArrangeMapper.selectOne(new LambdaQueryWrapper<NinArrange>().eq(NinArrange::getCourseId, courseId));
 
             //教师
             arrange.setTeacherId(teacherId);
@@ -107,7 +102,7 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
             List<Long> houseIdList = ninHouseMapper.selectList(new QueryWrapper<>(new NinHouse() {{
                 setHouseType(course.getHouseType());
             }})).stream().filter(i -> i.getSeat() >= num).map(NinHouse::getId).collect(Collectors.toList());
-            Boolean bo = false;
+            boolean bo = false;
             //判断是否冲突
             ok: for (Long houseId : houseIdList) {
                 for (int[] time : taskCourseTime) {
@@ -123,11 +118,7 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
                                 return false;
                             }
                         }).collect(Collectors.toList());
-                        if (collect == null) {
-                            size = 0;
-                        } else {
-                            size = collect.size();
-                        }
+                        size = collect.size();
                     }
                     if (ninArranges1 == null || size == 0) {
                         bo = true;
@@ -147,25 +138,23 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
         ninTeacherCourse.setTeacherId(teacherId);
         ninTeacherCourse.setCourseId(courseId);
 
-        return ninTeacherCourseMapper.insert(ninTeacherCourse);
+        return save(ninTeacherCourse);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int delSingle(Long teacherId, Long courseId) {
+    public boolean delSingle(Long teacherId, Long courseId) {
         //删除教师-课程记录
-        NinTeacherCourse ninTeacherCourse = ninTeacherCourseMapper
-                .selectOne(new LambdaQueryWrapper<NinTeacherCourse>()
+        NinTeacherCourse ninTeacherCourse = getOne(new LambdaQueryWrapper<NinTeacherCourse>()
                         .eq(NinTeacherCourse::getTeacherId, teacherId)
                         .eq(NinTeacherCourse::getCourseId, courseId));
-        NinArrange ninArrange = ninArrangeMapper.selectOne(new QueryWrapper<>(new NinArrange() {{
-            setTeacherId(ninTeacherCourse.getTeacherId());
-            setCourseId(ninTeacherCourse.getCourseId());
-        }}));
+        NinArrange ninArrange = ninArrangeMapper.selectOne(new LambdaQueryWrapper<NinArrange>()
+                .eq(NinArrange::getTeacherId, ninTeacherCourse.getTeacherId())
+                .eq(NinArrange::getCourseId, ninTeacherCourse.getCourseId()));
         //该记录是选修时，修改，将教师等信息置空
         if (ninArrange != null && ninArrange.getMust() == 0) {
             ninArrangeMapper.updateNullById(ninArrange.getId());
         }
-        return ninTeacherCourseMapper.deleteById(ninTeacherCourse.getId());
+        return removeById(ninTeacherCourse.getId());
     }
 }

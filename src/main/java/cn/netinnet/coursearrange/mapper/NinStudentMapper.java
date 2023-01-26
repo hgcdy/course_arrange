@@ -22,8 +22,5 @@ public interface NinStudentMapper extends BaseMapper<NinStudent> {
      * 分页条件查询
      */
     List<StudentBo> getSelectList(@Param("careerIds") List<Long> careerIds, @Param("classId") Long classId, @Param("studentName") String studentName);
-    /**
-     * 根据学生id列表批量删除学生
-     */
-    int delBatchStudent(@Param("list") List<Long> studentIds);
+
 }

@@ -61,4 +61,22 @@ public class LoginServiceImpl implements LoginService {
         UserInfo userInfo = new UserInfo(oldId, oldCode, oldPassword, type);
         return userInfo;
     }
+
+    @Override
+    public void passwordVerify(String password) {
+        if (password != null) {
+            int length = password.length();
+            if (length < 6 || length > 14) {
+                throw new ServiceException(412, "密码长度为6-15");
+            }
+            for (int i = 0; i < length; i++) {
+                char c = password.charAt(i);
+                if (c < 32 || c >= 127) {
+                    throw new ServiceException(412, "密码请不要包含不能识别的特殊字符");
+                }
+            }
+        } else {
+            throw new ServiceException(412, "密码为空");
+        }
+    }
 }

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Map;
 
 /**
  * <p>
@@ -46,8 +45,7 @@ public class NinStudentController {
     public ResultModel getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          String college, Long careerId, Long classId, String studentName){
-        Map<String, Object> map = ninStudentService.getPageSelectList(page, size, college, careerId, classId, studentName);
-        return ResultModel.ok(map);
+        return ResultModel.ok(ninStudentService.getPageSelectList(page, size, college, careerId, classId, studentName));
     }
 
 
@@ -72,8 +70,8 @@ public class NinStudentController {
      */
     @PostMapping("/delStudent")
     public ResultModel delStudent(Long id){
-        int i = ninStudentService.delById(id);
-        if (i > 0){
+        boolean b = ninStudentService.delById(id);
+        if (b){
             return ResultModel.ok();
         }
         return ResultModel.error(412, "删除失败");

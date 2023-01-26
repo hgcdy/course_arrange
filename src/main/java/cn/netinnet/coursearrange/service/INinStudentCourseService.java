@@ -1,6 +1,5 @@
 package cn.netinnet.coursearrange.service;
 
-import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.entity.NinStudentCourse;
 import com.baomidou.mybatisplus.extension.service.IService;
 

@@ -146,27 +146,20 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delById(Long id) {
-        NinCourse course = ninCourseMapper.selectById(id);
+        NinCourse course = getById(id);
         //删除其他表有关该课程的记录
 
         //删除教师-课程
-        ninTeacherCourseMapper.delete(new QueryWrapper<>(new NinTeacherCourse() {{
-            setCourseId(id);
-        }}));
+        ninTeacherCourseMapper.delete(new LambdaQueryWrapper<NinTeacherCourse>().eq(NinTeacherCourse::getCourseId, id));
         //删除选课权限表
-        ninSettingMapper.delete(new QueryWrapper<>(new NinSetting() {{
-            setCourseId(id);
-        }}));
+        ninSettingMapper.delete(new LambdaQueryWrapper<NinSetting>().eq(NinSetting::getCourseId, id));
 
         if (course.getMust() == 0) {
             //删除学生-课程
-            ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
-                setCourseId(id);
-            }}));
+            ninStudentCourseMapper.delete(new LambdaQueryWrapper<NinStudentCourse>().eq(NinStudentCourse::getCourseId, id));
+
             //课程id查询排课信息
-            NinArrange arrange = ninArrangeMapper.selectOne(new QueryWrapper<>(new NinArrange() {{
-                setCourseId(id);
-            }}));
+            NinArrange arrange = ninArrangeMapper.selectOne(new LambdaQueryWrapper<NinArrange>().eq(NinArrange::getCourseId, id));
             //获取班级id
             Long classId = arrange.getClassId();
             //删除选修班级
@@ -175,10 +168,9 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         } else {
 
             //获取有选择该课程的专业列表
-            List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper.selectList(new QueryWrapper<>(new NinCareerCourse() {{
-                setCourseId(id);
-            }}));
-            if (ninCareerCourses != null && ninCareerCourses.size() != 0) {
+            List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper.selectList(new LambdaQueryWrapper<NinCareerCourse>()
+                    .select(NinCareerCourse::getCareerId).eq(NinCareerCourse::getCourseId, id));
+            if (ninCareerCourses != null && !ninCareerCourses.isEmpty()) {
                 //获取专业id并去重
                 List<Long> careerIdList = ninCareerCourses.stream().map(NinCareerCourse::getCareerId).distinct().collect(Collectors.toList());
 
@@ -192,9 +184,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
                 //班级课程数-1
                 ninClassMapper.alterBatchCourseNum(maps);
                 //删除专业-课程表
-                ninCareerCourseMapper.delete(new QueryWrapper<>(new NinCareerCourse() {{
-                    setCourseId(id);
-                }}));
+                ninCareerCourseMapper.delete(new LambdaQueryWrapper<NinCareerCourse>().eq(NinCareerCourse::getCourseId, id));
             }
         }
         //删除课程
@@ -205,14 +195,12 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     @Override
     public int alterSingle(NinCourse ninCourse) {
         //同名验证
-        Integer i = ninCourseMapper.selectCount(
-                new QueryWrapper<NinCourse>()
-                        .eq("course_name", ninCourse.getCourseName())
-                        .ne("id", ninCourse.getId()));
-        if (i > 0) {
+        int count = count(new LambdaQueryWrapper<NinCourse>()
+                .eq(NinCourse::getCourseName, ninCourse.getCourseName())
+                .ne(NinCourse::getId, ninCourse.getId()));
+        if (count > 0) {
             throw new ServiceException(412, "重名");
         }
-
         return ninCourseMapper.updateById(ninCourse);
     }
 

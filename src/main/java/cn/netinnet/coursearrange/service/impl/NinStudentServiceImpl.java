@@ -13,7 +13,9 @@ import cn.netinnet.coursearrange.mapper.NinStudentCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinStudentMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinStudentService;
+import cn.netinnet.coursearrange.service.LoginService;
 import cn.netinnet.coursearrange.util.MD5;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -23,10 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +47,8 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
     private NinCareerMapper ninCareerMapper;
     @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
+    @Autowired
+    private LoginService loginService;
 
 
     @Override
@@ -92,10 +93,9 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
 
         //班级人数+1
         ninClassMapper.addPeopleNum(ninStudent.getClassId());
-        Integer i = ninStudentMapper.selectCount(new QueryWrapper<>(new NinStudent(){{
-            setStudentCode(ninStudent.getStudentCode());
-        }}));
-        if (i > 0) {
+        int count = count(new LambdaQueryWrapper<NinStudent>()
+                .eq(NinStudent::getStudentCode, ninStudent.getStudentCode()));
+        if (count > 0) {
             throw new ServiceException(412, "重名");
         }
 
@@ -117,44 +117,34 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int delById(Long id) {
-        NinStudent ninStudent = ninStudentMapper.selectById(id);
-        int i = ninStudentMapper.deleteById(id);
+    public boolean delById(Long id) {
+        NinStudent ninStudent = getById(id);
         //删除学生-课程表记录
-        ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
-            setStudentId(id);
-        }}));
+        ninStudentCourseMapper.delete(new LambdaQueryWrapper<NinStudentCourse>().eq(NinStudentCourse::getStudentId, id));
         //班级人数-1
         ninClassMapper.subPeopleNum(ninStudent.getClassId());
-        return i;
+        //删除学生
+        return removeById(id);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int alterSingle(NinStudent ninStudent) {
-        Integer i1 = ninStudentMapper.selectCount(
-                new QueryWrapper<NinStudent>()
-                        .ne("id", ninStudent.getId())
-                        .eq("student_name", ninStudent.getStudentName()));
-        if (i1 > 0) {
+        int count = count(new LambdaQueryWrapper<NinStudent>()
+                .eq(NinStudent::getStudentName, ninStudent.getStudentName())
+                .ne(NinStudent::getId, ninStudent.getId()));
+        if (count > 0) {
             throw new ServiceException(412, "重名");
         }
-        NinStudent ninStudent1 = ninStudentMapper.selectById(ninStudent.getId());
-        if (ninStudent1.getClassId() != ninStudent.getClassId()) {
+        NinStudent ninStudent1 = getById(ninStudent.getId());
+        //学生修改班级
+        if (!Objects.equals(ninStudent1.getClassId(), ninStudent.getClassId())) {
             ninClassMapper.subPeopleNum(ninStudent1.getClassId());
             ninClassMapper.addPeopleNum(ninStudent.getClassId());
         }
 
         String password = ninStudent.getStudentPassword();
-        if (password != null) {
-            if (password.length() < 6) {
-                throw new ServiceException(412, "密码需大于六位数");
-            }
-            if (StringUtils.isBlank(password)) {
-                throw new ServiceException(412, "密码不符合条件");
-            }
-            ninStudent.setStudentPassword(MD5.getMD5Encode(ninStudent.getStudentPassword()));
-        }
+        loginService.passwordVerify(password);
 
         return ninStudentMapper.updateById(ninStudent);
     }
@@ -162,26 +152,19 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
 
     @Override
     public NinStudent getStudentById(Long id) {
-        return ninStudentMapper.selectById(id);
+        return getById(id);
     }
 
     @Override
     public ResultModel alterPassword(String code, String oldPassword, String newPassword) {
-        if (newPassword != null) {
-            if (newPassword.length() < 6) {
-                throw new ServiceException(412, "密码需大于六位数");
-            }
-            if (StringUtils.isBlank(newPassword)) {
-                throw new ServiceException(412, "密码不符合条件");
-            }
-        }
-        NinStudent ninStudent = ninStudentMapper.selectOne(new QueryWrapper<>(new NinStudent() {{
-            setStudentCode(code);
-        }}));
+
+        loginService.passwordVerify(newPassword);
+        NinStudent ninStudent = getOne(new LambdaQueryWrapper<NinStudent>().eq(NinStudent::getStudentCode, code));
+
         if (!oldPassword.equals(newPassword)) {
             if (ninStudent.getStudentPassword().equals(MD5.getMD5Encode(oldPassword))) {
                 ninStudent.setStudentPassword(MD5.getMD5Encode(newPassword));
-                ninStudentMapper.updateById(ninStudent);
+                updateById(ninStudent);
                 return ResultModel.ok();
             } else {
                 return ResultModel.error(412, "旧密码验证错误");

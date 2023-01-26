@@ -3,11 +3,8 @@ package cn.netinnet.coursearrange.controller;
 
 import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
-import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.domain.UserInfo;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
-import cn.netinnet.coursearrange.exception.ServiceException;
-import cn.netinnet.coursearrange.mapper.NinStudentMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.util.UserUtil;

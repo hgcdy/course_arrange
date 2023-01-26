@@ -21,15 +21,6 @@
         id, student_name, student_code, student_password, class_id, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
-<!--     批量删除学生 -->
-    <delete id="delBatchStudent">
-        DELETE FROM nin_student
-        WHERE
-        <foreach collection="list" index="index" item="item" separator="OR">
-            id = #{item}
-        </foreach>
-
-    </delete>
 
     <select id="getSelectList" resultType="cn.netinnet.coursearrange.bo.StudentBo">
         SElECT nin_student.id AS id,

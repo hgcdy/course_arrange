@@ -2,12 +2,11 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.entity.NinHouse;
+import cn.netinnet.coursearrange.enums.HouseTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinHouseMapper;
 import cn.netinnet.coursearrange.service.INinHouseService;
-import cn.netinnet.coursearrange.util.CnUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -40,9 +39,9 @@ public class NinHouseServiceImpl extends ServiceImpl<NinHouseMapper, NinHouse> i
         List<HouseBo> list = ninHouseMapper.getSelectList(houseName, houseType, firstSeat, tailSeat);
         PageInfo<HouseBo> pageInfo = new PageInfo<>(list);
 
-        pageInfo.getList().stream().forEach(i -> {
+        pageInfo.getList().forEach(i -> {
             if (i.getHouseType() != null) {
-                i.setCnHouseType(CnUtil.cnHouse(i.getHouseType()));
+                i.setCnHouseType(HouseTypeEnum.codeOfKey(i.getHouseType()).getName());
             }
         });
 
@@ -62,25 +61,24 @@ public class NinHouseServiceImpl extends ServiceImpl<NinHouseMapper, NinHouse> i
     }
 
     @Override
-    public int delById(@NotNull Long id) {
-        return ninHouseMapper.deleteById(id);
+    public boolean delById(@NotNull Long id) {
+        return removeById(id);
     }
 
     @Override
-    public int alterSingle(NinHouse ninHouse) {
-        Integer integer = ninHouseMapper.selectCount(
-                new QueryWrapper<NinHouse>()
-                        .eq("house_name", ninHouse.getHouseName())
-                        .ne("id", ninHouse.getId()));
-        if (integer > 0) {
+    public boolean alterSingle(NinHouse ninHouse) {
+        int count = count(new LambdaQueryWrapper<NinHouse>()
+                .eq(NinHouse::getHouseName, ninHouse.getHouseName())
+                .ne(NinHouse::getId, ninHouse.getId()));
+        if (count > 0) {
             throw new ServiceException(412, "重名");
         }
-        return ninHouseMapper.updateById(ninHouse);
+        return updateById(ninHouse);
     }
 
     @Override
     public NinHouse getHouseById(Long id) {
-        return ninHouseMapper.selectById(id);
+        return getById(id);
     }
 
     @Override

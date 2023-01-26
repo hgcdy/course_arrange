@@ -1,12 +1,8 @@
 package cn.netinnet.coursearrange.controller;
 
 
-import cn.netinnet.coursearrange.bo.ContactCourseBo;
-import cn.netinnet.coursearrange.entity.NinStudentCourse;
-import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -60,6 +52,7 @@ public class NinStudentCourseController {
         try {
             lock.lock();
             int i = ninStudentCourseService.addSingle(id, courseId);
+
             return i > 0 ? ResultModel.ok() : ResultModel.error(412, "新增失败");
         } finally {
             lock.unlock();

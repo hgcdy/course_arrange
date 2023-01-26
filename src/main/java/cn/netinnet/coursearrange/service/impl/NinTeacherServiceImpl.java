@@ -10,11 +10,10 @@ import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinTeacherService;
+import cn.netinnet.coursearrange.service.LoginService;
 import cn.netinnet.coursearrange.util.MD5;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -40,6 +39,8 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
     private NinTeacherMapper ninTeacherMapper;
     @Autowired
     private NinTeacherCourseMapper ninTeacherCourseMapper;
+    @Autowired
+    private LoginService loginService;
 
     @Override
     public Map<String, Object> getPageSelectList(Integer page, Integer size, String teacherName) {
@@ -53,60 +54,38 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
     }
 
     @Override
-    public int addSingle(NinTeacher ninTeacher) {
-        Integer integer = ninTeacherMapper.selectCount(
-                new QueryWrapper<NinTeacher>()
-                        .eq("teacher_code", ninTeacher.getTeacherCode()));
-        if (integer > 0) {
+    public boolean addSingle(NinTeacher ninTeacher) {
+        int count = count(new LambdaQueryWrapper<NinTeacher>().eq(NinTeacher::getTeacherCode, ninTeacher.getTeacherCode()));
+        if (count > 0) {
             throw new ServiceException(412, "重名");
         }
 
         String password = ninTeacher.getTeacherPassword();
-        if (password != null) {
-            if (password.length() < 6) {
-                throw new ServiceException(412, "密码需大于六位数");
-            }
-            if (StringUtils.isBlank(password)) {
-                throw new ServiceException(412, "密码不符合条件");
-            }
-            ninTeacher.setTeacherPassword(MD5.getMD5Encode(ninTeacher.getTeacherPassword()));
-        }
+        loginService.passwordVerify(password);
 
-        return ninTeacherMapper.insert(ninTeacher);
+        return save(ninTeacher);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int delById(Long id) {
-        int i = ninTeacherMapper.deleteById(id);
+    public boolean delById(Long id) {
         //删除教师-课程表
-        ninTeacherCourseMapper.delete(new QueryWrapper<>(new NinTeacherCourse(){{
-            setTeacherId(id);
-        }}));
-        return i;
+        ninTeacherCourseMapper.delete(new LambdaQueryWrapper<NinTeacherCourse>().eq(NinTeacherCourse::getTeacherId, id));
+        return removeById(id);
     }
 
     @Override
     public int alterSingle(NinTeacher ninTeacher) {
         //名字，编号重名验证
-        Integer integer = ninTeacherMapper.selectCount(
-                new QueryWrapper<NinTeacher>()
-                        .ne("id", ninTeacher.getId())
-                        .eq("teacher_code", ninTeacher.getTeacherCode()));
-        if (integer > 0) {
+        int count = count(new LambdaQueryWrapper<NinTeacher>()
+                .eq(NinTeacher::getTeacherCode, ninTeacher.getTeacherCode())
+                .ne(NinTeacher::getId, ninTeacher.getId()));
+        if (count > 0) {
             throw new ServiceException(412, "重名");
         }
 
         String password = ninTeacher.getTeacherPassword();
-        if (password != null) {
-            if (password.length() < 6) {
-                throw new ServiceException(412, "密码需大于六位数");
-            }
-            if (StringUtils.isBlank(password)) {
-                throw new ServiceException(412, "密码不符合条件");
-            }
-            ninTeacher.setTeacherPassword(MD5.getMD5Encode(ninTeacher.getTeacherPassword()));
-        }
+        loginService.passwordVerify(password);
 
         return ninTeacherMapper.updateById(ninTeacher);
     }
@@ -130,17 +109,9 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
 
     @Override
     public ResultModel alterPassword(String code, String oldPassword, String newPassword) {
-        if (newPassword != null) {
-            if (newPassword.length() < 6) {
-                throw new ServiceException(412, "密码需大于六位数");
-            }
-            if (StringUtils.isBlank(newPassword)) {
-                throw new ServiceException(412, "密码不符合条件");
-            }
-        }
-        NinTeacher ninTeacher = ninTeacherMapper.selectOne(new QueryWrapper<>(new NinTeacher() {{
-            setTeacherCode(code);
-        }}));
+        loginService.passwordVerify(newPassword);
+        NinTeacher ninTeacher = getOne(new LambdaQueryWrapper<NinTeacher>().eq(NinTeacher::getTeacherCode, code));
+
         if (!oldPassword.equals(newPassword)) {
             if (ninTeacher.getTeacherPassword().equals(MD5.getMD5Encode(oldPassword))) {
                 ninTeacher.setTeacherPassword(MD5.getMD5Encode(newPassword));

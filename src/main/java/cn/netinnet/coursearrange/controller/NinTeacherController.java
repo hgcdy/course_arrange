@@ -59,8 +59,8 @@ public class NinTeacherController {
      */
     @PostMapping("/addTeacher")
     public ResultModel addTeacher(NinTeacher ninTeacher){
-        int i = ninTeacherService.addSingle(ninTeacher);
-        if (i > 0){
+        boolean b = ninTeacherService.addSingle(ninTeacher);
+        if (b){
             return ResultModel.ok();
         }
         return ResultModel.error(412, "新增失败");
@@ -73,8 +73,8 @@ public class NinTeacherController {
      */
     @PostMapping("/delTeacher")
     public ResultModel delTeacher(Long id){
-        int i = ninTeacherService.delById(id);
-        if (i > 0){
+        boolean b = ninTeacherService.delById(id);
+        if (b){
             return ResultModel.ok();
         }
         return ResultModel.error(412, "删除失败");

@@ -20,42 +20,4 @@
         id, student_id, course_id, take_class_id, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
-    <select id="getSelectList" resultType="cn.netinnet.coursearrange.bo.ContactCourseBo">
-        SELECT nin_student_course.id AS id,
-               student_id,
-               nin_student_course.course_id AS courseId,
-               nin_course.course_name AS courseName,
-               nin_course.house_type AS houseType,
-               nin_course.must AS must,
-               nin_course.course_time AS courseTime,
-               nin_course.start_time AS startTime,
-               nin_course.end_time AS endTime,
-               nin_course.week_time AS weekTime,
-               nin_arrange.week AS week,
-               nin_arrange.pitch_num AS pitchNum
-        FROM nin_student_course, nin_course, nin_arrange
-        WHERE nin_student_course.del_flag = 0
-        AND nin_student_course.course_id = nin_course.id
-        AND nin_arrange.course_id = nin_course.id
-        AND nin_student_course.student_id = #{studentId}
-    </select>
-
-<!-- 根据学生id列表获取 -->
-    <select id="getStudentIds" resultType="cn.netinnet.coursearrange.entity.NinStudentCourse">
-        SELECT *
-        FROM nin_student_course
-        WHERE
-        <foreach collection="list" index="index" item="item" separator="OR">
-            student_id = #{item}
-        </foreach>
-    </select>
-
-    <delete id="delBatchStudentId">
-        DELETE FROM nin_student_course
-        WHERE
-        <foreach collection="list" index="index" item="item" separator="OR">
-            student_id = #{item}
-        </foreach>
-    </delete>
-
 </mapper>

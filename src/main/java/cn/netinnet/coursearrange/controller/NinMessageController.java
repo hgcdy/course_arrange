@@ -1,11 +1,9 @@
 package cn.netinnet.coursearrange.controller;
 
 
-import cn.netinnet.coursearrange.entity.NinMessage;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinMessageService;
 import com.alibaba.fastjson.JSON;
-import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

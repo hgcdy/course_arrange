@@ -1,9 +1,7 @@
 package cn.netinnet.coursearrange.service;
 
 import cn.netinnet.coursearrange.bo.ClassBo;
-import cn.netinnet.coursearrange.entity.NinCareer;
 import cn.netinnet.coursearrange.entity.NinClass;
-import cn.netinnet.coursearrange.entity.NinCourse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;

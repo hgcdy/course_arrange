@@ -3,7 +3,6 @@ package cn.netinnet.coursearrange.service;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.model.ResultModel;
 import com.baomidou.mybatisplus.extension.service.IService;
-import sun.security.util.Password;
 
 import java.util.Map;
 
@@ -28,7 +27,7 @@ public interface INinStudentService extends IService<NinStudent> {
     /**
      * 单个删除
      */
-    int delById(Long id);
+    boolean delById(Long id);
     /**
      * 单个修改
      */
