@@ -66,18 +66,18 @@ define(function () {
                         break;
                     case 1:
                         if (type === "student") {
-                            var find = $("iframe").contents().find("#bottom-head");
-                            if (find !== null) {
+                            // var find = $("iframe").contents().find("#bottom-head");
+                            // if (find !== null) {
                                 hint(message.content);
-                            }
+                            // }
                         }
                         break;
                     case 2:
                         if (type === "teacher") {
-                            var find = $("iframe").contents().find("#bottom-head");
-                            if (find !== null) {
+                            // var find = $("iframe").contents().find("#bottom-head");
+                            // if (find !== null) {
                                 hint(message.content);
-                            }
+                            // }
                         }
                         break;
                 }

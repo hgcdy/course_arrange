@@ -6,7 +6,7 @@ require(['../config'], function () {
             }
         });
 
-        util.openSocket();
+
 
         $("h3").parent("a").click(function () {
             window.location.href = window.location.href;
