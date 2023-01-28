@@ -3,6 +3,8 @@ package cn.netinnet.coursearrange.service.impl;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.enums.CourseTypeEnum;
+import cn.netinnet.coursearrange.enums.OpenStateEnum;
+import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinClassService;
@@ -42,6 +44,8 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
     private INinClassService ninClassService;
     @Autowired
     private NinStudentMapper ninStudentMapper;
+    @Autowired
+    private NinSettingMapper ninSettingMapper;
 
 
     @Override
@@ -61,12 +65,22 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
 
         Map<String, List<Map<String, Object>>> result = ninClassService.getCourse(classId);
 
+        List<NinSetting> ninSettings = ninSettingMapper.selectList(new LambdaQueryWrapper<NinSetting>()
+                .select(NinSetting::getCourseId, NinSetting::getOpenState)
+                .eq(NinSetting::getOpenState, OpenStateEnum.OPEN.getCode())
+                .eq(NinSetting::getUserType, UserTypeEnum.STUDENT.getName()));
+        Map<Long, Integer> stateMap = ninSettings.stream().collect(Collectors.toMap(NinSetting::getCourseId, NinSetting::getOpenState));
+
         courseList.forEach(i -> {
             Long courseId = i.getId();
             Map<String, Object> map = new HashMap<>();
             map.put("id", courseId.toString());
             map.put("name", i.getCourseName());
-            map.put("isOk", true);
+            if (stateMap.get(courseId) != null) {
+                map.put("isOk", true);
+            } else {
+                map.put("isOk", false);
+            }
             if (selectedList.contains(courseId)) {
                 result.get("selected").add(map);
             } else {

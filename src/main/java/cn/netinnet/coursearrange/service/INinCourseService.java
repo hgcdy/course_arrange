@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service;
 
+import cn.netinnet.coursearrange.bo.CourseBo;
 import cn.netinnet.coursearrange.entity.NinCourse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -23,6 +24,10 @@ public interface INinCourseService extends IService<NinCourse> {
      * 单条查询
      */
     NinCourse getCourseById(Long id);
+    /**
+     * 课程及状态
+     */
+    CourseBo getCourseAndState(Long id, String userType);
     /**
      * 单个新增
      */

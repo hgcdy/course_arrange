@@ -1,15 +1,11 @@
 package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
-import cn.netinnet.coursearrange.entity.NinArrange;
-import cn.netinnet.coursearrange.entity.NinCourse;
-import cn.netinnet.coursearrange.entity.NinHouse;
-import cn.netinnet.coursearrange.entity.NinTeacherCourse;
+import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.enums.OpenStateEnum;
+import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
-import cn.netinnet.coursearrange.mapper.NinArrangeMapper;
-import cn.netinnet.coursearrange.mapper.NinCourseMapper;
-import cn.netinnet.coursearrange.mapper.NinHouseMapper;
-import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
+import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinTeacherCourseService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -41,6 +37,8 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
     private NinArrangeMapper ninArrangeMapper;
     @Autowired
     private NinHouseMapper ninHouseMapper;
+    @Autowired
+    private NinSettingMapper ninSettingMapper;
 
 
     @Override
@@ -55,12 +53,23 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
         List<Map<String, Object>> selectedList = new ArrayList<>();
         List<Map<String, Object>> unselectedList = new ArrayList<>();
 
+        List<NinSetting> ninSettings = ninSettingMapper.selectList(new LambdaQueryWrapper<NinSetting>()
+                .select(NinSetting::getCourseId, NinSetting::getOpenState)
+                .eq(NinSetting::getOpenState, OpenStateEnum.OPEN.getCode())
+                .eq(NinSetting::getUserType, UserTypeEnum.TEACHER.getName()));
+        Map<Long, Integer> stateMap = ninSettings.stream().collect(Collectors.toMap(NinSetting::getCourseId, NinSetting::getOpenState));
+
+
         courseList.forEach(i -> {
             Long courseId = i.getId();
             Map<String, Object> map = new HashMap<>();
             map.put("id", courseId.toString());
             map.put("name", i.getCourseName());
-            map.put("isOk", true);//是否可以修改
+            if (stateMap.get(courseId) != null) {
+                map.put("isOk", true);
+            } else {
+                map.put("isOk", false);
+            }
             if (selectCourses.contains(courseId)) {
                 selectedList.add(map);
             } else {

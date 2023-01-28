@@ -28,4 +28,13 @@ public enum CourseTypeEnum {
     public void setName(String name) {
         this.name = name;
     }
+
+    public static CourseTypeEnum codeOfKey(int code) {
+        for (CourseTypeEnum e : values()) {
+            if (e.code == code) {
+                return e;
+            }
+        }
+        return null;
+    }
 }

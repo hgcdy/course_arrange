@@ -20,6 +20,14 @@ require(['../config'], function () {
             }
         }
 
+        var url;
+        if (type !== "class") {
+            url = "nin-" + type + "-course";
+        } else {
+            url = "nin-" + type;
+        }
+
+
         if (role === "admin") {
             var bu1 = '<button type="button" class="btn" id="back">返回</button>';
             var bu2 = '<button type="button" class="btn disabled" id="details">选课</button>';
@@ -31,15 +39,9 @@ require(['../config'], function () {
 
         function query() {
             $(".chunk-card-body:lt(2)").empty();
-            var url;
-            if (type !== "class") {
-                url = "nin-" + type + "-course";
-            } else {
-                url = "nin-" + type;
-            }
-            url = url + "/getCourse";
+
             $.ajax({
-                url: url,
+                url: url + "/getCourse",
                 dataType: "json",
                 type: "post",
                 data: {
@@ -61,11 +63,12 @@ require(['../config'], function () {
                             $(this).css("border", "2px solid #1dc072");
                             var id = $(this).attr("data-id");
                             $.ajax({
-                                url: "nin-course/getCourseById",
+                                url: "nin-course/getCourseAndState",
                                 dataType: "json",
                                 type: "get",
                                 data: {
-                                    id: id
+                                    id: id,
+                                    userType: type
                                 },
                                 success: function (data) {
                                     if (data.code === 200) {
@@ -73,18 +76,11 @@ require(['../config'], function () {
                                         var record = data.data;
 
                                         $($td[1]).text(record.courseName);
-                                        var houseType;
-                                        switch (record.houseType) {
-                                            case 0: houseType = "普通教室";break;
-                                            case 1: houseType = "机房";break;
-                                            case 2: houseType = "实验室";break;
-                                            case 3: houseType = "课外";break;
-                                            case 4: houseType = "网课";break;
-                                        }
-                                        $($td[3]).text(houseType);
+                                        $($td[3]).text(record.cnHouseType);
                                         $($td[5]).text(record.courseTime);
-                                        $($td[7]).text(record.must === 0 ? "选修" : "必修");
+                                        $($td[7]).text(record.cnMust);
                                         $($td[9]).text(record.startTime + "-" + record.endTime);
+                                        $($td[11]).text(record.start);
                                     } else {
                                         util.hint(data.msg);
                                     }
@@ -103,25 +99,27 @@ require(['../config'], function () {
                             fun($(this).parent().attr("data-id"), "/delCourse");
                         })
 
-                        function fun(courseId, path) {
-                            $.ajax({
-                                url: url + path,
-                                dataType: "json",
-                                type: "post",
-                                data: {
-                                    id: detailId,
-                                    courseId: courseId
-                                },
-                                success: function (data) {
-                                    if (data.code === 200) {
-                                        query();
-                                    } else {
-                                        util.hint(data.msg);
-                                    }
-                                }
-                            })
-                        }
 
+
+                    } else {
+                        util.hint(data.msg);
+                    }
+                }
+            })
+        }
+
+        function fun(courseId, path) {
+            $.ajax({
+                url: url + path,
+                dataType: "json",
+                type: "post",
+                data: {
+                    id: detailId,
+                    courseId: courseId
+                },
+                success: function (data) {
+                    if (data.code === 200) {
+                        query();
                     } else {
                         util.hint(data.msg);
                     }

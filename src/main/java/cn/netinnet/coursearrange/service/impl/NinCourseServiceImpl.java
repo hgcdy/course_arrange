@@ -4,12 +4,15 @@ import cn.netinnet.coursearrange.bo.CourseBo;
 import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.domain.UserInfo;
 import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.enums.CourseTypeEnum;
 import cn.netinnet.coursearrange.enums.HouseTypeEnum;
+import cn.netinnet.coursearrange.enums.OpenStateEnum;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinCourseService;
 import cn.netinnet.coursearrange.service.INinSettingService;
+import cn.netinnet.coursearrange.util.IDUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import cn.netinnet.coursearrange.util.CnUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -17,6 +20,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,6 +87,26 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     }
 
     @Override
+    public CourseBo getCourseAndState(Long id, String userType) {
+        CourseBo courseBo = new CourseBo();
+        NinCourse course = getById(id);
+        BeanUtils.copyProperties(course, courseBo);
+        NinSetting ninSetting = ninSettingMapper.selectOne(new LambdaQueryWrapper<NinSetting>()
+                .select(NinSetting::getOpenState)
+                .eq(NinSetting::getUserType, userType)
+                .eq(NinSetting::getCourseId, id));
+        if (UserTypeEnum.CLAZZ.getName().equals(userType)) {
+            courseBo.setStart("不可修改");
+        } else {
+            courseBo.setStart(OpenStateEnum.codeOfKey(ninSetting.getOpenState()).getName());
+        }
+        courseBo.setCnHouseType(HouseTypeEnum.codeOfKey(courseBo.getHouseType()).getName());
+        courseBo.setCnMust(CourseTypeEnum.codeOfKey(courseBo.getMust()).getName());
+
+        return courseBo;
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public int addSingle(NinCourse ninCourse) {
 
@@ -137,6 +161,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             ninArrangeMapper.insert(arrange);
 
             //生成学生权限记录
+            ninSetting.setId(IDUtil.getID());
             ninSetting.setUserType(UserTypeEnum.STUDENT.getName());
             ninSettingMapper.insert(ninSetting);
         }

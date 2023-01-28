@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +51,10 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
         result.forEach(bo -> {
             OpenStateEnum openStateEnum = OpenStateEnum.codeOfKey(bo.getOpenState());
             bo.setState(openStateEnum.getName());
+            if (null != bo.getOpenTime()) {
+                bo.setOpenTimestamp(bo.getOpenTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+                bo.setCloseTimestamp(bo.getCloseTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+            }
         });
         return result;
     }
@@ -85,8 +90,6 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
             }
             ninSettingMapper.alterBatch(settingIdList, openState, openDate, closeDate);
             List<NinSetting> ninSettings = ninSettingMapper.selectList(new LambdaQueryWrapper<NinSetting>()
-                    .select(NinSetting::getId, NinSetting::getUserType, NinSetting::getOpenState,
-                            NinSetting::getOpenTime, NinSetting::getCloseTime)
                     .in(NinSetting::getId, settingIdList));
             addTimer(ninSettings);
             return ResultModel.ok();
@@ -104,22 +107,24 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
                 LocalDateTime closeTime = setting.getCloseTime();
                 Integer openState = setting.getOpenState();
 
-                String idStr = setting.getId().toString();
-                String userType = setting.getUserType();
-                if (openState == 2) {
-                    quartzManager.removeJob(idStr, userType, idStr, userType);
-                } else {
-                    if (openState == 0) {
-                        Date openDate = Date.from(openTime.atZone(ZoneId.systemDefault()).toInstant());
-                        calendar.setTime(openDate);
+                if (null != openTime && null != closeTime) {
+                    String idStr = setting.getId().toString();
+                    String userType = setting.getUserType();
+                    if (openState == 2) {
+                        quartzManager.removeJob(idStr, userType, idStr, userType);
                     } else {
-                        Date closeDate = Date.from(closeTime.atZone(ZoneId.systemDefault()).toInstant());
-                        calendar.setTime(closeDate);
+                        if (openState == 0) {
+                            Date openDate = Date.from(openTime.atZone(ZoneId.systemDefault()).toInstant());
+                            calendar.setTime(openDate);
+                        } else {
+                            Date closeDate = Date.from(closeTime.atZone(ZoneId.systemDefault()).toInstant());
+                            calendar.setTime(closeDate);
+                        }
+                        StringBuffer buffer = new StringBuffer();
+                        buffer.append(calendar.get(Calendar.SECOND)).append(" ").append(calendar.get(Calendar.MINUTE)).append(" ").append(calendar.get(Calendar.HOUR_OF_DAY)).append(" ")
+                                .append(calendar.get(Calendar.DATE)).append(" ").append(calendar.get(Calendar.MONTH) + 1).append(" ? ").append(calendar.get(Calendar.YEAR));
+                        quartzManager.modifyJobTime(idStr, userType, idStr, userType, SettingTask.class, buffer.toString(), setting);
                     }
-                    StringBuffer buffer = new StringBuffer();
-                    buffer.append(calendar.get(Calendar.SECOND)).append(" ").append(calendar.get(Calendar.MINUTE)).append(" ").append(calendar.get(Calendar.HOUR_OF_DAY)).append(" ")
-                            .append(calendar.get(Calendar.DATE)).append(" ").append(calendar.get(Calendar.MONTH) + 1).append(" ? ").append(calendar.get(Calendar.YEAR));
-                    quartzManager.modifyJobTime(idStr, userType, idStr, userType, SettingTask.class, buffer.toString(), setting);
                 }
             });
         }

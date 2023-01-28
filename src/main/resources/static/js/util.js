@@ -47,19 +47,41 @@ define(function () {
             //打开事件
             socket.onopen = function() {
                 console.log("websocket已打开");
-                var obj = {
-                    "userId": getCache("userId"),
-                    "content": "xxx",
-                    "sendDate": new Date()
-                }
-                socket.send(JSON.stringify(obj));
+                // var obj = {
+                //     "userId": getCache("userId"),
+                //     "content": "xxx",
+                //     "sendDate": new Date()
+                // }
+                // socket.send(JSON.stringify(obj));
             };
             //获得消息事件
             socket.onmessage = function(event) {
                 console.log(event.data);
                 var message = JSON.parse(event.data);
-                console.log(message.content);
-                console.log(message["content"]);
+                var code = message.code;
+                var type = getCache("type");
+                switch (code) {
+                    case 0:
+                        console.log(message.content);
+                        break;
+                    case 1:
+                        if (type === "student") {
+                            var find = $("iframe").contents().find("#bottom-head");
+                            if (find !== null) {
+                                hint(message.content);
+                            }
+                        }
+                        break;
+                    case 2:
+                        if (type === "teacher") {
+                            var find = $("iframe").contents().find("#bottom-head");
+                            if (find !== null) {
+                                hint(message.content);
+                            }
+                        }
+                        break;
+                }
+
                 // util.hint("您有一条新消息！");
                 //发现消息进入    开始处理前端触发逻辑
             };

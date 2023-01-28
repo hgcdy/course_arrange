@@ -2,18 +2,23 @@ package cn.netinnet.coursearrange.config;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import cn.netinnet.coursearrange.domain.Message;
-import cn.netinnet.coursearrange.model.ResultModel;
+import cn.netinnet.coursearrange.entity.NinStudent;
+import cn.netinnet.coursearrange.entity.NinTeacher;
+import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Component;
 
 
@@ -21,7 +26,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class WebSocketServer {
-
 
     /**静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。*/
     private static int onlineCount = 0;
@@ -50,11 +54,7 @@ public class WebSocketServer {
         }
         log.info("用户连接: "+userId+", 当前在线人数为:" + getOnlineCount());
         try {
-            Message message = new Message();
-            message.setContent("后端->前端连接成功");
-            message.setSendDate(new Date());
-            message.setUserId(Long.parseLong(userId));
-            sendMessage(message);
+            sendMessage(new Message(Long.parseLong(userId), "连接成功", 0));
         } catch (IOException | EncodeException e) {
             log.error("用户:"+userId+",网络异常!!!!!!");
         }
@@ -118,17 +118,24 @@ public class WebSocketServer {
         error.printStackTrace();
     }
 
+    Lock lock = new ReentrantLock();
+
     /**
      * 实现服务器主动推送
      */
-    public void sendMessage(Message message) throws IOException, EncodeException {
-        this.session.getBasicRemote().sendText(JSON.toJSONString(message));
+    public synchronized void  sendMessage(Message message) throws IOException, EncodeException {
+        try {
+            lock.lock();
+            this.session.getBasicRemote().sendText(JSON.toJSONString(message));
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
      * 发送自定义消息
      * */
-    public static void sendInfo(String content, @PathParam("userId") String userId) throws IOException, EncodeException {
+    public static void sendImnfo(String content, @PathParam("userId") String userId) throws IOException, EncodeException {
         Message message = new Message();
         message.setUserId(Long.parseLong(userId));
         message.setSendDate(new Date());
@@ -138,6 +145,19 @@ public class WebSocketServer {
             webSocketMap.get(userId).sendMessage(message);
         }else{
             log.error("用户" + userId + ",不在线！");
+        }
+    }
+
+    /**
+     * 给userIdList用户发送消息，如果为空则发送全部在线用户
+     */
+    public static void sendBatchInfo(String content, List<Long> userIdList, int code) throws IOException, EncodeException {
+        log.info("发送消息到:全部, 报文:" + content);
+        if (null == userIdList) {
+            userIdList = webSocketMap.keySet().stream().map(Long::parseLong).collect(Collectors.toList());
+        }
+        for (Long userId : userIdList) {
+            webSocketMap.get(userId.toString()).sendMessage(new Message(userId, content, code));
         }
     }
 

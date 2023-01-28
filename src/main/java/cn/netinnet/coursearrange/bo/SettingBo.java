@@ -21,4 +21,7 @@ public class SettingBo extends NinSetting {
      * 开放状态（中文）
      */
     private String state;
+
+    private Long openTimestamp;
+    private Long closeTimestamp;
 }

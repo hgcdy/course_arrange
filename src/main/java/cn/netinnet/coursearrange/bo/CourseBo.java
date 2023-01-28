@@ -58,4 +58,9 @@ public class CourseBo {
      * 最多上课班级
      */
     private Integer maxClassNum;
+
+    /**
+     * 课程状态
+     */
+    private String start;
 }

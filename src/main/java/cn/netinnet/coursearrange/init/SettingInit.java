@@ -35,15 +35,17 @@ public class SettingInit implements CommandLineRunner {
             LocalDateTime openTime = setting.getOpenTime();
             LocalDateTime closeTime = setting.getCloseTime();
             LocalDateTime nowTime = LocalDateTime.now();
-            if (openTime.isAfter(nowTime) && openState != OpenStateEnum.UNOPEN.getCode()) {
-                setting.setOpenState(OpenStateEnum.UNOPEN.getCode());
-                updateSettingList.add(setting);
-            } else if (nowTime.isAfter(closeTime) && openState != OpenStateEnum.FINISHED.getCode()) {
-                setting.setOpenState(OpenStateEnum.FINISHED.getCode());
-                updateSettingList.add(setting);
-            } else if (nowTime.isAfter(openTime) && closeTime.isAfter(nowTime) && openState != OpenStateEnum.OPEN.getCode()){
-                setting.setOpenState(OpenStateEnum.OPEN.getCode());
-                updateSettingList.add(setting);
+            if (null != openTime && null != closeTime) {
+                if (openTime.isAfter(nowTime) && openState != OpenStateEnum.UNOPEN.getCode()) {
+                    setting.setOpenState(OpenStateEnum.UNOPEN.getCode());
+                    updateSettingList.add(setting);
+                } else if (nowTime.isAfter(closeTime) && openState != OpenStateEnum.FINISHED.getCode()) {
+                    setting.setOpenState(OpenStateEnum.FINISHED.getCode());
+                    updateSettingList.add(setting);
+                } else if (nowTime.isAfter(openTime) && closeTime.isAfter(nowTime) && openState != OpenStateEnum.OPEN.getCode()){
+                    setting.setOpenState(OpenStateEnum.OPEN.getCode());
+                    updateSettingList.add(setting);
+                }
             }
         });
         if (!updateSettingList.isEmpty()) {

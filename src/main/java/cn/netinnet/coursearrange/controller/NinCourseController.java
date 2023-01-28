@@ -57,6 +57,12 @@ public class NinCourseController {
         return ResultModel.ok(ninCourseService.getCourseById(id));
     }
 
+    //根据id获取课程信息
+    @GetMapping("/getCourseAndState")
+    public ResultModel getCourseAndState(Long id, String userType){
+        return ResultModel.ok(ninCourseService.getCourseAndState(id, userType));
+    }
+
     /**
      * 课程新增
      * @param ninCourse

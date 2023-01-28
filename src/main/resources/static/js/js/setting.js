@@ -9,6 +9,7 @@ require(['../config'], function () {
         var courseName = null;
         var openState = null;
         const STR = ["courseName", "state", "openTime", "closeTime"];
+        var timer = null;
         query();
         util.navPath("/设置/选课时间设置");
 
@@ -73,15 +74,39 @@ require(['../config'], function () {
                         var $tbody = $("tbody");
                         $tbody.empty();
                         $("#checkAll").prop('checked', false);
+
+                        var minDate = null;
+
                         //生成列表
                         for (let i = 0; i < size; i++) {
+                            var obj = data.data[i];
+
+                            if (obj["openState"] === 0) {
+                                if ((obj["openTimestamp"] != null && obj["openTimestamp"] < minDate) || minDate == null) {
+                                    minDate = obj["openTimestamp"];
+                                }
+                            } else if (obj["openState"] === 1) {
+                                if ((obj["closeTimestamp"] != null && obj["closeTimestamp"] < minDate || minDate == null)) {
+                                    minDate = obj["closeTimestamp"];
+                                }
+                            }
+                            if (minDate != null) {
+                                if (timer != null) {
+                                    clearInterval(timer);
+                                }
+                                timer = window.setTimeout(function () {
+                                    query();
+                                },minDate - new Date());
+                            }
+
+
                             var $tr = $("<tr></tr>");
-                            var input = $("<input type='checkbox' name='checkbox' class='setting'>").attr("id", data.data[i]["id"]);
+                            var input = $("<input type='checkbox' name='checkbox' class='setting'>").attr("id", obj["id"]);
                             var $th = $("<th></th>").append(input);
                             var $thNum = $("<th></th>").text(num++).attr("scope", "row");
                             $tr.append($th, $thNum);
                             for (let j = 0; j < STR.length; j++) {
-                                var $td = $("<td></td>").text(data.data[i][STR[j]]);
+                                var $td = $("<td></td>").text(obj[STR[j]]);
                                 $tr.append($td);
                             }
                             var bu = "<button type='button' data-openState='2' class='btn btn-success timing'>设置</button>&nbsp;";
@@ -90,6 +115,8 @@ require(['../config'], function () {
                             $tr.append($td);
                             $tbody.append($tr);
                         }
+
+
 
                         //添加全选框
                         $("#checkAll").unbind("click");
@@ -111,6 +138,7 @@ require(['../config'], function () {
                             var id = $(this).parent().parent().children("th").children("input").attr("id");
                             alter("[" + id + "]", $(this).attr("data-openState"));
                         })
+
                     }
                 }
             })
