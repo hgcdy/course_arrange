@@ -20,27 +20,30 @@ require(['../config'], function () {
 
         //新增专业
         $(".chunk-card-foot:eq(1)").children("button").click(function () {
-            var val = $chunk.children("input").val();
+            var val = $(".chunk-card-foot:eq(1)").children("input").val();
             if (val == "") {
                 util.hint("请勿置空");
             } else {
-
-                $.ajax({
-                    url: "nin-career/addCareer",
-                    dataType: "json",
-                    type: "post",
-                    data: {
-                        college: getCollege(),
-                        careerName: val
-                    },
-                    success: function (data) {
-                        if (data.code == 200) {
-                            itemCollege();
-                        } else {
-                            util.hint(data.msg);
+                var college = getCollege();
+                if (college !== undefined) {
+                    $.ajax({
+                        url: "nin-career/addCareer",
+                        dataType: "json",
+                        type: "post",
+                        data: {
+                            college: college,
+                            careerName: val
+                        },
+                        success: function (data) {
+                            if (data.code == 200) {
+                                itemCollege();
+                            } else {
+                                util.hint(data.msg);
+                            }
                         }
-                    }
-                })
+                    })
+                }
+
             }
         })
 
@@ -362,7 +365,11 @@ require(['../config'], function () {
         //获取被选中的学院
         function getCollege() {
             var children = $(".chunk-card-body:first").children("[data-opt='1']");
-            return children.text();
+            if (children.text() === "") {
+                util.hint("请选择学院");
+            } else {
+                return children.text();
+            }
         }
 
         //获取被选中的专业列表
