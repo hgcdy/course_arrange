@@ -22,5 +22,4 @@ public interface INinMessageService extends IService<NinMessage> {
     boolean delBatchMsg(List<Long> msgIdList);
 
     boolean readBatchMag(List<Long> msgIdList);
-
 }

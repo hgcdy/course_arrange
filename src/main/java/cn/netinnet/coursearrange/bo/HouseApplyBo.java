@@ -10,4 +10,9 @@ public class HouseApplyBo {
     private Long courseId;
     private String weeklyList;
     private String weekList;
+
+
+    private Integer weekly;
+    private Integer week;
+    private Integer pitchNum;
 }

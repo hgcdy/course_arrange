@@ -36,6 +36,12 @@ public class NinSetting extends BaseEntity implements Serializable {
     private Long courseId;
 
     /**
+     * 课程名称
+     */
+    @TableField("course_name")
+    private String courseName;
+
+    /**
      * 用户类型
      */
     @TableField("user_type")
@@ -58,6 +64,4 @@ public class NinSetting extends BaseEntity implements Serializable {
      */
     @TableField("close_time")
     private LocalDateTime closeTime;
-
-
 }

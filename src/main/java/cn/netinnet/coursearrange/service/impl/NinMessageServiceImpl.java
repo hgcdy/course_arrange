@@ -43,4 +43,5 @@ public class NinMessageServiceImpl extends ServiceImpl<NinMessageMapper, NinMess
                 .set(NinMessage::getIsRead, 1)
                 .in(NinMessage::getId, msgIdList));
     }
+
 }

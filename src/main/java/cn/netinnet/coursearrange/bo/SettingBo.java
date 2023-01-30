@@ -13,11 +13,6 @@ import lombok.experimental.Accessors;
 public class SettingBo extends NinSetting {
 
     /**
-     * 课程名称
-     */
-    private String courseName;
-
-    /**
      * 开放状态（中文）
      */
     private String state;

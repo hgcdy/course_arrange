@@ -6,8 +6,8 @@
     <resultMap id="BaseResultMap" type="cn.netinnet.coursearrange.entity.NinMessage">
         <id column="id" property="id" />
         <result column="user_id" property="userId" />
-        <result column="class_id" property="classId" />
         <result column="is_read" property="isRead" />
+        <result column="is_consent" property="isConsent" />
         <result column="msg" property="msg" />
         <result column="del_flag" property="delFlag" />
         <result column="create_time" property="createTime" />
@@ -18,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, class_id, is_read, msg, del_flag, create_time, create_user_id, modify_time, modify_user_id
+        id, user_id, is_read, is_consent, msg, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
 </mapper>

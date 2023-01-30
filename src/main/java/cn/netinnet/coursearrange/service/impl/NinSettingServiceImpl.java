@@ -15,15 +15,16 @@ import cn.netinnet.coursearrange.util.QuartzManager;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -47,21 +48,24 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
 
     @Override
     public List<SettingBo> getSelectList(String userType, Integer openState, String courseName) {
-        List<SettingBo> result = ninSettingMapper.getSelectList(userType, openState, courseName);
-        result.forEach(bo -> {
-            OpenStateEnum openStateEnum = OpenStateEnum.codeOfKey(bo.getOpenState());
-            bo.setState(openStateEnum.getName());
+        List<NinSetting> ninSettingList = list(new LambdaQueryWrapper<NinSetting>().eq(NinSetting::getUserType, userType)
+                .eq(null != userType, NinSetting::getOpenState, openState)
+                .like(null != courseName && !"".equals(courseName), NinSetting::getCourseName, courseName));
+
+        return ninSettingList.stream().map(i -> {
+            SettingBo bo = new SettingBo();
+            BeanUtils.copyProperties(i, bo);
+            bo.setState(OpenStateEnum.codeOfKey(bo.getOpenState()).getName());
             if (null != bo.getOpenTime()) {
                 bo.setOpenTimestamp(bo.getOpenTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
                 bo.setCloseTimestamp(bo.getCloseTime().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
             }
-        });
-        return result;
+            return bo;
+        }).collect(Collectors.toList());
     }
 
     @Override
     public ResultModel alterBatch(String settingIds, String userType, String openTime, String closeTime) {
-        //todo 暂时保留
         if (UserTypeEnum.STUDENT.getName().equals(userType)) {
             NinArrange arrange = ninArrangeService.getOne(new LambdaQueryWrapper<NinArrange>()
                     .ne(NinArrange::getCareerId, 0)
@@ -88,6 +92,7 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
             } else {
                 openState = 1;
             }
+
             ninSettingMapper.alterBatch(settingIdList, openState, openDate, closeDate);
             List<NinSetting> ninSettings = ninSettingMapper.selectList(new LambdaQueryWrapper<NinSetting>()
                     .in(NinSetting::getId, settingIdList));

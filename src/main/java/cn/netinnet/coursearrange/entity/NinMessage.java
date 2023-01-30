@@ -27,7 +27,6 @@ public class NinMessage extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-
     /**
      * 用户id
      */
@@ -36,22 +35,19 @@ public class NinMessage extends BaseEntity implements Serializable {
     private Long userId;
 
     /**
-     * 所属班级id
-     */
-    @JsonSerialize(using = ToStringSerializer.class)
-    @TableField("class_id")
-    private Long classId;
-
-    /**
      * 是否已读(0-未读， 1-已读)
      */
     @TableField("is_read")
     private Integer isRead;
 
     /**
+     * 是否同意(-1-无需操作,0-未操作,1-同意,2-拒绝)
+     */
+    @TableField("is_consent")
+    private Integer isConsent;
+
+    /**
      * 消息内容
      */
     private String msg;
-
-
 }

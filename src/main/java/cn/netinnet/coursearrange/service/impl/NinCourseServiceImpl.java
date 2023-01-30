@@ -135,6 +135,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         //教师权限记录
         NinSetting ninSetting = new NinSetting();
         ninSetting.setCourseId(ninCourse.getId());
+        ninSetting.setCourseName(ninCourse.getCourseName());
         ninSetting.setUserType(UserTypeEnum.TEACHER.getName());
         ninSetting.setOpenState(0);
         ninSettingMapper.insert(ninSetting);
@@ -213,8 +214,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             }
         }
         //删除课程
-        int i = ninCourseMapper.deleteById(id);
-        return i;
+        return ninCourseMapper.deleteById(id);
     }
 
     @Override
@@ -251,13 +251,11 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
 
         }
         return courseList;
-
     }
 
     @Override
     public List<NinCourse> getCourseAll() {
-        List<NinCourse> courseList = ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>()
+        return ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>()
                 .select(NinCourse::getId, NinCourse::getCourseName));
-        return courseList;
     }
 }

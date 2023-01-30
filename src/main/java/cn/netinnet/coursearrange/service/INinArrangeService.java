@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.service;
 import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
+import cn.netinnet.coursearrange.model.ResultModel;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,22 +29,6 @@ public interface INinArrangeService extends IService<NinArrange> {
      */
     void empty();
     /**
-     * 获取课程表信息
-     * @param count 周次（为空则获取整个学期的课程表）
-     */
-    Map<String, StringBuffer> getInfo(Long classId, Long teacherId, Long studentId, Integer count);
-    /**
-     * 补课，获取时间
-     * @param bo
-     * @return
-     */
-    List<String> getHouseApplyTime(HouseApplyBo bo);
-
-    /**
-     * 添加·排课信息
-     */
-    int addArrange(Integer weekly, Integer week, Integer pitchNum, Long houseId, Long teacherId, Long courseId, String classIdList);
-    /**
      * 分页条件查询
      */
     Map<String, Object> getPageSelectList(ArrangeBo bo, Integer page, Integer size);
@@ -51,9 +36,35 @@ public interface INinArrangeService extends IService<NinArrange> {
      * 根据id删除排课记录
      */
     int delArrange(Long id);
+
+
+    /**
+     * 获取课程表信息
+     * @param count 周次（为空则获取整个学期的课程表）
+     */
+    Map<String, StringBuffer> getInfo(Long classId, Long teacherId, Long studentId, Integer count);
     /**
      * 导出，
      * @param type class-班级， teacher-教师， student-学生
      */
-     void exportCourseForm(String type, Long id, Integer count, HttpServletRequest request, HttpServletResponse response);
+    void exportCourseForm(String type, Long id, Integer count, HttpServletRequest request, HttpServletResponse response);
+
+
+    /**
+     * 教室申请，获取时间
+     * @param bo
+     * @return
+     */
+    List<String> getHouseApplyTime(HouseApplyBo bo);
+    /**
+     * 提交申请
+     * @param bo
+     * @return
+     */
+    ResultModel submitApply(HouseApplyBo bo);
+    /**
+     * 添加·排课信息
+     */
+    int addArrange(HouseApplyBo bo);
+
 }

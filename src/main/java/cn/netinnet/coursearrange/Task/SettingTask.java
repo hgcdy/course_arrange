@@ -40,6 +40,6 @@ public class SettingTask extends QuartzJobBean{
         ninSettingService.updateById(ninSetting);
         int code = ninSetting.getUserType().equals(UserTypeEnum.STUDENT.getName()) ? 1 : 2;
 
-        WebSocketServer.sendBatchInfo("部分课程状态变化，请手动刷新", null, code);
+        WebSocketServer.sendBatchInfo("课程【" + ninSetting.getCourseName() + "】状态发生变化，请手动刷新", null, code);
     }
 }

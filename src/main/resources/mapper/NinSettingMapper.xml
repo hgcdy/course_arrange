@@ -6,6 +6,7 @@
     <resultMap id="BaseResultMap" type="cn.netinnet.coursearrange.entity.NinSetting">
         <id column="id" property="id" />
         <result column="course_id" property="courseId" />
+        <result column="course_name" property="courseName" />
         <result column="user_type" property="userType" />
         <result column="open_state" property="openState" />
         <result column="open_time" property="openTime" />
@@ -19,7 +20,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, course_id, user_type, open_state, open_time, close_time, del_flag, create_time, create_user_id, modify_time, modify_user_id
+        id, course_id, course_name, user_type, open_state, open_time, close_time, del_flag, create_time, create_user_id, modify_time, modify_user_id
     </sql>
 
     <update id="alterBatch">
@@ -35,36 +36,7 @@
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")" >
             #{item}
         </foreach>
-
     </update>
 
-
-    <select id="getSelectList1" resultType="cn.netinnet.coursearrange.bo.SettingBo">
-        SELECT *
-        FROM
-        (SELECT nin_setting.id AS id, course_id AS courseId, user_type AS userType, course_name AS courseName, open_state AS openState, open_time AS openTime, close_time AS closeTime
-        FROM nin_setting INNER JOIN nin_course ON nin_setting.course_id = nin_course.id
-        WHERE nin_setting.open_state = 2
-        UNION ALL
-        SELECT nin_setting.id AS id, course_id AS courseId, user_type AS userType, course_name AS courseName, open_state AS openState, null AS openTime, null AS closeTime
-        FROM nin_setting INNER JOIN nin_course ON nin_setting.course_id = nin_course.id
-        WHERE nin_setting.open_state != 2) AS a
-        WHERE a.userType = #{userType}
-        <if test="courseName != null and courseName != ''">
-            AND a.courseName LIKE CONCAT('%', #{courseName}, '%')
-        </if>
-    </select>
-
-    <select id="getSelectList" resultType="cn.netinnet.coursearrange.bo.SettingBo">
-        SELECT nin_setting.id, course_id, user_type, course_name, open_state, open_time, close_time
-        FROM nin_setting INNER JOIN nin_course ON nin_setting.course_id = nin_course.id
-        WHERE user_type = #{userType}
-        <if test="openState != null">
-            AND open_state = #{openState}
-        </if>
-        <if test="courseName != null and courseName != ''">
-            AND course_name LIKE CONCAT('%', #{courseName}, '%')
-        </if>
-    </select>
 
 </mapper>
