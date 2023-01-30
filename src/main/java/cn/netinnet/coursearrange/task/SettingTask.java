@@ -1,13 +1,10 @@
-package cn.netinnet.coursearrange.Task;
+package cn.netinnet.coursearrange.task;
 
 import cn.netinnet.coursearrange.config.WebSocketServer;
 import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.service.INinSettingService;
-import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.core.JsonParser;
 import lombok.SneakyThrows;
-import org.apache.tomcat.util.json.JSONParser;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

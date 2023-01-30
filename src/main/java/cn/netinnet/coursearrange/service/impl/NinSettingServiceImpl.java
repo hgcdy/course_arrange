@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
-import cn.netinnet.coursearrange.Task.SettingTask;
+import cn.netinnet.coursearrange.task.SettingTask;
 import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinSetting;
