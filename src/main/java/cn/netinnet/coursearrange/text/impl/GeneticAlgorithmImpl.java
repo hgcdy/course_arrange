@@ -277,41 +277,35 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
 
         Chromosome c1 = clone(p1);
         Chromosome c2 = clone(p2);
-        //随机产生交叉互换位置
+
+        //随机产生交叉互换时间
         int size = c1.getTaskRecordList().size();
         int a = (int) (Math.random() * size);
 
 
         List<TaskRecord> taskRecordList1 = c1.getTaskRecordList();
-        List<TaskRecord> taskRecordList2 = c2.getTaskRecordList();
-
         TaskRecord taskRecord1 = taskRecordList1.get(a);
+
+        List<TaskRecord> taskRecordList2 = c2.getTaskRecordList();
         TaskRecord taskRecord2 = taskRecordList2.get(a);
 
-        if (a % 2 == 0) {
-            //交换教室
-            Long houseId1 = taskRecord1.getHouseId();
-            Long houseId2 = taskRecord2.getHouseId();
-            taskRecord1.setHouseId(houseId2);
-            taskRecord2.setHouseId(houseId1);
-        } else {
-            //交换时间
-            int week1 = taskRecord1.getWeek();
-            int week2 = taskRecord2.getWeek();
-            taskRecord1.setWeek(week2);
-            taskRecord2.setWeek(week1);
+        //交换时间
+        int week1 = taskRecord1.getWeek();
+        int week2 = taskRecord2.getWeek();
+        taskRecord1.setWeek(week2);
+        taskRecord2.setWeek(week1);
 
-            int pitchNum1 = taskRecord1.getPitchNum();
-            int pitchNum2 = taskRecord2.getPitchNum();
-            taskRecord1.setPitchNum(pitchNum2);
-            taskRecord2.setPitchNum(pitchNum1);
-        }
+        int pitchNum1 = taskRecord1.getPitchNum();
+        int pitchNum2 = taskRecord2.getPitchNum();
+        taskRecord1.setPitchNum(pitchNum2);
+        taskRecord2.setPitchNum(pitchNum1);
 
+
+        //校验并解决冲突
         boolean b1 = arrangeService.verifyClash(taskRecordList1, taskRecord1);
         if (!b1) {
             arrangeService.solveClash(taskRecordList1, taskRecord1);
         }
-
         boolean b2 = arrangeService.verifyClash(taskRecordList2, taskRecord2);
         if (!b2) {
             arrangeService.solveClash(taskRecordList2, taskRecord2);

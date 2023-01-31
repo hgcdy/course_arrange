@@ -2,6 +2,7 @@ package cn.netinnet.coursearrange.text.impl;
 
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.enums.CourseTypeEnum;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.text.ArrangeService;
 import cn.netinnet.coursearrange.text.TaskRecord;
@@ -18,6 +19,8 @@ import java.util.stream.Collectors;
 
 public class ArrangeServiceImpl implements ArrangeService {
     @Autowired
+    private NinArrangeMapper ninArrangeMapper;
+    @Autowired
     private NinClassMapper ninClassMapper;
     @Autowired
     private NinCourseMapper ninCourseMapper;
@@ -31,14 +34,22 @@ public class ArrangeServiceImpl implements ArrangeService {
     private NinCareerCourseMapper ninCareerCourseMapper;
 
     private static List<TeaTask> teaTaskList;
+    private List<TeaTask> electiveTaskList;
 
     //生成一个解
     @Override
     public List<TaskRecord> generateChromosome() {
+        getElectiveTaskList();
         generateTeaTask();
         selectTeacher();
         List<TaskRecord> taskRecords = selectHouse();
         return generateTime(taskRecords);
+    }
+
+    public void getElectiveTaskList() {
+        List<NinArrange> ninArranges = ninArrangeMapper.selectList(new LambdaQueryWrapper<NinArrange>()
+                .eq(NinArrange::getMust, CourseTypeEnum.OPTIONAL.getCode()));
+
     }
 
     //生成教学任务(班级 + 课程)
