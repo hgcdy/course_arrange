@@ -218,8 +218,6 @@ require(['../config'], function () {
             list.push({"type": 0, "name": "平台教室"});
             list.push({"type": 1, "name": "机房"});
             list.push({"type": 2, "name": "实验室"});
-            list.push({"type": 3, "name": "课外"});
-            list.push({"type": 4, "name": "网课"});
 
             var $apply = $(".apply-body:first");
             createItemsText($apply, "--教室类型--");

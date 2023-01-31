@@ -11,6 +11,9 @@ public class TeaTask {
     private List<Long> classIdList;
     private int code;
 
-    private int num;
+    private int peopleNum;
     private int houseType;
+
+    private Long teacherId;
+
 }

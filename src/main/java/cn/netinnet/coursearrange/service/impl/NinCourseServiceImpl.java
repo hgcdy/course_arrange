@@ -68,10 +68,10 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
 
         pageInfo.getList().forEach(i -> {
             if (i.getMust() != null) {
-                i.setCnMust(CnUtil.cnMust(i.getMust()));
+                i.setCnMust(CourseTypeEnum.codeOfKey(i.getMust()).getName());
             }
             if (i.getHouseType() != null) {
-                i.setCnHouseType(CnUtil.cnHouse(i.getHouseType()));
+                i.setCnHouseType(HouseTypeEnum.codeOfKey(i.getHouseType()).getName());
             }
         });
 
@@ -116,19 +116,18 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             throw new ServiceException(412, "重名");
         }
 
-        if (ninCourse.getHouseType() != HouseTypeEnum.OUTSIDE_CLASS.getCode() &&
-                ninCourse.getHouseType() != HouseTypeEnum.ONLINE_COURSE.getCode()) {
-            List<NinHouse> houses = ninHouseMapper.selectList(new LambdaQueryWrapper<NinHouse>()
-                    .eq(NinHouse::getHouseType, ninCourse.getHouseType()).orderByDesc(NinHouse::getSeat));
-            if (houses != null && houses.size() != 0) {
-                List<Integer> list = houses.stream().map(NinHouse::getSeat).filter(i -> i > ninCourse.getMaxClassNum() * 50).collect(Collectors.toList());
-                if (list.isEmpty()) {
-                    throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的教室");
-                }
-            } else {
+
+        List<NinHouse> houses = ninHouseMapper.selectList(new LambdaQueryWrapper<NinHouse>()
+                .eq(NinHouse::getHouseType, ninCourse.getHouseType()).orderByDesc(NinHouse::getSeat));
+        if (houses != null && houses.size() != 0) {
+            List<Integer> list = houses.stream().map(NinHouse::getSeat).filter(i -> i > ninCourse.getMaxClassNum() * 50).collect(Collectors.toList());
+            if (list.isEmpty()) {
                 throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的教室");
             }
+        } else {
+            throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的教室");
         }
+
 
         int i = ninCourseMapper.insert(ninCourse);
 

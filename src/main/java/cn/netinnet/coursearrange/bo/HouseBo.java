@@ -23,7 +23,7 @@ public class HouseBo {
     private String houseName;
 
     /**
-     * 教室类型,0-教室，1-机房，2-实验室，3-课外，4-网课
+     * 教室类型,0-教室，1-机房，2-实验室
      */
     private Integer houseType;
     private String cnHouseType;

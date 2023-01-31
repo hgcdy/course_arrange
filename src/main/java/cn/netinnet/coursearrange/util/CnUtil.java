@@ -36,12 +36,6 @@ public class CnUtil {
             case 2:
                 str = "实验室";
                 break;
-            case 3:
-                str = "网课";
-                break;
-            case 4:
-                str = "课外";
-                break;
             default:
                 str = "";
         }

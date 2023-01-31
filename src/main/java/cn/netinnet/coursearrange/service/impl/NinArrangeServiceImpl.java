@@ -256,17 +256,14 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             Long courseId = arrange.getCourseId();
             NinCourse ninCourse = longNinCourseMap.get(courseId);
             Integer houseType = ninCourse.getHouseType();
-            if (houseType == 3 || houseType == 4) {
-                //3-课外，4-网课，对应id也是3和4
-                arrange.setHouseId((long) houseType);
-            } else {
-                //符合教室类型，大于班级人数的教室,排序
-                List<NinHouse> collect = integerListNinHouseMap.get(houseType).stream().filter(i -> i.getSeat() >= arrange.getPeopleNum()).collect(Collectors.toList());
-                Integer seat = collect.stream().min(Comparator.comparing(NinHouse::getSeat)).get().getSeat();
-                List<NinHouse> ninHouses = collect.stream().collect(Collectors.groupingBy(NinHouse::getSeat)).get(seat);
-                int i = (int) (Math.random() * ninHouses.size());
-                arrange.setHouseId(ninHouses.get(i).getId());
-            }
+
+            //符合教室类型，大于班级人数的教室,排序
+            List<NinHouse> collect = integerListNinHouseMap.get(houseType).stream().filter(i -> i.getSeat() >= arrange.getPeopleNum()).collect(Collectors.toList());
+            Integer seat = collect.stream().min(Comparator.comparing(NinHouse::getSeat)).get().getSeat();
+            List<NinHouse> ninHouses = collect.stream().collect(Collectors.groupingBy(NinHouse::getSeat)).get(seat);
+            int i = (int) (Math.random() * ninHouses.size());
+            arrange.setHouseId(ninHouses.get(i).getId());
+
         }
 
         //按每周需要上的节数降序排序
@@ -835,13 +832,12 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         if (ninArrange.getTeacherId().equals(arrange.getTeacherId())) {
                             return false;
                         }
-                        //不是网课或课外(网课id和类型编号均为3，课外id和类型编号为4)
-                        if (ninArrange.getHouseId() != 3 && ninArrange.getHouseId() != 4) {
-                            //教室相同
-                            if (ninArrange.getHouseId().equals(arrange.getHouseId())) {
-                                return false;
-                            }
+
+                        //教室相同
+                        if (ninArrange.getHouseId().equals(arrange.getHouseId())) {
+                            return false;
                         }
+
                         //班级重叠
                         List<Long> A = new ArrayList<>();
                         List<Long> B = new ArrayList<>();

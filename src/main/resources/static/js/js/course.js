@@ -123,7 +123,7 @@ require(['../config'], function () {
                         var obj = data.data;
                         var $courseName = $("<tr><td><label for='courseName'>课程名称:</label></td><td><input type='text' id='courseName' value=" + obj.courseName + "></td></tr>");
 
-                        var $houseType = $("<tr><td><label for='houseType'>教室类型:</label></td><td><select id='houseType'><option value=0>普通教室</option><option value=1>机房</option><option value=2>实验室</option><option value=3>课外</option><option value=4>网课</option></select></td></tr>");
+                        var $houseType = $("<tr><td><label for='houseType'>教室类型:</label></td><td><select id='houseType'><option value=0>普通教室</option><option value=1>机房</option><option value=2>实验室</option></select></td></tr>");
                         $houseType.find("select").val(obj.houseType);
 
                         var $must = $("<tr><td><label for='must'>是否必修:</label></td><td><input type='text' id='must' readonly='readonly'><!--<select id='must'><option value=0>选修</option><option value=1>必修</option></select>--></td></tr>");
@@ -184,7 +184,7 @@ require(['../config'], function () {
         //新增
         $("#insert").click(function () {
             var $courseName = $("<tr><td><label for='courseName'>课程名称:</label></td><td><input type='text' id='courseName'></td></tr>");
-            var $houseType = $("<tr><td><label for='houseType'>教室类型:</label></td><td><select id='houseType'><option disabled='disabled' selected='selected'></option><option value=0>普通教室</option><option value=1>机房</option><option value=2>实验室</option><option value=3>课外</option><option value=4>网课</option></select></td></tr>");
+            var $houseType = $("<tr><td><label for='houseType'>教室类型:</label></td><td><select id='houseType'><option disabled='disabled' selected='selected'></option><option value=0>普通教室</option><option value=1>机房</option><option value=2>实验室</option></select></td></tr>");
             var $must = $("<tr><td><label for='must'>是否必修:</label></td><td><select id='must'><option value=0>选修</option><option value=1>必修</option></select></td></tr>");
             $must.find("select").val(1);
             var $courseTime = $("<tr><td><label for='courseTime'>课时:</label></td><td><select id='courseTime'><option value=8>8</option><option value=16>16</option><option value=32>32</option><option value=48>48</option><option value=64>64</option></select></td></tr>");

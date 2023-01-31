@@ -33,7 +33,7 @@ public class NinCourse extends BaseEntity implements Serializable {
     private String courseName;
 
     /**
-     * 课程需要的教室类型.0-教室，1-机房，2-实验室，3-课外，4-网课
+     * 课程需要的教室类型.0-教室，1-机房，2-实验室
      */
     @TableField("house_type")
     private Integer houseType;
