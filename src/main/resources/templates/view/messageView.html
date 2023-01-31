@@ -4,11 +4,102 @@
     <meta charset="UTF-8">
     <title>title</title>
     <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/message},defer=true"></script>
-    <script th:inline="javascript">
+    <link th:href="@{css/selectCourse.css}" rel="stylesheet">
+    <style>
+        div{
+            border: 1px solid #dddddd;
+        }
 
-    </script>
+        #chunk-main {
+            position: absolute;
+            top: 1%;
+            right: 7%;
+            left: 7%;
+            bottom: 1%;
+            border: 1px solid #dddddd;
+        }
+
+        #user-info {
+            position: absolute;
+            height: 100%;
+            width: 37%;
+            left: 0;
+            border: 1px solid #dddddd;
+        }
+
+        tr {
+            position: absolute;
+            line-height:50px;
+            height: 50px;
+            /*text-indent: 15px;*/
+            width: 100%;
+            font-size: 20px;
+        }
+        td {
+            position: absolute;
+            width: 40%;
+        }
+        td:first-child {
+            left: 0;
+            text-align: right;
+        }
+        td:last-child{
+            right: 10%;
+            /*text-indent: 15px;*/
+        }
+
+
+        #msg {
+            position: absolute;
+            height: 100%;
+            width: 57%;
+            right: 0;
+            border: 1px solid #dddddd;
+        }
+    </style>
+
 </head>
 <body>
+<div id="chunk-main">
+    <div id="user-info">
+        <table>
+            <tr style="top: 5%;">
+                <td>名称:&nbsp;</td>
+                <td></td>
+            </tr>
+            <tr style="top: 20%;">
+                <td>账号:&nbsp;</td>
+                <td></td>
+            </tr>
+            <tr style="top: 35%;">
+                <td>旧密码:&nbsp;</td>
+                <td>
+                    <input type="password" value="不修改则置空">
+                </td>
+            </tr>
+            <tr style="top: 50%;">
+                <td>新密码:&nbsp;</td>
+                <td>
+                    <input type="password" value="不修改则置空">
+                </td>
+            </tr>
+            <tr style="top: 65%;">
+                <td>新密码确认:&nbsp;</td>
+                <td>
+                    <input type="password" value="不修改则置空">
+                </td>
+            </tr>
+            <tr  style="top: 80%">
+                <td clospan="2">
+                    <button type="submit">修改密码</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="msg">
+
+    </div>
+</div>
 
 </body>
 </html>

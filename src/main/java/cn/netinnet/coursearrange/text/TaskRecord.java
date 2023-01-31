@@ -9,7 +9,6 @@ public class TaskRecord {
     private Long houseId;
     private Integer seat;
 
-    private int[] time = new int[3];
     private int weekly;
     private int week;
     private int pitchNum;

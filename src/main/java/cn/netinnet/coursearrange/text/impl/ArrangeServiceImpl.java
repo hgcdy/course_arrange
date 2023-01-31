@@ -34,26 +34,57 @@ public class ArrangeServiceImpl implements ArrangeService {
     private NinCareerCourseMapper ninCareerCourseMapper;
 
     private static List<TeaTask> teaTaskList;
-    private List<TeaTask> electiveTaskList;
+    private static List<TaskRecord> electiveTaskRecordList;
 
     //生成一个解
     @Override
     public List<TaskRecord> generateChromosome() {
-        getElectiveTaskList();
+        //生成教学任务(课程班级教师)(只生成一次)
         generateTeaTask();
         selectTeacher();
+        //教学任务安排教室
         List<TaskRecord> taskRecords = selectHouse();
-        return generateTime(taskRecords);
+        //随机安排时间
+        List<TaskRecord> recordList = generateTime(taskRecords);
+        //获取数据库中选修课数据(只生成一次)
+        List<TaskRecord> electiveTaskList = getElectiveTaskList();
+        recordList.addAll(electiveTaskList);
+        return recordList;
     }
 
-    public void getElectiveTaskList() {
-        List<NinArrange> ninArranges = ninArrangeMapper.selectList(new LambdaQueryWrapper<NinArrange>()
-                .eq(NinArrange::getMust, CourseTypeEnum.OPTIONAL.getCode()));
+    //获取数据库中选修课数据
+    public List<TaskRecord> getElectiveTaskList() {
+        if (null == electiveTaskRecordList) {
+            List<NinArrange> ninArranges = ninArrangeMapper.selectList(new LambdaQueryWrapper<NinArrange>()
+                    .eq(NinArrange::getMust, CourseTypeEnum.OPTIONAL.getCode()));
+            List<TaskRecord> recordList = new ArrayList<>();
+            ninArranges.forEach(arr -> {
+                TeaTask teaTask = new TeaTask();
+                teaTask.setClassIdList(Collections.singletonList(arr.getClassId()));
+                teaTask.setCode(2);
+                teaTask.setCourseId(arr.getCourseId());
+                teaTask.setPeopleNum(arr.getPeopleNum());
+                teaTask.setTeacherId(arr.getTeacherId());
 
+                TaskRecord taskRecord = new TaskRecord(teaTask);
+                taskRecord.setHouseId(arr.getHouseId());
+                taskRecord.setWeekly(0);
+                taskRecord.setWeek(arr.getWeek());
+                taskRecord.setPitchNum(arr.getPitchNum());
+
+                recordList.add(taskRecord);
+            });
+            electiveTaskRecordList = recordList;
+        }
+        return electiveTaskRecordList;
     }
 
     //生成教学任务(班级 + 课程)
     public void generateTeaTask() {
+        if (null != teaTaskList) {
+            return;
+        }
+
         //专业表
         List<NinCareer> ninCareerList = ninCareerMapper.selectList(new QueryWrapper<>());
         List<Long> careerIdList = ninCareerList.stream().map(NinCareer::getId).collect(Collectors.toList());

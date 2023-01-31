@@ -189,7 +189,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
                     TeaTask teaTask = taskRecord.getTeaTask();
 
                     List<Long> longs = new ArrayList<>();
-                    longs.add(teaTask.getTeachClassId());
+                    longs.add(teaTask.getTeacherId());
                     longs.addAll(teaTask.getClassIdList());
 
                     for (Long id : longs) {
