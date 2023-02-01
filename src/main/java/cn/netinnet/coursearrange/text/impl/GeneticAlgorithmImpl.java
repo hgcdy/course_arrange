@@ -37,16 +37,19 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
 
     @Override
     public List<TaskRecord> caculte() {
-        //初始化种群
-        generation = 1;
-        init();
-        while (generation < maxIterNum) {
-            //种群遗传
-            evolve();
-            print();
-            generation++;
-        }
-        return bestChromosome.getTaskRecordList();
+        //todo 测试，尝试拿到一个解
+        List<TaskRecord> taskRecords = arrangeService.generateChromosome();
+        return taskRecords;
+//        //初始化种群
+//        generation = 1;
+//        init();
+//        while (generation < maxIterNum) {
+//            //种群遗传
+//            evolve();
+//            print();
+//            generation++;
+//        }
+//        return bestChromosome.getTaskRecordList();
     }
 
     /**
@@ -66,18 +69,17 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
      * 初始化
      */
     private void init() {
-        for (int i = 0; i < popSize; i++) {
+        int count = 0;
+        while (count < popSize) {
             population = new ArrayList<Chromosome>();
             List<TaskRecord> taskRecords = arrangeService.generateChromosome();
-            System.out.println("第" + generation + "代第" + (i + 1) + "个");
-            int count = 0;
-            while (null == taskRecords && count++ < 10) {
-                taskRecords = arrangeService.generateChromosome();
-            }
+            System.out.println("第" + generation + "代第" + (count + 1) + "个");
             if (null == taskRecords) {
                 continue;
             }
-            Chromosome chro = new Chromosome(taskRecords);
+            Chromosome chro = new Chromosome();
+            chro.setTaskRecordList(taskRecords);
+            count++;
             population.add(chro);
         }
         caculteScore();
@@ -170,6 +172,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
          * 课程在同一天
          */
 
+        int count = 0;
         double score = 0;
         Map<Long, int[]> idNumMap = new HashMap();
 
@@ -184,6 +187,11 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             for (Map.Entry<Integer, List<TaskRecord>> map2 : value.entrySet()) {
                 Integer pitchNum = map2.getKey();
                 List<TaskRecord> recordList = map2.getValue();
+
+                if (null == pitchNum) {
+                    count++;
+                    break;
+                }
 
                 int len = recordList.size();
                 for (int i = 0; i < len; i++) {
@@ -211,7 +219,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         for (Map.Entry<Long, int[]> map1 : idNumMap.entrySet()) {
             score -= computeVariance(map1.getValue());
         }
-
+        score -= Math.log(count);
         chro.setScore(Math.log(score));
     }
 
@@ -251,12 +259,19 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             return null;
         }
         List<TaskRecord> recordList = new ArrayList<>();
-        Chromosome copy = new Chromosome(recordList);
-        for (TaskRecord record : c.getTaskRecordList()) {
+
+        List<TaskRecord> taskRecordList = c.getTaskRecordList();
+        for (TaskRecord record : taskRecordList) {
             TaskRecord newTaskRecord = new TaskRecord(record.getTeaTask());
-            BeanUtils.copyProperties(record, newTaskRecord);
-            copy.getTaskRecordList().add(newTaskRecord);
+            newTaskRecord.setWeekly(record.getWeekly());
+            newTaskRecord.setWeek(record.getWeek());
+            newTaskRecord.setPitchNum(record.getPitchNum());
+            newTaskRecord.setHouseId(record.getHouseId());
+            newTaskRecord.setSeat(record.getSeat());
+            recordList.add(newTaskRecord);
         }
+        Chromosome copy = new Chromosome();
+        copy.setTaskRecordList(recordList);
         return copy;
     }
 
@@ -303,17 +318,11 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         //校验并解决冲突
         boolean b1 = arrangeService.verifyClash(taskRecordList1, taskRecord1);
         if (!b1) {
-            boolean b = arrangeService.solveClash(taskRecordList1, taskRecord1);
-            if (!b) {
-                return null;
-            }
+            arrangeService.solveClash(taskRecordList1, taskRecord1);
         }
         boolean b2 = arrangeService.verifyClash(taskRecordList2, taskRecord2);
         if (!b2) {
-            boolean b = arrangeService.solveClash(taskRecordList2, taskRecord2);
-            if (!b) {
-                return null;
-            }
+            arrangeService.solveClash(taskRecordList2, taskRecord2);
         }
 
         List<Chromosome> list = new ArrayList<Chromosome>();

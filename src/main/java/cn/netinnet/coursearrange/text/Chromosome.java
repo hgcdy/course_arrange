@@ -10,7 +10,4 @@ public class Chromosome {
     private List<TaskRecord> taskRecordList;
     private double score;
 
-    public Chromosome(List<TaskRecord> taskRecordList) {
-        this.taskRecordList = taskRecordList;
-    }
 }

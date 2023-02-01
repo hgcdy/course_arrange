@@ -9,9 +9,9 @@ public class TaskRecord {
     private Long houseId;
     private Integer seat;
 
-    private int weekly;
-    private int week;
-    private int pitchNum;
+    private Integer weekly;
+    private Integer week;
+    private Integer pitchNum;
 
     public TaskRecord(TeaTask teaTask) {
         this.teaTask = teaTask;

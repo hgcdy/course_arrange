@@ -294,10 +294,7 @@ public class ArrangeServiceImpl implements ArrangeService {
                 count++;
             }
             if (count == 50) {
-                boolean b = solveClash(genTaskRecords, record);
-                if (!b) {//冲突无法解决
-                    return null;
-                }
+                solveClash(genTaskRecords, record);
             }
             genTaskRecords.add(record);
         }
@@ -311,7 +308,10 @@ public class ArrangeServiceImpl implements ArrangeService {
         if (!b) {
             //遍历时间无法解决，遍历教室
             List<NinHouse> ninHouses = getHouseTypeNinHouseListMap().get(taskRecord.getTeaTask().getHouseType());
-            List<NinHouse> ninHouseList = ninHouses.stream().filter(i -> i.getSeat() >= taskRecord.getTeaTask().getPeopleNum()).collect(Collectors.toList());
+            List<NinHouse> ninHouseList = ninHouses.stream()
+                    .filter(i -> !i.getId().equals(taskRecord.getHouseId()))
+                    .filter(i -> i.getSeat() >= taskRecord.getTeaTask().getPeopleNum())
+                    .collect(Collectors.toList());
             for (NinHouse house: ninHouseList) {
                 taskRecord.setHouseId(house.getId());
                 boolean b1 = traversalTime(taskRecordList, taskRecord);
@@ -319,6 +319,10 @@ public class ArrangeServiceImpl implements ArrangeService {
                     return true;
                 }
             }
+            taskRecord.setHouseId(null);
+            taskRecord.setWeek(null);
+            taskRecord.setPitchNum(null);
+            System.out.println("冲突无法解决");
             return false;
         } else {
             return true;
@@ -327,23 +331,19 @@ public class ArrangeServiceImpl implements ArrangeService {
 
     //遍历时间
     public boolean traversalTime(List<TaskRecord> taskRecordList, TaskRecord taskRecord) {
-        int count = 0;
+        boolean isOk = false;
         ok:for (int i = 1; i <= 7; i++) {
             for (int j = 1; j <= 5; j++) {
                 taskRecord.setWeek(i);
                 taskRecord.setPitchNum(j);
                 boolean b = verifyClash(taskRecordList, taskRecord);
                 if (b) {
+                    isOk = true;
                     break ok;
-                } else {
-                    count++;
                 }
             }
         }
-        if (count == 35) {
-            return false;
-        }
-        return true;
+        return isOk;
     }
 
     //冲突校验
@@ -358,33 +358,28 @@ public class ArrangeServiceImpl implements ArrangeService {
             }
             TeaTask teaTask1 = r.getTeaTask();
             TeaTask teaTask2 = taskRecord.getTeaTask();
-
             if (teaTask1.getTeacherId().equals(teaTask2.getTeacherId())) {
                 return false;
             }
-            if (null != teaTask1.getTeachClassId() && teaTask1.getTeachClassId().equals(teaTask2.getTeachClassId())) {
-                return false;
-            } else {
-                List<Long> classIdList1 = teaTask1.getClassIdList();
-                List<Long> classIdList2 = teaTask2.getClassIdList();
-                if (!Collections.disjoint(classIdList1, classIdList2)) {
-                    return false;
-                }
-            }
 
+            List<Long> classIdList1 = teaTask1.getClassIdList();
+            List<Long> classIdList2 = teaTask2.getClassIdList();
+            if (!Collections.disjoint(classIdList1, classIdList2)) {
+                return false;
+            }
         }
         return true;
     }
 
     //时间校验
     public boolean verifyTime(TaskRecord record1, TaskRecord record2) {
-        int t11 = record1.getWeekly(), t12 = record1.getWeek(), t13 = record1.getPitchNum();
-        int t21 = record2.getWeekly(), t22 = record2.getWeek(), t23 = record2.getPitchNum();
-        if (t12 == 0 || t22 == 0) {
+        Integer t11 = record1.getWeekly(), t12 = record1.getWeek(), t13 = record1.getPitchNum();
+        Integer t21 = record2.getWeekly(), t22 = record2.getWeek(), t23 = record2.getPitchNum();
+        if (t12 == null || t22 == null) {
             return true;
         }
-        if (t12 == t22 && t13 == t23) {
-            if (t11 == t21 || t11 == 0 || t21 == 0) {
+        if (t12.equals(t22) && t13.equals(t23)) {
+            if (t11.equals(t21) || t11 == 0 || t21 == 0) {
                 return false;
             }
         }
