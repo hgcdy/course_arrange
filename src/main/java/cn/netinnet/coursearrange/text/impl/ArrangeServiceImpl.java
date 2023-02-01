@@ -328,7 +328,7 @@ public class ArrangeServiceImpl implements ArrangeService {
     //遍历时间
     public boolean traversalTime(List<TaskRecord> taskRecordList, TaskRecord taskRecord) {
         int count = 0;
-        ok:for (int i = 1; i <= 5; i++) {
+        ok:for (int i = 1; i <= 7; i++) {
             for (int j = 1; j <= 5; j++) {
                 taskRecord.setWeek(i);
                 taskRecord.setPitchNum(j);
@@ -340,23 +340,8 @@ public class ArrangeServiceImpl implements ArrangeService {
                 }
             }
         }
-        if (count == 25) {
-            int count1 = 0;
-            for (int i = 6; i <= 7; i++) {
-                for (int j = 1; j <= 5; j++) {
-                    taskRecord.setWeek(i);
-                    taskRecord.setPitchNum(j);
-                    boolean b = verifyClash(taskRecordList, taskRecord);
-                    if (b) {
-                        break;
-                    } else {
-                        count1++;
-                    }
-                }
-            }
-            if (count1 == 10) {
-                return false;
-            }
+        if (count == 35) {
+            return false;
         }
         return true;
     }
@@ -379,13 +364,14 @@ public class ArrangeServiceImpl implements ArrangeService {
             }
             if (null != teaTask1.getTeachClassId() && teaTask1.getTeachClassId().equals(teaTask2.getTeachClassId())) {
                 return false;
+            } else {
+                List<Long> classIdList1 = teaTask1.getClassIdList();
+                List<Long> classIdList2 = teaTask2.getClassIdList();
+                if (!Collections.disjoint(classIdList1, classIdList2)) {
+                    return false;
+                }
             }
 
-            List<Long> classIdList1 = teaTask1.getClassIdList();
-            List<Long> classIdList2 = teaTask2.getClassIdList();
-            if (!Collections.disjoint(classIdList1, classIdList2)) {
-                return false;
-            }
         }
         return true;
     }
