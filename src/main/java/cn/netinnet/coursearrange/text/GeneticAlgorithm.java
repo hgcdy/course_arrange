@@ -1,5 +1,7 @@
 package cn.netinnet.coursearrange.text;
 
+import java.util.List;
+
 public interface GeneticAlgorithm {
-    void caculte();
+    List<TaskRecord> caculte();
 }

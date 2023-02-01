@@ -2,6 +2,7 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.CourseBo;
 import cn.netinnet.coursearrange.bo.SettingBo;
+import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.domain.UserInfo;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.enums.CourseTypeEnum;
@@ -17,6 +18,7 @@ import cn.netinnet.coursearrange.util.UserUtil;
 import cn.netinnet.coursearrange.util.CnUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -95,7 +97,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
                 .select(NinSetting::getOpenState)
                 .eq(NinSetting::getUserType, userType)
                 .eq(NinSetting::getCourseId, id));
-        if (UserTypeEnum.CLAZZ.getName().equals(userType)) {
+        if (null == ninSetting || UserTypeEnum.CLAZZ.getName().equals(userType)) {
             courseBo.setStart("不可修改");
         } else {
             courseBo.setStart(OpenStateEnum.codeOfKey(ninSetting.getOpenState()).getName());
@@ -120,12 +122,12 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         List<NinHouse> houses = ninHouseMapper.selectList(new LambdaQueryWrapper<NinHouse>()
                 .eq(NinHouse::getHouseType, ninCourse.getHouseType()).orderByDesc(NinHouse::getSeat));
         if (houses != null && houses.size() != 0) {
-            List<Integer> list = houses.stream().map(NinHouse::getSeat).filter(i -> i > ninCourse.getMaxClassNum() * 50).collect(Collectors.toList());
+            List<Integer> list = houses.stream().map(NinHouse::getSeat).filter(i -> i >= ninCourse.getMaxClassNum() * ApplicationConstant.CLASS_PEOPLE_NUM).collect(Collectors.toList());
             if (list.isEmpty()) {
-                throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的教室");
+                throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的" + HouseTypeEnum.codeOfKey(ninCourse.getHouseType()).getName());
             }
         } else {
-            throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的教室");
+            throw new ServiceException(412, "没有可容纳" + ninCourse.getMaxClassNum() + "个班级一起上课的" + HouseTypeEnum.codeOfKey(ninCourse.getHouseType()).getName());
         }
 
 
@@ -217,6 +219,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int alterSingle(NinCourse ninCourse) {
         //同名验证
         int count = count(new LambdaQueryWrapper<NinCourse>()
@@ -225,6 +228,9 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
         if (count > 0) {
             throw new ServiceException(412, "重名");
         }
+        ninSettingService.update(new LambdaUpdateWrapper<NinSetting>()
+                .set(NinSetting::getCourseName, ninCourse.getCourseName())
+                .eq(NinSetting::getCourseId, ninCourse.getId()));
         return ninCourseMapper.updateById(ninCourse);
     }
 

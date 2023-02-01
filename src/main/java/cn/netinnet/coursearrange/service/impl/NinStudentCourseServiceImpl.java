@@ -92,7 +92,7 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int addSingle(Long studentId, Long courseId) {
+    public boolean addSingle(Long studentId, Long courseId) {
 
         //判断学生是否已经有选修
         List<NinStudentCourse> ninStudentCourses = list(new LambdaQueryWrapper<NinStudentCourse>().eq(NinStudentCourse::getStudentId, studentId));
@@ -138,7 +138,7 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
         //班级人数+1
         ninClassMapper.addPeopleNum(classId);
 
-        return ninStudentCourseMapper.insert(new NinStudentCourse(){{
+        return save(new NinStudentCourse(){{
             setStudentId(studentId);
             setCourseId(courseId);
             setTakeClassId(classId);
@@ -147,7 +147,7 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int delSingle(Long studentId, Long courseId) {
+    public boolean delSingle(Long studentId, Long courseId) {
         //班级人数-1
         NinStudentCourse ninStudentCourse = ninStudentCourseMapper
                 .selectOne(new LambdaQueryWrapper<NinStudentCourse>()
@@ -162,6 +162,6 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
         arrange.setPeopleNum(arrange.getPeopleNum() + 1);
         ninArrangeMapper.updateById(arrange);
 
-        return ninStudentCourseMapper.deleteById(ninStudentCourse.getId());
+        return removeById(ninStudentCourse.getId());
     }
 }

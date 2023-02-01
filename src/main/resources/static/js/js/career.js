@@ -20,7 +20,8 @@ require(['../config'], function () {
 
         //新增专业
         $(".chunk-card-foot:eq(1)").children("button").click(function () {
-            var val = $(".chunk-card-foot:eq(1)").children("input").val();
+            var input = $(".chunk-card-foot:eq(1)").children("input");
+            var val = input.val();
             if (val == "") {
                 util.hint("请勿置空");
             } else {
@@ -35,8 +36,10 @@ require(['../config'], function () {
                             careerName: val
                         },
                         success: function (data) {
+                            input.val("");
                             if (data.code == 200) {
                                 itemCollege();
+                                $(".chunk-card-body:eq(1)").empty();
                             } else {
                                 util.hint(data.msg);
                             }
@@ -138,7 +141,7 @@ require(['../config'], function () {
 
             //新增
             var $chunk = $(".chunk-card-foot:first");
-            $chunk.children("button").click(function () {
+            $chunk.children("button").unbind("click").click(function () {
                 var val = $chunk.children("input").val();
                 if (val == "") {
                     util.hint("请勿置空");

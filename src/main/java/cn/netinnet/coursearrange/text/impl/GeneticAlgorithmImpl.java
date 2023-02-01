@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.text.impl;
 import cn.netinnet.coursearrange.text.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,16 +11,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Service
 public class GeneticAlgorithmImpl implements GeneticAlgorithm {
 
     private List<Chromosome> population = new ArrayList<Chromosome>();
     private int popSize = 20;//种群数量
-    private int geneSize;//基因最大长度
-    private int maxIterNum = 500;//最大迭代次数
+    private int maxIterNum = 10;//最大迭代次数
     private double mutationRate = 0.01;//基因变异的概率
 
     private int generation = 1;//当前遗传到第几代
 
+    private Chromosome bestChromosome;
     private double bestScore;//最好得分
     private double worstScore;//最坏得分
     private double totalScore;//总得分
@@ -34,7 +36,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
 
 
     @Override
-    public void caculte() {
+    public List<TaskRecord> caculte() {
         //初始化种群
         generation = 1;
         init();
@@ -44,6 +46,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             print();
             generation++;
         }
+        return bestChromosome.getTaskRecordList();
     }
 
     /**
@@ -66,6 +69,14 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         for (int i = 0; i < popSize; i++) {
             population = new ArrayList<Chromosome>();
             List<TaskRecord> taskRecords = arrangeService.generateChromosome();
+            System.out.println("第" + generation + "代第" + (i + 1) + "个");
+            int count = 0;
+            while (null == taskRecords && count++ < 10) {
+                taskRecords = arrangeService.generateChromosome();
+            }
+            if (null == taskRecords) {
+                continue;
+            }
             Chromosome chro = new Chromosome(taskRecords);
             population.add(chro);
         }
@@ -85,6 +96,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             if (children != null) {
                 for (Chromosome chro : children) {
                     childPopulation.add(chro);
+                    System.out.println("第" + generation + "代第" + childPopulation.size() + "个");
                 }
             }
         }
@@ -118,7 +130,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
      * 计算种群适应度
      */
     private void caculteScore() {
-        //todo
+        System.out.println("计算种群适应度");
         setChromosomeScore(population.get(0));
         bestScore = population.get(0).getScore();
         worstScore = population.get(0).getScore();
@@ -127,11 +139,11 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             setChromosomeScore(chro);
             if (chro.getScore() > bestScore) { //设置最好基因值
                 bestScore = chro.getScore();
-                if (y < bestScore) {
-
-                    y = bestScore;
-                    geneI = generation;
-                }
+                bestChromosome = chro;
+//                if (y < bestScore) {
+//                    y = bestScore;
+//                    geneI = generation;
+//                }
             }
             if (chro.getScore() < worstScore) { //设置最坏基因值
                 worstScore = chro.getScore();
@@ -141,9 +153,6 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         averageScore = totalScore / popSize;
         //因为精度问题导致的平均值大于最好值，将平均值设置成最好值
         averageScore = averageScore > bestScore ? bestScore : averageScore;
-
-
-
     }
 
     /**
@@ -151,6 +160,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
      * @param chro
      */
     private void setChromosomeScore(Chromosome chro) {
+        System.out.println("计算染色体得分");
         if (chro == null) {
             return;
         }
@@ -161,11 +171,9 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
          */
 
         double score = 0;
-        int clashNum = 0;//冲突次数
-        Map<Long, int[]> idVarianceMap = new HashMap();
+        Map<Long, int[]> idNumMap = new HashMap();
 
         List<TaskRecord> taskRecordList = chro.getTaskRecordList();
-
 
         Map<Integer, Map<Integer, List<TaskRecord>>> map = taskRecordList.stream().collect(Collectors.groupingBy(TaskRecord::getWeek, Collectors.groupingBy(TaskRecord::getPitchNum)));
 
@@ -180,12 +188,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
                 int len = recordList.size();
                 for (int i = 0; i < len; i++) {
                     TaskRecord taskRecord = recordList.get(i);
-                    if (i + 1 != len) {
-                        boolean b = arrangeService.verifyClash(recordList.subList(i + 1, len), taskRecord);
-                        if (!b) {
-                            clashNum++;
-                        }
-                    }
+
                     TeaTask teaTask = taskRecord.getTeaTask();
 
                     List<Long> longs = new ArrayList<>();
@@ -193,27 +196,23 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
                     longs.addAll(teaTask.getClassIdList());
 
                     for (Long id : longs) {
-                        if (null == idVarianceMap.get(id)) {
+                        if (null == idNumMap.get(id)) {
                             int[] ints = new int[5];
                             ints[week - 1] = 1;
-                            idVarianceMap.put(id, ints);
+                            idNumMap.put(id, ints);
                         } else {
-                            idVarianceMap.get(id)[week - 1] += 1;
+                            idNumMap.get(id)[week - 1] += 1;
                         }
                     }
                 }
             }
         }
 
-        Map<TeaTask, List<TaskRecord>> teaTaskListMap = taskRecordList.stream().collect(Collectors.groupingBy(TaskRecord::getTeaTask));
-        for (Map.Entry<TeaTask, List<TaskRecord>> map1: teaTaskListMap.entrySet()) {
-            TeaTask task = map1.getKey();
-            List<TaskRecord> recordList = map1.getValue();
-
-
-
+        for (Map.Entry<Long, int[]> map1 : idNumMap.entrySet()) {
+            score -= computeVariance(map1.getValue());
         }
-        chro.setScore(score);
+
+        chro.setScore(Math.log(score));
     }
 
     /**
@@ -304,17 +303,37 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         //校验并解决冲突
         boolean b1 = arrangeService.verifyClash(taskRecordList1, taskRecord1);
         if (!b1) {
-            arrangeService.solveClash(taskRecordList1, taskRecord1);
+            boolean b = arrangeService.solveClash(taskRecordList1, taskRecord1);
+            if (!b) {
+                return null;
+            }
         }
         boolean b2 = arrangeService.verifyClash(taskRecordList2, taskRecord2);
         if (!b2) {
-            arrangeService.solveClash(taskRecordList2, taskRecord2);
+            boolean b = arrangeService.solveClash(taskRecordList2, taskRecord2);
+            if (!b) {
+                return null;
+            }
         }
 
         List<Chromosome> list = new ArrayList<Chromosome>();
         list.add(c1);
         list.add(c2);
         return list;
+    }
+
+
+    public double computeVariance(int[] arr) {
+        int len = arr.length;
+        double sum = 0;
+        for (int i = 0; i < len; i++) {
+            sum += arr[i];
+        }
+        double avg = sum / len, pow = 0;
+        for (int i = 0; i < len; i++) {
+            pow += Math.pow(arr[i] - avg, 2);
+        }
+        return Math.sqrt(pow / len);
     }
 
 }

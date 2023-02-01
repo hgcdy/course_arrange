@@ -49,7 +49,7 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
     @Override
     public List<SettingBo> getSelectList(String userType, Integer openState, String courseName) {
         List<NinSetting> ninSettingList = list(new LambdaQueryWrapper<NinSetting>().eq(NinSetting::getUserType, userType)
-                .eq(null != userType, NinSetting::getOpenState, openState)
+                .eq(null != openState, NinSetting::getOpenState, openState)
                 .like(null != courseName && !"".equals(courseName), NinSetting::getCourseName, courseName));
 
         return ninSettingList.stream().map(i -> {

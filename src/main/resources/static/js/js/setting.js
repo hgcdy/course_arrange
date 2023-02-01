@@ -105,8 +105,13 @@ require(['../config'], function () {
                             var $th = $("<th></th>").append(input);
                             var $thNum = $("<th></th>").text(num++).attr("scope", "row");
                             $tr.append($th, $thNum);
-                            for (let j = 0; j < STR.length; j++) {
-                                var $td = $("<td></td>").text(obj[STR[j]]);
+                            var len = STR.length
+                            for (let j = 0; j < len; j++) {
+                                var text = obj[STR[j]];
+                                if (j >= len - 2 && text != null) {
+                                    text = text.replace("T", " ");
+                                }
+                                var $td = $("<td></td>").text(text);
                                 $tr.append($td);
                             }
                             var bu = "<button type='button' data-openState='2' class='btn btn-success timing'>设置</button>&nbsp;";
@@ -115,7 +120,6 @@ require(['../config'], function () {
                             $tr.append($td);
                             $tbody.append($tr);
                         }
-
 
 
                         //添加全选框

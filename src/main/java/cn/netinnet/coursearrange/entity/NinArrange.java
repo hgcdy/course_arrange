@@ -1,6 +1,9 @@
 package cn.netinnet.coursearrange.entity;
 
 import cn.netinnet.coursearrange.domain.BaseEntity;
+import cn.netinnet.coursearrange.enums.CourseTypeEnum;
+import cn.netinnet.coursearrange.text.TaskRecord;
+import cn.netinnet.coursearrange.text.TeaTask;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -114,4 +117,28 @@ public class NinArrange extends BaseEntity implements Serializable {
     private Integer peopleNum;
 
 
+    public NinArrange() {
+    }
+
+    public NinArrange(TaskRecord taskRecord) {
+        TeaTask teaTask = taskRecord.getTeaTask();
+        this.careerId = teaTask.getCareerId();
+        this.teacherId = teaTask.getTeacherId();
+        this.courseId = teaTask.getCourseId();
+        this.houseId = taskRecord.getHouseId();
+        if (null == teaTask.getTeacherId()) {
+            this.classId = teaTask.getClassIdList().get(0);
+            this.must = CourseTypeEnum.OPTIONAL.getCode();
+        } else {
+            this.must = CourseTypeEnum.REQUIRED_COURSE.getCode();
+        }
+        this.teachClassId = teaTask.getTeachClassId();
+        this.weekly = taskRecord.getWeekly();
+//        this.startTime = startTime;
+//        this.endTime = endTime;
+        this.week = taskRecord.getWeek();
+        this.pitchNum = taskRecord.getPitchNum();
+        this.peopleNum = teaTask.getPeopleNum();
+
+    }
 }

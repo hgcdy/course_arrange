@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class TeaTask {
+    private Long careerId;
     private Long courseId;
     private Long teachClassId;
     private List<Long> classIdList;

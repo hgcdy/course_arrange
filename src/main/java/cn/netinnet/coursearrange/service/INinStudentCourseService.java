@@ -25,10 +25,10 @@ public interface INinStudentCourseService extends IService<NinStudentCourse> {
     /**
      * 添加
      */
-    int addSingle(Long studentId, Long courseId);
+    boolean addSingle(Long studentId, Long courseId);
 
     /**
      * 删除
      */
-    int delSingle(Long studentId, Long courseId);
+    boolean delSingle(Long studentId, Long courseId);
 }

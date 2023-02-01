@@ -51,7 +51,7 @@ public class NinTeacherCourseController {
             lock.lock();
             boolean b = ninTeacherCourseService.addSingle(id, courseId);
             if (b) {
-                ResultModel.ok();
+                return ResultModel.ok();
             }
             return ResultModel.error(412, "新增失败");
         } finally {
@@ -70,7 +70,7 @@ public class NinTeacherCourseController {
             lock.lock();
             boolean b = ninTeacherCourseService.delSingle(id, courseId);
             if (b) {
-                ResultModel.ok();
+                return ResultModel.ok();
             }
             return ResultModel.error(412, "删除失败");
         } finally {

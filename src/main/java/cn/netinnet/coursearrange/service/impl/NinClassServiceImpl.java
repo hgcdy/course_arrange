@@ -187,26 +187,36 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     @Override
     public Map<String, List<Map<String, Object>>> getCourse(Long id) {
         NinClass ninClass = getById(id);
-        List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper
-                .selectList(new LambdaQueryWrapper<NinCareerCourse>()
-                        .eq(NinCareerCourse::getCareerId, ninClass.getCareerId()));
-        List<NinCourse> courseList = ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>()
-                .select(NinCourse::getId, NinCourse::getCourseName)
-                .eq(NinCourse::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode()));
-        Map<Long, String> courseMap = courseList.stream().collect(Collectors.toMap(NinCourse::getId, NinCourse::getCourseName));
         List<Map<String, Object>> selectedList = new ArrayList<>();
-        ninCareerCourses.forEach(i -> {
-            Map<String, Object> map = new HashMap<>();
-            Long courseId = i.getCourseId();
-            map.put("id", courseId.toString());
-            map.put("name", courseMap.get(courseId));
-            map.put("isOk", false);
-            selectedList.add(map);
-        });
-        List<Map<String, Object>> maps = new ArrayList<>();
+        List<NinCourse> courseList = ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>()
+                .select(NinCourse::getId, NinCourse::getCourseName));
+        Map<Long, String> courseMap = courseList.stream().collect(Collectors.toMap(NinCourse::getId, NinCourse::getCourseName));
+
+        if (ninClass.getCareerId() == 0) {
+            NinArrange arrange = ninArrangeMapper.selectOne(new LambdaQueryWrapper<NinArrange>().select(NinArrange::getCourseId).eq(NinArrange::getClassId, id));
+            selectedList.add(new HashMap<String, Object>(){{
+                put("id", arrange.getCourseId().toString());
+                put("name", courseMap.get(arrange.getCourseId()));
+                put("isOk", false);
+            }});
+
+        } else {
+            List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper
+                    .selectList(new LambdaQueryWrapper<NinCareerCourse>()
+                            .eq(NinCareerCourse::getCareerId, ninClass.getCareerId()));
+            ninCareerCourses.forEach(i -> {
+                Map<String, Object> map = new HashMap<>();
+                Long courseId = i.getCourseId();
+                map.put("id", courseId.toString());
+                map.put("name", courseMap.get(courseId));
+                map.put("isOk", false);
+                selectedList.add(map);
+            });
+        }
+
         return new HashMap<String, List<Map<String, Object>>>() {{
             put("selected", selectedList);
-            put("unselected", maps);
+            put("unselected", new ArrayList<Map<String, Object>>());
         }};
     }
 

@@ -51,9 +51,11 @@ public class NinStudentCourseController {
     public ResultModel addStudent(Long id, Long courseId){
         try {
             lock.lock();
-            int i = ninStudentCourseService.addSingle(id, courseId);
-
-            return i > 0 ? ResultModel.ok() : ResultModel.error(412, "新增失败");
+            boolean b = ninStudentCourseService.addSingle(id, courseId);
+            if (b) {
+                return ResultModel.ok();
+            }
+            return ResultModel.error(412, "新增失败");
         } finally {
             lock.unlock();
         }
@@ -68,8 +70,11 @@ public class NinStudentCourseController {
     public ResultModel delStudent(Long id, Long courseId){
         try {
             lock.lock();
-            int i = ninStudentCourseService.delSingle(id, courseId);
-            return i > 0 ? ResultModel.ok() : ResultModel.error(412, "删除失败");
+            boolean b = ninStudentCourseService.delSingle(id, courseId);
+            if (b) {
+                return ResultModel.ok();
+            }
+            return ResultModel.error(412, "删除失败");
         } finally {
             lock.unlock();
         }
