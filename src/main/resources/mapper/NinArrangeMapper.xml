@@ -77,7 +77,6 @@
             INNER JOIN nin_course ON nin_arrange.course_id = nin_course.id)
             INNER JOIN nin_career On nin_arrange.career_id = nin_career.id
         <where>
-            nin_arrange.del_flag = 0
             <if test="teacherId != null">
                 AND nin_arrange.teacher_id = #{teacherId}
             </if>
@@ -112,18 +111,18 @@
                 FROM nin_teach_class
                 WHERE nin_arrange.teach_class_id = nin_teach_class.teach_class_id))
             AS className,
-        IFNULL(teacher_name, "暂无") AS teacherName,
-        IFNULL(house_name, "暂无") AS houseName,
+        IFNULL(teacher_name, "") AS teacherName,
+        IFNULL(house_name, "") AS houseName,
         nin_arrange.must AS must, weekly,
         nin_arrange.start_time AS startTime,
         nin_arrange.end_time AS endTime,
-        week, pitch_num AS pitchNum
+        week, pitch_num AS pitchNum,
+        nin_arrange.del_flag AS delFlag
         FROM (((nin_arrange LEFT JOIN nin_teacher ON nin_arrange.teacher_id = nin_teacher.id)
             LEFT JOIN nin_house ON nin_arrange.house_id = nin_house.id)
             INNER JOIN nin_course ON nin_arrange.course_id = nin_course.id)
             INNER JOIN nin_career On nin_arrange.career_id = nin_career.id
-        WHERE
-        nin_arrange.del_flag = 0
+        <where>
         <if test="teachClassIdList != null">
             AND(
             <foreach collection="teachClassIdList" index="index" item="item" separator="OR" >
@@ -152,7 +151,8 @@
         <if test="courseName != null and courseName != ''">
             AND course_name LIKE CONCAT('%',#{courseName},'%')
         </if>
-        ORDER BY nin_arrange.career_id, courseName, className, week, pitchNum
+        </where>
+        ORDER BY nin_arrange.del_flag, nin_arrange.career_id, courseName, className, week, pitchNum
     </select>
 
     <!--判断是否存在冲突的记录-->

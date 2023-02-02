@@ -37,8 +37,4 @@ public interface INinStudentService extends IService<NinStudent> {
      */
     NinStudent getStudentById(Long id);
 
-    /**
-     * 学生修改密码
-     */
-    ResultModel alterPassword(String code, String oldPassword, String newPassword);
 }

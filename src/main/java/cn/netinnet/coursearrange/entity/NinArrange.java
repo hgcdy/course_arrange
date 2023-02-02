@@ -139,6 +139,9 @@ public class NinArrange extends BaseEntity implements Serializable {
         this.week = taskRecord.getWeek();
         this.pitchNum = taskRecord.getPitchNum();
         this.peopleNum = teaTask.getPeopleNum();
+        if (null == houseId || null == week || null == pitchNum) {
+            setDelFlag(-1);
+        }
 
     }
 }

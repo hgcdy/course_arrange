@@ -107,21 +107,4 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
 
     }
 
-    @Override
-    public ResultModel alterPassword(String code, String oldPassword, String newPassword) {
-        loginService.passwordVerify(newPassword);
-        NinTeacher ninTeacher = getOne(new LambdaQueryWrapper<NinTeacher>().eq(NinTeacher::getTeacherCode, code));
-
-        if (!oldPassword.equals(newPassword)) {
-            if (ninTeacher.getTeacherPassword().equals(MD5.getMD5Encode(oldPassword))) {
-                ninTeacher.setTeacherPassword(MD5.getMD5Encode(newPassword));
-                ninTeacherMapper.updateById(ninTeacher);
-                return ResultModel.ok();
-            } else {
-                return ResultModel.error(412, "旧密码验证错误");
-            }
-        } else {
-            return ResultModel.error(412, "新密码和旧密码一致");
-        }
-    }
 }

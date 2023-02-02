@@ -134,23 +134,26 @@ define(function () {
             var $th = $("<th></th>").text(num++).attr("scope", "row").attr("data-id", data[i]["id"]);
             $tr.append($th)
             for (let j = 0; j < strList.length; j++) {
-                var $td = $("<td></td>").text(data[i][strList[j]]);
-                $tr.append($td);
+                $tr.append($("<td></td>").text(data[i][strList[j]]));
             }
+            var delFlag = data[i]["delFlag"];
             var bu1 = "<button type='button' class='btn btn-danger delete'>删除</button>&nbsp;";
             var bu2 = "<button type='button' class='btn btn-warning update'>编辑</button>&nbsp;";
             var bu3 = "<button type='button' class='btn btn-success details'>详情</button>&nbsp;";
             var $td = $("<td></td>");
-            if (count == 1) {
+            if (count === 1) {
                 $td.append(bu1);
-            } else if (count == 2) {
+                if (delFlag != null && delFlag === -1) {
+                    $td.append(bu2);
+                }
+            } else if (count === 2) {
                 $td.append(bu1, bu2);
-            } else if (count == 3) {
+            } else if (count === 3) {
                 $td.append(bu1, bu2, bu3);
-            } else if (count == 0){
+            } else if (count === 0){
                 $td.text("不可操作");
             }
-            if (count != -1) {
+            if (count !== -1) {
                 $tr.append($td);
             }
             $tbody.append($tr);

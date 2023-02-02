@@ -113,18 +113,6 @@ public class NinTeacherController {
         return ResultModel.ok(ninTeacherService.getTeacherById(id));
     }
 
-    /**
-     * 教师修改密码
-     * @param code
-     * @param oldPassword
-     * @param newPassword
-     * @return
-     */
-    @RequiresRoles(value = {"teacher"}, logical = Logical.OR)
-    @PostMapping("/alterTeaPassword")
-    public ResultModel alterPassword(String code, String oldPassword, String newPassword){
-        return ninTeacherService.alterPassword(code, oldPassword, newPassword);
-    }
 
 
 }

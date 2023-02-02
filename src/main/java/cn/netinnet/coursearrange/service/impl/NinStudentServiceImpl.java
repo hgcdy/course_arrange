@@ -2,15 +2,9 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.StudentBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
-import cn.netinnet.coursearrange.entity.NinCareer;
-import cn.netinnet.coursearrange.entity.NinClass;
-import cn.netinnet.coursearrange.entity.NinStudent;
-import cn.netinnet.coursearrange.entity.NinStudentCourse;
+import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
-import cn.netinnet.coursearrange.mapper.NinCareerMapper;
-import cn.netinnet.coursearrange.mapper.NinClassMapper;
-import cn.netinnet.coursearrange.mapper.NinStudentCourseMapper;
-import cn.netinnet.coursearrange.mapper.NinStudentMapper;
+import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinStudentService;
 import cn.netinnet.coursearrange.service.LoginService;
@@ -47,6 +41,8 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
     private NinCareerMapper ninCareerMapper;
     @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
+    @Autowired
+    private NinMessageMapper ninMessageMapper;
     @Autowired
     private LoginService loginService;
 
@@ -123,6 +119,8 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
         ninStudentCourseMapper.delete(new LambdaQueryWrapper<NinStudentCourse>().eq(NinStudentCourse::getStudentId, id));
         //班级人数-1
         ninClassMapper.subPeopleNum(ninStudent.getClassId());
+        //删除学生消息
+        ninMessageMapper.delete(new LambdaQueryWrapper<NinMessage>().eq(NinMessage::getUserId, id));
         //删除学生
         return removeById(id);
     }
@@ -153,25 +151,6 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
     @Override
     public NinStudent getStudentById(Long id) {
         return getById(id);
-    }
-
-    @Override
-    public ResultModel alterPassword(String code, String oldPassword, String newPassword) {
-
-        loginService.passwordVerify(newPassword);
-        NinStudent ninStudent = getOne(new LambdaQueryWrapper<NinStudent>().eq(NinStudent::getStudentCode, code));
-
-        if (!oldPassword.equals(newPassword)) {
-            if (ninStudent.getStudentPassword().equals(MD5.getMD5Encode(oldPassword))) {
-                ninStudent.setStudentPassword(MD5.getMD5Encode(newPassword));
-                updateById(ninStudent);
-                return ResultModel.ok();
-            } else {
-                return ResultModel.error(412, "旧密码验证错误");
-            }
-        } else {
-            return ResultModel.error(412, "新密码和旧密码一致");
-        }
     }
 
 

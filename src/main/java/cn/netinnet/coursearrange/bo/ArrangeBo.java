@@ -100,4 +100,9 @@ public class ArrangeBo {
      */
     private Integer peopleNum;
 
+    /**
+     * 删除标记，但用于标记是否未安排的课程
+     */
+    private int delFlag;
+
 }

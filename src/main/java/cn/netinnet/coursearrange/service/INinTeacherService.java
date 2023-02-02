@@ -41,8 +41,5 @@ public interface INinTeacherService extends IService<NinTeacher> {
      * 获取所有教师
      */
     List<NinTeacher> getTeaAll();
-    /**
-     * 学生修改密码
-     */
-    ResultModel alterPassword(String code, String oldPassword, String newPassword);
+
 }
