@@ -1,12 +1,12 @@
-package cn.netinnet.coursearrange.text.impl;
+package cn.netinnet.coursearrange.geneticAlgorithm.impl;
 
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.enums.CourseTypeEnum;
 import cn.netinnet.coursearrange.mapper.*;
-import cn.netinnet.coursearrange.text.ArrangeService;
-import cn.netinnet.coursearrange.text.TaskRecord;
-import cn.netinnet.coursearrange.text.TeaTask;
+import cn.netinnet.coursearrange.geneticAlgorithm.ArrangeService;
+import cn.netinnet.coursearrange.geneticAlgorithm.TaskRecord;
+import cn.netinnet.coursearrange.geneticAlgorithm.TeaTask;
 import cn.netinnet.coursearrange.util.IDUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -265,15 +265,19 @@ public class ArrangeServiceImpl implements ArrangeService {
                     BeanUtils.copyProperties(taskRecord, taskRecord1);
                     taskRecord.setWeekly(0);
                     taskRecord1.setWeekly((int) (Math.random() * 2) + 1);
+                    taskRecordList.add(taskRecord);
+                    taskRecordList.add(taskRecord1);
                     break;
                 case 4:
                     TaskRecord taskRecord2 = new TaskRecord(task);
                     BeanUtils.copyProperties(taskRecord, taskRecord2);
                     taskRecord.setWeekly(0);
                     taskRecord2.setWeekly(0);
+                    taskRecordList.add(taskRecord);
+                    taskRecordList.add(taskRecord2);
                     break;
             }
-            taskRecordList.add(taskRecord);
+
         }
         return taskRecordList;
     }
@@ -312,6 +316,8 @@ public class ArrangeServiceImpl implements ArrangeService {
                     .filter(i -> !i.getId().equals(taskRecord.getHouseId()))
                     .filter(i -> i.getSeat() >= taskRecord.getTeaTask().getPeopleNum())
                     .collect(Collectors.toList());
+            //打乱顺序，避免多次遍历教室，导致第一个教室安排过多
+            Collections.shuffle(ninHouseList);
             for (NinHouse house: ninHouseList) {
                 taskRecord.setHouseId(house.getId());
                 boolean b1 = traversalTime(taskRecordList, taskRecord);
@@ -331,19 +337,22 @@ public class ArrangeServiceImpl implements ArrangeService {
 
     //遍历时间
     public boolean traversalTime(List<TaskRecord> taskRecordList, TaskRecord taskRecord) {
-        boolean isOk = false;
-        ok:for (int i = 1; i <= 7; i++) {
-            for (int j = 1; j <= 5; j++) {
-                taskRecord.setWeek(i);
-                taskRecord.setPitchNum(j);
-                boolean b = verifyClash(taskRecordList, taskRecord);
-                if (b) {
-                    isOk = true;
-                    break ok;
-                }
+        int sign = (int) (Math.random() * 25), count = 0;
+        while (count++ < 25) {
+            if (sign == 25) {
+                sign = 0;
             }
+            int i = sign / 5 + 1;
+            int j = sign % 5 + 1;
+            taskRecord.setWeek(i);
+            taskRecord.setPitchNum(j);
+            boolean b = verifyClash(taskRecordList, taskRecord);
+            if (b) {
+                break;
+            }
+            sign++;
         }
-        return isOk;
+        return count != 25;
     }
 
     //冲突校验
@@ -371,6 +380,21 @@ public class ArrangeServiceImpl implements ArrangeService {
         return true;
     }
 
+    //校验所有
+    @Override
+    public int verifyClashAll(List<TaskRecord> taskRecordList) {
+        int count = 0;
+        while (taskRecordList.isEmpty()) {
+            TaskRecord taskRecord = taskRecordList.get(0);
+            taskRecordList.remove(0);
+            boolean b = verifyClash(taskRecordList, taskRecord);
+            if (!b) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     //时间校验
     public boolean verifyTime(TaskRecord record1, TaskRecord record2) {
         Integer t11 = record1.getWeekly(), t12 = record1.getWeek(), t13 = record1.getPitchNum();
@@ -393,8 +417,6 @@ public class ArrangeServiceImpl implements ArrangeService {
         }
         return houseTypeNinHouseListMap;
     }
-
-
 
     //获取数据库中选修课数据
     public List<TaskRecord> getElectiveTaskList() {

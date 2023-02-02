@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.service.impl;
 import cn.netinnet.coursearrange.entity.NinMessage;
 import cn.netinnet.coursearrange.mapper.NinMessageMapper;
 import cn.netinnet.coursearrange.service.INinMessageService;
+import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,20 +29,32 @@ public class NinMessageServiceImpl extends ServiceImpl<NinMessageMapper, NinMess
     public Page<NinMessage> getMsgList(Integer page, Integer size) {
         Page<NinMessage> msgPage = new Page<>(page, size);
         LambdaQueryWrapper<NinMessage> wrapper = new LambdaQueryWrapper<NinMessage>()
-                .orderByDesc(NinMessage::getCreateTime);
+                .orderByAsc(NinMessage::getIsRead).orderByDesc(NinMessage::getCreateTime);
         return this.page(msgPage, wrapper);
     }
 
     @Override
-    public boolean delBatchMsg(List<Long> msgIdList) {
-        return removeByIds(msgIdList);
+    public boolean delMsg(Long id) {
+        LambdaQueryWrapper<NinMessage> wrapper = new LambdaQueryWrapper<NinMessage>().eq(NinMessage::getIsRead, 1);
+        if (null == id) {
+            Long userId = UserUtil.getUserInfo().getUserId();
+            wrapper.eq(NinMessage::getUserId, userId);
+        } else {
+            wrapper.eq(NinMessage::getId, id);
+        }
+        return remove(wrapper);
     }
 
     @Override
-    public boolean readBatchMag(List<Long> msgIdList) {
-        return update(new LambdaUpdateWrapper<NinMessage>()
-                .set(NinMessage::getIsRead, 1)
-                .in(NinMessage::getId, msgIdList));
+    public boolean readMag(Long id) {
+        LambdaUpdateWrapper<NinMessage> wrapper = new LambdaUpdateWrapper<NinMessage>().set(NinMessage::getIsRead, 1);
+        if (null == id) {
+            Long userId = UserUtil.getUserInfo().getUserId();
+            wrapper.eq(NinMessage::getUserId, userId).eq(NinMessage::getIsConsent, -1);
+        } else {
+            wrapper.eq(NinMessage::getId, id);
+        }
+        return update(wrapper);
     }
 
 }

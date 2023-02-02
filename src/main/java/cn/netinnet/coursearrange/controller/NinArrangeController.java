@@ -12,17 +12,14 @@ import cn.netinnet.coursearrange.enums.CourseTypeEnum;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.mapper.NinClassMapper;
 import cn.netinnet.coursearrange.mapper.NinCourseMapper;
-import cn.netinnet.coursearrange.mapper.NinTeachClassMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.service.INinTeachClassService;
-import cn.netinnet.coursearrange.service.impl.NinTeachClassServiceImpl;
-import cn.netinnet.coursearrange.text.GeneticAlgorithm;
-import cn.netinnet.coursearrange.text.TaskRecord;
-import cn.netinnet.coursearrange.text.TeaTask;
+import cn.netinnet.coursearrange.geneticAlgorithm.GeneticAlgorithm;
+import cn.netinnet.coursearrange.geneticAlgorithm.TaskRecord;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +28,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.websocket.EncodeException;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,14 +50,7 @@ import java.util.stream.Collectors;
 public class NinArrangeController {
     @Autowired
     private INinArrangeService ninArrangeService;
-    @Autowired
-    private GeneticAlgorithm geneticAlgorithm;
-    @Autowired
-    private NinCourseMapper ninCourseMapper;
-    @Autowired
-    private INinTeachClassService ninTeachClassService;
-    @Autowired
-    private NinClassMapper ninClassMapper;
+
 
     /*--排课--*/
     //跳转排课页面
@@ -76,64 +64,7 @@ public class NinArrangeController {
      */
     @GetMapping("/nin-arrange/arrange")
     public ResultModel arrange() {
-//        ninArrangeService.arrange();
-        List<TaskRecord> caculte = geneticAlgorithm.caculte();
-        Map<Long, NinCourse> collect = ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>().eq(NinCourse::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode())).stream().collect(Collectors.toMap(NinCourse::getId, Function.identity()));
-        Map<Long, String> collect1 = ninClassMapper.selectList(new LambdaQueryWrapper<NinClass>().select(NinClass::getId, NinClass::getClassName)).stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
-        HashMap<Long, List<Long>> longListHashMap = new HashMap<>();
-
-        ArrayList<NinArrange> ninArrangeArrayList = new ArrayList<>();
-        ArrayList<NinTeachClass> ninTeachClasses = new ArrayList<>();
-
-        for (TaskRecord taskRecord : caculte) {
-            if (null == taskRecord.getTeaTask().getTeachClassId()) {
-                continue;
-            }
-            NinArrange arrange = new NinArrange(taskRecord);
-            NinCourse course = collect.get(arrange.getCourseId());
-            if (arrange.getMust() == CourseTypeEnum.REQUIRED_COURSE.getCode()) {
-                longListHashMap.put(taskRecord.getTeaTask().getTeachClassId(), taskRecord.getTeaTask().getClassIdList());
-            }
-            Integer startTime = course.getStartTime();
-            Integer endTime = course.getEndTime();
-            Integer weekTime = course.getWeekTime();
-            Integer weekly = arrange.getWeekly();
-
-            int start, end;
-            if (endTime - startTime > weekTime) {
-                start = (int) (Math.random() * (endTime - weekTime - startTime)) + startTime;
-                end = start + weekTime;
-            } else {
-                start = startTime;
-                end = startTime + weekTime - 1;
-            }
-
-            if (weekly != 0) {
-                if ((weekly + start % 2) == 1 || (weekly + start % 2) == 3) {
-                    start ++;
-                }
-                if ((weekly + end % 2) == 1 || (weekly + end % 2) == 3) {
-                    end--;
-                }
-            }
-            arrange.setStartTime(startTime);
-            arrange.setEndTime(endTime);
-            ninArrangeArrayList.add(arrange);
-        }
-
-        for (Map.Entry<Long, List<Long>> map : longListHashMap.entrySet()) {
-            List<Long> value = map.getValue();
-            for (Long classId : value) {
-                NinTeachClass ninTeachClass = new NinTeachClass();
-                ninTeachClass.setClassId(classId);
-                ninTeachClass.setTeachClassId(map.getKey());
-                ninTeachClass.setClassName(collect1.get(classId));
-                ninTeachClasses.add(ninTeachClass);
-            }
-        }
-
-        ninArrangeService.saveBatch(ninArrangeArrayList);
-        ninTeachClassService.saveBatch(ninTeachClasses);
+        ninArrangeService.arrange();
         return ResultModel.ok();
     }
 
@@ -141,7 +72,7 @@ public class NinArrangeController {
      * 清空记录
      */
     @GetMapping("nin-arrange/empty")
-    public ResultModel empty() throws IOException, EncodeException {
+    public ResultModel empty(){
         ninArrangeService.empty();
         return ResultModel.ok();
     }

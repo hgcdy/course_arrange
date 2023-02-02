@@ -19,7 +19,7 @@ public interface INinMessageService extends IService<NinMessage> {
 
     Page<NinMessage> getMsgList(Integer page, Integer size);
 
-    boolean delBatchMsg(List<Long> msgIdList);
+    boolean delMsg(Long id);
 
-    boolean readBatchMag(List<Long> msgIdList);
+    boolean readMag(Long id);
 }

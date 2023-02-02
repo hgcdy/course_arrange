@@ -28,7 +28,7 @@ public class NinMessageController {
 
     @GetMapping("")
     public ModelAndView gotoView() {
-        return new ModelAndView("");
+        return new ModelAndView("view/messageView");
     }
 
     /**
@@ -39,19 +39,17 @@ public class NinMessageController {
      */
     @GetMapping("/getMsgList")
     public ResultModel getMsgList(@RequestParam(value = "page", defaultValue = "1") Integer page,
-                                  @RequestParam(value = "size", defaultValue = "10") Integer size) {
+                                  @RequestParam(value = "size", defaultValue = "5") Integer size) {
         return ResultModel.ok(ninMessageService.getMsgList(page, size));
     }
 
     /**
-     * 批量删除
-     * @param msgIds
+     * 删除
      * @return
      */
-    @PostMapping("/delBatchMsg")
-    public ResultModel delBatchMsg(String msgIds) {
-        List<Long> msgIdList = JSON.parseArray(msgIds, Long.class);
-        boolean b = ninMessageService.delBatchMsg(msgIdList);
+    @PostMapping("/delMsg")
+    public ResultModel delMsg(Long id) {
+        boolean b = ninMessageService.delMsg(id);
         if (b) {
             return ResultModel.ok();
         }
@@ -59,14 +57,12 @@ public class NinMessageController {
     }
 
     /**
-     * 批量已读
-     * @param msgIds
+     * 已读
      * @return
      */
-    @PostMapping("/readBatchMag")
-    public ResultModel readBatchMag(String msgIds) {
-        List<Long> msgIdList = JSON.parseArray(msgIds, Long.class);
-        boolean b = ninMessageService.readBatchMag(msgIdList);
+    @PostMapping("/readMag")
+    public ResultModel readMag(Long id) {
+        boolean b = ninMessageService.readMag(id);
         if (b) {
             return ResultModel.ok();
         }

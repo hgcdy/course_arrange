@@ -4,12 +4,16 @@ import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.enums.CourseTypeEnum;
 import cn.netinnet.coursearrange.enums.OpenStateEnum;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
+import cn.netinnet.coursearrange.geneticAlgorithm.GeneticAlgorithm;
+import cn.netinnet.coursearrange.geneticAlgorithm.TaskRecord;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
+import cn.netinnet.coursearrange.service.INinTeachClassService;
 import cn.netinnet.coursearrange.util.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -19,6 +23,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -43,10 +48,10 @@ import java.util.stream.Collectors;
  * @author wangjs
  * @since 2022-08-18
  */
+@Slf4j
 @Service
 public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArrange> implements INinArrangeService {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(NinArrangeServiceImpl.class);
 
     @Autowired
     private NinArrangeMapper ninArrangeMapper;
@@ -65,370 +70,447 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Autowired
     private NinTeacherCourseMapper ninTeacherCourseMapper;
     @Autowired
-    private NinCareerMapper ninCareerMapper;
-    @Autowired
-    private NinCareerCourseMapper ninCareerCourseMapper;
-    @Autowired
     private NinTeachClassMapper ninTeachClassMapper;
     @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
+    @Autowired
+    private GeneticAlgorithm geneticAlgorithm;
+    @Autowired
+    private INinTeachClassService ninTeachClassService;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void arrange() {
-
-        Integer courseCount = ninCourseMapper.selectCount(new QueryWrapper<NinCourse>());
-        Integer selectCount = ninTeacherCourseMapper.selectCount(new QueryWrapper<NinTeacherCourse>().select("DISTINCT course_id"));
-        if (courseCount > selectCount) {
-            throw new ServiceException(412, "尚有课程还未选择，不能进行排课");
-        }
-
-        Integer settingCount = ninSettingMapper.selectCount(new LambdaQueryWrapper<NinSetting>()
-                .eq(NinSetting::getUserType, UserTypeEnum.TEACHER.getName())
-                .eq(NinSetting::getOpenState, OpenStateEnum.OPEN.getCode()));
-        if (settingCount != 0) {
-            throw new ServiceException(412, "排课前请先关闭教师选课通道");
-        }
-
-
         long oldData = System.currentTimeMillis();
-        //获取选修的排课记录
-        List<NinArrange> ninArrangeList = ninArrangeMapper.selectList(new QueryWrapper<NinArrange>().eq("must", 0));
 
-        //专业表
-        List<NinCareer> ninCareers = ninCareerMapper.selectList(new QueryWrapper<>());
-        List<Long> careerIdList = ninCareers.stream().map(NinCareer::getId).collect(Collectors.toList());
+        //遗传算法获取较优解
+        List<TaskRecord> taskRecordList = geneticAlgorithm.start();
 
-        //课程表
-        List<NinCourse> courseList = ninCourseMapper.selectList(new QueryWrapper<>());
-        Map<Long, NinCourse> longNinCourseMap = courseList.stream().collect(Collectors.toMap(NinCourse::getId, Function.identity()));
+        Map<Long, NinCourse> courseIdCourseListMap = ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>().eq(NinCourse::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode())).stream().collect(Collectors.toMap(NinCourse::getId, Function.identity()));
+        Map<Long, String> classIdClassNameMap = ninClassMapper.selectList(new LambdaQueryWrapper<NinClass>().select(NinClass::getId, NinClass::getClassName)).stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
+        HashMap<Long, List<Long>> teachClassIdClassIdListMap = new HashMap<>();
 
-        //<专业id，班级列表>//有顺序的
-        List<NinClass> ninClasses1 = ninClassMapper.selectList(new QueryWrapper<>());
-        Map<Long, List<NinClass>> longListNinClassMap = ninClasses1.stream().sorted(Comparator.comparing(NinClass::getClassName)).filter(i -> i.getCareerId() != null).collect(Collectors.groupingBy(NinClass::getCareerId));
+        //排课表结果集
+        ArrayList<NinArrange> ninArrangeList = new ArrayList<>();
+        //教学班结果集
+        ArrayList<NinTeachClass> ninTeachClasses = new ArrayList<>();
 
-        //专业选课表
-        List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper.selectList(new QueryWrapper<>());
-        Map<Long, List<NinCareerCourse>> longListNinCareerCourseMap = ninCareerCourses.stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId));
-
-        //教室表
-        Map<Integer, List<NinHouse>> integerListNinHouseMap = ninHouseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.groupingBy(NinHouse::getHouseType));
-
-        //教师选课表
-        Map<Long, List<NinTeacherCourse>> longListNinTeacherCourseMap = ninTeacherCourseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.groupingBy(NinTeacherCourse::getCourseId));
-
-        //存放教学班
-        List<NinTeachClass> ninTeachClasses = new ArrayList<>();
-
-        //必修的排课列表
-        ArrayList<NinArrange> ninArrangeArrayList = new ArrayList<>();
-
-        //遍历专业列表 确定教学班和课程
-        for (Long careerId : careerIdList) {
-            if (careerId == 0 || careerId == -1) {
+        for (TaskRecord taskRecord : taskRecordList) {
+            if (null == taskRecord.getTeaTask().getTeachClassId()) {
                 continue;
             }
-            //获得该专业的专业-课程表
-            List<NinCareerCourse> ninCareerCourses1 = longListNinCareerCourseMap.get(careerId);
-            if (ninCareerCourses1 == null) {
-                throw new ServiceException(412, "请到班级管理完成专业课程安排！");
+            NinArrange arrange = new NinArrange(taskRecord);
+            NinCourse course = courseIdCourseListMap.get(arrange.getCourseId());
+            if (arrange.getMust() == CourseTypeEnum.REQUIRED_COURSE.getCode()) {
+                teachClassIdClassIdListMap.put(taskRecord.getTeaTask().getTeachClassId(), taskRecord.getTeaTask().getClassIdList());
             }
+            Integer startTime = course.getStartTime();
+            Integer endTime = course.getEndTime();
+            Integer weekTime = course.getWeekTime();
+            Integer weekly = arrange.getWeekly();
 
-            //该专业的班级列表（有序的）
-            List<NinClass> ninClasses = longListNinClassMap.get(careerId);
-            if (ninClasses == null) {
-                continue;
-            }
-            //该专业的班级数量
-            Integer classNum = ninClasses.size();
-            //<课程上课数量，Long{该专业分成的教学班id}>
-            Map<Integer, Long[]> teachClassMap = new HashMap<>();
-
-            //循环该专业的专业选课表
-            for (NinCareerCourse ncc : ninCareerCourses1) {
-                //该专业-课程记录对应的课程
-                NinCourse ninCourse = longNinCourseMap.get(ncc.getCourseId());
-
-                //最多几个班一起上课
-                Integer maxClassNum = ninCourse.getMaxClassNum();
-
-                //如果为空，生成
-                if (teachClassMap.get(maxClassNum) == null) {
-
-                    int i = classNum / maxClassNum;
-                    int i1 = classNum % maxClassNum;
-
-                    int[] ints = null;
-                    if (i == 0) {
-                        ints = new int[]{i1};
-                    } else {
-                        if (i1 == 0) {
-                            //表示刚好
-                            ints = grouping(classNum, i);
-                        } else {
-                            ints = grouping(classNum, i + 1);
-                        }
-                    }
-
-                    Long[] teachClasses = new Long[ints.length];
-                    for (int j = 0, count = 0; j < ints.length; j++) {
-                        long teachClassId = IDUtil.getID();
-                        for (int k = 0; k < ints[j]; k++, count++) {
-                            Long classId = ninClasses.get(count).getId();
-                            String className = ninClasses.get(count).getClassName();
-                            NinTeachClass ninTeachClass = new NinTeachClass();
-                            ninTeachClass.setTeachClassId(teachClassId);
-                            ninTeachClass.setClassId(classId);
-                            ninTeachClass.setClassName(className);
-
-                            ninTeachClasses.add(ninTeachClass);
-                        }
-                        teachClasses[j] = teachClassId;
-                    }
-                    teachClassMap.put(maxClassNum, teachClasses);
-                }
-
-                Long[] longs = teachClassMap.get(maxClassNum);
-
-                for (int i = 0; i < longs.length; i++) {
-                    if (longs[i] == null) {
-                        break;
-                    }
-                    NinArrange ninArrange = new NinArrange();
-                    //专业id
-                    ninArrange.setCareerId(careerId);
-                    //教学班id
-                    ninArrange.setTeachClassId(longs[i]);
-                    //课程id
-                    ninArrange.setCourseId(ninCourse.getId());
-                    //必修
-                    ninArrange.setMust(1);
-                    //人数
-                    Map<Long, List<NinTeachClass>> longListNinTeachClassMap = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
-                    ninArrange.setPeopleNum(longListNinTeachClassMap.get(longs[i]).size() * ApplicationConstant.CLASS_PEOPLE_NUM);
-
-                    ninArrangeArrayList.add(ninArrange);
-                }
-            }
-        }
-
-        //按专业排序、课程分组
-        //Map<课程id，List<排课记录>>
-        List<NinArrange> ninArranges = ninArrangeArrayList.stream().sorted(Comparator.comparing(NinArrange::getCareerId)).collect(Collectors.toList());
-        Map<Long, List<NinArrange>> courseListArrangeMap = ninArranges.stream().collect(Collectors.groupingBy(NinArrange::getCourseId));
-
-        //确定教师
-        for (Map.Entry<Long, List<NinArrange>> map : courseListArrangeMap.entrySet()) {
-            //课程
-            NinCourse ninCourse = longNinCourseMap.get(map.getKey());
-            //选择该课程的教师(教师-课程表记录)
-            List<NinTeacherCourse> ninTeacherCourses = longListNinTeacherCourseMap.get(map.getKey());
-            if (ninTeacherCourses == null) {
-                throw new ServiceException(412, ninCourse.getCourseName() + "还未有教师");
-            }
-
-            //教师id列表
-            List<Long> teacherIdList = ninTeacherCourses.stream().map(NinTeacherCourse::getTeacherId).collect(Collectors.toList());
-
-            //有选择该课程的教学班(排课记录)数量
-            int size = map.getValue().size();
-
-            //确定教师
-            if (teacherIdList.size() >= size) {
-                //如果教师数量比较多，大于大于教学班数量
-                for (int i = 0; i < size; i++) {
-                    map.getValue().get(i).setTeacherId(teacherIdList.get(i));
-                }
+            int start, end;
+            if (endTime - startTime > weekTime) {
+                start = (int) (Math.random() * (endTime - weekTime - startTime)) + startTime;
+                end = start + weekTime;
             } else {
-                //如果教师数量少
-                int[] grouping = grouping(size, teacherIdList.size());
-                for (int i = 0; i < grouping.length; i++) {
-                    for (int j = 0; j < grouping[i]; j++) {
-                        map.getValue().get(i + j).setTeacherId(teacherIdList.get(i));
-                    }
+                start = startTime;
+                end = startTime + weekTime - 1;
+            }
+
+            if (weekly != 0) {
+                if ((weekly + start % 2) == 1 || (weekly + start % 2) == 3) {
+                    start ++;
+                }
+                if ((weekly + end % 2) == 1 || (weekly + end % 2) == 3) {
+                    end--;
                 }
             }
-
+            arrange.setStartTime(startTime);
+            arrange.setEndTime(endTime);
+            ninArrangeList.add(arrange);
         }
 
-        //确定教室
-        for (NinArrange arrange : ninArranges) {
-            Long courseId = arrange.getCourseId();
-            NinCourse ninCourse = longNinCourseMap.get(courseId);
-            Integer houseType = ninCourse.getHouseType();
-
-            //符合教室类型，大于班级人数的教室,排序
-            List<NinHouse> collect = integerListNinHouseMap.get(houseType).stream().filter(i -> i.getSeat() >= arrange.getPeopleNum()).collect(Collectors.toList());
-            Integer seat = collect.stream().min(Comparator.comparing(NinHouse::getSeat)).get().getSeat();
-            List<NinHouse> ninHouses = collect.stream().collect(Collectors.groupingBy(NinHouse::getSeat)).get(seat);
-            int i = (int) (Math.random() * ninHouses.size());
-            arrange.setHouseId(ninHouses.get(i).getId());
-
-        }
-
-        //按每周需要上的节数降序排序
-        List<NinCourse> collect = courseList.stream().filter(i -> i.getMust() == 1).sorted(Comparator.comparing(i -> (double) i.getCourseTime() / 2 / i.getWeekTime(), Comparator.reverseOrder())).collect(Collectors.toList());
-
-        //专业排序，课程分组
-        Map<Long, List<NinArrange>> longListNinArrangeMap = ninArranges.stream().sorted(Comparator.comparing(NinArrange::getCareerId)).collect(Collectors.groupingBy(NinArrange::getCourseId));
-
-        Map<Long, List<NinTeachClass>> longListNinTeachClassMap = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
-        //确定时间
-        for (NinCourse course : collect) {
-            //每周要上的课程
-            double v = (double) course.getCourseTime() / 2 / course.getWeekTime();
-            if (v <= 0.5) {
-                //两周一节
-                v = 0.5;
-            } else if (v <= 1) {
-                //一周一节
-                v = 1;
-            } else if (v <= 1.5) {
-                //两周三节
-                v = 1.5;
-            } else {
-                //v,向上取整
-                v = Math.ceil(v);
-            }
-
-            //该课程的排课记录
-            List<NinArrange> ninArranges1 = longListNinArrangeMap.get(course.getId());
-            if (ninArranges1 == null) {
-                continue;
-            }
-
-            for (NinArrange arrange : ninArranges1) {
-                //一周要上复数课程的，先随机插入，一定次数后按顺序排
-                if (Math.ceil(v) >= 2) {
-                    Integer weekTime = course.getWeekTime();
-                    Integer startTime = course.getStartTime();
-                    Integer endTime = course.getEndTime();
-                    int i1 = (int) (Math.random() * ((endTime - startTime + 1) / weekTime));
-                    arrange.setStartTime(startTime + i1 * weekTime);
-                    arrange.setEndTime(arrange.getStartTime() + weekTime - 1);
-                    for (int i = 0; i < (int) Math.ceil(v); i++) {
-                        NinArrange arrange1 = new NinArrange();
-                        BeanUtils.copyProperties(arrange, arrange1);
-                        int count = 0;
-                        do {
-                            arrange1.setWeekly(0);
-                            if (v == 1.5 && i == 0) {
-                                arrange1.setWeekly((int) (Math.random() * 2) + 1);
-                            }
-
-                            arrange1.setWeek((int) (Math.random() * 5) + 1);
-                            arrange1.setPitchNum((int) (Math.random() * ApplicationConstant.DAY_PITCH_NUM) + 1);
-                            if (count++ > 100) {
-                                break;
-                            }
-
-                        } while (!compare(ninArrangeList, arrange1, longListNinTeachClassMap));
-                        if (count > 100) {
-                            boolean b = false;
-                            ok:
-                            for (int j = 0; j < 7; j++) {
-                                for (int k = 0; k < ApplicationConstant.DAY_PITCH_NUM; k++) {
-                                    arrange1.setWeek(j + 1);
-                                    arrange1.setPitchNum(k + 1);
-                                    if (compare(ninArrangeList, arrange1, longListNinTeachClassMap)) {
-                                        b = true;
-                                        break ok;
-                                    }
-                                }
-                            }
-                            //如果循环结束。。置空
-                            if (!b) {
-                                arrange1.setWeekly(null);
-                                arrange1.setWeek(null);
-                                arrange1.setPitchNum(null);
-                                arrange1.setStartTime(null);
-                                arrange1.setEndTime(null);
-                            }
-
-                        }
-                        //id
-                        arrange1.setId(IDUtil.getID());
-                        if (arrange1.getWeekly() == 1) {
-                            arrange1.setEndTime(arrange1.getEndTime() - 1);
-                        }
-                        if (arrange1.getWeekly() == 2) {
-                            arrange1.setStartTime(arrange1.getStartTime() + 1);
-                        }
-                        ninArrangeList.add(arrange1);
-                    }
-                } else {
-                    NinArrange arrange1 = new NinArrange();
-                    BeanUtils.copyProperties(arrange, arrange1);
-                    Integer weekTime = course.getWeekTime();
-                    Integer startTime = course.getStartTime();
-                    Integer endTime = course.getEndTime();
-                    int i1 = (int) (Math.random() * ((endTime - startTime + 1) / weekTime));
-                    arrange1.setStartTime(startTime + i1 * weekTime);
-
-                    //id
-                    arrange1.setId(IDUtil.getID());
-                    if (v == 1) {
-                        arrange1.setEndTime(arrange1.getStartTime() + weekTime - 1);
-                        arrange1.setWeekly(0);
-                        ok:
-                        for (int j = 0; j < 7; j++) {
-                            for (int k = 0; k < ApplicationConstant.DAY_PITCH_NUM; k++) {
-                                arrange1.setWeek(j + 1);
-                                arrange1.setPitchNum(k + 1);
-                                if (compare(ninArrangeList, arrange1, longListNinTeachClassMap)) {
-                                    break ok;
-                                }
-                            }
-                        }
-                    } else if (v == 0.5) {
-                        arrange1.setEndTime(arrange1.getStartTime() + course.getCourseTime() - 1);
-                        ok:
-                        for (int j = 0; j < 7; j++) {
-                            for (int k = 0; k < ApplicationConstant.DAY_PITCH_NUM; k++) {
-                                for (int i = 0; i < 2; i++) {
-                                    arrange1.setWeek(j + 1);
-                                    arrange1.setPitchNum(k + 1);
-                                    arrange1.setWeekly(i + 1);
-                                    if (compare(ninArrangeList, arrange1, longListNinTeachClassMap)) {
-                                        break ok;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (arrange1.getWeekly() == 1) {
-                        arrange1.setEndTime(arrange1.getEndTime() - 1);
-                    }
-                    if (arrange1.getWeekly() == 2) {
-                        arrange1.setStartTime(arrange1.getStartTime() + 1);
-                    }
-                    ninArrangeList.add(arrange1);
-                }
-
-            }
-
-        }
-
-        //删除教学班表
-        ninTeachClassMapper.delete(new QueryWrapper<>());
-        //生成教学班级表
-        ninTeachClassMapper.addBatch(ninTeachClasses);
-        //删除排课记录表
-        ninArrangeMapper.delete(new QueryWrapper<>());
-        //生成排课记录表
-        int len = ninArrangeList.size();
-        for (int i = 0; i < len; i += 500) {
-            if (i + 500 > len) {
-                ninArrangeMapper.addBatch(ninArrangeList.subList(i, len));
-            } else {
-                ninArrangeMapper.addBatch(ninArrangeList.subList(i, i + 500));
+        for (Map.Entry<Long, List<Long>> map : teachClassIdClassIdListMap.entrySet()) {
+            List<Long> value = map.getValue();
+            for (Long classId : value) {
+                NinTeachClass ninTeachClass = new NinTeachClass();
+                ninTeachClass.setClassId(classId);
+                ninTeachClass.setTeachClassId(map.getKey());
+                ninTeachClass.setClassName(classIdClassNameMap.get(classId));
+                ninTeachClasses.add(ninTeachClass);
             }
         }
+
+        //清除数据库
+        empty();
+        //持久化数据
+        saveBatch(ninArrangeList);
+        ninTeachClassService.saveBatch(ninTeachClasses);
+
+        //计时
         long newData = System.currentTimeMillis();
-        LOGGER.info("排课结束, 用时" + (newData - oldData) + "毫秒");
+        log.info("排课结束, 用时" + (newData - oldData) + "毫秒");
 
-
+//        int i = geneticAlgorithm.verifyClashAll(taskRecordList);
+//        System.out.println(i + "个冲突");
     }
+
+//    public void arrange() {
+//
+//        Integer courseCount = ninCourseMapper.selectCount(new QueryWrapper<NinCourse>());
+//        Integer selectCount = ninTeacherCourseMapper.selectCount(new QueryWrapper<NinTeacherCourse>().select("DISTINCT course_id"));
+//        if (courseCount > selectCount) {
+//            throw new ServiceException(412, "尚有课程还未选择，不能进行排课");
+//        }
+//
+//        Integer settingCount = ninSettingMapper.selectCount(new LambdaQueryWrapper<NinSetting>()
+//                .eq(NinSetting::getUserType, UserTypeEnum.TEACHER.getName())
+//                .eq(NinSetting::getOpenState, OpenStateEnum.OPEN.getCode()));
+//        if (settingCount != 0) {
+//            throw new ServiceException(412, "排课前请先关闭教师选课通道");
+//        }
+//
+//
+//        long oldData = System.currentTimeMillis();
+//        //获取选修的排课记录
+//        List<NinArrange> ninArrangeList = ninArrangeMapper.selectList(new QueryWrapper<NinArrange>().eq("must", 0));
+//
+//        //专业表
+//        List<NinCareer> ninCareers = ninCareerMapper.selectList(new QueryWrapper<>());
+//        List<Long> careerIdList = ninCareers.stream().map(NinCareer::getId).collect(Collectors.toList());
+//
+//        //课程表
+//        List<NinCourse> courseList = ninCourseMapper.selectList(new QueryWrapper<>());
+//        Map<Long, NinCourse> longNinCourseMap = courseList.stream().collect(Collectors.toMap(NinCourse::getId, Function.identity()));
+//
+//        //<专业id，班级列表>//有顺序的
+//        List<NinClass> ninClasses1 = ninClassMapper.selectList(new QueryWrapper<>());
+//        Map<Long, List<NinClass>> longListNinClassMap = ninClasses1.stream().sorted(Comparator.comparing(NinClass::getClassName)).filter(i -> i.getCareerId() != null).collect(Collectors.groupingBy(NinClass::getCareerId));
+//
+//        //专业选课表
+//        List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper.selectList(new QueryWrapper<>());
+//        Map<Long, List<NinCareerCourse>> longListNinCareerCourseMap = ninCareerCourses.stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId));
+//
+//        //教室表
+//        Map<Integer, List<NinHouse>> integerListNinHouseMap = ninHouseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.groupingBy(NinHouse::getHouseType));
+//
+//        //教师选课表
+//        Map<Long, List<NinTeacherCourse>> longListNinTeacherCourseMap = ninTeacherCourseMapper.selectList(new QueryWrapper<>()).stream().collect(Collectors.groupingBy(NinTeacherCourse::getCourseId));
+//
+//        //存放教学班
+//        List<NinTeachClass> ninTeachClasses = new ArrayList<>();
+//
+//        //必修的排课列表
+//        ArrayList<NinArrange> ninArrangeArrayList = new ArrayList<>();
+//
+//        //遍历专业列表 确定教学班和课程
+//        for (Long careerId : careerIdList) {
+//            if (careerId == 0 || careerId == -1) {
+//                continue;
+//            }
+//            //获得该专业的专业-课程表
+//            List<NinCareerCourse> ninCareerCourses1 = longListNinCareerCourseMap.get(careerId);
+//            if (ninCareerCourses1 == null) {
+//                throw new ServiceException(412, "请到班级管理完成专业课程安排！");
+//            }
+//
+//            //该专业的班级列表（有序的）
+//            List<NinClass> ninClasses = longListNinClassMap.get(careerId);
+//            if (ninClasses == null) {
+//                continue;
+//            }
+//            //该专业的班级数量
+//            Integer classNum = ninClasses.size();
+//            //<课程上课数量，Long{该专业分成的教学班id}>
+//            Map<Integer, Long[]> teachClassMap = new HashMap<>();
+//
+//            //循环该专业的专业选课表
+//            for (NinCareerCourse ncc : ninCareerCourses1) {
+//                //该专业-课程记录对应的课程
+//                NinCourse ninCourse = longNinCourseMap.get(ncc.getCourseId());
+//
+//                //最多几个班一起上课
+//                Integer maxClassNum = ninCourse.getMaxClassNum();
+//
+//                //如果为空，生成
+//                if (teachClassMap.get(maxClassNum) == null) {
+//
+//                    int i = classNum / maxClassNum;
+//                    int i1 = classNum % maxClassNum;
+//
+//                    int[] ints = null;
+//                    if (i == 0) {
+//                        ints = new int[]{i1};
+//                    } else {
+//                        if (i1 == 0) {
+//                            //表示刚好
+//                            ints = grouping(classNum, i);
+//                        } else {
+//                            ints = grouping(classNum, i + 1);
+//                        }
+//                    }
+//
+//                    Long[] teachClasses = new Long[ints.length];
+//                    for (int j = 0, count = 0; j < ints.length; j++) {
+//                        long teachClassId = IDUtil.getID();
+//                        for (int k = 0; k < ints[j]; k++, count++) {
+//                            Long classId = ninClasses.get(count).getId();
+//                            String className = ninClasses.get(count).getClassName();
+//                            NinTeachClass ninTeachClass = new NinTeachClass();
+//                            ninTeachClass.setTeachClassId(teachClassId);
+//                            ninTeachClass.setClassId(classId);
+//                            ninTeachClass.setClassName(className);
+//
+//                            ninTeachClasses.add(ninTeachClass);
+//                        }
+//                        teachClasses[j] = teachClassId;
+//                    }
+//                    teachClassMap.put(maxClassNum, teachClasses);
+//                }
+//
+//                Long[] longs = teachClassMap.get(maxClassNum);
+//
+//                for (int i = 0; i < longs.length; i++) {
+//                    if (longs[i] == null) {
+//                        break;
+//                    }
+//                    NinArrange ninArrange = new NinArrange();
+//                    //专业id
+//                    ninArrange.setCareerId(careerId);
+//                    //教学班id
+//                    ninArrange.setTeachClassId(longs[i]);
+//                    //课程id
+//                    ninArrange.setCourseId(ninCourse.getId());
+//                    //必修
+//                    ninArrange.setMust(1);
+//                    //人数
+//                    Map<Long, List<NinTeachClass>> longListNinTeachClassMap = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
+//                    ninArrange.setPeopleNum(longListNinTeachClassMap.get(longs[i]).size() * ApplicationConstant.CLASS_PEOPLE_NUM);
+//
+//                    ninArrangeArrayList.add(ninArrange);
+//                }
+//            }
+//        }
+//
+//        //按专业排序、课程分组
+//        //Map<课程id，List<排课记录>>
+//        List<NinArrange> ninArranges = ninArrangeArrayList.stream().sorted(Comparator.comparing(NinArrange::getCareerId)).collect(Collectors.toList());
+//        Map<Long, List<NinArrange>> courseListArrangeMap = ninArranges.stream().collect(Collectors.groupingBy(NinArrange::getCourseId));
+//
+//        //确定教师
+//        for (Map.Entry<Long, List<NinArrange>> map : courseListArrangeMap.entrySet()) {
+//            //课程
+//            NinCourse ninCourse = longNinCourseMap.get(map.getKey());
+//            //选择该课程的教师(教师-课程表记录)
+//            List<NinTeacherCourse> ninTeacherCourses = longListNinTeacherCourseMap.get(map.getKey());
+//            if (ninTeacherCourses == null) {
+//                throw new ServiceException(412, ninCourse.getCourseName() + "还未有教师");
+//            }
+//
+//            //教师id列表
+//            List<Long> teacherIdList = ninTeacherCourses.stream().map(NinTeacherCourse::getTeacherId).collect(Collectors.toList());
+//
+//            //有选择该课程的教学班(排课记录)数量
+//            int size = map.getValue().size();
+//
+//            //确定教师
+//            if (teacherIdList.size() >= size) {
+//                //如果教师数量比较多，大于大于教学班数量
+//                for (int i = 0; i < size; i++) {
+//                    map.getValue().get(i).setTeacherId(teacherIdList.get(i));
+//                }
+//            } else {
+//                //如果教师数量少
+//                int[] grouping = grouping(size, teacherIdList.size());
+//                for (int i = 0; i < grouping.length; i++) {
+//                    for (int j = 0; j < grouping[i]; j++) {
+//                        map.getValue().get(i + j).setTeacherId(teacherIdList.get(i));
+//                    }
+//                }
+//            }
+//
+//        }
+//
+//        //确定教室
+//        for (NinArrange arrange : ninArranges) {
+//            Long courseId = arrange.getCourseId();
+//            NinCourse ninCourse = longNinCourseMap.get(courseId);
+//            Integer houseType = ninCourse.getHouseType();
+//
+//            //符合教室类型，大于班级人数的教室,排序
+//            List<NinHouse> collect = integerListNinHouseMap.get(houseType).stream().filter(i -> i.getSeat() >= arrange.getPeopleNum()).collect(Collectors.toList());
+//            Integer seat = collect.stream().min(Comparator.comparing(NinHouse::getSeat)).get().getSeat();
+//            List<NinHouse> ninHouses = collect.stream().collect(Collectors.groupingBy(NinHouse::getSeat)).get(seat);
+//            int i = (int) (Math.random() * ninHouses.size());
+//            arrange.setHouseId(ninHouses.get(i).getId());
+//
+//        }
+//
+//        //按每周需要上的节数降序排序
+//        List<NinCourse> collect = courseList.stream().filter(i -> i.getMust() == 1).sorted(Comparator.comparing(i -> (double) i.getCourseTime() / 2 / i.getWeekTime(), Comparator.reverseOrder())).collect(Collectors.toList());
+//
+//        //专业排序，课程分组
+//        Map<Long, List<NinArrange>> longListNinArrangeMap = ninArranges.stream().sorted(Comparator.comparing(NinArrange::getCareerId)).collect(Collectors.groupingBy(NinArrange::getCourseId));
+//
+//        Map<Long, List<NinTeachClass>> longListNinTeachClassMap = ninTeachClasses.stream().collect(Collectors.groupingBy(NinTeachClass::getTeachClassId));
+//        //确定时间
+//        for (NinCourse course : collect) {
+//            //每周要上的课程
+//            double v = (double) course.getCourseTime() / 2 / course.getWeekTime();
+//            if (v <= 0.5) {
+//                //两周一节
+//                v = 0.5;
+//            } else if (v <= 1) {
+//                //一周一节
+//                v = 1;
+//            } else if (v <= 1.5) {
+//                //两周三节
+//                v = 1.5;
+//            } else {
+//                //v,向上取整
+//                v = Math.ceil(v);
+//            }
+//
+//            //该课程的排课记录
+//            List<NinArrange> ninArranges1 = longListNinArrangeMap.get(course.getId());
+//            if (ninArranges1 == null) {
+//                continue;
+//            }
+//
+//            for (NinArrange arrange : ninArranges1) {
+//                //一周要上复数课程的，先随机插入，一定次数后按顺序排
+//                if (Math.ceil(v) >= 2) {
+//                    Integer weekTime = course.getWeekTime();
+//                    Integer startTime = course.getStartTime();
+//                    Integer endTime = course.getEndTime();
+//                    int i1 = (int) (Math.random() * ((endTime - startTime + 1) / weekTime));
+//                    arrange.setStartTime(startTime + i1 * weekTime);
+//                    arrange.setEndTime(arrange.getStartTime() + weekTime - 1);
+//                    for (int i = 0; i < (int) Math.ceil(v); i++) {
+//                        NinArrange arrange1 = new NinArrange();
+//                        BeanUtils.copyProperties(arrange, arrange1);
+//                        int count = 0;
+//                        do {
+//                            arrange1.setWeekly(0);
+//                            if (v == 1.5 && i == 0) {
+//                                arrange1.setWeekly((int) (Math.random() * 2) + 1);
+//                            }
+//
+//                            arrange1.setWeek((int) (Math.random() * 5) + 1);
+//                            arrange1.setPitchNum((int) (Math.random() * ApplicationConstant.DAY_PITCH_NUM) + 1);
+//                            if (count++ > 100) {
+//                                break;
+//                            }
+//
+//                        } while (!compare(ninArrangeList, arrange1, longListNinTeachClassMap));
+//                        if (count > 100) {
+//                            boolean b = false;
+//                            ok:
+//                            for (int j = 0; j < 7; j++) {
+//                                for (int k = 0; k < ApplicationConstant.DAY_PITCH_NUM; k++) {
+//                                    arrange1.setWeek(j + 1);
+//                                    arrange1.setPitchNum(k + 1);
+//                                    if (compare(ninArrangeList, arrange1, longListNinTeachClassMap)) {
+//                                        b = true;
+//                                        break ok;
+//                                    }
+//                                }
+//                            }
+//                            //如果循环结束。。置空
+//                            if (!b) {
+//                                arrange1.setWeekly(null);
+//                                arrange1.setWeek(null);
+//                                arrange1.setPitchNum(null);
+//                                arrange1.setStartTime(null);
+//                                arrange1.setEndTime(null);
+//                            }
+//
+//                        }
+//                        //id
+//                        arrange1.setId(IDUtil.getID());
+//                        if (arrange1.getWeekly() == 1) {
+//                            arrange1.setEndTime(arrange1.getEndTime() - 1);
+//                        }
+//                        if (arrange1.getWeekly() == 2) {
+//                            arrange1.setStartTime(arrange1.getStartTime() + 1);
+//                        }
+//                        ninArrangeList.add(arrange1);
+//                    }
+//                } else {
+//                    NinArrange arrange1 = new NinArrange();
+//                    BeanUtils.copyProperties(arrange, arrange1);
+//                    Integer weekTime = course.getWeekTime();
+//                    Integer startTime = course.getStartTime();
+//                    Integer endTime = course.getEndTime();
+//                    int i1 = (int) (Math.random() * ((endTime - startTime + 1) / weekTime));
+//                    arrange1.setStartTime(startTime + i1 * weekTime);
+//
+//                    //id
+//                    arrange1.setId(IDUtil.getID());
+//                    if (v == 1) {
+//                        arrange1.setEndTime(arrange1.getStartTime() + weekTime - 1);
+//                        arrange1.setWeekly(0);
+//                        ok:
+//                        for (int j = 0; j < 7; j++) {
+//                            for (int k = 0; k < ApplicationConstant.DAY_PITCH_NUM; k++) {
+//                                arrange1.setWeek(j + 1);
+//                                arrange1.setPitchNum(k + 1);
+//                                if (compare(ninArrangeList, arrange1, longListNinTeachClassMap)) {
+//                                    break ok;
+//                                }
+//                            }
+//                        }
+//                    } else if (v == 0.5) {
+//                        arrange1.setEndTime(arrange1.getStartTime() + course.getCourseTime() - 1);
+//                        ok:
+//                        for (int j = 0; j < 7; j++) {
+//                            for (int k = 0; k < ApplicationConstant.DAY_PITCH_NUM; k++) {
+//                                for (int i = 0; i < 2; i++) {
+//                                    arrange1.setWeek(j + 1);
+//                                    arrange1.setPitchNum(k + 1);
+//                                    arrange1.setWeekly(i + 1);
+//                                    if (compare(ninArrangeList, arrange1, longListNinTeachClassMap)) {
+//                                        break ok;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                    if (arrange1.getWeekly() == 1) {
+//                        arrange1.setEndTime(arrange1.getEndTime() - 1);
+//                    }
+//                    if (arrange1.getWeekly() == 2) {
+//                        arrange1.setStartTime(arrange1.getStartTime() + 1);
+//                    }
+//                    ninArrangeList.add(arrange1);
+//                }
+//
+//            }
+//
+//        }
+//
+//        //删除教学班表
+//        ninTeachClassMapper.delete(new QueryWrapper<>());
+//        //生成教学班级表
+//        ninTeachClassMapper.addBatch(ninTeachClasses);
+//        //删除排课记录表
+//        ninArrangeMapper.delete(new QueryWrapper<>());
+//        //生成排课记录表
+//        int len = ninArrangeList.size();
+//        for (int i = 0; i < len; i += 500) {
+//            if (i + 500 > len) {
+//                ninArrangeMapper.addBatch(ninArrangeList.subList(i, len));
+//            } else {
+//                ninArrangeMapper.addBatch(ninArrangeList.subList(i, i + 500));
+//            }
+//        }
+//        long newData = System.currentTimeMillis();
+//        LOGGER.info("排课结束, 用时" + (newData - oldData) + "毫秒");
+//
+//
+//    }
 
     @Override
     public void empty() {

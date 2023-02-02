@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.service;
 
 import cn.netinnet.coursearrange.domain.UserInfo;
+import cn.netinnet.coursearrange.model.ResultModel;
 
 public interface LoginService {
     /**
@@ -11,4 +12,8 @@ public interface LoginService {
      * 校验密码是否合法
      */
     void passwordVerify(String password);
+    /**
+     * 修改密码
+     */
+    ResultModel alterPassword(String oldPassword, String newPassword);
 }

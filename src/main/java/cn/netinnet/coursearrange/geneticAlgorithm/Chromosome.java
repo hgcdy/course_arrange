@@ -1,4 +1,4 @@
-package cn.netinnet.coursearrange.text;
+package cn.netinnet.coursearrange.geneticAlgorithm;
 
 import lombok.Data;
 

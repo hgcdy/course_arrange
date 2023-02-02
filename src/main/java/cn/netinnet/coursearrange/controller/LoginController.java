@@ -5,6 +5,7 @@ import cn.netinnet.coursearrange.domain.UserInfo;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.LoginService;
+import cn.netinnet.coursearrange.util.UserUtil;
 import com.sun.istack.internal.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +51,7 @@ public class LoginController {
         return new ModelAndView(path);
     }
 
+    //登录校验
     @PostMapping("/login/{type}")
     public ResultModel login(@NotNull String code, @NotNull String password, @PathVariable String type) {
         UserInfo userInfo = loginService.verify(code, password, type);
@@ -59,5 +61,18 @@ public class LoginController {
             put("userId", userInfo.getUserId());
             put("role", userInfo.getUserType());
         }});
+    }
+
+    //获取用户信息
+    @GetMapping("/getUserInfo")
+    public ResultModel getUserInfo() {
+        UserInfo userInfo = UserUtil.getUserInfo();
+        return ResultModel.ok(userInfo);
+    }
+
+    //修改密码
+    @PostMapping("/alterPassword")
+    public ResultModel alterPassword(String oldPassword, String newPassword) {
+        return loginService.alterPassword(oldPassword, newPassword);
     }
 }

@@ -1,9 +1,10 @@
-package cn.netinnet.coursearrange.text;
+package cn.netinnet.coursearrange.geneticAlgorithm;
 
 import lombok.Data;
 
 @Data
 public class TaskRecord {
+    //教学任务
     private TeaTask teaTask;
 
     private Long houseId;

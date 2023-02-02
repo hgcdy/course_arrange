@@ -2,8 +2,8 @@ package cn.netinnet.coursearrange.entity;
 
 import cn.netinnet.coursearrange.domain.BaseEntity;
 import cn.netinnet.coursearrange.enums.CourseTypeEnum;
-import cn.netinnet.coursearrange.text.TaskRecord;
-import cn.netinnet.coursearrange.text.TeaTask;
+import cn.netinnet.coursearrange.geneticAlgorithm.TaskRecord;
+import cn.netinnet.coursearrange.geneticAlgorithm.TeaTask;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

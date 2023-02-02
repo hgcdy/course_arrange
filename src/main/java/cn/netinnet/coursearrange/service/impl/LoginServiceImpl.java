@@ -8,8 +8,11 @@ import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinStudentMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
+import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.LoginService;
 import cn.netinnet.coursearrange.util.MD5;
+import cn.netinnet.coursearrange.util.UserUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,12 +28,14 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public UserInfo verify(String code, String password, String type) {
         Long oldId = null;
+        String oldName = null;
         String oldCode = null;
         String oldPassword = null;
         if (UserTypeEnum.ADMIN.getName().equals(type)) {
             if (code.equals(ApplicationConstant.ADMIN_CODE)) {
                 oldId = ApplicationConstant.ADMIN_ID;
-                oldCode = code;
+                oldName = ApplicationConstant.ADMIN_NAME;
+                oldCode = ApplicationConstant.ADMIN_CODE;
                 oldPassword = ApplicationConstant.ADMIN_PASSWORD;
             }
         } else if(UserTypeEnum.TEACHER.getName().equals(type)) {
@@ -39,6 +44,7 @@ public class LoginServiceImpl implements LoginService {
             }}));
             if (ninTeacher != null) {
                 oldId = ninTeacher.getId();
+                oldName = ninTeacher.getTeacherName();
                 oldCode = ninTeacher.getTeacherCode();
                 oldPassword = ninTeacher.getTeacherPassword();
             }
@@ -48,6 +54,7 @@ public class LoginServiceImpl implements LoginService {
             }}));
             if (ninStudent != null) {
                 oldId = ninStudent.getId();
+                oldName = ninStudent.getStudentName();
                 oldCode = ninStudent.getStudentCode();
                 oldPassword = ninStudent.getStudentPassword();
             }
@@ -58,8 +65,7 @@ public class LoginServiceImpl implements LoginService {
         if (!oldPassword.equals(MD5.getMD5Encode(password))) {
             throw new ServiceException(412, "密码错误");
         }
-        UserInfo userInfo = new UserInfo(oldId, oldCode, oldPassword, type);
-        return userInfo;
+        return new UserInfo(oldId, oldName, oldCode, type);
     }
 
     @Override
@@ -78,5 +84,42 @@ public class LoginServiceImpl implements LoginService {
         } else {
             throw new ServiceException(412, "密码为空");
         }
+    }
+
+    @Override
+    public ResultModel alterPassword(String oldPassword, String newPassword) {
+        passwordVerify(newPassword);
+
+        UserInfo userInfo = UserUtil.getUserInfo();
+        Long userId = userInfo.getUserId();
+        String userType = userInfo.getUserType();
+        String password = "";
+        NinStudent ninStudent = null;
+        NinTeacher ninTeacher = null;
+
+        if (userType.equals(UserTypeEnum.STUDENT.getName())) {
+            ninStudent = ninStudentMapper.selectById(userId);
+            password = ninStudent.getStudentPassword();
+            ninStudent.setStudentPassword(MD5.getMD5Encode(newPassword));
+        } else if (userType.equals(UserTypeEnum.TEACHER.getName())){
+            ninTeacher = ninTeacherMapper.selectById(userId);
+            password = ninTeacher.getTeacherPassword();
+            ninTeacher.setTeacherPassword(MD5.getMD5Encode(newPassword));
+        }
+
+        if (!oldPassword.equals(newPassword)) {
+            if (password.equals(MD5.getMD5Encode(oldPassword))) {
+                if (userType.equals(UserTypeEnum.STUDENT.getName())) {
+                    ninStudentMapper.updateById(ninStudent);
+                } else if (userType.equals(UserTypeEnum.TEACHER.getName())){
+                    ninTeacherMapper.updateById(ninTeacher);
+                }
+            } else {
+                return ResultModel.error(412, "旧密码验证错误");
+            }
+        } else {
+            return ResultModel.error(412, "新密码和旧密码一致");
+        }
+        return ResultModel.ok();
     }
 }
