@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.enums.CourseTypeEnum;
 import cn.netinnet.coursearrange.task.SettingTask;
 import cn.netinnet.coursearrange.bo.SettingBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
@@ -68,9 +69,8 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
     public ResultModel alterBatch(String settingIds, String userType, String openTime, String closeTime) {
         if (UserTypeEnum.STUDENT.getName().equals(userType)) {
             NinArrange arrange = ninArrangeService.getOne(new LambdaQueryWrapper<NinArrange>()
-                    .ne(NinArrange::getCareerId, 0)
-                    .ne(NinArrange::getCareerId, -1), false);
-            if (arrange == null) {
+                    .eq(NinArrange::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode()), false);
+            if (null == arrange) {
                 throw new ServiceException(412, "请在排课后再开放学生选课通道");
             }
         }

@@ -4,22 +4,10 @@ package cn.netinnet.coursearrange.controller;
 import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
 import cn.netinnet.coursearrange.domain.UserInfo;
-import cn.netinnet.coursearrange.entity.NinArrange;
-import cn.netinnet.coursearrange.entity.NinClass;
-import cn.netinnet.coursearrange.entity.NinCourse;
-import cn.netinnet.coursearrange.entity.NinTeachClass;
-import cn.netinnet.coursearrange.enums.CourseTypeEnum;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
-import cn.netinnet.coursearrange.mapper.NinClassMapper;
-import cn.netinnet.coursearrange.mapper.NinCourseMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
-import cn.netinnet.coursearrange.service.INinTeachClassService;
-import cn.netinnet.coursearrange.geneticAlgorithm.GeneticAlgorithm;
-import cn.netinnet.coursearrange.geneticAlgorithm.TaskRecord;
 import cn.netinnet.coursearrange.util.UserUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +17,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -95,6 +77,23 @@ public class NinArrangeController {
             return ResultModel.ok();
         }
         return ResultModel.error(412, "删除失败");
+    }
+
+    /**
+     * 根据排课记录返回可选教室
+     */
+    @GetMapping("nin-arrange/getHouseByArrangeId")
+    public ResultModel getHouseByArrangeId(Long id) {
+        return ResultModel.ok(ninArrangeService.getHouseByArrangeId(id));
+    }
+
+    @PostMapping("nin-arrange/alterArrange")
+    public ResultModel alterArrange(Long id, Long houseId, Integer week, Integer pitchNum) {
+        boolean b = ninArrangeService.alterArrange(id, houseId, week, pitchNum);
+        if (b) {
+            return ResultModel.ok();
+        }
+        return ResultModel.error(412, "编辑失败");
     }
 
     /*--课程表--*/

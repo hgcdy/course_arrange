@@ -13,6 +13,7 @@ import cn.netinnet.coursearrange.geneticAlgorithm.TaskRecord;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
+import cn.netinnet.coursearrange.service.INinHouseService;
 import cn.netinnet.coursearrange.service.INinTeachClassService;
 import cn.netinnet.coursearrange.util.*;
 import com.alibaba.fastjson.JSON;
@@ -64,7 +65,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Autowired
     private NinCourseMapper ninCourseMapper;
     @Autowired
-    private NinHouseMapper ninHouseMapper;
+    private INinHouseService ninHouseService;
     @Autowired
     private NinSettingMapper ninSettingMapper;
     @Autowired
@@ -82,7 +83,22 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void arrange() {
+
         long oldData = System.currentTimeMillis();
+
+        Integer courseCount = ninCourseMapper.selectCount(new QueryWrapper<NinCourse>());
+        Integer selectCount = ninTeacherCourseMapper.selectCount(new QueryWrapper<NinTeacherCourse>().select("DISTINCT course_id"));
+        if (courseCount > selectCount) {
+            throw new ServiceException(412, "尚有课程还未选择，不能进行排课");
+        }
+
+        Integer settingCount = ninSettingMapper.selectCount(new LambdaQueryWrapper<NinSetting>()
+                .eq(NinSetting::getUserType, UserTypeEnum.TEACHER.getName())
+                .eq(NinSetting::getOpenState, OpenStateEnum.OPEN.getCode()));
+        if (settingCount != 0) {
+            throw new ServiceException(412, "排课前请先关闭教师选课通道");
+        }
+
 
         //遗传算法获取较优解
         List<TaskRecord> taskRecordList = geneticAlgorithm.start();
@@ -560,8 +576,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         map.put("list", pageInfo.getList());
         map.put("total", pageInfo.getTotal());
         NinArrange arrange = getOne(new LambdaQueryWrapper<NinArrange>()
-                .eq(NinArrange::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode()));
-        map.put("isOk", null != arrange);//是否排课过
+                .eq(NinArrange::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode()), false);
+        map.put("isOk", null != arrange);//是否排课过,未排课,选修可以进行编辑
         return map;
     }
 
@@ -596,6 +612,72 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             }}));
         }
         return ninArrangeMapper.deleteById(id);
+    }
+
+    @Override
+    public List<NinHouse> getHouseByArrangeId(Long id) {
+        //两种情况：
+        //1、排课前的选修课程
+        //2、排课后的存在冲突的必修课程 -》班级存在，即需要设置教室的座位足够
+        NinArrange arrange = getById(id);
+        NinCourse course = ninCourseMapper.selectById(arrange.getCourseId());
+        Integer houseType = course.getHouseType();
+        LambdaQueryWrapper<NinHouse> wrapper = new LambdaQueryWrapper<NinHouse>()
+                .eq(NinHouse::getHouseType, houseType);
+
+        if (arrange.getMust() == CourseTypeEnum.REQUIRED_COURSE.getCode()) {
+            wrapper.ge(NinHouse::getSeat, arrange.getPeopleNum());
+        }
+        return ninHouseService.list(wrapper);
+    }
+
+    @Override
+    public boolean alterArrange(Long id, Long houseId, Integer week, Integer pitchNum) {
+        NinArrange arrange = getById(id);
+        Integer weekly = arrange.getWeekly();
+        Long teacherId = arrange.getTeacherId();
+
+        if (arrange.getMust().equals(CourseTypeEnum.REQUIRED_COURSE.getCode())) {
+            //时间相同的排课记录
+            List<NinArrange> list = list(new LambdaQueryWrapper<NinArrange>()
+                    .eq(NinArrange::getWeek, week)
+                    .eq(NinArrange::getPitchNum, pitchNum)
+                    .eq(NinArrange::getMust, arrange.getMust()));
+            if (!list.isEmpty()) {
+                //排课记录对应的教学班id
+                Set<Long> teachClassIdList = list.stream().map(NinArrange::getTeachClassId).collect(Collectors.toSet());
+                teachClassIdList.add(arrange.getTeachClassId());//加上要修改的排课记录对应的教学班id
+
+                List<NinTeachClass> teachClassList = ninTeachClassMapper.selectList(new LambdaQueryWrapper<NinTeachClass>()
+                        .in(NinTeachClass::getTeachClassId, teachClassIdList));
+                //教学班-》班级列表
+                Map<Long, List<Long>> teachClassMap = teachClassList.stream()
+                        .collect(Collectors.toMap(NinTeachClass::getTeachClassId,i -> Collections.singletonList(i.getClassId()), (v1, v2) -> {v1.addAll(v2);return v1;}));
+
+                //要修改排课记录对应的班级id列表
+                List<Long> classIdList = teachClassMap.get(arrange.getTeachClassId());
+                for (NinArrange ninArrange : list) {
+                    Integer weekly1 = ninArrange.getWeekly();
+                    if (weekly != 0 && weekly1 != 0 && !weekly.equals(weekly1)) {
+                        continue;
+                    }
+                    if (teacherId.equals(ninArrange.getTeacherId())) {
+                        throw new ServiceException(412, "教师冲突");
+                    }
+                    if (houseId.equals(ninArrange.getHouseId())) {
+                        throw new ServiceException(412, "教室冲突");
+                    }
+                    List<Long> classIds = teachClassMap.get(ninArrange.getTeachClassId());
+                    if (!Collections.disjoint(classIds, classIdList)) {
+                        throw new ServiceException(412, "班级冲突");
+                    }
+                }
+            }
+        }
+        arrange.setHouseId(houseId);
+        arrange.setWeek(week);
+        arrange.setPitchNum(pitchNum);
+        return updateById(arrange);
     }
 
     @Override

@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.service;
 import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
+import cn.netinnet.coursearrange.entity.NinHouse;
 import cn.netinnet.coursearrange.model.ResultModel;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -36,6 +37,14 @@ public interface INinArrangeService extends IService<NinArrange> {
      * 根据id删除排课记录
      */
     int delArrange(Long id);
+    /**
+     * 在编辑根据排课记录的id获取可选的教室
+     */
+    List<NinHouse> getHouseByArrangeId(Long id);
+    /**
+     * 编辑排课记录
+     */
+    boolean alterArrange(Long id, Long houseId, Integer week, Integer pitchNum);
 
 
     /**

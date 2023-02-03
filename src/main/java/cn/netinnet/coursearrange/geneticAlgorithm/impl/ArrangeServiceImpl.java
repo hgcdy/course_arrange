@@ -81,9 +81,6 @@ public class ArrangeServiceImpl implements ArrangeService {
         List<NinCareerCourse> ninCareerCourseList = ninCareerCourseMapper.selectList(new QueryWrapper<>());
         Map<Long, List<NinCareerCourse>> careerIdNinCareerCourseListMap = ninCareerCourseList.stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId));
 
-        //存放教学班
-//        List<NinTeachClass> ninTeachClasses = new ArrayList<>();
-
         Map<Long, List<Long>> teaIdClassListMap = new HashMap<>();
 
         //教学任务列表
@@ -142,14 +139,7 @@ public class ArrangeServiceImpl implements ArrangeService {
                         long teachClassId = IDUtil.getID();
                         List<Long> classes = new ArrayList<>();
                         for (int k = 0; k < ints[j]; k++, count++) {
-                            Long classId = classList.get(count).getId();
-                            String className = classList.get(count).getClassName();
-//                            NinTeachClass ninTeachClass = new NinTeachClass();
-//                            ninTeachClass.setTeachClassId(teachClassId);
-//                            ninTeachClass.setClassId(classId);
-//                            ninTeachClass.setClassName(className);
-//                            ninTeachClasses.add(ninTeachClass);
-                            classes.add(classId);
+                            classes.add(classList.get(count).getId());
                         }
                         teachClasses[j] = teachClassId;
                         teaIdClassListMap.put(teachClassId, classes);

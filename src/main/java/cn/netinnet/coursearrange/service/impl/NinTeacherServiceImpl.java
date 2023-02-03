@@ -62,6 +62,7 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
 
         String password = ninTeacher.getTeacherPassword();
         loginService.passwordVerify(password);
+        ninTeacher.setTeacherPassword(MD5.getMD5Encode(password));
 
         return save(ninTeacher);
     }
@@ -86,6 +87,7 @@ public class NinTeacherServiceImpl extends ServiceImpl<NinTeacherMapper, NinTeac
 
         String password = ninTeacher.getTeacherPassword();
         loginService.passwordVerify(password);
+        ninTeacher.setTeacherPassword(MD5.getMD5Encode(password));
 
         return ninTeacherMapper.updateById(ninTeacher);
     }

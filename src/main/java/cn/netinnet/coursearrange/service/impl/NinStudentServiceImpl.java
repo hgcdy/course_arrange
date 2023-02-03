@@ -96,15 +96,8 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
         }
 
         String password = ninStudent.getStudentPassword();
-        if (password != null) {
-            if (password.length() < 6) {
-                throw new ServiceException(412, "密码需大于六位数");
-            }
-            if (StringUtils.isBlank(password)) {
-                throw new ServiceException(412, "密码不符合条件");
-            }
-            ninStudent.setStudentPassword(MD5.getMD5Encode(ninStudent.getStudentPassword()));
-        }
+        loginService.passwordVerify(password);
+        ninStudent.setStudentPassword(MD5.getMD5Encode(password));
 
         return ninStudentMapper.insert(ninStudent);
     }
@@ -143,6 +136,7 @@ public class NinStudentServiceImpl extends ServiceImpl<NinStudentMapper, NinStud
 
         String password = ninStudent.getStudentPassword();
         loginService.passwordVerify(password);
+        ninStudent.setStudentPassword(MD5.getMD5Encode(password));
 
         return ninStudentMapper.updateById(ninStudent);
     }

@@ -172,7 +172,7 @@ require(['../config'], function () {
                         if ((data.data.list).length != 0) {
                             $("#page span:eq(2) input").val(page);
                             var count = 4;
-                            if (isOk) {
+                            if (!isOk) {
                                 count = 5;
                             }
                             util.createForm((page - 1) * size + 1, data.data.list, STR, count);
@@ -214,6 +214,8 @@ require(['../config'], function () {
                 success: function (data) {
                     if (data.code == 200) {
                         query();
+                    } else {
+                        util.hint(data.msg);
                     }
                 }
             })
@@ -222,62 +224,88 @@ require(['../config'], function () {
         //编辑
         function alter(id) {
             $.ajax({
-                url: "nin-arrange/getAvailable",
-                type: "post",
+                url: "nin-arrange/getHouseByArrangeId",
+                type: "get",
                 dataType: "json",
                 data: {
                     id: id
                 },
                 success: function (data) {
                     if (data.code == 200) {
-                        var teacherId = data.data.teacherId;
-                        var houseId = data.data.houseId;
-                        var week = data.data.week;
-                        var pitchNum = data.data.pitchNum;
-                        getAvailable(id, teacherId, houseId, week, pitchNum);
+                        var list = data.data;
+                        var len = list.length;
 
-                        //点击确认时，获取值，修改，删除select，隐藏，获取数据
+                        var $houseId = $("<tr><td><label for='houseId'>教室:</label></td></tr>");
+                        var $td = $("<td></td>")
+                        var $select = $("<select id='houseId'></select>");
+                        for (let i = 0; i < len; i++) {
+                            var $op = $("<option></option>").text(list[i].houseName).attr("value", list[i].id);
+                            $select.append($op);
+                        }
+                        $td.append($select);
+                        $houseId.append($td);
 
-                        //取消时，隐藏，删除select
+                        var $week =
+                            "<tr>" +
+                            "<td>" +
+                            "<label for='week'>星期:</label>" +
+                            "</td>" +
+                            "<td>" +
+                            "<select id='week'>" +
+                            "<option value='1'>星期一</option>" +
+                            "<option value='2'>星期二</option>" +
+                            "<option value='3'>星期三</option>" +
+                            "<option value='4'>星期四</option>" +
+                            "<option value='5'>星期五</option>" +
+                            "<option value='6'>星期六</option>" +
+                            "<option value='7'>星期日</option>" +
+                            "</select>" +
+                            "</td>" +
+                            "</tr>";
+
+                        var $pitchNum =
+                            "<tr>" +
+                            "<td>" +
+                            "<label for='week'>节数:</label>" +
+                            "</td>" +
+                            "<td>" +
+                            "<select id='pitchNum'>" +
+                            "<option value='1'>第一节</option>" +
+                            "<option value='2'>第二节</option>" +
+                            "<option value='3'>第三节</option>" +
+                            "<option value='4'>第四节</option>" +
+                            "<option value='5'>第五节</option>" +
+                            "</select>" +
+                            "</td>" +
+                            "</tr>";
 
 
+                        util.popup([$houseId, $week, $pitchNum], ["houseId", "week", "pitchNum"], $update);
+
+                        function $update(record) {
+                            $.ajax({
+                                url: "nin-arrange/alterArrange",
+                                dataType: "json",
+                                type: "post",
+                                data: {
+                                    id: id,
+                                    houseId: record.houseId,
+                                    week: record.week,
+                                    pitchNum: record.pitchNum
+                                },
+                                success: function (data) {
+                                    if (data.code == 200) {
+                                        query();
+                                    } else {
+                                        util.hint(data.msg);
+                                    }
+                                }
+                            })
+                        }
                     }
                 }
             })
         }
-
-        function getAvailable(id, teacherId, houseId, week, pitchNum) {
-            $.ajax({
-                url: "nin-arrange/getAvailable",
-                type: "post",
-                dataType: "json",
-                data: {
-                    id: id,
-                    teacherId: teacherId,
-                    houseId: houseId,
-                    week: week,
-                    pitchNum: pitchNum
-                },
-                success: function (data) {
-                    if (data.code == 200) {
-                        var teacherList = data.data.teacherList;
-                        var houseList = data.data.houseList;
-                        var timeList = data.data.timeList;
-
-                        //生成下拉列表
-                        //初始值，如果原本的值不为空，则为初始值，否则空
-
-                        //当检测到select值变更时,调用getAvailable
-
-
-                    }
-                }
-
-            })
-
-        }
-
-
 
 
 

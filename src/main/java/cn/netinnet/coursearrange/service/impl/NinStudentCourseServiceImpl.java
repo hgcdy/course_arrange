@@ -52,6 +52,8 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
     private NinSettingMapper ninSettingMapper;
     @Autowired
     private NinMessageMapper ninMessageMapper;
+    @Autowired
+    private NinHouseMapper ninHouseMapper;
 
 
     @Override
@@ -110,6 +112,12 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
         NinArrange ninArrange = ninArrangeMapper.selectOne(new LambdaQueryWrapper<NinArrange>()
                 .select(NinArrange::getWeek, NinArrange::getPitchNum)
                 .in(NinArrange::getCourseId, courseId));
+
+        NinHouse house = ninHouseMapper.selectById(ninArrange.getHouseId());
+        if (ninArrange.getPeopleNum() >= house.getSeat()) {
+            throw new ServiceException(412, "该课程人数已满");
+        }
+
         if (count != 0) {
             List<Long> courseIdList = list.stream().map(NinStudentCourse::getCourseId).collect(Collectors.toList());
             //该学生已选的课程记录并对比时间(如果有的话)

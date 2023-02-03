@@ -20,7 +20,9 @@ require(['../config'], function () {
                 util.hint("无法操作");
             });
         } else {
-            alterPassword();
+            $("button").click(function () {
+                alterPassword();
+            })
         }
 
 
@@ -76,9 +78,11 @@ require(['../config'], function () {
 
             if (old === "") {
                 util.hint("旧密码为空");
+                return;
             }
             if (new1 === "" || new2 === "" || new1 === new2) {
                 util.hint("新密码不一致")
+                return;
             }
 
             $.ajax({
@@ -135,6 +139,27 @@ require(['../config'], function () {
                             $item.append($text, $operate);
                             $("#msg-body").append($item);
                         }
+
+                        //已读
+                        $(".read").click(function () {
+                            var id = $(this).parent().attr("data-id");
+                            readMag(id);
+                        })
+                        //删除
+                        $(".read").click(function () {
+                            var id = $(this).parent().attr("data-id");
+                            delMsg(id);
+                        })
+                        //同意
+                        $(".consent").click(function () {
+                            var id = $(this).parent().attr("data-id");
+                            //todo
+                        })
+                        //退回
+                        $(".unconsent").click(function () {
+                            var id = $(this).parent().attr("data-id");
+                        })
+
                     } else {
                         util.hint(data.msg);
                     }
