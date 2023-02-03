@@ -69,4 +69,10 @@ public class NinMessageController {
         return ResultModel.error(412, "更新失败");
     }
 
+    @PostMapping("consentMsg")
+    public ResultModel consentMsg(Long id, Integer isConsent) {
+        ninMessageService.consentMsg(id, isConsent);
+        return null;
+    }
+
 }

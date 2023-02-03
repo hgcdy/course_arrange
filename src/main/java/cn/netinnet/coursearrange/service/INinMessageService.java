@@ -22,4 +22,6 @@ public interface INinMessageService extends IService<NinMessage> {
     boolean delMsg(Long id);
 
     boolean readMag(Long id);
+
+    void consentMsg(Long id, Integer isConsent);
 }

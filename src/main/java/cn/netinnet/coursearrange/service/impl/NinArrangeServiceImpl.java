@@ -31,6 +31,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -78,6 +79,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     private GeneticAlgorithm geneticAlgorithm;
     @Autowired
     private INinTeachClassService ninTeachClassService;
+    @Autowired
+    private NinMessageMapper ninMessageMapper;
 
 
     @Override
@@ -891,8 +894,34 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
     @Override
     public ResultModel submitApply(HouseApplyBo bo) {
+        JSONObject jsonObject = (JSONObject) JSONObject.toJSON(bo);
+
+        List<Long> classIds = JSON.parseArray(bo.getClassIdList(), Long.class);
+        List<NinClass> ninClasses = ninClassMapper.selectList(new LambdaQueryWrapper<NinClass>()
+                .select(NinClass::getClassName).in(NinClass::getId, classIds));
+        List<String> classNameList = ninClasses.stream().map(NinClass::getClassName).collect(Collectors.toList());
+
+        jsonObject.put("className", StringUtils.join(classNameList, ","));
+        NinHouse house = ninHouseService.getById(bo.getHouseId());
+        jsonObject.put("houseName", house.getHouseName());
+        NinTeacher ninTeacher = ninTeacherMapper.selectById(bo.getTeacherId());
+        jsonObject.put("teacherName", ninTeacher.getTeacherName());
+        Long courseId = bo.getCourseId();
+        if (courseId == -1) {
+            jsonObject.put("courseName", "其他");
+        } else {
+            NinCourse course = ninCourseMapper.selectById(courseId);
+            jsonObject.put("courseName", course.getCourseName());
+        }
+
+        NinMessage ninMessage = new NinMessage();
+        ninMessage.setMsg(jsonObject.toJSONString());
+        ninMessage.setUserId(ApplicationConstant.ADMIN_ID);
+        ninMessage.setIsConsent(0);
+        ninMessageMapper.insert(ninMessage);
+
         //生成一条消息记录
-        return null;
+        return ResultModel.ok();
     }
 
     @Override
