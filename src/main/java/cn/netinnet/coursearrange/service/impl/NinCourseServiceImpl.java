@@ -160,6 +160,7 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             arrange.setStartTime(ninCourse.getStartTime() != null ? ninCourse.getStartTime() : 1);
             arrange.setEndTime(ninCourse.getEndTime() != null ? ninCourse.getEndTime() : 16);
             arrange.setPeopleNum(0);
+            arrange.setDelFlag(-2);
             ninArrangeMapper.insert(arrange);
 
             //生成学生权限记录

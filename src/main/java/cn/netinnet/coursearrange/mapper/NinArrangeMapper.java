@@ -35,7 +35,7 @@ public interface NinArrangeMapper extends BaseMapper<NinArrange> {
     /**
      * 删除教师选课时的置空
      */
-    void updateNullById(@Param("id") Long id);
+    void updateTeaNullById(@Param("id") Long id);
     /**
      * 判断是否可以插入 返回数大于0即不可插入
      * @param weekly 第几周（sql里表示0每周，1-单周，2-双周）

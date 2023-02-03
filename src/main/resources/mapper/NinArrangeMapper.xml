@@ -48,12 +48,9 @@
     </insert>
 
     <!--修改置空-->
-    <update id="updateNullById">
+    <update id="updateTeaNullById">
         UPDATE nin_arrange SET
-        teacher_id = null,
-        house_id = null,
-        week = null,
-        pitch_num = null
+        teacher_id = null
         WHERE id = #{id}
     </update>
 

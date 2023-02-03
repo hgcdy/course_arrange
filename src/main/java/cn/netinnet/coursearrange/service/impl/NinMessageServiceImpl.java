@@ -30,7 +30,13 @@ public class NinMessageServiceImpl extends ServiceImpl<NinMessageMapper, NinMess
         Page<NinMessage> msgPage = new Page<>(page, size);
         LambdaQueryWrapper<NinMessage> wrapper = new LambdaQueryWrapper<NinMessage>()
                 .orderByAsc(NinMessage::getIsRead).orderByDesc(NinMessage::getCreateTime);
-        return this.page(msgPage, wrapper);
+        Page<NinMessage> messagePage = this.page(msgPage, wrapper);
+        messagePage.getRecords().forEach(msg -> {
+            if (msg.getIsConsent() != -1) {
+                //对msg进行操作
+            }
+        });
+        return messagePage;
     }
 
     @Override

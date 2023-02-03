@@ -549,7 +549,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 i.setCnPitchNum(CnUtil.cnPitchNum(i.getPitchNum()));
             }
             if (i.getMust() != null) {
-                i.setCnMust(CnUtil.cnMust(i.getMust()));
+                i.setCnMust(CourseTypeEnum.codeOfKey(i.getMust()).getName());
             }
             if (i.getWeekly() != null) {
                 i.setCnWeekly(CnUtil.cnWeekly(i.getWeekly()));
@@ -559,6 +559,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         HashMap<String, Object> map = new HashMap<>();
         map.put("list", pageInfo.getList());
         map.put("total", pageInfo.getTotal());
+        NinArrange arrange = getOne(new LambdaQueryWrapper<NinArrange>()
+                .eq(NinArrange::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode()));
+        map.put("isOk", null != arrange);//是否排课过
         return map;
     }
 

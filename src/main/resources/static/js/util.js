@@ -141,21 +141,33 @@ define(function () {
             var bu2 = "<button type='button' class='btn btn-warning update'>编辑</button>&nbsp;";
             var bu3 = "<button type='button' class='btn btn-success details'>详情</button>&nbsp;";
             var $td = $("<td></td>");
-            if (count === 1) {
-                $td.append(bu1);
-                if (delFlag != null && delFlag === -1) {
-                    $td.append(bu2);
-                }
-            } else if (count === 2) {
-                $td.append(bu1, bu2);
-            } else if (count === 3) {
-                $td.append(bu1, bu2, bu3);
-            } else if (count === 0){
-                $td.text("不可操作");
+
+            switch (count) {
+                case 0 :
+                    $td.text("不可操作");
+                case 1:
+                    $td.append(bu1);
+                    break;
+                case 2:
+                    $td.append(bu1, bu2);
+                    break;
+                case 3:
+                    $td.append(bu1, bu2, bu3);
+                    break;
+                case 4:
+                    $td.append(bu1);
+                    if (delFlag != null && delFlag === -1) {
+                        $td.append(bu2);
+                    }
+                    break;
+                case 5:
+                    $td.append(bu1);
+                    if (delFlag != null && delFlag === -2) {
+                        $td.append(bu2);
+                    }
+                    break;
             }
-            if (count !== -1) {
-                $tr.append($td);
-            }
+            $tr.append($td);
             $tbody.append($tr);
         }
     }
@@ -170,7 +182,7 @@ define(function () {
 
         var $popup = $("#popup", parent.document);
         var $table = $popup.find("table");
-        $table.empty();//todo img问题
+        $table.empty();
         $popup.css("display", "block");
         $("button").attr('disabled', true);
         var len = modules.length;

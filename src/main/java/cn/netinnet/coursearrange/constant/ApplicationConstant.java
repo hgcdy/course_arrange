@@ -17,8 +17,6 @@ public class ApplicationConstant {
     public static String ADMIN_PASSWORD;
 
 
-    //选修课默认的时间  {4,3} -> 周四第三节课
-    public static int[][] TASK_COURSE_TIME = {{4, 3}, {4, 4}, {5, 3}, {5, 4}};
     //班级人数上限
     public static int CLASS_PEOPLE_NUM = 50;
     //专业(班级)选课数量上限

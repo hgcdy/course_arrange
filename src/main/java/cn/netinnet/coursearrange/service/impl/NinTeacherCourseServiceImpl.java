@@ -2,13 +2,16 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
+import cn.netinnet.coursearrange.enums.MsgEnum;
 import cn.netinnet.coursearrange.enums.OpenStateEnum;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinTeacherCourseService;
+import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,9 +39,9 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
     @Autowired
     private NinArrangeMapper ninArrangeMapper;
     @Autowired
-    private NinHouseMapper ninHouseMapper;
-    @Autowired
     private NinSettingMapper ninSettingMapper;
+    @Autowired
+    private NinMessageMapper ninMessageMapper;
 
 
     @Override
@@ -85,68 +88,42 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
     @Override
     public boolean addSingle(Long teacherId, Long courseId) {
         List<NinTeacherCourse> ninTeacherCourses = list(new LambdaQueryWrapper<NinTeacherCourse>().eq(NinTeacherCourse::getTeacherId, teacherId));
-        if (ninTeacherCourses.size() >= ApplicationConstant.TEACHER_COURSE_NUM){
+        int count = ninTeacherCourses.size();
+        if (count >= ApplicationConstant.TEACHER_COURSE_NUM){
             throw new ServiceException(412, "该教师选课数量已经上限");
         }
 
-        for (NinTeacherCourse ntc: ninTeacherCourses) {
-            if (ntc.getCourseId().equals(courseId)){
-                throw new ServiceException(412, "该教师已经选择这门课程了");
-            }
-        }
-
         NinCourse course = ninCourseMapper.selectById(courseId);
-        if (course.getMust() == 0) {
-
-            NinArrange arrange = ninArrangeMapper.selectOne(new LambdaQueryWrapper<NinArrange>().eq(NinArrange::getCourseId, courseId));
-
-            //教师
+        if (course.getMust() == 0 && count > 0) {
+            //如果是选修课，看两个选修课之间是否冲突
+            //课程对应记录
+            NinArrange arrange = ninArrangeMapper.selectOne(new LambdaQueryWrapper<NinArrange>()
+                    .eq(NinArrange::getCourseId, courseId));
             arrange.setTeacherId(teacherId);
 
-            List<NinArrange> ninArranges1 = ninArrangeMapper.selectList(new QueryWrapper<>());
-            int[][] taskCourseTime = ApplicationConstant.TASK_COURSE_TIME;
+            //此刻排课记录中只有选修课
+            List<NinArrange> ninArranges = ninArrangeMapper.selectList(new LambdaQueryWrapper<NinArrange>()
+                    .eq(NinArrange::getTeacherId, teacherId));
 
-            //人数
-            int num = course.getMaxClassNum() * ApplicationConstant.CLASS_PEOPLE_NUM;
-            List<Long> houseIdList = ninHouseMapper.selectList(new QueryWrapper<>(new NinHouse() {{
-                setHouseType(course.getHouseType());
-            }})).stream().filter(i -> i.getSeat() >= num).map(NinHouse::getId).collect(Collectors.toList());
-            boolean bo = false;
-            //判断是否冲突
-            ok: for (Long houseId : houseIdList) {
-                for (int[] time : taskCourseTime) {
-                    int size = 1;
-                    if (ninArranges1 != null) {
-                        List<NinArrange> collect = ninArranges1.stream().filter(i -> {
-                            if (((i.getTeacherId() != null && i.getTeacherId().equals(teacherId))
-                                    || (i.getHouseId() != null && i.getHouseId().equals(houseId)))
-                                    && i.getWeek() == time[0]
-                                    && i.getPitchNum() == time[1]) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }).collect(Collectors.toList());
-                        size = collect.size();
-                    }
-                    if (ninArranges1 == null || size == 0) {
-                        bo = true;
-                        arrange.setHouseId(houseId);
-                        arrange.setWeek(time[0]);
-                        arrange.setPitchNum(time[1]);
-                        ninArrangeMapper.updateById(arrange);
-                        break ok;
-                    }
+            for (NinArrange ninArrange : ninArranges) {
+                if (ninArrange.getWeek().equals(arrange.getWeek()) && ninArrange.getPitchNum().equals(arrange.getPitchNum())) {
+                    throw new ServiceException(412, "该课程和其他课程时间发生冲突");
                 }
             }
-            if (!bo) {
-                throw new ServiceException(412, "没有合适的教室或时间安排该课程");
-            }
         }
+
+        if (UserTypeEnum.ADMIN.getName().equals(UserUtil.getUserInfo().getUserType())) {
+            //如果是管理员操作则添加消息
+            String msg = StringUtils.format(MsgEnum.ADD_COURSE.getMsg(), course.getCourseName());
+            ninMessageMapper.insert(new NinMessage(){{
+                setUserId(teacherId);
+                setMsg(msg);
+            }});
+        }
+
         NinTeacherCourse ninTeacherCourse = new NinTeacherCourse();
         ninTeacherCourse.setTeacherId(teacherId);
         ninTeacherCourse.setCourseId(courseId);
-
         return save(ninTeacherCourse);
     }
 
@@ -160,10 +137,21 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
         NinArrange ninArrange = ninArrangeMapper.selectOne(new LambdaQueryWrapper<NinArrange>()
                 .eq(NinArrange::getTeacherId, ninTeacherCourse.getTeacherId())
                 .eq(NinArrange::getCourseId, ninTeacherCourse.getCourseId()));
-        //该记录是选修时，修改，将教师等信息置空
+        //该记录是选修时，修改，将教师信息置空
         if (ninArrange != null && ninArrange.getMust() == 0) {
-            ninArrangeMapper.updateNullById(ninArrange.getId());
+            ninArrangeMapper.updateTeaNullById(ninArrange.getId());
         }
+
+        if (UserTypeEnum.ADMIN.getName().equals(UserUtil.getUserInfo().getUserType())) {
+            //如果是管理员操作则添加消息
+            NinCourse course = ninCourseMapper.selectById(courseId);
+            String msg = StringUtils.format(MsgEnum.DEL_COURSE.getMsg(), course.getCourseName());
+            ninMessageMapper.insert(new NinMessage(){{
+                setUserId(teacherId);
+                setMsg(msg);
+            }});
+        }
+
         return removeById(ninTeacherCourse.getId());
     }
 }

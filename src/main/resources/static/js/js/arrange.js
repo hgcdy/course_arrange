@@ -148,7 +148,6 @@ require(['../config'], function () {
             query();
         });
 
-
         //查询
         function query() {
             $.ajax({
@@ -169,13 +168,16 @@ require(['../config'], function () {
                 success: function (data) {
                     if (data.code == 200) {
                         total = data.data.total;
+                        var isOk = data.data.isOk;//是否排课过
                         if ((data.data.list).length != 0) {
                             $("#page span:eq(2) input").val(page);
-                            util.createForm((page - 1) * size + 1, data.data.list, STR, 1);
+                            var count = 4;
+                            if (isOk) {
+                                count = 5;
+                            }
+                            util.createForm((page - 1) * size + 1, data.data.list, STR, count);
                             $("#page-text").text("共" + total + "条数据, " + Math.ceil(total / size) + "页");
 
-                            // var bu2 = "<button type='button' class='btn btn-info update'>编辑</button>&nbsp;";
-                            // $("td:contains(选修)").parent().find(".delete").parent().append(bu2);
 
                             $(".delete").click(function () {
                                 var id = $(this).parent().parent().children("th").attr("data-id");
@@ -185,6 +187,7 @@ require(['../config'], function () {
                                 var id = $(this).parent().parent().children("th").attr("data-id");
                                 alter(id);
                             })
+
                         } else {
                             if (page > 1) {
                                 page = page - 1;
@@ -216,16 +219,6 @@ require(['../config'], function () {
             })
         }
 
-/*
-获取单条的数据
-展示
-调用getAvailable
-如果原本为空,生成列表
-如果不为空,空和原本那条
-每次修改，列表该变
-*/
-
-
         //编辑
         function alter(id) {
             $.ajax({
@@ -252,7 +245,6 @@ require(['../config'], function () {
                 }
             })
         }
-
 
         function getAvailable(id, teacherId, houseId, week, pitchNum) {
             $.ajax({
