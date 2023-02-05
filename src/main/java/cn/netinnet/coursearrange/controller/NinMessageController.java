@@ -72,7 +72,7 @@ public class NinMessageController {
     @PostMapping("consentMsg")
     public ResultModel consentMsg(Long id, Integer isConsent) {
         ninMessageService.consentMsg(id, isConsent);
-        return null;
+        return ResultModel.ok();
     }
 
 }

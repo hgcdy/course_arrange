@@ -1,18 +1,23 @@
 package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
+import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.entity.NinMessage;
 import cn.netinnet.coursearrange.enums.MsgEnum;
 import cn.netinnet.coursearrange.mapper.NinMessageMapper;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.service.INinMessageService;
+import cn.netinnet.coursearrange.util.CnUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,21 +41,28 @@ public class NinMessageServiceImpl extends ServiceImpl<NinMessageMapper, NinMess
     private INinArrangeService ninArrangeService;
 
     @Override
-    public Page<NinMessage> getMsgList(Integer page, Integer size) {
-        Page<NinMessage> msgPage = new Page<>(page, size);
+    public PageInfo<NinMessage> getMsgList(Integer page, Integer size) {
         LambdaQueryWrapper<NinMessage> wrapper = new LambdaQueryWrapper<NinMessage>()
                 .orderByAsc(NinMessage::getIsRead).orderByDesc(NinMessage::getCreateTime);
-        Page<NinMessage> messagePage = this.page(msgPage, wrapper);
-        messagePage.getRecords().forEach(msg -> {
+        PageHelper.startPage(page, size);
+        List<NinMessage> list = list(wrapper);
+        PageInfo<NinMessage> pageInfo = new PageInfo<>(list);
+
+        pageInfo.getList().forEach(msg -> {
             if (msg.getIsConsent() != -1) {
                 //对msg进行操作
                 JSONObject jsonObject = (JSONObject) JSONObject.parse(msg.getMsg());
-                //todo
-
-
+                Integer weekly = jsonObject.getInteger("weekly");
+                Integer week = jsonObject.getInteger("week");
+                Integer pitchNum = jsonObject.getInteger("pitchNum");
+                String time = "第" + CnUtil.cnNum(weekly) + "周" + CnUtil.cnWeek(week) + CnUtil.cnPitchNum(pitchNum);
+                String message = StringUtils.format(MsgEnum.HOUSE_APPLY.getMsg(),
+                        jsonObject.get("teacherName"), jsonObject.get("houseName"),
+                        jsonObject.get("className"), time, jsonObject.get("courseName"));
+                msg.setMsg(message);
             }
         });
-        return messagePage;
+        return pageInfo;
     }
 
     @Override
@@ -81,18 +93,15 @@ public class NinMessageServiceImpl extends ServiceImpl<NinMessageMapper, NinMess
     @Transactional(rollbackFor = Exception.class)
     public void consentMsg(Long id, Integer isConsent) {
         NinMessage message = getById(id);
+        String msg = message.getMsg();
+        JSONObject jsonObject = (JSONObject) JSONObject.parse(msg);
 
         if (isConsent == 1) {
-            String msg = message.getMsg();
-            Object o = JSONObject.parse(msg);
-            HouseApplyBo bo = new HouseApplyBo();
-            BeanUtils.copyProperties(o, bo);
-            ninArrangeService.addArrange(bo);
+            ninArrangeService.addArrange(jsonObject);
         }
-        //todo 如果同意，需要添加排课记录
 
         NinMessage ninMessage = new NinMessage();
-        ninMessage.setUserId(0L); //教师id
+        ninMessage.setUserId(jsonObject.getLong("teacherId")); //教师id
         ninMessage.setMsg(MsgEnum.codeOfKey(isConsent).getMsg());
         save(ninMessage);
 

@@ -5,6 +5,7 @@ import cn.netinnet.coursearrange.bo.HouseApplyBo;
 import cn.netinnet.coursearrange.entity.NinArrange;
 import cn.netinnet.coursearrange.entity.NinHouse;
 import cn.netinnet.coursearrange.model.ResultModel;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -74,6 +75,6 @@ public interface INinArrangeService extends IService<NinArrange> {
     /**
      * 添加·排课信息
      */
-    int addArrange(HouseApplyBo bo);
+    int addArrange(JSONObject jsonObject);
 
 }

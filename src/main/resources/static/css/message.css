@@ -99,3 +99,11 @@ td:last-child{
 .operate-item a {
     text-decoration: none;
 }
+
+#page-num {
+    position: absolute;
+    width: 100%;
+    height: 5%;
+    bottom: 0;
+    text-align: center;
+}

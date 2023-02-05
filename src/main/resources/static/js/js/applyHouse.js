@@ -33,7 +33,7 @@ require(['../config'], function () {
             }
         })
 
-        $("#selected button").click(function () {
+        $("#button button").click(function () {
             var classIdList = getIdList($("#class"));
             if (classIdList === "[]") {
                 util.hint("请选择班级");
@@ -110,7 +110,7 @@ require(['../config'], function () {
                             var attr = $(this).attr("data-id");
                             var time = attr.split("#");
                             $.ajax({
-                                url: "nin-arrange/addArrange",
+                                url: "nin-arrange/submitApply",
                                 dataType: "json",
                                 type: "post",
                                 data: {
@@ -215,7 +215,7 @@ require(['../config'], function () {
         function getHouse() {
             var list = Array();
             list.push({"type": -1, "name": "全部"});
-            list.push({"type": 0, "name": "平台教室"});
+            list.push({"type": 0, "name": "教室"});
             list.push({"type": 1, "name": "机房"});
             list.push({"type": 2, "name": "实验室"});
 

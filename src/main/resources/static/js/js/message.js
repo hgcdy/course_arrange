@@ -35,17 +35,17 @@ require(['../config'], function () {
             //一键删除
             delMsg(null);
         })
-        $($a[1]).click(function () {
+        $($a[2]).click(function () {
             //上一页
             if (page > 1)
                 page = page - 1;
             getMsgList();
         })
-        $($a[1]).click(function () {
+        $($a[3]).click(function () {
             //刷新
             getMsgList();
         })
-        $($a[1]).click(function () {
+        $($a[4]).click(function () {
             //下一页
             if (page < totalPage)
                 page = page + 1;
@@ -114,8 +114,9 @@ require(['../config'], function () {
                         $("#msg-body").empty();
                         var total = data.data.total;
                         totalPage = Math.ceil(total / 5.0);
-                        var list = data.data.records;
+                        var list = data.data.list;
                         var len = list.length;
+                        $("#page-num").text(page + "/" + totalPage);
                         for (let i = 0; i < len; i++) {
                             var record = list[i];
                             var $item = $("<div class='mag-item'></div>").css("top", i * 20 + "%");
@@ -153,11 +154,12 @@ require(['../config'], function () {
                         //同意
                         $(".consent").click(function () {
                             var id = $(this).parent().attr("data-id");
-                            //todo
+                            consentMsg(id, 1);
                         })
                         //退回
                         $(".unconsent").click(function () {
                             var id = $(this).parent().attr("data-id");
+                            consentMsg(id, 2);
                         })
 
                     } else {
@@ -205,6 +207,25 @@ require(['../config'], function () {
                         if (id === null) {
                             page = 1;
                         }
+                        getMsgList();
+                    } else {
+                        util.hint(data.msg);
+                    }
+                }
+            })
+        }
+        //同意，拒绝
+        function consentMsg(id, isConsent) {
+            $.ajax({
+                url: "nin-message/consentMsg",
+                dataType: "json",
+                type: "post",
+                data: {
+                    id: id,
+                    isConsent: isConsent
+                },
+                success: function (data) {
+                    if (data.code === 200) {
                         getMsgList();
                     } else {
                         util.hint(data.msg);

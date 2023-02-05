@@ -152,22 +152,8 @@ public class NinArrangeController {
      */
     @PostMapping("/nin-arrange/submitApply")
     public ResultModel submitApply(HouseApplyBo bo) {
-        return null;
+        return ninArrangeService.submitApply(bo);
     }
-
-    /**
-     * 添加排课记录（教室申请）
-     */
-    @PostMapping("/nin-arrange/addArrange")
-    public ResultModel addArrange(HouseApplyBo bo) {
-        int i = ninArrangeService.addArrange(bo);
-        if (i > 0) {
-            return ResultModel.ok();
-        }
-        return ResultModel.error(412, "操作失败");
-    }
-
-
 
     //跳转班级课程页面
     @GetMapping("nin-class-course")
