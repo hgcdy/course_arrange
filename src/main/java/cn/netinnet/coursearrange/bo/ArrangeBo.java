@@ -64,8 +64,8 @@ public class ArrangeBo extends NinArrange {
     private String cnPitchNum;
 
     /**
-     * 删除标记，但用于标记是否未安排的课程
+     * 删除标记，但用于标记是否因为冲突导致未安排的课程
      */
-    private int delFlag;
+//    private Integer delFlag;
 
 }

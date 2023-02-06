@@ -289,7 +289,7 @@ require(['../config'], function () {
             $(".apply-body:first").find(".item:first").click(function () {
                 var $apply1 = $(".apply-body:eq(1)");
                 $.ajax({
-                    url: "nin-course/getCourseAll",
+                    url: "nin-course/getCourseList",
                     dataType: "json",
                     type: "get",
                     success: function (data) {

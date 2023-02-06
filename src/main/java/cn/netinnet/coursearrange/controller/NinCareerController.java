@@ -102,6 +102,12 @@ public class NinCareerController {
         return ResultModel.ok();
     }
 
+    /**
+     * 修改学院名称
+     * @param oldCollege
+     * @param newCollege
+     * @return
+     */
     @PostMapping("alterCollege")
     public ResultModel alterCollege(String oldCollege, String newCollege) {
         int count = ninCareerService.count(new LambdaQueryWrapper<NinCareer>().eq(NinCareer::getCollege, newCollege));

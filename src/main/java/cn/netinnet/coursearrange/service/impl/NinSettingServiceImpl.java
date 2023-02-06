@@ -1,10 +1,11 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.enums.CourseTypeEnum;
+import cn.netinnet.coursearrange.enums.MsgEnum;
+import cn.netinnet.coursearrange.service.INinMessageService;
 import cn.netinnet.coursearrange.task.SettingTask;
 import cn.netinnet.coursearrange.bo.SettingBo;
-import cn.netinnet.coursearrange.entity.NinArrange;
-import cn.netinnet.coursearrange.entity.NinSetting;
 import cn.netinnet.coursearrange.enums.OpenStateEnum;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
@@ -15,10 +16,12 @@ import cn.netinnet.coursearrange.service.INinSettingService;
 import cn.netinnet.coursearrange.util.QuartzManager;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -45,6 +48,8 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
     private INinArrangeService ninArrangeService;
     @Autowired
     private QuartzManager quartzManager;
+    @Autowired
+    private INinMessageService ninMessageService;
 
 
     @Override
@@ -97,6 +102,13 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
             List<NinSetting> ninSettings = ninSettingMapper.selectList(new LambdaQueryWrapper<NinSetting>()
                     .in(NinSetting::getId, settingIdList));
             addTimer(ninSettings);
+
+
+            List<String> CourseNameList = ninSettings.stream().map(NinSetting::getCourseName).collect(Collectors.toList());
+            String join = StringUtils.join(CourseNameList, ",");
+            String msg = String.format(MsgEnum.COURSE_REMIND.getMsg(), join, openTime, closeTime, OpenStateEnum.codeOfKey(openState).getName());
+            ninMessageService.addBatchMsg(null, userType, msg);
+
             return ResultModel.ok();
         } else {
             throw new ServiceException(412, "请选择课程！");

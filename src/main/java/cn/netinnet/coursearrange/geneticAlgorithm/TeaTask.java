@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class TeaTask {
     /**
-     * 教学任务 将教师,班级,课程绑定
+     * 将教师,班级,课程绑定形成一个教学任务
      */
 
     private Long careerId;

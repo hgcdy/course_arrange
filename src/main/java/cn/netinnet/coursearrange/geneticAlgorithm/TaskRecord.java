@@ -4,6 +4,10 @@ import lombok.Data;
 
 @Data
 public class TaskRecord {
+    /**
+     * 教学任务加上教室和时间形成一条任务记录
+     */
+
     //教学任务
     private TeaTask teaTask;
 

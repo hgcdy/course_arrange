@@ -1,6 +1,7 @@
 package cn.netinnet.coursearrange.service;
 
 import cn.netinnet.coursearrange.entity.NinMessage;
+import cn.netinnet.coursearrange.enums.MsgEnum;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.pagehelper.PageInfo;
@@ -25,4 +26,7 @@ public interface INinMessageService extends IService<NinMessage> {
     boolean readMag(Long id);
 
     void consentMsg(Long id, Integer isConsent);
+
+    void addBatchMsg(List<Long> userIdList, String userType, MsgEnum msgEnum, Object... objects);
+    void addBatchMsg(List<Long> userIdList, String userType, String msg);
 }

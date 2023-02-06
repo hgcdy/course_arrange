@@ -1,8 +1,13 @@
 package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.entity.NinMessage;
+import cn.netinnet.coursearrange.entity.NinStudent;
+import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.enums.MsgEnum;
+import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.mapper.NinMessageMapper;
+import cn.netinnet.coursearrange.mapper.NinStudentMapper;
+import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.service.INinMessageService;
 import cn.netinnet.coursearrange.util.CnUtil;
@@ -19,7 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -35,6 +42,10 @@ public class NinMessageServiceImpl extends ServiceImpl<NinMessageMapper, NinMess
 
     @Autowired
     private INinArrangeService ninArrangeService;
+    @Autowired
+    private NinStudentMapper ninStudentMapper;
+    @Autowired
+    private NinTeacherMapper ninTeacherMapper;
 
     @Override
     public PageInfo<NinMessage> getMsgList(Integer page, Integer size) {
@@ -105,5 +116,39 @@ public class NinMessageServiceImpl extends ServiceImpl<NinMessageMapper, NinMess
         message.setIsConsent(isConsent);
         message.setIsRead(1);
         updateById(message);
+    }
+
+    @Override
+    public void addBatchMsg(List<Long> userIdList, String userType, MsgEnum msgEnum, Object... objects) {
+        String msg = String.format(msgEnum.getMsg(), objects);
+        addBatchMsg(userIdList, userType, msg);
+    }
+
+    @Override
+    public void addBatchMsg(List<Long> userIdList, String userType, String msg) {
+        if (null == userIdList || userIdList.isEmpty()) {
+            if (null != userType) {
+                if (userType.equals(UserTypeEnum.STUDENT.getName())) {
+                    userIdList = ninStudentMapper.selectList(new LambdaQueryWrapper<NinStudent>()
+                                    .select(NinStudent::getId))
+                            .stream().map(NinStudent::getId).collect(Collectors.toList());
+                } else if (userType.equals(UserTypeEnum.TEACHER.getName())) {
+                    userIdList = ninTeacherMapper.selectList(new LambdaQueryWrapper<NinTeacher>()
+                                    .select(NinTeacher::getId))
+                            .stream().map(NinTeacher::getId).collect(Collectors.toList());
+                }
+            } else {
+                return;
+            }
+        }
+
+        List<NinMessage> msgList = new ArrayList<>();
+        userIdList.forEach(id -> {
+            NinMessage ninMessage = new NinMessage();
+            ninMessage.setMsg(msg);
+            ninMessage.setUserId(id);
+            msgList.add(ninMessage);
+        });
+        saveBatch(msgList);
     }
 }

@@ -40,15 +40,11 @@ public interface INinCourseService extends IService<NinCourse> {
      * 单个修改
      */
     int alterSingle(NinCourse ninCourse);
-    /**
-     * 返回可选的课程
-     * @param sign 0-选修，1-必修，null或其他全选
-     */
-    List<NinCourse> getSelectCourseList(Integer sign);
 
     /**
-     * 获取全部课程
+     * 获取必修课程
      * @return
      */
-    List<NinCourse> getCourseAll();
+    List<NinCourse> getCourseList(Integer must);
+
 }

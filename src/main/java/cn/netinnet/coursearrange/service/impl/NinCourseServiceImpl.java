@@ -236,32 +236,10 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
     }
 
     @Override
-    public List<NinCourse> getSelectCourseList(Integer sign) {
-        UserInfo userInfo = UserUtil.getUserInfo();
-        String userType = userInfo.getUserType();
-
-        List<NinCourse> courseList = ninCourseMapper.selectList(new QueryWrapper<>());
-        //0-返回选修课程，1-返回必修课程
-        if (sign != null && (sign == 0 || sign == 1)) {
-            courseList = courseList.stream().filter(i ->
-                    i.getMust() == sign
-            ).collect(Collectors.toList());
-        } else {
-            //如果不是0或1，即表示是教师获取可选的课程（返回除被选的选修课程外的所有课程）
-            courseList = ninCourseMapper.reSelectCourse();
-        }
-
-        if (!userType.equals(UserTypeEnum.ADMIN.getName())) {
-            Map<Long, SettingBo> boMap = ninSettingService.getSelectList(userType, 1, null).stream().collect(Collectors.toMap(SettingBo::getCourseId, Function.identity()));
-            courseList = courseList.stream().filter(i -> boMap.get(i.getId()) != null).collect(Collectors.toList());
-
-        }
-        return courseList;
-    }
-
-    @Override
-    public List<NinCourse> getCourseAll() {
+    public List<NinCourse> getCourseList(Integer must) {
         return ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>()
-                .select(NinCourse::getId, NinCourse::getCourseName));
+                .select(NinCourse::getId, NinCourse::getCourseName)
+                .eq(null != must, NinCourse::getMust, must));
     }
+
 }

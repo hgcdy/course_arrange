@@ -109,25 +109,13 @@ public class NinCourseController {
     }
 
     /**
-     * 获取可选的课程列表
-     * 0-选修，1-必修，null或其他全选
-     * 如果不是admin，根据setting限制课程
+     * 获取课程列表
+     * must null-全部，0-选修，1-必修
      * @return
      */
-    @PostMapping("/getSelectCourseList")
-    public ResultModel getSelectCourseList(Integer sign){
-        List<NinCourse> courseList = ninCourseService.getSelectCourseList(sign);
-        return ResultModel.ok(courseList);
+    @GetMapping("/getCourseList")
+    public ResultModel getCourseList(Integer must) {
+        return ResultModel.ok(ninCourseService.getCourseList(must));
     }
-
-    /**
-     * 获取全部课程
-     * @return
-     */
-    @GetMapping("/getCourseAll")
-    public ResultModel getCourseAll() {
-        return ResultModel.ok(ninCourseService.getCourseAll());
-    }
-
 
 }

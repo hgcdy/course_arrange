@@ -28,7 +28,7 @@ import java.text.ParseException;
  */
 @RestController
 @RequestMapping("")
-@RequiresRoles(value = {"admin", "teacher", "student"}, logical = Logical.OR)
+@RequiresRoles(value = {"admin"}, logical = Logical.OR)
 public class NinArrangeController {
     @Autowired
     private INinArrangeService ninArrangeService;
@@ -99,6 +99,7 @@ public class NinArrangeController {
     /*--课程表--*/
 
     //跳转各管理的页面的课程表
+    @RequiresRoles(value = {"admin", "teacher", "student"}, logical = Logical.OR)
     @GetMapping("/nin-arrange/courseForm")
     public ModelAndView gotoFormView() {
         return new ModelAndView("view/courseFormView");
@@ -108,6 +109,7 @@ public class NinArrangeController {
      * 获取课程表的信息
      * @return 12（星期一第二节课） -> 课程信息（String）
      */
+    @RequiresRoles(value = {"admin", "teacher", "student"}, logical = Logical.OR)
     @PostMapping("/nin-arrange/getInfo")
     public ResultModel getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
         return ResultModel.ok(ninArrangeService.getInfo(classId, teacherId, studentId, count));
@@ -119,6 +121,7 @@ public class NinArrangeController {
      * @param id id
      */
     @GetMapping("/exportCourseForm")
+    @RequiresRoles(value = {"admin", "teacher", "student"}, logical = Logical.OR)
     public ResultModel exportCourseForm(String type, Long id, Integer count,  HttpServletRequest request, HttpServletResponse response) throws ParseException {
         ninArrangeService.exportCourseForm(type, id, count, request, response);
         return ResultModel.ok();
@@ -127,6 +130,7 @@ public class NinArrangeController {
     /*--教室申请--*/
 
     //跳转教室申请页面
+    @RequiresRoles(value = {"admin", "teacher"}, logical = Logical.OR)
     @GetMapping("/applyHouse")
     public ModelAndView gotoApplyHouseView() {
         ModelAndView modelAndView = new ModelAndView("view/applyHouseView");
@@ -141,6 +145,7 @@ public class NinArrangeController {
      * @param bo
      * @return
      */
+    @RequiresRoles(value = {"admin", "teacher"}, logical = Logical.OR)
     @PostMapping("nin-arrange/getHouseApplyTime")
     public ResultModel getHouseApplyTime(HouseApplyBo bo) {
         return ResultModel.ok(ninArrangeService.getHouseApplyTime(bo));
@@ -148,6 +153,7 @@ public class NinArrangeController {
     /**
      * 提交申请
      */
+    @RequiresRoles(value = {"admin", "teacher"}, logical = Logical.OR)
     @PostMapping("/nin-arrange/submitApply")
     public ResultModel submitApply(HouseApplyBo bo) {
         return ninArrangeService.submitApply(bo);
@@ -156,6 +162,7 @@ public class NinArrangeController {
 
     //跳转班级课程页面
     @GetMapping("nin-class-course")
+    @RequiresRoles(value = {"admin", "teacher", "student"}, logical = Logical.OR)
     public ModelAndView gotoClassCourse() {
         return new ModelAndView("view/selectCourseView");
     }

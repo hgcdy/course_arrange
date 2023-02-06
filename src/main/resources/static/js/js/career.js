@@ -337,7 +337,7 @@ require(['../config'], function () {
             $($chunkElement).empty();
 
             $.ajax({
-                url: "nin-course/getSelectCourseList",
+                url: "nin-course/getCourseList",
                 type: "post",
                 dataType: "json",
                 data: {

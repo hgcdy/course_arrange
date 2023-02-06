@@ -9,6 +9,7 @@ import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.service.INinClassService;
+import cn.netinnet.coursearrange.service.INinMessageService;
 import cn.netinnet.coursearrange.service.INinStudentCourseService;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -18,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -51,7 +49,7 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
     @Autowired
     private NinSettingMapper ninSettingMapper;
     @Autowired
-    private NinMessageMapper ninMessageMapper;
+    private INinMessageService ninMessageService;
     @Autowired
     private NinHouseMapper ninHouseMapper;
 
@@ -146,11 +144,7 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
         if (UserTypeEnum.ADMIN.getName().equals(UserUtil.getUserInfo().getUserType())) {
             //如果是管理员操作则添加消息
             NinCourse course = ninCourseMapper.selectById(courseId);
-            String msg = StringUtils.format(MsgEnum.ADD_COURSE.getMsg(), course.getCourseName());
-            ninMessageMapper.insert(new NinMessage(){{
-                setUserId(studentId);
-                setMsg(msg);
-            }});
+            ninMessageService.addBatchMsg(Collections.singletonList(studentId), null, MsgEnum.ADD_COURSE, course.getCourseName());
         }
 
         return save(new NinStudentCourse(){{
@@ -181,11 +175,7 @@ public class NinStudentCourseServiceImpl extends ServiceImpl<NinStudentCourseMap
         if (UserTypeEnum.ADMIN.getName().equals(UserUtil.getUserInfo().getUserType())) {
             //如果是管理员操作则添加消息
             NinCourse course = ninCourseMapper.selectById(courseId);
-            String msg = StringUtils.format(MsgEnum.DEL_COURSE.getMsg(), course.getCourseName());
-            ninMessageMapper.insert(new NinMessage(){{
-                setUserId(studentId);
-                setMsg(msg);
-            }});
+            ninMessageService.addBatchMsg(Collections.singletonList(studentId), null, MsgEnum.DEL_COURSE, course.getCourseName());
         }
 
         return removeById(ninStudentCourse.getId());

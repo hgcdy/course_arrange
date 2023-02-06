@@ -41,10 +41,5 @@
         </if>
         ORDER BY must, course_name
     </select>
-    <select id="reSelectCourse" resultType="cn.netinnet.coursearrange.entity.NinCourse">
-        SELECT nin_course.*
-        FROM nin_course LEFT JOIN nin_teacher_course ON nin_course.id = nin_teacher_course.course_id
-        WHERE (nin_course.must = 0 AND nin_teacher_course.`course_id` IS NULL) OR nin_course.must != 0
-    </select>
 
 </mapper>

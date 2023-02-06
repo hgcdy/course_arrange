@@ -26,9 +26,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -544,10 +541,10 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         jsonObject.put("teacherName", ninTeacher.getTeacherName());
         Long courseId = bo.getCourseId();
         if (courseId == -1) {
-            jsonObject.put("courseName", "其他");
+            jsonObject.put("courseName", "其他用途");
         } else {
             NinCourse course = ninCourseMapper.selectById(courseId);
-            jsonObject.put("courseName", course.getCourseName());
+            jsonObject.put("courseName", "用于课程[" + course.getCourseName() + "]补课");
         }
 
         NinMessage ninMessage = new NinMessage();
