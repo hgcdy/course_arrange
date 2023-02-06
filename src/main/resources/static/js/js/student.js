@@ -322,10 +322,10 @@ require(['../config'], function () {
                                 var $op3 = $("<option disabled='disabled'></option>").html("&nbsp;&nbsp;&nbsp;" + key1);
                                 $($select).append($op3);
                                 for (let i = 0; i < value1.length; i++) {
-                                    if (classId_ != null && classId_ == value1[i].classId) {
-                                        var $op4 = $("<option selected = 'selected'></option>").html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + value1[i].className).val(value1[i].classId);
+                                    if (classId_ != null && classId_ == value1[i].id) {
+                                        var $op4 = $("<option selected = 'selected'></option>").html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + value1[i].className).val(value1[i].id);
                                     } else {
-                                        var $op4 = $("<option></option>").html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + value1[i].className).val(value1[i].classId);
+                                        var $op4 = $("<option></option>").html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + value1[i].className).val(value1[i].id);
                                     }
                                     $($select).append($op4);
                                 }

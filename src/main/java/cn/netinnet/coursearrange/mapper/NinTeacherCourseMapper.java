@@ -1,11 +1,9 @@
 package cn.netinnet.coursearrange.mapper;
 
-import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.entity.NinTeacherCourse;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
 
 /**
  * <p>

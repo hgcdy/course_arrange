@@ -1,7 +1,6 @@
 package cn.netinnet.coursearrange.bo;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import cn.netinnet.coursearrange.entity.NinArrange;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -11,30 +10,13 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class ArrangeBo {
-
-    /**
-     * 排课记录id
-     */
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long id;
-
-    /**
-     * 专业id
-     */
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long careerId;
+public class ArrangeBo extends NinArrange {
 
     /**
      * 专业名称
      */
     private String careerName;
 
-    /**
-     * 班级id
-     */
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long classId;
 
     /**
      * 教学班id列表
@@ -64,41 +46,22 @@ public class ArrangeBo {
     /**
      * 是否选修，0-选修，1-必修
      */
-    private Integer must;
     private String cnMust;
 
     /**
      * 周次(0-每周，1-单周，2-双周)
      */
-    private Integer weekly;
     private String cnWeekly;
-
-    /**
-     * 开始周次
-     */
-    private Integer startTime;
-
-    /**
-     * 结束周次
-     */
-    private Integer endTime;
 
     /**
      * 星期
      */
-    private Integer week;
     private String cnWeek;
 
     /**
      * 节数
      */
-    private Integer pitchNum;
     private String cnPitchNum;
-
-    /**
-     * 人数
-     */
-    private Integer peopleNum;
 
     /**
      * 删除标记，但用于标记是否未安排的课程

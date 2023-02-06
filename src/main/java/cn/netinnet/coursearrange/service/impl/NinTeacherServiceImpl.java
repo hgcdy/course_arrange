@@ -8,7 +8,6 @@ import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinTeacherCourseMapper;
 import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
-import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinTeacherService;
 import cn.netinnet.coursearrange.service.LoginService;
 import cn.netinnet.coursearrange.util.MD5;

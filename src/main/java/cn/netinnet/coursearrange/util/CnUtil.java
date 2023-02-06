@@ -2,8 +2,10 @@ package cn.netinnet.coursearrange.util;
 
 public class CnUtil {
 
-    public static String cnWeek(int week) {
-        if (week > 0 && week < 7) {
+    public static String cnWeek(Integer week) {
+        if (null == week) {
+            return null;
+        } else if (week > 0 && week < 7) {
             return "星期" + cnNum(week);
         } else if (week == 7) {
             return "星期日";
@@ -12,8 +14,10 @@ public class CnUtil {
         }
     }
 
-    public static String cnPitchNum(int pitchNum) {
-        if (pitchNum > 0){
+    public static String cnPitchNum(Integer pitchNum) {
+        if (null == pitchNum) {
+            return null;
+        } else if (pitchNum > 0){
             return "第" + cnNum(pitchNum) + "节";
         } else {
             return "";

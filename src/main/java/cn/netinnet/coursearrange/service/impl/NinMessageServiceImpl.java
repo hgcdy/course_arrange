@@ -1,7 +1,5 @@
 package cn.netinnet.coursearrange.service.impl;
 
-import cn.netinnet.coursearrange.bo.HouseApplyBo;
-import cn.netinnet.coursearrange.bo.HouseBo;
 import cn.netinnet.coursearrange.entity.NinMessage;
 import cn.netinnet.coursearrange.enums.MsgEnum;
 import cn.netinnet.coursearrange.mapper.NinMessageMapper;
@@ -13,12 +11,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -20,15 +20,10 @@
     </sql>
 
     <!--条件查询-->
-    <select id="getSelectList" resultType="cn.netinnet.coursearrange.bo.ContactCourseBo">
-        SELECT nin_career_course.id AS id, career_id,
-               nin_career_course.course_id AS courseId,
-               course_name, house_type, must, course_time,
-               start_time, end_time, week_time
-        FROM nin_career_course, nin_course
-        WHERE nin_career_course.del_flag = 0
-        AND nin_career_course.course_id = nin_course.id
-        AND nin_career_course.career_id = #{careerId}
+    <select id="getSelectList" resultType="java.util.Map">
+        SELECT nin_career_course.id AS id, course_name AS courseName
+        FROM nin_career_course INNER JOIN nin_course ON nin_career_course.course_id = nin_course.id
+        WHERE nin_career_course.career_id = #{careerId}
     </select>
 
 </mapper>

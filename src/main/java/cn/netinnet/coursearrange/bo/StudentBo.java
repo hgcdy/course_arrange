@@ -1,5 +1,6 @@
 package cn.netinnet.coursearrange.bo;
 
+import cn.netinnet.coursearrange.entity.NinStudent;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
@@ -9,23 +10,7 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class StudentBo {
-
-    /**
-     * 学生id
-     */
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long id;
-
-    /**
-     * 学生名称
-     */
-    private String studentName;
-
-    /**
-     * 学生账号
-     */
-    private String studentCode;
+public class StudentBo extends NinStudent {
 
     /**
      * 学院
@@ -42,12 +27,6 @@ public class StudentBo {
      * 专业名称
      */
     private String careerName;
-
-    /**
-     * 班级id
-     */
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long classId;
 
     /**
      * 班级名称

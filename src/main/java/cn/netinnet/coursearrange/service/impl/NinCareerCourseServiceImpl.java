@@ -1,6 +1,5 @@
 package cn.netinnet.coursearrange.service.impl;
 
-import cn.netinnet.coursearrange.bo.ContactCourseBo;
 import cn.netinnet.coursearrange.entity.NinCareerCourse;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.mapper.NinCareerCourseMapper;
@@ -32,9 +31,8 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
     private NinClassMapper ninClassMapper;
 
     @Override
-    public List<ContactCourseBo> getSelectList(Long careerId) {
-        List<ContactCourseBo> list = ninCareerCourseMapper.getSelectList(careerId);
-        return list;
+    public List<Map<String, Object>> getSelectList(Long careerId) {
+        return ninCareerCourseMapper.getSelectList(careerId);
     }
 
     @Override
@@ -60,7 +58,6 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
                 }
             }
         }
-
 
         if (ninCareerCourseArrayList.size() != 0) {
             //插入新的专业选课记录

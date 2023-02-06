@@ -136,7 +136,6 @@ public class NinArrangeController {
         }
         return modelAndView;
     }
-
     /**
      * 返回可申请的时间
      * @param bo
@@ -146,7 +145,6 @@ public class NinArrangeController {
     public ResultModel getHouseApplyTime(HouseApplyBo bo) {
         return ResultModel.ok(ninArrangeService.getHouseApplyTime(bo));
     }
-
     /**
      * 提交申请
      */
@@ -154,6 +152,7 @@ public class NinArrangeController {
     public ResultModel submitApply(HouseApplyBo bo) {
         return ninArrangeService.submitApply(bo);
     }
+
 
     //跳转班级课程页面
     @GetMapping("nin-class-course")

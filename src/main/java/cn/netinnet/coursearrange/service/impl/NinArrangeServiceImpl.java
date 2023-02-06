@@ -204,16 +204,12 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         PageInfo<ArrangeBo> pageInfo = new PageInfo<>(list);
 
         pageInfo.getList().forEach(i -> {
-            if (i.getWeek() != null) {
-                i.setCnWeek(CnUtil.cnWeek(i.getWeek()));
-            }
-            if (i.getPitchNum() != null) {
-                i.setCnPitchNum(CnUtil.cnPitchNum(i.getPitchNum()));
-            }
-            if (i.getMust() != null) {
+            i.setCnWeek(CnUtil.cnWeek(i.getWeek()));
+            i.setCnPitchNum(CnUtil.cnPitchNum(i.getPitchNum()));
+            if (null != i.getMust()) {
                 i.setCnMust(CourseTypeEnum.codeOfKey(i.getMust()).getName());
             }
-            if (i.getWeekly() != null) {
+            if (null != i.getWeekly()) {
                 i.setCnWeekly(weeklyTypeEnum.codeOfKey(i.getWeekly()).getName());
             }
         });
@@ -243,19 +239,16 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             ninCourseMapper.deleteById(courseId);
 
             //删除学生选课记录
-            ninStudentCourseMapper.delete(new QueryWrapper<>(new NinStudentCourse() {{
-                setTakeClassId(classId);
-            }}));
+            ninStudentCourseMapper.delete(new LambdaQueryWrapper<NinStudentCourse>()
+                    .eq(NinStudentCourse::getTakeClassId, classId));
 
             //删除教师选课记录
-            ninTeacherCourseMapper.delete(new QueryWrapper<>(new NinTeacherCourse() {{
-                setCourseId(courseId);
-            }}));
+            ninTeacherCourseMapper.delete(new LambdaQueryWrapper<NinTeacherCourse>()
+                    .eq(NinTeacherCourse::getCourseId, courseId));
 
             //删除设置记录
-            ninSettingMapper.delete(new QueryWrapper<>(new NinSetting() {{
-                setCourseId(courseId);
-            }}));
+            ninSettingMapper.delete(new LambdaQueryWrapper<NinSetting>()
+                    .eq(NinSetting::getCourseId, courseId));
         }
         return ninArrangeMapper.deleteById(id);
     }
@@ -610,7 +603,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         arrange.setTeacherId(teacherId);
         arrange.setHouseId(houseId);
         arrange.setCourseId(courseId);
-        arrange.setWeekly(0);
+        arrange.setWeekly(weeklyTypeEnum.WEEKLY.getCode());
         arrange.setWeek(week);
         arrange.setPitchNum(pitchNum);
         arrange.setStartTime(weekly);
@@ -619,100 +612,5 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         arrange.setMust(courseId != -1 ? ninCourseMapper.selectById(courseId).getMust() : 1);
         return ninArrangeMapper.insert(arrange);
     }
-
-
-    /**
-     * maxNum分成minNum份，使每份之间的差最小
-     *
-     * @param maxNum 例：8
-     * @param minNum 例：3
-     * @return 数组，存放每份的数 例：{3,3,2}
-     */
-    public int[] grouping(int maxNum, int minNum) {
-        int[] ints = new int[minNum];
-        for (int i = 0; i < maxNum; i++) {
-            ints[i % ints.length]++;
-        }
-        return ints;
-    }
-
-    /**
-     * 判断准备放进去的排课是否可以放入
-     *
-     * @param ninArrangeList           存放最终排课记录的列表
-     * @param ninArrange               准备放进去的排课记录
-     * @param longListNinTeachClassMap Map<教学班id,List<教学班列表>>
-     * @return 可以返回true, 不行则返回false
-     */
-    public Boolean compare(List<NinArrange> ninArrangeList, NinArrange ninArrange, Map<Long, List<NinTeachClass>> longListNinTeachClassMap) {
-        if (ninArrangeList.size() > 1) {
-            NinArrange arrange1 = ninArrangeList.get(ninArrangeList.size() - 1);
-            //和上一条记录相比，同教学班，同课程时，且在同一天，直接跳出
-            if (arrange1.getCourseId().equals(ninArrange.getCourseId()) && arrange1.getTeachClassId().equals(ninArrange.getTeachClassId())) {
-                if (arrange1.getWeek() == ninArrange.getWeek()) {
-                    return false;
-                }
-            }
-        }
-
-        for (NinArrange arrange : ninArrangeList) {
-            //为空，表示该记录没有排
-            if (arrange.getWeekly() == null) {
-                continue;
-            }
-            //星期节数重叠
-            if (ninArrange.getWeek() == arrange.getWeek() && ninArrange.getPitchNum() == arrange.getPitchNum()) {
-                //开始结束时间有重叠
-                if (!(ninArrange.getStartTime() > arrange.getEndTime() || ninArrange.getEndTime() < arrange.getStartTime())) {
-                    //单双周重叠
-                    if (ninArrange.getWeekly() == 0 || arrange.getWeekly() == 0 || ninArrange.getWeekly() == arrange.getWeekly()) {
-                        //当时间一样时，开始对比其他条件
-                        //教师相同
-                        if (ninArrange.getTeacherId().equals(arrange.getTeacherId())) {
-                            return false;
-                        }
-
-                        //教室相同
-                        if (ninArrange.getHouseId().equals(arrange.getHouseId())) {
-                            return false;
-                        }
-
-                        //班级重叠
-                        List<Long> A = new ArrayList<>();
-                        List<Long> B = new ArrayList<>();
-                        //班级id为空，即是教学班，生成存放该教学班包含班级的列表
-                        if (arrange.getClassId() == null) {
-                            List<NinTeachClass> ninTeachClasses = longListNinTeachClassMap.get(arrange.getTeachClassId());
-                            for (NinTeachClass ninTeachClass : ninTeachClasses) {
-                                A.add(ninTeachClass.getClassId());
-                            }
-                        } else {
-                            //表示教学班，也将班级单独放进列表
-                            A.add(arrange.getClassId());
-                        }
-                        if (ninArrange.getClassId() == null) {
-                            List<NinTeachClass> ninTeachClasses = longListNinTeachClassMap.get(ninArrange.getTeachClassId());
-                            for (NinTeachClass ninTeachClass : ninTeachClasses) {
-                                B.add(ninTeachClass.getClassId());
-                            }
-                        } else {
-                            B.add(ninArrange.getClassId());
-                        }
-
-                        //遍历两个列表，只要有一个相同，即表示发生了冲突
-                        for (Long l1 : A) {
-                            for (Long l2 : B) {
-                                if (l1.equals(l2)) {
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
 }
 

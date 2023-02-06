@@ -39,9 +39,8 @@ public class LoginServiceImpl implements LoginService {
                 oldPassword = ApplicationConstant.ADMIN_PASSWORD;
             }
         } else if(UserTypeEnum.TEACHER.getName().equals(type)) {
-            NinTeacher ninTeacher = ninTeacherMapper.selectOne(new QueryWrapper<>(new NinTeacher() {{
-                setTeacherCode(code);
-            }}));
+            NinTeacher ninTeacher = ninTeacherMapper.selectOne(new LambdaQueryWrapper<NinTeacher>()
+                    .eq(NinTeacher::getTeacherCode, code));
             if (ninTeacher != null) {
                 oldId = ninTeacher.getId();
                 oldName = ninTeacher.getTeacherName();
@@ -49,17 +48,16 @@ public class LoginServiceImpl implements LoginService {
                 oldPassword = ninTeacher.getTeacherPassword();
             }
         } else if (UserTypeEnum.STUDENT.getName().equals(type)) {
-            NinStudent ninStudent = ninStudentMapper.selectOne(new QueryWrapper<>(new NinStudent() {{
-                setStudentCode(code);
-            }}));
-            if (ninStudent != null) {
+            NinStudent ninStudent = ninStudentMapper.selectOne(new LambdaQueryWrapper<NinStudent>()
+                    .eq(NinStudent::getStudentCode, code));
+            if (null != ninStudent) {
                 oldId = ninStudent.getId();
                 oldName = ninStudent.getStudentName();
                 oldCode = ninStudent.getStudentCode();
                 oldPassword = ninStudent.getStudentPassword();
             }
         }
-        if (oldCode == null) {
+        if (null == oldCode) {
             throw new ServiceException(412, "账号不存在");
         }
         if (!oldPassword.equals(MD5.getMD5Encode(password))) {

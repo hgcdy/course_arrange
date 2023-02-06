@@ -68,7 +68,7 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
             Map<String, Object> map = new HashMap<>();
             map.put("id", courseId.toString());
             map.put("name", i.getCourseName());
-            if (stateMap.get(courseId) != null) {
+            if (null != stateMap.get(courseId)) {
                 map.put("isOk", true);
             } else {
                 map.put("isOk", false);
