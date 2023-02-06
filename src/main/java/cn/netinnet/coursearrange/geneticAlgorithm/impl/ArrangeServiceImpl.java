@@ -349,30 +349,27 @@ public class ArrangeServiceImpl implements ArrangeService {
     @Override
     public boolean verifyClash(List<TaskRecord> taskRecordList, TaskRecord taskRecord) {
         for (TaskRecord r : taskRecordList) {
-            if (verifyTime(r, taskRecord)) {
-                continue;
-            }
-            if (r.getHouseId().equals(taskRecord.getHouseId())) {
-                return false;
-            }
-            TeaTask teaTask1 = r.getTeaTask();
-            TeaTask teaTask2 = taskRecord.getTeaTask();
-            if (teaTask1.getTeacherId().equals(teaTask2.getTeacherId())) {
-                return false;
-            }
+            //校验时间
+            if (!verifyTime(r, taskRecord)) {
+                if (r.getHouseId().equals(taskRecord.getHouseId())) {
+                    return false;
+                }
+                TeaTask teaTask1 = r.getTeaTask();
+                TeaTask teaTask2 = taskRecord.getTeaTask();
+                if (teaTask1.getTeacherId().equals(teaTask2.getTeacherId())) {
+                    return false;
+                }
 
-            List<Long> classIdList1 = teaTask1.getClassIdList();
-            List<Long> classIdList2 = teaTask2.getClassIdList();
-            for (Long classId1 : classIdList1) {
-                for (Long classId2 : classIdList2) {
-                    if (classId1.equals(classId2)) {
-                        return false;
+                List<Long> classIdList1 = teaTask1.getClassIdList();
+                List<Long> classIdList2 = teaTask2.getClassIdList();
+                for (Long classId1 : classIdList1) {
+                    for (Long classId2 : classIdList2) {
+                        if (classId1.equals(classId2)) {
+                            return false;
+                        }
                     }
                 }
             }
-//            if (!Collections.disjoint(classIdList1, classIdList2)) {
-//                return false;
-//            }
         }
         return true;
     }
@@ -396,16 +393,15 @@ public class ArrangeServiceImpl implements ArrangeService {
     public boolean verifyTime(TaskRecord record1, TaskRecord record2) {
         Integer weekly1 = record1.getWeekly(), week1 = record1.getWeek(), pitchNum1 = record1.getPitchNum();
         Integer weekly2 = record2.getWeekly(), week2 = record2.getWeek(), pitchNum2 = record2.getPitchNum();
-        if (null == week1 || null == week2) {
-            return true;
-        }
-        if (week1.equals(week2) && pitchNum1.equals(pitchNum2)) {
-            if (weekly1.equals(0) || weekly2.equals(0) || weekly1.equals(weekly2)) {
+        if (null != week1 && null != week2) {
+            //等于3，即一个单周，一个双周
+            if (week1.equals(week2) && pitchNum1.equals(pitchNum2) && weekly1 + weekly2 != 3) {
                 return false;
             }
         }
         return true;
     }
+
 
     public Map<Integer, List<NinHouse>> getHouseTypeNinHouseListMap() {
         if (null == houseTypeNinHouseListMap) {
