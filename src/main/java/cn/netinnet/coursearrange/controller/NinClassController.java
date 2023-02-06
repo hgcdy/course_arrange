@@ -47,7 +47,7 @@ public class NinClassController {
      * @param className 模糊查询班级名称
      * @return
      */
-    @PostMapping("/getPageSelectList")
+    @GetMapping("/getPageSelectList")
     public ResultModel getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          Long careerId, String college, String className) {
@@ -62,7 +62,7 @@ public class NinClassController {
      * @param careerId
      * @return
      */
-    @PostMapping("/getClassList")
+    @GetMapping("/getClassList")
     public ResultModel getClassList(String college, Long careerId) {
         return ResultModel.ok(ninClassService.getClassList(college, careerId));
     }
@@ -132,7 +132,7 @@ public class NinClassController {
      * @param id
      * @return
      */
-    @PostMapping("/getCourse")
+    @GetMapping("/getCourse")
     public ResultModel getCourse(Long id) {
         return ResultModel.ok(ninClassService.getCourse(id));
     }

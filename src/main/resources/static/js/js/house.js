@@ -56,7 +56,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-house/getPageSelectList",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     houseName: houseName,
                     houseType: houseType,

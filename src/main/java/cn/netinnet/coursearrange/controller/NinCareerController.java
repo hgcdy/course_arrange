@@ -46,7 +46,7 @@ public class NinCareerController {
      * 获取学院名称列表
      * @return
      */
-    @PostMapping("getCollegeList")
+    @GetMapping("getCollegeList")
     public ResultModel getCollege() {
         return ResultModel.ok(ninCareerService.getCollegeList());
     }
@@ -56,7 +56,7 @@ public class NinCareerController {
      *
      * @return
      */
-    @PostMapping("getCareerList")
+    @GetMapping("getCareerList")
     public ResultModel getCareer(String college) {
         return ResultModel.ok(ninCareerService.getNinCareerList(college));
     }
@@ -66,7 +66,8 @@ public class NinCareerController {
      * 获取专业列表，并按学院分组
      * @return
      */
-    @PostMapping("getCollegeCareerList")
+    @RequiresRoles(value = {"admin", "teacher"}, logical = Logical.OR)
+    @GetMapping("getCollegeCareerList")
     public ResultModel getCollegeCareerList() {
         return ResultModel.ok(ninCareerService.getCollegeCareerList());
     }

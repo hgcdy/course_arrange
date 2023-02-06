@@ -43,7 +43,7 @@ public class NinCourseController {
      * @param ninCourse
      * @return
      */
-    @PostMapping("/getPageSelectList")
+    @GetMapping("/getPageSelectList")
     public ResultModel getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          NinCourse ninCourse){

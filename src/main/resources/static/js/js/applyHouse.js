@@ -67,7 +67,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-arrange/getHouseApplyTime",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     classIdList: classIdList,
                     houseId: houseId,
@@ -160,7 +160,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-career/getCollegeCareerList",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 success: function (data) {
                     if (data.code == 200) {
                         createItemsText($apply, "--学院专业--");
@@ -178,7 +178,7 @@ require(['../config'], function () {
                             $.ajax({
                                 url: "nin-class/getClassList",
                                 dataType: "json",
-                                type: "post",
+                                type: "get",
                                 data: {
                                     careerId: careerId
                                 },
@@ -230,7 +230,7 @@ require(['../config'], function () {
                 $.ajax({
                     url: "nin-house/getHouseByType",
                     dataType: "json",
-                    type: "post",
+                    type: "get",
                     data: {
                         houseType: houseType
                     },
@@ -260,7 +260,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-teacher/getTeaAll",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 success: function (data) {
                     if (data.code == 200) {
                         $apply1.empty();

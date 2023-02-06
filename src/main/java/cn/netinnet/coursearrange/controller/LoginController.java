@@ -58,7 +58,7 @@ public class LoginController {
         String token = JWTUtil.sign(userInfo);
         return ResultModel.ok(new HashMap<String, Object>() {{
             put("token", token);
-            put("userId", userInfo.getUserId());
+            put("userId", userInfo.getUserId().toString());
             put("role", userInfo.getUserType());
         }});
     }

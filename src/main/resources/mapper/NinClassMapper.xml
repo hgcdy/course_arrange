@@ -48,7 +48,7 @@
 
 <!-- 学院专业班级列表 -->
     <select id="collegeCareerClassList" resultType="cn.netinnet.coursearrange.bo.ClassBo">
-        SELECT college, career_name, nin_class.id AS classId, class_name
+        SELECT college, career_name, nin_class.id AS id, class_name
         FROM nin_class INNER JOIN nin_career ON nin_class.career_id = nin_career.id
         WHERE nin_class.career_id != 0
         ORDER BY college, career_id, class_name

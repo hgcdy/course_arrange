@@ -98,7 +98,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-career/getCollegeList",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 success: function (data) {
                     if (data.code == 200) {
 
@@ -177,7 +177,7 @@ require(['../config'], function () {
                 $.ajax({
                     url: "nin-career/getCareerList",
                     dataType: "json",
-                    type: "post",
+                    type: "get",
                     data: {
                         college: $1.text()
                     },
@@ -212,7 +212,7 @@ require(['../config'], function () {
                                 var careerName = parent2.children(".text").text();
                                 $.ajax({
                                     url: "nin-career-course/getSelectList",
-                                    type: "post",
+                                    type: "get",
                                     dataType: "json",
                                     data: {
                                         careerId: careerId
@@ -338,7 +338,7 @@ require(['../config'], function () {
 
             $.ajax({
                 url: "nin-course/getCourseList",
-                type: "post",
+                type: "get",
                 dataType: "json",
                 data: {
                     sign: 1

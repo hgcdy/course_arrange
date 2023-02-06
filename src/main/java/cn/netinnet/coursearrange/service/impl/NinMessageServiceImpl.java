@@ -15,7 +15,6 @@ import cn.netinnet.coursearrange.util.UserUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.github.pagehelper.PageHelper;
@@ -50,6 +49,7 @@ public class NinMessageServiceImpl extends ServiceImpl<NinMessageMapper, NinMess
     @Override
     public PageInfo<NinMessage> getMsgList(Integer page, Integer size) {
         LambdaQueryWrapper<NinMessage> wrapper = new LambdaQueryWrapper<NinMessage>()
+                .eq(NinMessage::getUserId, UserUtil.getUserInfo().getUserId())
                 .orderByAsc(NinMessage::getIsRead).orderByDesc(NinMessage::getCreateTime);
         PageHelper.startPage(page, size);
         List<NinMessage> list = list(wrapper);
@@ -62,10 +62,10 @@ public class NinMessageServiceImpl extends ServiceImpl<NinMessageMapper, NinMess
                 Integer weekly = jsonObject.getInteger("weekly");
                 Integer week = jsonObject.getInteger("week");
                 Integer pitchNum = jsonObject.getInteger("pitchNum");
-                String time = "第" + CnUtil.cnNum(weekly) + "周" + CnUtil.cnWeek(week) + CnUtil.cnPitchNum(pitchNum);
-                String message = StringUtils.format(MsgEnum.HOUSE_APPLY.getMsg(),
+                String message = String.format(MsgEnum.HOUSE_APPLY.getMsg(),
                         jsonObject.get("teacherName"), jsonObject.get("houseName"),
-                        jsonObject.get("className"), time, jsonObject.get("courseName"));
+                        jsonObject.get("className"), CnUtil.cnNum(weekly), CnUtil.cnWeek(week),
+                        CnUtil.cnNum(pitchNum), jsonObject.get("courseName"));
                 msg.setMsg(message);
             }
         });

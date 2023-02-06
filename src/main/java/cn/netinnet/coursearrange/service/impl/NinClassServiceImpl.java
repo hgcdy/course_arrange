@@ -65,11 +65,13 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
     @Override
     public List<NinClass> getClassList(String college, Long careerId) {
         List<Long> careerIdList = null;
-        if (college != null && !college.equals("")) {
-            List<NinCareer> ninCareers = ninCareerMapper.selectList(new LambdaQueryWrapper<NinCareer>().select(NinCareer::getCareerName).eq(NinCareer::getCollege, college));
-            careerIdList = ninCareers.stream().map(NinCareer::getId).collect(Collectors.toList());
-        } else {
+        if (null != careerId) {
             careerIdList = Collections.singletonList(careerId);
+        } else {
+            List<NinCareer> ninCareers = ninCareerMapper.selectList(new LambdaQueryWrapper<NinCareer>()
+                    .select(NinCareer::getId)
+                    .eq(null != college && !"".equals(college), NinCareer::getCollege, college));
+            careerIdList = ninCareers.stream().map(NinCareer::getId).collect(Collectors.toList());
         }
         List<NinClass> list = list(new QueryWrapper<NinClass>().select("id, career_id, class_name").lambda().in(NinClass::getCareerId, careerIdList));
         return list;

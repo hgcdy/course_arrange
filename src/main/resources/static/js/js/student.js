@@ -28,7 +28,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-career/getCollegeList",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 success: function (data) {
                     if (data.code == 200) {
                         var list = data.data;
@@ -61,7 +61,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-career/getCareerList",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     college: college
                 },
@@ -96,7 +96,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-class/getClassList",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     college: college,
                     careerId: careerId
@@ -151,7 +151,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-student/getPageSelectList",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     college: college,
                     studentName: studentName,

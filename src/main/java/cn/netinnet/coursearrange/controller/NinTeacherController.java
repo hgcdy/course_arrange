@@ -42,7 +42,7 @@ public class NinTeacherController {
      * @param teacherName
      * @return
      */
-    @PostMapping("/getPageSelectList")
+    @GetMapping("/getPageSelectList")
     public ResultModel getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          String teacherName){
@@ -98,7 +98,7 @@ public class NinTeacherController {
      * 教室申请时查询所有教师（教师用户返回自己）
      * @return
      */
-    @PostMapping("getTeaAll")
+    @GetMapping("getTeaAll")
     public ResultModel getTeaAll() {
         return ResultModel.ok(ninTeacherService.getTeaAll());
     }

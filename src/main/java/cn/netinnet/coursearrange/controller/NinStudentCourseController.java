@@ -38,7 +38,7 @@ public class NinStudentCourseController {
         return new ModelAndView("view/selectCourseView");
     }
 
-    @PostMapping("/getCourse")
+    @GetMapping("/getCourse")
     public ResultModel getSelectCourse(Long id) {
         return ResultModel.ok(ninStudentCourseService.getCourse(id));
     }

@@ -164,14 +164,6 @@ td {
 }
 
 
-#stuSetting, #teaSetting {
-    height: 5%;
-    width: 80px;
-    background-color: #f5f5f5;
-    position: absolute;
-    text-align:center;
-    font-size: 22px;
-}
 
 #welcome div {
     position: absolute;

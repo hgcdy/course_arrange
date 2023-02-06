@@ -117,12 +117,18 @@ require(['../config'], function () {
                         var list = data.data.list;
                         var len = list.length;
                         $("#page-num").text(page + "/" + totalPage);
+                        if (len === 0) {
+                            $("#msg-body").append("<h3>暂无消息</h3>").css("text-align", "center");
+                        }
                         for (let i = 0; i < len; i++) {
                             var record = list[i];
-                            var $item = $("<div class='mag-item'></div>").css("top", i * 20 + "%");
-                            var $text = $("<div class='msg-text'></div>").text(record.msg);
-                            var $operate = $("<div class='msg-operate'></div>").attr("data-id", record.id);
+                            var $item = $("<div class='msg-item'></div>").css("top", i * 20 + "%");
 
+                            var $text = $("<div class='msg-text'></div>").text(record.msg);
+                            var $time = $("<div class='msg-time'></div>").text(record.createTime);
+                            $text.append($time);
+
+                            var $operate = $("<div class='msg-operate'></div>").attr("data-id", record.id);
                             var a1 = "<a href='javaScript:void(0)' class='read'>已读</a>";
                             var a2 = "<a href='javaScript:void(0)' class='del'>删除</a>";
                             var a3 = "<a href='javaScript:void(0)' class='consent'>同意</a>";
@@ -138,6 +144,7 @@ require(['../config'], function () {
                                 $operate.append("<br>", a2);
                             }
                             $item.append($text, $operate);
+
                             $("#msg-body").append($item);
                         }
 
@@ -147,7 +154,7 @@ require(['../config'], function () {
                             readMag(id);
                         })
                         //删除
-                        $(".read").click(function () {
+                        $(".del").click(function () {
                             var id = $(this).parent().attr("data-id");
                             delMsg(id);
                         })

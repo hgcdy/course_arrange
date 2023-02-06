@@ -26,7 +26,7 @@ require(['../config'], function () {
         //重置按钮
         $("#reset").click(function () {
             openState = null;
-            $("#dropupCollegeButton").text("状态");
+            $("#dropupStateTypeButton").text("状态");
             courseName = null;
             $("#courseName").val(null);
             query();
@@ -49,10 +49,14 @@ require(['../config'], function () {
         })
 
         //教师学生切换
-        $("#stuSetting, #teaSetting").click(function () {
-            userType = $(this).attr("data-id");
-            $("#stuSetting, #teaSetting").css("border", "");
-            $(this).css("border", "1px solid #000000")
+        $("#switchover").click(function () {
+            if (userType === "teacher") {
+                userType = "student";
+                $(this).text("学生[切换]");
+            } else if (userType === "student") {
+                userType = "teacher";
+                $(this).text("教师[切换]");
+            }
             query();
         })
 

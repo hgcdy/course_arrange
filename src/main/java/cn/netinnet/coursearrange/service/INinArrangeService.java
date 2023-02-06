@@ -68,6 +68,7 @@ public interface INinArrangeService extends IService<NinArrange> {
     List<String> getHouseApplyTime(HouseApplyBo bo);
     /**
      * 提交申请
+     * 如果是管理员直接通过申请
      * @param bo
      * @return
      */

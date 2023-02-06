@@ -41,7 +41,7 @@ public class NinStudentController {
      * @param studentName 名字或账号模糊查询
      * @return
      */
-    @PostMapping("/getPageSelectList")
+    @GetMapping("/getPageSelectList")
     public ResultModel getPageSelectList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          String college, Long careerId, Long classId, String studentName){

@@ -30,7 +30,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-teacher/getPageSelectList",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     teacherName: teacherName,
                     size: size,

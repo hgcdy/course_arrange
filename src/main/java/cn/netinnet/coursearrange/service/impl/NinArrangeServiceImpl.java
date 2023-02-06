@@ -4,10 +4,7 @@ import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
-import cn.netinnet.coursearrange.enums.CourseTypeEnum;
-import cn.netinnet.coursearrange.enums.OpenStateEnum;
-import cn.netinnet.coursearrange.enums.UserTypeEnum;
-import cn.netinnet.coursearrange.enums.weeklyTypeEnum;
+import cn.netinnet.coursearrange.enums.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.geneticAlgorithm.GeneticAlgorithm;
 import cn.netinnet.coursearrange.geneticAlgorithm.TaskRecord;
@@ -187,9 +184,10 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             if (ninClass.getCareerId() != 0) {
                 //如果不是选修，查询教学班id列表
                 //如果是，则什么都不做
-                List<Long> teachClassIdList = ninTeachClassMapper.selectList(new QueryWrapper<>(new NinTeachClass() {{
-                    setClassId(ninClass.getId());
-                }})).stream().map(NinTeachClass::getTeachClassId).collect(Collectors.toList());
+                List<Long> teachClassIdList = ninTeachClassMapper.selectList(new LambdaQueryWrapper<NinTeachClass>()
+                        .eq(NinTeachClass::getClassId, ninClass.getId()))
+                        .stream().map(NinTeachClass::getTeachClassId).collect(Collectors.toList());
+
                 //添加教学班列表，将班级置空
                 bo.setTeachClassIdList(teachClassIdList);
                 bo.setClassId(null);
@@ -526,7 +524,15 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultModel submitApply(HouseApplyBo bo) {
+
+        NinArrange arrange = getOne(new LambdaQueryWrapper<NinArrange>()
+                .eq(NinArrange::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode()), false);
+        if (null == arrange) {
+            throw new ServiceException(412, "此功能将在排课完成后开放");
+        }
+
         JSONObject jsonObject = (JSONObject) JSONObject.toJSON(bo);
 
         List<Long> classIds = JSON.parseArray(bo.getClassIdList(), Long.class);
@@ -547,10 +553,25 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             jsonObject.put("courseName", "用于课程[" + course.getCourseName() + "]补课");
         }
 
+        String userType = UserUtil.getUserInfo().getUserType();
         NinMessage ninMessage = new NinMessage();
-        ninMessage.setMsg(jsonObject.toJSONString());
-        ninMessage.setUserId(ApplicationConstant.ADMIN_ID);
-        ninMessage.setIsConsent(0);
+        if (userType.equals(UserTypeEnum.TEACHER.getName())) {
+            ninMessage.setMsg(jsonObject.toJSONString());
+            ninMessage.setUserId(ApplicationConstant.ADMIN_ID);
+            ninMessage.setIsConsent(0);
+        } else if (userType.equals(UserTypeEnum.ADMIN.getName())) {
+            //管理员直接通过申请
+            addArrange(jsonObject);
+            ninMessage.setUserId(jsonObject.getLong("teacherId")); //教师id
+
+            Integer weekly = jsonObject.getInteger("weekly");
+            Integer week = jsonObject.getInteger("week");
+            Integer pitchNum = jsonObject.getInteger("pitchNum");
+            String msg = String.format(MsgEnum.ADMIN_APPLY.getMsg(), jsonObject.get("houseName"),
+                    jsonObject.get("className"), CnUtil.cnNum(weekly), CnUtil.cnWeek(week),
+                    CnUtil.cnNum(pitchNum), jsonObject.get("courseName"));
+            ninMessage.setMsg(msg);
+        }
         ninMessageMapper.insert(ninMessage);
 
         //生成一条消息记录

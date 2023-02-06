@@ -62,7 +62,7 @@ public class NinArrangeController {
     /**
      * 条件分页查询
      */
-    @PostMapping("/nin-arrange/getPageSelectList")
+    @GetMapping("/nin-arrange/getPageSelectList")
     public ResultModel getPageSelectList(ArrangeBo bo, Integer page, Integer size) {
         return ResultModel.ok(ninArrangeService.getPageSelectList(bo, page, size));
     }
@@ -87,6 +87,9 @@ public class NinArrangeController {
         return ResultModel.ok(ninArrangeService.getHouseByArrangeId(id));
     }
 
+    /**
+     * 修改排课记录
+     */
     @PostMapping("nin-arrange/alterArrange")
     public ResultModel alterArrange(Long id, Long houseId, Integer week, Integer pitchNum) {
         boolean b = ninArrangeService.alterArrange(id, houseId, week, pitchNum);
@@ -110,7 +113,7 @@ public class NinArrangeController {
      * @return 12（星期一第二节课） -> 课程信息（String）
      */
     @RequiresRoles(value = {"admin", "teacher", "student"}, logical = Logical.OR)
-    @PostMapping("/nin-arrange/getInfo")
+    @GetMapping("/nin-arrange/getInfo")
     public ResultModel getInfo(Long classId, Long teacherId, Long studentId, Integer count) {
         return ResultModel.ok(ninArrangeService.getInfo(classId, teacherId, studentId, count));
     }
@@ -146,7 +149,7 @@ public class NinArrangeController {
      * @return
      */
     @RequiresRoles(value = {"admin", "teacher"}, logical = Logical.OR)
-    @PostMapping("nin-arrange/getHouseApplyTime")
+    @GetMapping("nin-arrange/getHouseApplyTime")
     public ResultModel getHouseApplyTime(HouseApplyBo bo) {
         return ResultModel.ok(ninArrangeService.getHouseApplyTime(bo));
     }

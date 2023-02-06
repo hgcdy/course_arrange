@@ -60,7 +60,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-career/getCareerList",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 success: function (data) {
                     if (data.code == 200) {
                         var list = data.data;
@@ -88,7 +88,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-class/getClassList",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     careerId: careerId
                 },
@@ -153,7 +153,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-arrange/getPageSelectList",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     careerId: careerId,
                     classId: classId,

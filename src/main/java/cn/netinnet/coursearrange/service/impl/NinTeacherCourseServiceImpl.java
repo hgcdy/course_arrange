@@ -91,14 +91,14 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
             throw new ServiceException(412, "该教师选课数量已经上限");
         }
 
-        //课程对应记录
-        NinArrange arrange = ninArrangeMapper.selectOne(new LambdaQueryWrapper<NinArrange>()
-                .eq(NinArrange::getCourseId, courseId));
-        arrange.setTeacherId(teacherId);
-
         NinCourse course = ninCourseMapper.selectById(courseId);
         if (course.getMust() == 0 && count > 0) {
             //如果是选修课，看两个选修课之间是否冲突
+            //课程对应记录
+            NinArrange arrange = ninArrangeMapper.selectOne(new LambdaQueryWrapper<NinArrange>()
+                    .eq(NinArrange::getCourseId, courseId));
+            arrange.setTeacherId(teacherId);
+
             //此刻排课记录中只有选修课
             List<NinArrange> ninArranges = ninArrangeMapper.selectList(new LambdaQueryWrapper<NinArrange>()
                     .eq(NinArrange::getTeacherId, teacherId));
@@ -108,14 +108,13 @@ public class NinTeacherCourseServiceImpl extends ServiceImpl<NinTeacherCourseMap
                     throw new ServiceException(412, "该课程和其他课程时间发生冲突");
                 }
             }
+            ninArrangeMapper.updateById(arrange);
         }
 
         if (UserTypeEnum.ADMIN.getName().equals(UserUtil.getUserInfo().getUserType())) {
             //如果是管理员操作则添加消息
             ninMessageService.addBatchMsg(Collections.singletonList(teacherId), null, MsgEnum.ADD_COURSE, course.getCourseName());
         }
-
-        ninArrangeMapper.updateById(arrange);
 
         NinTeacherCourse ninTeacherCourse = new NinTeacherCourse();
         ninTeacherCourse.setTeacherId(teacherId);

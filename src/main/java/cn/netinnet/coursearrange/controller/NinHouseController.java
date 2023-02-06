@@ -46,7 +46,7 @@ public class NinHouseController {
      * @param tailSeat
      * @return
      */
-    @PostMapping("/getPageSelectList")
+    @GetMapping("/getPageSelectList")
     public ResultModel getSelectPageList(@RequestParam(value = "page", defaultValue = "1") Integer page,
                                          @RequestParam(value = "size", defaultValue = "10") Integer size,
                                          String houseName, Integer houseType, Integer firstSeat, Integer tailSeat){
@@ -109,7 +109,8 @@ public class NinHouseController {
     /**
      * 根据类型查询教室
      */
-    @PostMapping("/getHouseByType")
+    @GetMapping("/getHouseByType")
+    @RequiresRoles(value = {"admin", "teacher"}, logical = Logical.OR)
     public ResultModel getHouseByType(Integer houseType) {
         return ResultModel.ok(ninHouseService.getHouseByType(houseType));
     }

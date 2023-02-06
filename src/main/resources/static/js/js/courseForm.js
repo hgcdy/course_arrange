@@ -16,6 +16,13 @@ require(['../config'], function () {
             return map;
         }
 
+        var role = util.getCache("role");
+        if (role === "admin") {
+            var bu1 = '<button type="button" class="btn" id="back">返回</button>';
+            var bu2 = '<button type="button" class="btn" id="details">选课</button>';
+            $(".border-bottom").prepend(bu1, bu2);
+        }
+
         query();
 
         //周次下拉
@@ -30,7 +37,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "/nin-arrange/getInfo",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     count: count,
                     classId: detail.get("class"),

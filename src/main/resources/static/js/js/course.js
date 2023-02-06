@@ -55,7 +55,7 @@ require(['../config'], function () {
             $.ajax({
                 url: "nin-course/getPageSelectList",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     courseName: courseName,
                     houseType: houseType,

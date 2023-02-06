@@ -45,7 +45,7 @@ require(['../config'], function () {
             $.ajax({
                 url: url + "/getCourse",
                 dataType: "json",
-                type: "post",
+                type: "get",
                 data: {
                     id: detailId
                 },
