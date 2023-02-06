@@ -26,6 +26,7 @@ public interface INinArrangeService extends IService<NinArrange> {
      * 自动排课
      */
     void arrange();
+    void arrange_();
     /**
      * 清空排课记录
      */

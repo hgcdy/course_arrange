@@ -8,6 +8,7 @@ import cn.netinnet.coursearrange.enums.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
 import cn.netinnet.coursearrange.geneticAlgorithm.GeneticAlgorithm;
 import cn.netinnet.coursearrange.geneticAlgorithm.TaskRecord;
+import cn.netinnet.coursearrange.geneticAlgorithm.TeaTask;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
@@ -166,6 +167,37 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //计时
         long newData = System.currentTimeMillis();
         log.info("排课结束, 用时" + (newData - oldData) + "毫秒");
+    }
+
+    //校验
+    public void arrange_() {
+        List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<>());
+        List<NinTeachClass> list = ninTeachClassService.list(new QueryWrapper<>());
+        Map<Long, List<Long>> collect = list.stream().collect(Collectors.toMap(i -> i.getTeachClassId(), i -> Collections.singletonList(i.getClassId()), (v1, v2) -> {
+            v1.addAll(v2);
+            return v1;
+        }));
+
+        List<TaskRecord> taskRecords = new ArrayList<>();
+        for (NinArrange arrange : ninArranges) {
+            TeaTask teaTask = new TeaTask();
+            teaTask.setCourseId(arrange.getCourseId());
+            Long teachClassId = arrange.getTeachClassId();
+            if (null != teachClassId){
+                teaTask.setClassIdList(collect.get(teachClassId));
+            } else {
+                teaTask.setClassIdList(Collections.singletonList(arrange.getClassId()));
+            }
+            teaTask.setTeacherId(arrange.getTeacherId());
+
+            TaskRecord taskRecord = new TaskRecord(teaTask);
+            taskRecord.setHouseId(arrange.getHouseId());
+            taskRecord.setWeekly(arrange.getWeekly());
+            taskRecord.setWeek(arrange.getWeek());
+            taskRecord.setPitchNum(arrange.getPitchNum());
+            taskRecords.add(taskRecord);
+        }
+        geneticAlgorithm.verifyClashAll(taskRecords);
     }
 
     @Override
