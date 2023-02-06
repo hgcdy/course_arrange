@@ -104,9 +104,16 @@ public class NinSettingServiceImpl extends ServiceImpl<NinSettingMapper, NinSett
             addTimer(ninSettings);
 
 
-            List<String> CourseNameList = ninSettings.stream().map(NinSetting::getCourseName).collect(Collectors.toList());
-            String join = StringUtils.join(CourseNameList, ",");
-            String msg = String.format(MsgEnum.COURSE_REMIND.getMsg(), join, openTime, closeTime, OpenStateEnum.codeOfKey(openState).getName());
+            List<String> courseNameList = ninSettings.stream().map(NinSetting::getCourseName).collect(Collectors.toList());
+            String courseName;
+            if (courseNameList.size() > 5) {
+                courseName = StringUtils.join(courseNameList.subList(0, 5), "，") + "...";
+            } else {
+                courseName = StringUtils.join(courseNameList, "，");
+            }
+            String msg = String.format(MsgEnum.COURSE_REMIND.getMsg(), courseName,
+                    openTime.replace("T", " "), closeTime.replace("T", " "),
+                    OpenStateEnum.codeOfKey(openState).getName());
             ninMessageService.addBatchMsg(null, userType, msg);
 
             return ResultModel.ok();

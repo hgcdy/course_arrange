@@ -369,10 +369,12 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                     continue;
             } else {
                 str.append(bo.getStartTime()).append("-").append(bo.getEndTime()).append("周");
-                if (bo.getWeek() == 1) {
+                if (bo.getWeekly() == 1) {
                     str.append("(单)/");
-                } else if (bo.getWeek() == 2) {
+                } else if (bo.getWeekly() == 2) {
                     str.append("(双)/");
+                } else {
+                    str.append("/");
                 }
             }
             String key = "" + bo.getWeek() + bo.getPitchNum();

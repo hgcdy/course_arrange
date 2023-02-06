@@ -72,16 +72,20 @@ require(['../config'], function () {
         //修改密码
         function alterPassword() {
             var $input = $("input");
-            var old = $($input[0]).text();
-            var new1 = $($input[1]).text();
-            var new2 = $($input[2]).text();
+            var old = $($input[0]).val();
+            var new1 = $($input[1]).val();
+            var new2 = $($input[2]).val();
 
             if (old === "") {
                 util.hint("旧密码为空");
                 return;
             }
-            if (new1 === "" || new2 === "" || new1 === new2) {
-                util.hint("新密码不一致")
+            if (new1 === "" || new2 === "") {
+                util.hint("新密码为空");
+                return;
+            }
+            if (new1 !== new2) {
+                util.hint("两次输入的密码不一致");
                 return;
             }
 

@@ -363,9 +363,16 @@ public class ArrangeServiceImpl implements ArrangeService {
 
             List<Long> classIdList1 = teaTask1.getClassIdList();
             List<Long> classIdList2 = teaTask2.getClassIdList();
-            if (!Collections.disjoint(classIdList1, classIdList2)) {
-                return false;
+            for (Long classId1 : classIdList1) {
+                for (Long classId2 : classIdList2) {
+                    if (classId1.equals(classId2)) {
+                        return false;
+                    }
+                }
             }
+//            if (!Collections.disjoint(classIdList1, classIdList2)) {
+//                return false;
+//            }
         }
         return true;
     }
@@ -387,13 +394,13 @@ public class ArrangeServiceImpl implements ArrangeService {
 
     //时间校验
     public boolean verifyTime(TaskRecord record1, TaskRecord record2) {
-        Integer t11 = record1.getWeekly(), t12 = record1.getWeek(), t13 = record1.getPitchNum();
-        Integer t21 = record2.getWeekly(), t22 = record2.getWeek(), t23 = record2.getPitchNum();
-        if (t12 == null || t22 == null) {
+        Integer weekly1 = record1.getWeekly(), week1 = record1.getWeek(), pitchNum1 = record1.getPitchNum();
+        Integer weekly2 = record2.getWeekly(), week2 = record2.getWeek(), pitchNum2 = record2.getPitchNum();
+        if (null == week1 || null == week2) {
             return true;
         }
-        if (t12.equals(t22) && t13.equals(t23)) {
-            if (t11.equals(t21) || t11 == 0 || t21 == 0) {
+        if (week1.equals(week2) && pitchNum1.equals(pitchNum2)) {
+            if (weekly1.equals(0) || weekly2.equals(0) || weekly1.equals(weekly2)) {
                 return false;
             }
         }

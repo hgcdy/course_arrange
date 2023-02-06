@@ -7,7 +7,7 @@ public enum MsgEnum {
     ADMIN_APPLY(3, "管理员已帮您提交教室申请，教室：%s，班级：[%s]，时间：第%s周%s第%s节，用途：%s"),
     ADD_COURSE(4, "管理员已为您添加课程[%s]"),
     DEL_COURSE(5, "您的课程[%s]已被管理员移除"),
-    COURSE_REMIND(6, "课程[%s]将于[%s]到[%s]开放，请在时间内完成选课，当前状态[%s]")
+    COURSE_REMIND(6, "课程[%s]于[%s]到[%s]开放，请在时间内完成选课，当前状态[%s]")
     ;
 
 

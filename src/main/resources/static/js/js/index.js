@@ -6,8 +6,6 @@ require(['../config'], function () {
             }
         });
 
-
-
         $("h3").parent("a").click(function () {
             window.location.href = window.location.href;
         })
@@ -24,11 +22,6 @@ require(['../config'], function () {
             var path = $(this).attr("data-html");
             path = path + "?token=" + util.getToken();
             $("iframe").attr("src", path);
-            var attr = $(this).attr("data-type");
-            if (attr !== undefined) {
-                util.setCache("type", attr);
-                util.setCache("detailId", util.getCache("userId"));
-            }
             $("#popup").css("display", "none").find("table").empty();
         })
 

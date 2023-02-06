@@ -36,6 +36,10 @@ require(['../config'], function () {
                                 util.setToken(token);
                                 util.setCache("userId", userId);
                                 util.setCache("role", role);
+                                if (role !== "admin") {
+                                    util.setCache("detailId", userId);
+                                    util.setCache("type", role);
+                                }
                                 window.location.href = "index?type="+ val +"&token=" + token;
                             } else {
                                 util.hint(data.msg);
