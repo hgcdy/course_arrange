@@ -11,8 +11,8 @@ class CourseArrangeApplicationTests {
     void contextLoads() {
 
 
-
     }
+
 
     /**
      * 教师申请教室给管理员发送消息

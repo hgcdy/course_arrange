@@ -205,7 +205,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 i.setCnMust(CourseTypeEnum.codeOfKey(i.getMust()).getName());
             }
             if (null != i.getWeekly()) {
-                i.setCnWeekly(weeklyTypeEnum.codeOfKey(i.getWeekly()).getName());
+                i.setCnWeekly(WeeklyTypeEnum.codeOfKey(i.getWeekly()).getName());
             }
         });
 
@@ -623,7 +623,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         arrange.setTeacherId(teacherId);
         arrange.setHouseId(houseId);
         arrange.setCourseId(courseId);
-        arrange.setWeekly(weeklyTypeEnum.WEEKLY.getCode());
+        arrange.setWeekly(WeeklyTypeEnum.WEEKLY.getCode());
         arrange.setWeek(week);
         arrange.setPitchNum(pitchNum);
         arrange.setStartTime(weekly);

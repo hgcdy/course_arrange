@@ -1,6 +1,6 @@
 package cn.netinnet.coursearrange.enums;
 
-public enum weeklyTypeEnum {
+public enum WeeklyTypeEnum {
     WEEKLY(0, "单双周"),
     ODD_WEEK(1, "单周"),
     DOUBLE_WEEK(2, "双周");
@@ -9,7 +9,7 @@ public enum weeklyTypeEnum {
     private int code;
     private String name;
 
-    weeklyTypeEnum(int code, String name) {
+    WeeklyTypeEnum(int code, String name) {
         this.code = code;
         this.name = name;
     }
@@ -30,8 +30,8 @@ public enum weeklyTypeEnum {
         this.name = name;
     }
 
-    public static weeklyTypeEnum codeOfKey(int code) {
-        for (weeklyTypeEnum e : values()) {
+    public static WeeklyTypeEnum codeOfKey(int code) {
+        for (WeeklyTypeEnum e : values()) {
             if (e.code == code) {
                 return e;
             }

@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.geneticAlgorithm.impl;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.enums.CourseTypeEnum;
+import cn.netinnet.coursearrange.enums.WeeklyTypeEnum;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.geneticAlgorithm.ArrangeService;
 import cn.netinnet.coursearrange.geneticAlgorithm.TaskRecord;
@@ -120,19 +121,7 @@ public class ArrangeServiceImpl implements ArrangeService {
                 //如果为空，生成教学班
                 if (teachClassMap.get(maxClassNum) == null) {
 
-                    int i = classNum / maxClassNum;
-                    int ii = classNum % maxClassNum;
-
-                    int[] ints = null;
-                    if (i == 0) {
-                        ints = new int[]{ii};
-                    } else {
-                        if (ii == 0) {
-                            ints = grouping(classNum,  i);
-                        } else {
-                            ints = grouping(classNum,  i + 1);
-                        }
-                    }
+                    int[] ints = grouping(classNum,  maxClassNum);
 
                     Long[] teachClasses = new Long[ints.length];
                     for (int j = 0, count = 0; j < ints.length; j++) {
@@ -247,23 +236,29 @@ public class ArrangeServiceImpl implements ArrangeService {
                     taskRecordList.add(taskRecord);
                     break;
                 case 2:
-                    taskRecord.setWeekly(0);
+                    taskRecord.setWeekly(WeeklyTypeEnum.WEEKLY.getCode());
                     taskRecordList.add(taskRecord);
                     break;
                 case 3:
-                    TaskRecord taskRecord1 = new TaskRecord(task);
-                    BeanUtils.copyProperties(taskRecord, taskRecord1);
-                    taskRecord.setWeekly(0);
-                    taskRecord1.setWeekly((int) (Math.random() * 2) + 1);
+                    taskRecord.setWeekly(WeeklyTypeEnum.WEEKLY.getCode());
                     taskRecordList.add(taskRecord);
+
+                    TaskRecord taskRecord1 = new TaskRecord(task);
+                    taskRecord1.setTeaTask(taskRecord.getTeaTask());
+                    taskRecord1.setHouseId(taskRecord.getHouseId());
+                    taskRecord1.setSeat(taskRecord.getSeat());
+                    taskRecord1.setWeekly((int) (Math.random() * 2) + 1);
                     taskRecordList.add(taskRecord1);
                     break;
                 case 4:
-                    TaskRecord taskRecord2 = new TaskRecord(task);
-                    BeanUtils.copyProperties(taskRecord, taskRecord2);
-                    taskRecord.setWeekly(0);
-                    taskRecord2.setWeekly(0);
+                    taskRecord.setWeekly(WeeklyTypeEnum.WEEKLY.getCode());
                     taskRecordList.add(taskRecord);
+
+                    TaskRecord taskRecord2 = new TaskRecord(task);
+                    taskRecord2.setTeaTask(taskRecord.getTeaTask());
+                    taskRecord2.setHouseId(taskRecord.getHouseId());
+                    taskRecord2.setSeat(taskRecord.getSeat());
+                    taskRecord2.setWeekly(WeeklyTypeEnum.WEEKLY.getCode());
                     taskRecordList.add(taskRecord2);
                     break;
             }
@@ -351,15 +346,20 @@ public class ArrangeServiceImpl implements ArrangeService {
         for (TaskRecord r : taskRecordList) {
             //校验时间
             if (!verifyTime(r, taskRecord)) {
+
+                //教室
                 if (r.getHouseId().equals(taskRecord.getHouseId())) {
                     return false;
                 }
+
                 TeaTask teaTask1 = r.getTeaTask();
                 TeaTask teaTask2 = taskRecord.getTeaTask();
+                //教师
                 if (teaTask1.getTeacherId().equals(teaTask2.getTeacherId())) {
                     return false;
                 }
 
+                //班级
                 List<Long> classIdList1 = teaTask1.getClassIdList();
                 List<Long> classIdList2 = teaTask2.getClassIdList();
                 for (Long classId1 : classIdList1) {
@@ -439,10 +439,11 @@ public class ArrangeServiceImpl implements ArrangeService {
     }
 
     //平均分配教学班
-    public int[] grouping(int maxNum, int minNum) {
-        int[] ints = new int[minNum];
-        for (int i = 0; i < maxNum; i++) {
-            ints[i % ints.length]++;
+    public int[] grouping(int total, int maxNum) {
+        int len =(int) Math.ceil(total *1.0 / maxNum);
+        int[] ints = new int[len];
+        for (int i = 0; i < total; i++) {
+            ints[i % len]++;
         }
         return ints;
     }
