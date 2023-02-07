@@ -101,6 +101,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
         //遗传算法获取较优解
         List<TaskRecord> taskRecordList = geneticAlgorithm.start();
+        int i = geneticAlgorithm.verifyClashSolve(taskRecordList);
+        System.out.println("冲突个数" + i);
 
         Map<Long, NinCourse> courseIdCourseListMap = ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>().eq(NinCourse::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode())).stream().collect(Collectors.toMap(NinCourse::getId, Function.identity()));
         Map<Long, String> classIdClassNameMap = ninClassMapper.selectList(new LambdaQueryWrapper<NinClass>().select(NinClass::getId, NinClass::getClassName)).stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));
@@ -169,36 +171,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         log.info("排课结束, 用时" + (newData - oldData) + "毫秒");
     }
 
-    //校验
-    public void arrange_() {
-        List<NinArrange> ninArranges = ninArrangeMapper.selectList(new QueryWrapper<>());
-        List<NinTeachClass> list = ninTeachClassService.list(new QueryWrapper<>());
-        Map<Long, List<Long>> collect = list.stream().collect(Collectors.toMap(i -> i.getTeachClassId(), i -> Collections.singletonList(i.getClassId()), (v1, v2) -> {
-            v1.addAll(v2);
-            return v1;
-        }));
-
-        List<TaskRecord> taskRecords = new ArrayList<>();
-        for (NinArrange arrange : ninArranges) {
-            TeaTask teaTask = new TeaTask();
-            teaTask.setCourseId(arrange.getCourseId());
-            Long teachClassId = arrange.getTeachClassId();
-            if (null != teachClassId){
-                teaTask.setClassIdList(collect.get(teachClassId));
-            } else {
-                teaTask.setClassIdList(Collections.singletonList(arrange.getClassId()));
-            }
-            teaTask.setTeacherId(arrange.getTeacherId());
-
-            TaskRecord taskRecord = new TaskRecord(teaTask);
-            taskRecord.setHouseId(arrange.getHouseId());
-            taskRecord.setWeekly(arrange.getWeekly());
-            taskRecord.setWeek(arrange.getWeek());
-            taskRecord.setPitchNum(arrange.getPitchNum());
-            taskRecords.add(taskRecord);
-        }
-        geneticAlgorithm.verifyClashAll(taskRecords);
-    }
 
     @Override
     public void empty() {

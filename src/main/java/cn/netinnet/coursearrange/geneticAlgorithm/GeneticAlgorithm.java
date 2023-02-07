@@ -6,9 +6,9 @@ public interface GeneticAlgorithm {
     List<TaskRecord> start();
 
     /**
-     * 校验一组解里是否存在冲突
+     * 遍历全部校验并解决硬冲突
      * @param taskRecordList
      * @return 冲突个数
      */
-    int verifyClashAll(List<TaskRecord> taskRecordList);
+    int verifyClashSolve(List<TaskRecord> taskRecordList);
 }

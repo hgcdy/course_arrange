@@ -49,11 +49,6 @@ public class NinArrangeController {
         ninArrangeService.arrange();
         return ResultModel.ok();
     }
-    @GetMapping("/nin-arrange/arrange1")
-    public ResultModel arrange_() {
-        ninArrangeService.arrange_();
-        return ResultModel.ok();
-    }
 
     /**
      * 清空记录

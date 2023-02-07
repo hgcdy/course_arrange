@@ -47,9 +47,10 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
     }
 
     @Override
-    public int verifyClashAll(List<TaskRecord> taskRecordList) {
-        return arrangeService.verifyClashAll(taskRecordList);
+    public int verifyClashSolve(List<TaskRecord> taskRecordList) {
+        return arrangeService.verifyClashSolve(taskRecordList);
     }
+
 
     /**
      * 输出
@@ -279,6 +280,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
      * 基因突变
      */
     private void mutation() {
+        System.out.println("基因突变");
         for (Chromosome chro : population) {
             if (Math.random() < mutationRate) { //发生基因突变
                 int i = (int) (Math.random() * 5) + 1;
@@ -296,9 +298,10 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
                         record.setWeek(i);
                     }
                 }
-
+                arrangeService.verifyClashSolve(taskRecordList);
             }
         }
+        System.out.println("基因突变结束");
     }
 
     /**
@@ -366,16 +369,9 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         taskRecord1.setPitchNum(pitchNum2);
         taskRecord2.setPitchNum(pitchNum1);
 
-
         //校验并解决冲突
-        boolean b1 = arrangeService.verifyClash(taskRecordList1, taskRecord1);
-        if (!b1) {
-            arrangeService.solveClash(taskRecordList1, taskRecord1);
-        }
-        boolean b2 = arrangeService.verifyClash(taskRecordList2, taskRecord2);
-        if (!b2) {
-            arrangeService.solveClash(taskRecordList2, taskRecord2);
-        }
+        arrangeService.verifyClashSolve(taskRecordList1);
+        arrangeService.verifyClashSolve(taskRecordList2);
 
         List<Chromosome> list = new ArrayList<Chromosome>();
         list.add(c1);

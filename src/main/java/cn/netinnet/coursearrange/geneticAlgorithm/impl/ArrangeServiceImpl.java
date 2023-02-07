@@ -57,6 +57,8 @@ public class ArrangeServiceImpl implements ArrangeService {
         //获取数据库中选修课数据(只生成一次)
         List<TaskRecord> electiveTaskList = getElectiveTaskList();
         recordList.addAll(electiveTaskList);
+        //解决硬冲突
+        verifyClashSolve(recordList);
         return recordList;
     }
 
@@ -244,7 +246,6 @@ public class ArrangeServiceImpl implements ArrangeService {
                     taskRecordList.add(taskRecord);
 
                     TaskRecord taskRecord1 = new TaskRecord(task);
-                    taskRecord1.setTeaTask(taskRecord.getTeaTask());
                     taskRecord1.setHouseId(taskRecord.getHouseId());
                     taskRecord1.setSeat(taskRecord.getSeat());
                     taskRecord1.setWeekly((int) (Math.random() * 2) + 1);
@@ -255,7 +256,6 @@ public class ArrangeServiceImpl implements ArrangeService {
                     taskRecordList.add(taskRecord);
 
                     TaskRecord taskRecord2 = new TaskRecord(task);
-                    taskRecord2.setTeaTask(taskRecord.getTeaTask());
                     taskRecord2.setHouseId(taskRecord.getHouseId());
                     taskRecord2.setSeat(taskRecord.getSeat());
                     taskRecord2.setWeekly(WeeklyTypeEnum.WEEKLY.getCode());
@@ -267,83 +267,42 @@ public class ArrangeServiceImpl implements ArrangeService {
         return taskRecordList;
     }
 
-    //随机时间
+    //随机生成时间
     public List<TaskRecord> generateTime(List<TaskRecord> taskRecordList) {
-        List<TaskRecord> genTaskRecords = new ArrayList<>();
         for (TaskRecord record : taskRecordList) {
-
-            int count = 0;
-            while (count < 50) {
-                record.setWeek((int) (Math.random() * 5) + 1);
-                record.setPitchNum((int) (Math.random() * 5) + 1);
-                boolean b = verifyClash(genTaskRecords, record);
-                if (b) {
-                    break;
-                }
-                count++;
-            }
-            if (count == 50) {
-                solveClash(genTaskRecords, record);
-            }
-            genTaskRecords.add(record);
+            record.setWeek((int) (Math.random() * 5) + 1);
+            record.setPitchNum((int) (Math.random() * 5) + 1);
         }
-        return genTaskRecords;
+        return taskRecordList;
     }
 
-    //冲突解决
+    //校验所有冲突并解决
     @Override
-    public boolean solveClash(List<TaskRecord> taskRecordList, TaskRecord taskRecord) {
-        boolean b = traversalTime(taskRecordList, taskRecord);
-        if (!b) {
-            //遍历时间无法解决，遍历教室
-            List<NinHouse> ninHouses = getHouseTypeNinHouseListMap().get(taskRecord.getTeaTask().getHouseType());
-            List<NinHouse> ninHouseList = ninHouses.stream()
-                    .filter(i -> !i.getId().equals(taskRecord.getHouseId()))
-                    .filter(i -> i.getSeat() >= taskRecord.getTeaTask().getPeopleNum())
-                    .collect(Collectors.toList());
-            //打乱顺序，避免多次遍历教室，导致第一个教室安排过多
-            Collections.shuffle(ninHouseList);
-            for (NinHouse house: ninHouseList) {
-                taskRecord.setHouseId(house.getId());
-                boolean b1 = traversalTime(taskRecordList, taskRecord);
+    public int verifyClashSolve(List<TaskRecord> taskRecordList) {
+        int count = 0;
+        int size = taskRecordList.size();
+        for (int i = 0; i <size; i++) {
+            boolean b = verifyClash(taskRecordList.subList(i + 1, size), taskRecordList.get(i));
+            if (!b) {
+                boolean b1 = solveClash(taskRecordList, taskRecordList.get(i));
                 if (b1) {
-                    return true;
+                    System.out.println("解决一个冲突");
+                } else {
+                    count++;
                 }
             }
-            taskRecord.setHouseId(null);
-            taskRecord.setWeek(null);
-            taskRecord.setPitchNum(null);
-            System.out.println("冲突无法解决");
-            return false;
-        } else {
-            return true;
         }
-    }
-
-    //遍历时间
-    public boolean traversalTime(List<TaskRecord> taskRecordList, TaskRecord taskRecord) {
-        int sign = (int) (Math.random() * 25), count = 0;
-        while (count++ < 25) {
-            if (sign == 25) {
-                sign = 0;
-            }
-            int i = sign / 5 + 1;
-            int j = sign % 5 + 1;
-            taskRecord.setWeek(i);
-            taskRecord.setPitchNum(j);
-            boolean b = verifyClash(taskRecordList, taskRecord);
-            if (b) {
-                break;
-            }
-            sign++;
-        }
-        return count != 25;
+        return count;
     }
 
     //冲突校验
     @Override
     public boolean verifyClash(List<TaskRecord> taskRecordList, TaskRecord taskRecord) {
         for (TaskRecord r : taskRecordList) {
+            //同一对象，跳过
+            if (r == taskRecord) {
+                continue;
+            }
             //校验时间
             if (!verifyTime(r, taskRecord)) {
 
@@ -374,19 +333,49 @@ public class ArrangeServiceImpl implements ArrangeService {
         return true;
     }
 
-    //校验所有
+    //冲突解决
     @Override
-    public int verifyClashAll(List<TaskRecord> taskRecordList) {
-        int count = 0;
-        while (taskRecordList.isEmpty()) {
-            TaskRecord taskRecord = taskRecordList.get(0);
-            taskRecordList.remove(0);
-            boolean b = verifyClash(taskRecordList, taskRecord);
-            if (!b) {
-                count++;
+    public boolean solveClash(List<TaskRecord> taskRecordList, TaskRecord taskRecord) {
+        //遍历时间无法解决，遍历教室
+        List<NinHouse> ninHouses = getHouseTypeNinHouseListMap().get(taskRecord.getTeaTask().getHouseType());
+        List<NinHouse> ninHouseList = ninHouses.stream()
+                .filter(i -> i.getSeat() >= taskRecord.getTeaTask().getPeopleNum())
+                .collect(Collectors.toList());
+        //打乱顺序，避免多次遍历教室，导致第一个教室安排过多
+        Collections.shuffle(ninHouseList);
+        for (NinHouse house: ninHouseList) {
+            taskRecord.setHouseId(house.getId());
+            boolean b1 = traversalTime(taskRecordList, taskRecord);
+            if (b1) {
+                return true;
             }
         }
-        return count;
+        taskRecord.setHouseId(null);
+        taskRecord.setWeek(null);
+        taskRecord.setPitchNum(null);
+        System.out.println("冲突无法解决");
+        return false;
+
+    }
+
+    //遍历时间
+    public boolean traversalTime(List<TaskRecord> taskRecordList, TaskRecord taskRecord) {
+        int sign = (int) (Math.random() * 25), count = 0;
+        while (count++ < 25) {
+            if (sign == 25) {
+                sign = 0;
+            }
+            int i = sign / 5 + 1;
+            int j = sign % 5 + 1;
+            taskRecord.setWeek(i);
+            taskRecord.setPitchNum(j);
+            boolean b = verifyClash(taskRecordList, taskRecord);
+            if (b) {
+                break;
+            }
+            sign++;
+        }
+        return count != 25;
     }
 
     //时间校验
@@ -402,7 +391,7 @@ public class ArrangeServiceImpl implements ArrangeService {
         return true;
     }
 
-
+    //教室类型列表map
     public Map<Integer, List<NinHouse>> getHouseTypeNinHouseListMap() {
         if (null == houseTypeNinHouseListMap) {
             List<NinHouse> ninHouseList = ninHouseMapper.selectList(new QueryWrapper<>());
@@ -410,7 +399,6 @@ public class ArrangeServiceImpl implements ArrangeService {
         }
         return houseTypeNinHouseListMap;
     }
-
     //获取数据库中选修课数据
     public List<TaskRecord> getElectiveTaskList() {
         if (null == electiveTaskRecordList) {
@@ -437,7 +425,6 @@ public class ArrangeServiceImpl implements ArrangeService {
         }
         return electiveTaskRecordList;
     }
-
     //平均分配教学班
     public int[] grouping(int total, int maxNum) {
         int len =(int) Math.ceil(total *1.0 / maxNum);
