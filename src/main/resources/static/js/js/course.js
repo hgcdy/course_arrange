@@ -152,9 +152,7 @@ require(['../config'], function () {
                 }
             })
             function $update(record) {
-                if (record.must == 0 && record.num > 32){
-                    util.hint("选修课程请勿大于32个课时")
-                } else {
+                if (verify(record)) {
                     $.ajax({
                         url: "nin-course/alterCourse",
                         dataType: "json",
@@ -215,9 +213,7 @@ require(['../config'], function () {
             util.popup([$courseName, $houseType, $must, $courseTime, $startTime, $endTime, $weekTime, $maxClassNum], ["courseName", "houseType", "must", "courseTime", "startTime", "endTime", "weekTime", "maxClassNum"], $insert);
 
             function $insert(record) {
-                if (record.must == 0 && record.num > 32){
-                    util.hint("选修课程请勿大于32个课时")
-                } else {
+                if (verify(record)) {
                     $.ajax({
                         url: "nin-course/addCourse",
                         dataType: "json",
@@ -244,10 +240,27 @@ require(['../config'], function () {
                         }
                     })
                 }
-
             }
         })
 
+        function verify(record) {
+            var courseTime = record.courseTime;
+            var startTime = record.startTime;
+            var endTime = record.endTime;
+            var weekTime = record.weekTime;
+            if (endTime < startTime) {
+                util.hint("结束时间需大于等于开始时间");
+                return false;
+            }
+            if (endTime - startTime + 1 < weekTime) {
+                util.hint("开始结束时间需大于课程持续时间");
+                return false;
+            }
+            if (courseTime / 2 / weekTime <= 2) {
+                util.hint("课程持续时间过短");
+            }
+            return true;
+        }
 
         $("#mark").mouseout(function (){
             $("#markDiv").css("display", "none");
