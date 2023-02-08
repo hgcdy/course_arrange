@@ -23,6 +23,7 @@ public class ShiroRealm extends AuthorizingRealm {
     }
 
     @Override
+    //权限认证
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
@@ -35,20 +36,20 @@ public class ShiroRealm extends AuthorizingRealm {
         info.setRoles(roleSet);
 
         // 获取用户权限集(查询角色权限表)
-        List<String> rolePermission = Collections.emptyList();
-
-        Set<String> permissionSet = rolePermission.stream()
-                // 过滤空字符的权限
-                .filter(StringUtils::isNotBlank).collect(Collectors.toSet());
-        info.setStringPermissions(permissionSet);
+//        List<String> rolePermission = Collections.emptyList();
+//        Set<String> permissionSet = rolePermission.stream()
+//                // 过滤空字符的权限
+//                .filter(StringUtils::isNotBlank).collect(Collectors.toSet());
+//        info.setStringPermissions(permissionSet);
 
         return info;
     }
 
+
     @Override
+    //身份校验
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
 
-//        System.out.println("-----开始身份验证-----");
         //从token中获取信息
         String token = ((JWTToken) authenticationToken).getToken();
 
@@ -68,7 +69,6 @@ public class ShiroRealm extends AuthorizingRealm {
         }
 
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(userInfo, token, getName());
-//        System.out.println("-----身份验证成功-----");
 
         return info;
     }

@@ -83,7 +83,7 @@ project:
   projectName: 课程自动排课系统
   shiro:
     #免认证端口
-    anonUrl: /,/login,/login/**,/logout,/druid,/imserver,/static/**
+    anonUrl: /,/login,/login/**,/logout,/druid,/wsserver,/static/**
   #管理员信息(id,名称,账号,密码)
   admin:
     id: 100000000000000000

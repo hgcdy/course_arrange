@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 //将当前类设置成webSocket服务端，客户端可通过这个url连接到服务端
-@ServerEndpoint("/imserver/{userId}")
+@ServerEndpoint("/wsserver/{userId}")
 @Component
 @Slf4j
 public class WebSocketServer {
@@ -97,7 +97,7 @@ public class WebSocketServer {
     /**
      * 实现服务器主动推送
      */
-    public synchronized void  sendMessage(Message message) throws IOException, EncodeException {
+    public synchronized void sendMessage(Message message) throws IOException, EncodeException {
         try {
             lock.lock();
             this.session.getBasicRemote().sendText(JSON.toJSONString(message));

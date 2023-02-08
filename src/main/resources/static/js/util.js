@@ -35,7 +35,7 @@ define(function () {
             //实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
             //等同于socket = new WebSocket("ws://localhost:8888/xxxx/im/25");
             //var socketUrl="${request.contextPath}/im/"+$("#userId").val();
-            var socketUrl="http://" + window.location.host + "/imserver/" + getCache("userId");
+            var socketUrl="http://" + window.location.host + "/wsserver/" + getCache("userId");
             socketUrl=socketUrl.replace("https","ws").replace("http","ws");
             console.log(socketUrl);
             if(socket != null){
