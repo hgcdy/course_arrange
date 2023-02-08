@@ -23,7 +23,7 @@ public class SettingTask extends QuartzJobBean{
 
     @SneakyThrows
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    protected void executeInternal(JobExecutionContext context) {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         NinSetting ninSetting = (NinSetting) dataMap.get("data1");
         LocalDateTime closeTime = ninSetting.getCloseTime();

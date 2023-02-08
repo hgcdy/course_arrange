@@ -6,12 +6,11 @@ import cn.netinnet.coursearrange.enums.CourseTypeEnum;
 import cn.netinnet.coursearrange.enums.WeeklyTypeEnum;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.geneticAlgorithm.ArrangeService;
-import cn.netinnet.coursearrange.geneticAlgorithm.TaskRecord;
-import cn.netinnet.coursearrange.geneticAlgorithm.TeaTask;
+import cn.netinnet.coursearrange.geneticAlgorithm.domain.TaskRecord;
+import cn.netinnet.coursearrange.geneticAlgorithm.domain.TeaTask;
 import cn.netinnet.coursearrange.util.IDUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

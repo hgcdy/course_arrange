@@ -70,13 +70,6 @@
         </dependency>
 
 
-        <!-- websocket dependency -->
-<!--        <dependency>-->
-<!--            <groupId>com.corundumstudio.socketio</groupId>-->
-<!--            <artifactId>netty-socketio</artifactId>-->
-<!--            <version>1.7.7</version>-->
-<!--        </dependency>-->
-
         <!-- https://mvnrepository.com/artifact/com.alibaba/druid-spring-boot-starter -->
         <dependency>
             <groupId>com.alibaba</groupId>

@@ -135,7 +135,7 @@ public class WebSocketServer {
     /**
      * 发送自定义消息
      * */
-    public static void sendImnfo(String content, @PathParam("userId") String userId) throws IOException, EncodeException {
+    public static void sendInfo(String content, @PathParam("userId") String userId) throws IOException, EncodeException {
         Message message = new Message();
         message.setUserId(Long.parseLong(userId));
         message.setSendDate(new Date());

@@ -1,6 +1,9 @@
 package cn.netinnet.coursearrange.geneticAlgorithm.impl;
 
 import cn.netinnet.coursearrange.geneticAlgorithm.*;
+import cn.netinnet.coursearrange.geneticAlgorithm.domain.Chromosome;
+import cn.netinnet.coursearrange.geneticAlgorithm.domain.TaskRecord;
+import cn.netinnet.coursearrange.geneticAlgorithm.domain.TeaTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
