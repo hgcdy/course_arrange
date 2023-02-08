@@ -285,9 +285,7 @@ public class ArrangeServiceImpl implements ArrangeService {
             boolean b = verifyClash(taskRecordList.subList(i + 1, size), taskRecordList.get(i));
             if (!b) {
                 boolean b1 = solveClash(taskRecordList, taskRecordList.get(i));
-                if (b1) {
-                    System.out.println("解决一个冲突");
-                } else {
+                if (!b1) {
                     count++;
                 }
             }

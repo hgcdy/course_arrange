@@ -178,8 +178,8 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
          * 课程在同一天
          */
 
-        int count = 0;
-        double score = 100;
+        int count = 0;//冲突个数
+        double score = 0;
         Map<Long, int[]> idNumMap = new HashMap();
 
         List<TaskRecord> taskRecordList = chro.getTaskRecordList();
@@ -223,56 +223,70 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
                 }
             }
         }
+        score = idNumMap.size() * 2;
         for (Map.Entry<Long, int[]> map1 : idNumMap.entrySet()) {
             score -= computeVariance(map1.getValue());
         }
-        score -= count;
 
-        //Map<教学任务, 记录列表>
-        Map<TeaTask, List<TaskRecord>> taskListMap = taskRecordList.stream().collect(Collectors.groupingBy(TaskRecord::getTeaTask));
-        for (Map.Entry<TeaTask, List<TaskRecord>> map1 : taskListMap.entrySet()) {
-            List<TaskRecord> recordList = map1.getValue();
-            int len = recordList.size();
-            if (recordList.size() == 1) {
-                continue;
+        //如果存在硬冲突是不能容忍的
+        if (count != 0) {
+            if (count > 5) {
+                score = 0.000001;
+            } else {
+                score = Math.pow(0.1, count);
             }
-            for (int i = 0; i < len; i++) {
-                for (int j = i + 1; j < len; j++) {
-                    TaskRecord taskRecord1 = recordList.get(i);
-                    TaskRecord taskRecord2 = recordList.get(j);
+        } else {
+            //Map<教学任务, 记录列表>
+            Map<TeaTask, List<TaskRecord>> taskListMap = taskRecordList.stream().collect(Collectors.groupingBy(TaskRecord::getTeaTask));
+            for (Map.Entry<TeaTask, List<TaskRecord>> map1 : taskListMap.entrySet()) {
+                List<TaskRecord> recordList = map1.getValue();
+                int len = recordList.size();
+                if (recordList.size() == 1) {
+                    continue;
+                }
+                for (int i = 0; i < len; i++) {
+                    for (int j = i + 1; j < len; j++) {
+                        TaskRecord taskRecord1 = recordList.get(i);
+                        TaskRecord taskRecord2 = recordList.get(j);
 
-                    Integer week1 = taskRecord1.getWeek();
-                    Integer week2 = taskRecord2.getWeek();
+                        Integer week1 = taskRecord1.getWeek();
+                        Integer week2 = taskRecord2.getWeek();
 
-                    if (null == week1) {
-                        break;
-                    }
-                    if (null == week2) {
-                        continue;
-                    }
-
-                    switch (Math.abs(week2 - week1)) {
-                        case 0:
-                            Integer pitchNum1 = taskRecord1.getPitchNum();
-                            Integer pitchNum2 = taskRecord2.getPitchNum();
-                            int sum = pitchNum1 + pitchNum2;
-                            //12,23,34,45
-                            if (Math.abs(pitchNum1 - pitchNum2) == 1 && (sum == 3 || sum == 7)) {
-                                //同在上午或同在下午
-                                score -= 3;
-                            } else {
-                                score -= 2;
-                            }
+                        if (null == week1) {
                             break;
-                        case 1:
-                            score -= 1;
-                            break;
+                        }
+                        if (null == week2) {
+                            continue;
+                        }
+
+                        //看同一个教学任务的时间
+                        switch (Math.abs(week2 - week1)) {
+                            case 0:
+                                Integer pitchNum1 = taskRecord1.getPitchNum();
+                                Integer pitchNum2 = taskRecord2.getPitchNum();
+                                int sum = pitchNum1 + pitchNum2;
+                                //12,23,34,45
+                                if (Math.abs(pitchNum1 - pitchNum2) == 1 && (sum == 3 || sum == 7)) {
+                                    //同在上午或同在下午
+                                    score -= 2;
+                                } else {
+                                    score -= 1;
+                                }
+                                break;
+                            case 1:
+                                //不变
+                                break;
+                            case 2:
+                                score += 0.5;
+                                break;
+                            default:
+                                score += 1;
+                        }
                     }
                 }
+
             }
-
         }
-
         chro.setScore(score);
     }
 

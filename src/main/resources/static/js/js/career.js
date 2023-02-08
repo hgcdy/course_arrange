@@ -341,7 +341,7 @@ require(['../config'], function () {
                 type: "get",
                 dataType: "json",
                 data: {
-                    sign: 1
+                    must: 1
                 },
                 success: function (data) {
                     if (data.code == 200) {
