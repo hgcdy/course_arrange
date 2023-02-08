@@ -12,16 +12,12 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import cn.netinnet.coursearrange.domain.Message;
-import cn.netinnet.coursearrange.entity.NinStudent;
-import cn.netinnet.coursearrange.entity.NinTeacher;
-import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-
+//将当前类设置成webSocket服务端，客户端可通过这个url连接到服务端
 @ServerEndpoint("/imserver/{userId}")
 @Component
 @Slf4j
@@ -83,28 +79,6 @@ public class WebSocketServer {
         System.out.println("---");
         System.out.println(message.getContent());
         System.out.println(message.getSendDate());
-
-        //log.info("用户消息:"+userId+",报文:"+message);
-        //可以群发消息
-        //消息保存到数据库、redis
-//        if(StringUtils.isNotBlank(message)){
-//            try {
-//                //解析发送的报文
-//                JSONObject jsonObject = JSON.parseObject(message);
-//                //追加发送人(防止串改)
-//                jsonObject.put("fromUserId",this.userId);
-//                String toUserId=jsonObject.getString("msg");
-//                //传送给对应toUserId用户的websocket
-//                if(StringUtils.isNotBlank(toUserId)&&webSocketMap.containsKey(toUserId)){
-//                    webSocketMap.get(toUserId).sendMessage(jsonObject.toJSONString());
-//                }else{
-//                    log.error("请求的userId:"+toUserId+"不在该服务器上");
-//                    //否则不在这个服务器上，发送到mysql或者redis
-//                }
-//            }catch (Exception e){
-//                e.printStackTrace();
-//            }
-//        }
     }
 
     /**
