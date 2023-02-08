@@ -102,7 +102,6 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             List<Chromosome> children = genetic(p1, p2);
             if (children != null) {
                 for (Chromosome chro : children) {
-                    setChromosomeScore(chro);
                     childPopulation.add(chro);
                 }
             }
@@ -231,64 +230,62 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             score -= computeVariance(map1.getValue());
         }
 
-        //如果存在硬冲突是不能容忍的
-        if (count != 0) {
-            if (count > 5) {
-                score = 0.000001;
-            } else {
-                score = Math.pow(0.1, count);
+        //Map<教学任务, 记录列表>
+        Map<TeaTask, List<TaskRecord>> taskListMap = taskRecordList.stream().collect(Collectors.groupingBy(TaskRecord::getTeaTask));
+        for (Map.Entry<TeaTask, List<TaskRecord>> map1 : taskListMap.entrySet()) {
+            List<TaskRecord> recordList = map1.getValue();
+            int len = recordList.size();
+            if (recordList.size() == 1) {
+                continue;
             }
-        } else {
-            //Map<教学任务, 记录列表>
-            Map<TeaTask, List<TaskRecord>> taskListMap = taskRecordList.stream().collect(Collectors.groupingBy(TaskRecord::getTeaTask));
-            for (Map.Entry<TeaTask, List<TaskRecord>> map1 : taskListMap.entrySet()) {
-                List<TaskRecord> recordList = map1.getValue();
-                int len = recordList.size();
-                if (recordList.size() == 1) {
-                    continue;
-                }
-                for (int i = 0; i < len; i++) {
-                    for (int j = i + 1; j < len; j++) {
-                        TaskRecord taskRecord1 = recordList.get(i);
-                        TaskRecord taskRecord2 = recordList.get(j);
+            for (int i = 0; i < len; i++) {
+                for (int j = i + 1; j < len; j++) {
+                    TaskRecord taskRecord1 = recordList.get(i);
+                    TaskRecord taskRecord2 = recordList.get(j);
 
-                        Integer week1 = taskRecord1.getWeek();
-                        Integer week2 = taskRecord2.getWeek();
+                    Integer week1 = taskRecord1.getWeek();
+                    Integer week2 = taskRecord2.getWeek();
 
-                        if (null == week1) {
+                    if (null == week1) {
+                        break;
+                    }
+                    if (null == week2) {
+                        continue;
+                    }
+
+                    //看同一个教学任务的时间
+                    switch (Math.abs(week2 - week1)) {
+                        case 0:
+                            Integer pitchNum1 = taskRecord1.getPitchNum();
+                            Integer pitchNum2 = taskRecord2.getPitchNum();
+                            int sum = pitchNum1 + pitchNum2;
+                            //12,23,34,45
+                            if (Math.abs(pitchNum1 - pitchNum2) == 1 && (sum == 3 || sum == 7)) {
+                                //同在上午或同在下午
+                                score -= 2;
+                            } else {
+                                score -= 1;
+                            }
                             break;
-                        }
-                        if (null == week2) {
-                            continue;
-                        }
-
-                        //看同一个教学任务的时间
-                        switch (Math.abs(week2 - week1)) {
-                            case 0:
-                                Integer pitchNum1 = taskRecord1.getPitchNum();
-                                Integer pitchNum2 = taskRecord2.getPitchNum();
-                                int sum = pitchNum1 + pitchNum2;
-                                //12,23,34,45
-                                if (Math.abs(pitchNum1 - pitchNum2) == 1 && (sum == 3 || sum == 7)) {
-                                    //同在上午或同在下午
-                                    score -= 2;
-                                } else {
-                                    score -= 1;
-                                }
-                                break;
-                            case 1:
-                                //不变
-                                break;
-                            case 2:
-                                score += 0.5;
-                                break;
-                            default:
-                                score += 1;
-                        }
+                        case 1:
+                            //不变
+                            break;
+                        case 2:
+                            score += 0.5;
+                            break;
+                        default:
+                            score += 1;
                     }
                 }
-
             }
+
+        }
+
+        //如果存在硬冲突
+        if (count > 5) {
+            score = score * 0.000001;
+        } else {
+            score = score * Math.pow(0.1, count);
         }
         chro.setScore(score);
     }
@@ -297,7 +294,6 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
      * 基因突变
      */
     private void mutation() {
-        System.out.println("基因突变");
         for (Chromosome chro : population) {
             if (Math.random() < mutationRate) { //发生基因突变
                 int i = (int) (Math.random() * 5) + 1;
@@ -317,8 +313,8 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
                 }
                 arrangeService.verifyClashSolve(taskRecordList);
             }
+            setChromosomeScore(chro);
         }
-        System.out.println("基因突变结束");
     }
 
     /**
@@ -367,24 +363,32 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         //随机产生交叉互换时间
         int size = c1.getTaskRecordList().size();
         int a = (int) (Math.random() * size);
+        int b = (int) (Math.random() * size);
+        while (a == b) {
+            b = (int) (Math.random() * size);
+        }
+        int max = Math.max(a, b);
+        int min = Math.min(a, b);
 
 
         List<TaskRecord> taskRecordList1 = c1.getTaskRecordList();
-        TaskRecord taskRecord1 = taskRecordList1.get(a);
-
         List<TaskRecord> taskRecordList2 = c2.getTaskRecordList();
-        TaskRecord taskRecord2 = taskRecordList2.get(a);
+        for (int i = min; i < max ; i++) {
 
-        //交换时间
-        int week1 = taskRecord1.getWeek();
-        int week2 = taskRecord2.getWeek();
-        taskRecord1.setWeek(week2);
-        taskRecord2.setWeek(week1);
+            TaskRecord taskRecord1 = taskRecordList1.get(i);
+            TaskRecord taskRecord2 = taskRecordList2.get(i);
 
-        int pitchNum1 = taskRecord1.getPitchNum();
-        int pitchNum2 = taskRecord2.getPitchNum();
-        taskRecord1.setPitchNum(pitchNum2);
-        taskRecord2.setPitchNum(pitchNum1);
+            //交换时间
+            int week1 = taskRecord1.getWeek();
+            int week2 = taskRecord2.getWeek();
+            taskRecord1.setWeek(week2);
+            taskRecord2.setWeek(week1);
+
+            int pitchNum1 = taskRecord1.getPitchNum();
+            int pitchNum2 = taskRecord2.getPitchNum();
+            taskRecord1.setPitchNum(pitchNum2);
+            taskRecord2.setPitchNum(pitchNum1);
+        }
 
         //校验并解决冲突
         arrangeService.verifyClashSolve(taskRecordList1);
