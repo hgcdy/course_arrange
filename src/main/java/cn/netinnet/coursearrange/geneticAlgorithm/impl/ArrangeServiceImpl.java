@@ -4,6 +4,7 @@ import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.enums.CourseTypeEnum;
 import cn.netinnet.coursearrange.enums.WeeklyTypeEnum;
+import cn.netinnet.coursearrange.geneticAlgorithm.domain.Chromosome;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.geneticAlgorithm.ArrangeService;
 import cn.netinnet.coursearrange.geneticAlgorithm.domain.TaskRecord;
@@ -43,7 +44,7 @@ public class ArrangeServiceImpl implements ArrangeService {
 
     //生成一个解
     @Override
-    public List<TaskRecord> generateChromosome() {
+    public Chromosome generateChromosome() {
         //生成教学任务(课程班级教师)(只生成一次)
         generateTeaTask();
         //教学任务安排教室
@@ -58,7 +59,10 @@ public class ArrangeServiceImpl implements ArrangeService {
         recordList.addAll(electiveTaskList);
         //解决硬冲突
         verifyClashSolve(recordList);
-        return recordList;
+
+        Chromosome chromosome = new Chromosome();
+        chromosome.setTaskRecordList(recordList);
+        return chromosome;
     }
 
     //生成教学任务(班级 + 课程 + 教师)

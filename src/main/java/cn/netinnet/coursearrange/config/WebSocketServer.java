@@ -97,7 +97,7 @@ public class WebSocketServer {
     /**
      * 实现服务器主动推送
      */
-    public synchronized void sendMessage(Message message) throws IOException, EncodeException {
+    public void sendMessage(Message message) throws IOException, EncodeException {
         try {
             lock.lock();
             this.session.getBasicRemote().sendText(JSON.toJSONString(message));

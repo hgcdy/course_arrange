@@ -74,17 +74,15 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
      */
     private void init() {
         int count = 0;
+        population = new ArrayList<Chromosome>();
         while (count < popSize) {
-            population = new ArrayList<Chromosome>();
-            List<TaskRecord> taskRecords = arrangeService.generateChromosome();
-            if (null == taskRecords) {
+            Chromosome chromosome = arrangeService.generateChromosome();
+            if (null == chromosome) {
                 continue;
             }
-            Chromosome chro = new Chromosome();
-            chro.setTaskRecordList(taskRecords);
-            setChromosomeScore(chro);
+            setChromosomeScore(chromosome);
             count++;
-            population.add(chro);
+            population.add(chromosome);
         }
         caculteScore();
         print();
@@ -102,6 +100,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             List<Chromosome> children = genetic(p1, p2);
             if (children != null) {
                 for (Chromosome chro : children) {
+                    setChromosomeScore(chro);
                     childPopulation.add(chro);
                 }
             }
@@ -148,6 +147,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         }
         totalScore = 0;
         for (Chromosome chro : population) {
+            System.out.println(chro.getScore());
             if (chro.getScore() > bestScore) { //设置最好基因值
                 bestScore = chro.getScore();
                 if (bestScore > historyBestScore) {
