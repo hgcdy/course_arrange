@@ -359,6 +359,8 @@ public class ArrangeServiceImpl implements ArrangeService {
 
     }
 
+
+
     //遍历时间
     public boolean traversalTime(List<TaskRecord> taskRecordList, TaskRecord taskRecord) {
         int sign = (int) (Math.random() * 25), count = 0;
@@ -434,5 +436,60 @@ public class ArrangeServiceImpl implements ArrangeService {
             ints[i % len]++;
         }
         return ints;
+    }
+
+
+
+    @Override
+    public void mutation(List<TaskRecord> taskRecordList) {
+        int len = taskRecordList.size() - getElectiveTaskList().size();
+        //随机产生突变时间
+        int a = (int) (Math.random() * 5) + 1;
+        int b = (int) (Math.random() * 5) + 1;
+        while (a == b) {
+            b = (int) (Math.random() * 5) + 1;
+        }
+
+        for (int i = 0; i < len; i++) {
+            TaskRecord record = taskRecordList.get(i);
+            if (record.getWeek() == a) {
+                record.setWeek(b);
+                continue;
+            }
+            if (record.getWeek() == b) {
+                record.setWeek(a);
+            }
+        }
+    }
+
+    @Override
+    public void genetic(List<TaskRecord> taskRecordList1, List<TaskRecord> taskRecordList2) {
+        int len = taskRecordList1.size() - getElectiveTaskList().size();
+
+        //随机产生交叉互换时间
+        int a = (int) (Math.random() * len);
+        int b = (int) (Math.random() * len);
+        while (a == b) {
+            b = (int) (Math.random() * len);
+        }
+        int max = Math.max(a, b);
+        int min = Math.min(a, b);
+
+        for (int i = 0; i < 2 ; i++) {
+
+            TaskRecord taskRecord1 = taskRecordList1.get(i);
+            TaskRecord taskRecord2 = taskRecordList2.get(i);
+
+            //交换时间
+            int week1 = taskRecord1.getWeek();
+            int week2 = taskRecord2.getWeek();
+            taskRecord1.setWeek(week2);
+            taskRecord2.setWeek(week1);
+
+            int pitchNum1 = taskRecord1.getPitchNum();
+            int pitchNum2 = taskRecord2.getPitchNum();
+            taskRecord1.setPitchNum(pitchNum2);
+            taskRecord2.setPitchNum(pitchNum1);
+        }
     }
 }

@@ -18,8 +18,8 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
 
     private List<Chromosome> population = new ArrayList<Chromosome>();
     private int popSize = 100;//种群数量
-    private int maxIterNum = 500;//最大迭代次数
-    private double mutationRate = 0.01;//基因变异的概率
+    private int maxIterNum = 200;//最大迭代次数
+    private double mutationRate = 0.03;//基因变异的概率
 
     private int generation = 1;//当前遗传到第几代
 
@@ -147,7 +147,6 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         }
         totalScore = 0;
         for (Chromosome chro : population) {
-            System.out.println(chro.getScore());
             if (chro.getScore() > bestScore) { //设置最好基因值
                 bestScore = chro.getScore();
                 if (bestScore > historyBestScore) {
@@ -262,19 +261,19 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
                             //12,23,34,45
                             if (Math.abs(pitchNum1 - pitchNum2) == 1 && (sum == 3 || sum == 7)) {
                                 //同在上午或同在下午
-                                score -= 2;
+                                score -= 5;
                             } else {
-                                score -= 1;
+                                score -= 3;
                             }
                             break;
                         case 1:
                             //不变
                             break;
                         case 2:
-                            score += 0.5;
+                            score += 1;
                             break;
                         default:
-                            score += 1;
+                            score += 2;
                     }
                 }
             }
@@ -296,22 +295,8 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
     private void mutation() {
         for (Chromosome chro : population) {
             if (Math.random() < mutationRate) { //发生基因突变
-                int i = (int) (Math.random() * 5) + 1;
-                int j = (int) (Math.random() * 5) + 1;
-                while (i == j) {
-                    j = (int) (Math.random() * 5) + 1;
-                }
-
-                List<TaskRecord> taskRecordList = chro.getTaskRecordList();
-                for (TaskRecord record : taskRecordList) {
-                    if (record.getWeek() == i) {
-                        record.setWeek(j);
-                    }
-                    if (record.getWeek() == j) {
-                        record.setWeek(i);
-                    }
-                }
-                arrangeService.verifyClashSolve(taskRecordList);
+                arrangeService.mutation(chro.getTaskRecordList());
+                arrangeService.verifyClashSolve(chro.getTaskRecordList());
             }
             setChromosomeScore(chro);
         }
@@ -360,39 +345,10 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         Chromosome c1 = clone(p1);
         Chromosome c2 = clone(p2);
 
-        //随机产生交叉互换时间
-        int size = c1.getTaskRecordList().size();
-        int a = (int) (Math.random() * size);
-        int b = (int) (Math.random() * size);
-        while (a == b) {
-            b = (int) (Math.random() * size);
-        }
-        int max = Math.max(a, b);
-        int min = Math.min(a, b);
-
-
-        List<TaskRecord> taskRecordList1 = c1.getTaskRecordList();
-        List<TaskRecord> taskRecordList2 = c2.getTaskRecordList();
-        for (int i = min; i < max ; i++) {
-
-            TaskRecord taskRecord1 = taskRecordList1.get(i);
-            TaskRecord taskRecord2 = taskRecordList2.get(i);
-
-            //交换时间
-            int week1 = taskRecord1.getWeek();
-            int week2 = taskRecord2.getWeek();
-            taskRecord1.setWeek(week2);
-            taskRecord2.setWeek(week1);
-
-            int pitchNum1 = taskRecord1.getPitchNum();
-            int pitchNum2 = taskRecord2.getPitchNum();
-            taskRecord1.setPitchNum(pitchNum2);
-            taskRecord2.setPitchNum(pitchNum1);
-        }
-
+        arrangeService.genetic(c1.getTaskRecordList(), c2.getTaskRecordList());
         //校验并解决冲突
-        arrangeService.verifyClashSolve(taskRecordList1);
-        arrangeService.verifyClashSolve(taskRecordList2);
+        arrangeService.verifyClashSolve(c1.getTaskRecordList());
+        arrangeService.verifyClashSolve(c2.getTaskRecordList());
 
         List<Chromosome> list = new ArrayList<Chromosome>();
         list.add(c1);
