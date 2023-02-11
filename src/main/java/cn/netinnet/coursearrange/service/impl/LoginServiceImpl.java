@@ -1,6 +1,8 @@
 package cn.netinnet.coursearrange.service.impl;
 
+import cn.netinnet.coursearrange.authentication.JWTUtil;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
+import cn.netinnet.coursearrange.constant.CacheConstant;
 import cn.netinnet.coursearrange.entity.NinStudent;
 import cn.netinnet.coursearrange.entity.NinTeacher;
 import cn.netinnet.coursearrange.domain.UserInfo;
@@ -11,11 +13,15 @@ import cn.netinnet.coursearrange.mapper.NinTeacherMapper;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.LoginService;
 import cn.netinnet.coursearrange.util.MD5;
+import cn.netinnet.coursearrange.util.RedisUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -26,7 +32,7 @@ public class LoginServiceImpl implements LoginService {
     private NinStudentMapper ninStudentMapper;
 
     @Override
-    public UserInfo verify(String code, String password, String type) {
+    public Map<String, Object> verify(String code, String password, String type) {
         Long oldId = null;
         String oldName = null;
         String oldCode = null;
@@ -63,7 +69,17 @@ public class LoginServiceImpl implements LoginService {
         if (!oldPassword.equals(MD5.getMD5Encode(password))) {
             throw new ServiceException(412, "密码错误");
         }
-        return new UserInfo(oldId, oldName, oldCode, type);
+        UserInfo userInfo = new UserInfo(oldId, oldName, oldCode, type);
+
+        String token = JWTUtil.sign(userInfo);
+        String key = String.format(CacheConstant.LOGIN_TOKEN, userInfo.getUserId().toString());
+        RedisUtil.set(key, token);
+
+        return new HashMap<String, Object>() {{
+            put("token", token);
+            put("userId", userInfo.getUserId().toString());
+            put("role", userInfo.getUserType());
+        }};
     }
 
     @Override
@@ -119,5 +135,15 @@ public class LoginServiceImpl implements LoginService {
             return ResultModel.error(412, "新密码和旧密码一致");
         }
         return ResultModel.ok();
+    }
+
+    @Override
+    public String refreshToken(HttpServletRequest request) {
+        String token = JWTUtil.getToken(request);
+        UserInfo userInfo = JWTUtil.getUserInfo(token);
+        String newToken = JWTUtil.sign(userInfo);
+        String key = String.format(CacheConstant.LOGIN_TOKEN, userInfo.getUserId().toString());
+        RedisUtil.set(key, newToken);
+        return newToken;
     }
 }

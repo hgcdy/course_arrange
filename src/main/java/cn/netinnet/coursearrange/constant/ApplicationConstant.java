@@ -17,10 +17,11 @@ public class ApplicationConstant {
     public static String ADMIN_PASSWORD;
 
 
+    public static String PROJECT_CODE;
+
+
     //班级人数上限
     public static int CLASS_PEOPLE_NUM = 50;
-    //专业(班级)选课数量上限
-    public static int CAREER_COURSE_NUM = 10;
     //教师选课数量上限
     public static int TEACHER_COURSE_NUM = 2;
     //学生选课数量上限
@@ -47,6 +48,11 @@ public class ApplicationConstant {
     @Value("${project.admin.password}")
     public void setAdminPassword(String adminPassword) {
         ApplicationConstant.ADMIN_PASSWORD = adminPassword;
+    }
+
+    @Value("${project.projectCode}")
+    public void setProjectCode(String projectCode) {
+        ApplicationConstant.PROJECT_CODE = projectCode;
     }
 
 

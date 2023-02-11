@@ -1,16 +1,19 @@
 package cn.netinnet.coursearrange.controller;
 
 import cn.netinnet.coursearrange.authentication.JWTUtil;
+import cn.netinnet.coursearrange.constant.CacheConstant;
 import cn.netinnet.coursearrange.domain.UserInfo;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.LoginService;
+import cn.netinnet.coursearrange.util.RedisUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.sun.istack.internal.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 @RestController
@@ -54,25 +57,23 @@ public class LoginController {
     //登录校验
     @PostMapping("/login/{type}")
     public ResultModel login(@NotNull String code, @NotNull String password, @PathVariable String type) {
-        UserInfo userInfo = loginService.verify(code, password, type);
-        String token = JWTUtil.sign(userInfo);
-        return ResultModel.ok(new HashMap<String, Object>() {{
-            put("token", token);
-            put("userId", userInfo.getUserId().toString());
-            put("role", userInfo.getUserType());
-        }});
+        return ResultModel.ok(loginService.verify(code, password, type));
     }
 
     //获取用户信息
     @GetMapping("/getUserInfo")
     public ResultModel getUserInfo() {
-        UserInfo userInfo = UserUtil.getUserInfo();
-        return ResultModel.ok(userInfo);
+        return ResultModel.ok(UserUtil.getUserInfo());
     }
 
     //修改密码
     @PostMapping("/alterPassword")
     public ResultModel alterPassword(String oldPassword, String newPassword) {
         return loginService.alterPassword(oldPassword, newPassword);
+    }
+
+    @GetMapping("refreshToken")
+    public ResultModel refreshToken(HttpServletRequest request) {
+        return ResultModel.ok(loginService.refreshToken(request));
     }
 }

@@ -64,6 +64,11 @@ public class JWTUtil {
         }
     }
 
+    /**
+     * 多途径获取token
+     * @param request
+     * @return
+     */
     public static String getToken(HttpServletRequest request) {
         String token = request.getHeader("token");
         //增加token从url中获取途径
@@ -75,4 +80,5 @@ public class JWTUtil {
         }
         return token;
     }
+
 }

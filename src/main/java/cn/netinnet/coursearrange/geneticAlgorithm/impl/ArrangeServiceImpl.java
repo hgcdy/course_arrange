@@ -465,17 +465,12 @@ public class ArrangeServiceImpl implements ArrangeService {
     @Override
     public void genetic(List<TaskRecord> taskRecordList1, List<TaskRecord> taskRecordList2) {
         int len = taskRecordList1.size() - getElectiveTaskList().size();
+        //随机交换1/10到1/2长度
+        int size = len / ((int) (Math.random() * 8) + 2);
+        //随机产生，交叉互换的开始位置
+        int a = (int) (Math.random() * (len - size));
 
-        //随机产生交叉互换时间
-        int a = (int) (Math.random() * len);
-        int b = (int) (Math.random() * len);
-        while (a == b) {
-            b = (int) (Math.random() * len);
-        }
-        int max = Math.max(a, b);
-        int min = Math.min(a, b);
-
-        for (int i = 0; i < 2 ; i++) {
+        for (int i = a; i < a + size ; i++) {
 
             TaskRecord taskRecord1 = taskRecordList1.get(i);
             TaskRecord taskRecord2 = taskRecordList2.get(i);

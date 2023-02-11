@@ -61,6 +61,12 @@ spring:
         # IP黑名单（共同存在时，deny优先于allow）
         deny:
 
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    timeout: 3600
+    database: 0
+
   thymeleaf:
     cache: false
     prefix: classpath:/templates/
@@ -80,6 +86,7 @@ logging:
 
 #项目配置
 project:
+  projectCode: course_arrange
   projectName: 课程自动排课系统
   shiro:
     #免认证端口

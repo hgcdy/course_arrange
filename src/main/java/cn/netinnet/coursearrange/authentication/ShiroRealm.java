@@ -1,6 +1,9 @@
 package cn.netinnet.coursearrange.authentication;
 
+import cn.netinnet.coursearrange.constant.CacheConstant;
 import cn.netinnet.coursearrange.domain.UserInfo;
+import cn.netinnet.coursearrange.exception.ServiceException;
+import cn.netinnet.coursearrange.util.RedisUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
