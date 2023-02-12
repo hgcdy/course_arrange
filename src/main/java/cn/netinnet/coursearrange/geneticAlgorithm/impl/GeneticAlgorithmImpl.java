@@ -49,10 +49,6 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         return bestChromosome.getTaskRecordList();
     }
 
-    @Override
-    public int verifyClashSolve(List<TaskRecord> taskRecordList) {
-        return arrangeService.verifyClashSolve(taskRecordList);
-    }
 
 
     /**

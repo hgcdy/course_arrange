@@ -100,8 +100,6 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
 
         //遗传算法获取较优解
         List<TaskRecord> taskRecordList = geneticAlgorithm.start();
-        int i = geneticAlgorithm.verifyClashSolve(taskRecordList);
-        System.out.println("冲突个数" + i);
 
         Map<Long, NinCourse> courseIdCourseListMap = ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>().eq(NinCourse::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode())).stream().collect(Collectors.toMap(NinCourse::getId, Function.identity()));
         Map<Long, String> classIdClassNameMap = ninClassMapper.selectList(new LambdaQueryWrapper<NinClass>().select(NinClass::getId, NinClass::getClassName)).stream().collect(Collectors.toMap(NinClass::getId, NinClass::getClassName));

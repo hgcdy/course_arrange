@@ -359,7 +359,6 @@ public class ArrangeServiceImpl implements ArrangeService {
         taskRecord.setHouseId(null);
         taskRecord.setWeek(null);
         taskRecord.setPitchNum(null);
-        System.out.println("冲突无法解决");
         return false;
     }
 
