@@ -15,6 +15,24 @@ require(['../config'], function () {
             window.location.href = "logout?token=" + util.getToken();
         })
 
+
+        //刷新token
+        window.setInterval(function () {
+            $.ajax({
+                url: "refreshToken",
+                dataType: "json",
+                type: "get",
+                success: function (data) {
+                    if (data.code === 200) {
+                        util.setCache("token", data.data);
+                    } else {
+                        util.hint(data.msg);
+                    }
+                }
+            })
+        }, 1000 * 60 * 60)
+
+
         /**
          * 页面跳转
          */

@@ -256,8 +256,13 @@ require(['../config'], function () {
                 util.hint("开始结束时间需大于课程持续时间");
                 return false;
             }
-            if (courseTime / 2 / weekTime <= 2) {
-                util.hint("课程持续时间过短");
+            if (courseTime / 2 / weekTime < 0.5) {
+                util.hint("上课周次过长");
+                return false;
+            }
+            if (courseTime / 2 / weekTime > 2) {
+                util.hint("上课周次过短");
+                return false;
             }
             return true;
         }

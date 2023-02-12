@@ -38,7 +38,6 @@ public class ArrangeServiceImpl implements ArrangeService {
 
     private static Map<Integer, List<NinHouse>> houseTypeNinHouseListMap;
 
-
     private static List<TeaTask> teaTaskList;
     private static List<TaskRecord> electiveTaskRecordList;
 
@@ -285,8 +284,8 @@ public class ArrangeServiceImpl implements ArrangeService {
         int count = 0;
         int size = taskRecordList.size();
         for (int i = 0; i <size; i++) {
-            boolean b = verifyClash(taskRecordList.subList(i + 1, size), taskRecordList.get(i));
-            if (!b) {
+            boolean b = verifyClash(taskRecordList, taskRecordList.get(i));
+            if (!b || null == taskRecordList.get(i).getWeek()) {
                 boolean b1 = solveClash(taskRecordList, taskRecordList.get(i));
                 if (!b1) {
                     count++;
@@ -307,6 +306,12 @@ public class ArrangeServiceImpl implements ArrangeService {
             //校验时间
             if (!verifyTime(r, taskRecord)) {
 
+                if (null == r.getHouseId()) {
+                    System.out.println("");
+                }
+                if (null == taskRecord.getHouseId()) {
+                    System.out.println("");
+                }
                 //教室
                 if (r.getHouseId().equals(taskRecord.getHouseId())) {
                     return false;
@@ -356,10 +361,7 @@ public class ArrangeServiceImpl implements ArrangeService {
         taskRecord.setPitchNum(null);
         System.out.println("冲突无法解决");
         return false;
-
     }
-
-
 
     //遍历时间
     public boolean traversalTime(List<TaskRecord> taskRecordList, TaskRecord taskRecord) {
@@ -374,11 +376,11 @@ public class ArrangeServiceImpl implements ArrangeService {
             taskRecord.setPitchNum(j);
             boolean b = verifyClash(taskRecordList, taskRecord);
             if (b) {
-                break;
+                return true;
             }
             sign++;
         }
-        return count != 25;
+        return false;
     }
 
     //时间校验
@@ -452,6 +454,9 @@ public class ArrangeServiceImpl implements ArrangeService {
 
         for (int i = 0; i < len; i++) {
             TaskRecord record = taskRecordList.get(i);
+            if (null == record.getWeek()) {
+                continue;
+            }
             if (record.getWeek() == a) {
                 record.setWeek(b);
                 continue;
@@ -476,13 +481,16 @@ public class ArrangeServiceImpl implements ArrangeService {
             TaskRecord taskRecord2 = taskRecordList2.get(i);
 
             //交换时间
-            int week1 = taskRecord1.getWeek();
-            int week2 = taskRecord2.getWeek();
+            Integer week1 = taskRecord1.getWeek();
+            Integer week2 = taskRecord2.getWeek();
+            Integer pitchNum1 = taskRecord1.getPitchNum();
+            Integer pitchNum2 = taskRecord2.getPitchNum();
+            if (null == week1 || null == week2 || null == pitchNum1 || null == pitchNum2) {
+                continue;
+            }
+
             taskRecord1.setWeek(week2);
             taskRecord2.setWeek(week1);
-
-            int pitchNum1 = taskRecord1.getPitchNum();
-            int pitchNum2 = taskRecord2.getPitchNum();
             taskRecord1.setPitchNum(pitchNum2);
             taskRecord2.setPitchNum(pitchNum1);
         }

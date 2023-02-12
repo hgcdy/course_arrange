@@ -1,12 +1,8 @@
 package cn.netinnet.coursearrange.controller;
 
-import cn.netinnet.coursearrange.authentication.JWTUtil;
-import cn.netinnet.coursearrange.constant.CacheConstant;
-import cn.netinnet.coursearrange.domain.UserInfo;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.LoginService;
-import cn.netinnet.coursearrange.util.RedisUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.sun.istack.internal.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("")

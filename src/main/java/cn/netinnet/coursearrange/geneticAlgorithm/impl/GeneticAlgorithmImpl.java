@@ -18,7 +18,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
 
     private List<Chromosome> population = new ArrayList<Chromosome>();
     private int popSize = 100;//种群数量
-    private int maxIterNum = 200;//最大迭代次数
+    private int maxIterNum = 500;//最大迭代次数
     private double mutationRate = 0.03;//基因变异的概率
 
     private int generation = 1;//当前遗传到第几代
@@ -99,10 +99,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             Chromosome p2 = getParentChromosome();
             List<Chromosome> children = genetic(p1, p2);
             if (children != null) {
-                for (Chromosome chro : children) {
-                    setChromosomeScore(chro);
-                    childPopulation.add(chro);
-                }
+                childPopulation.addAll(children);
             }
         }
         //新种群替换旧种群
@@ -179,14 +176,14 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
          * 课程在同一天
          */
 
-        int count = 0;//冲突个数
+
         double score = 0;
         Map<Long, int[]> idNumMap = new HashMap();
 
         List<TaskRecord> taskRecordList = chro.getTaskRecordList();
-
+        int count = taskRecordList.size();//冲突个数
         //Map<周次, Map<节数, 记录列表>>
-        Map<Integer, Map<Integer, List<TaskRecord>>> map = taskRecordList.stream()
+        Map<Integer, Map<Integer, List<TaskRecord>>> map = taskRecordList.stream().filter(i -> null != i.getWeek() && null != i.getPitchNum())
                 .collect(Collectors.groupingBy(TaskRecord::getWeek, Collectors.groupingBy(TaskRecord::getPitchNum)));
 
         for (Map.Entry<Integer, Map<Integer, List<TaskRecord>>> map1: map.entrySet()) {
@@ -197,10 +194,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
                 Integer pitchNum = map2.getKey();
                 List<TaskRecord> recordList = map2.getValue();
 
-                if (null == pitchNum) {
-                    count++;
-                    break;
-                }
+                count--;
 
                 int len = recordList.size();
                 for (int i = 0; i < len; i++) {
@@ -349,6 +343,9 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         //校验并解决冲突
         arrangeService.verifyClashSolve(c1.getTaskRecordList());
         arrangeService.verifyClashSolve(c2.getTaskRecordList());
+
+        setChromosomeScore(c1);
+        setChromosomeScore(c2);
 
         List<Chromosome> list = new ArrayList<Chromosome>();
         list.add(c1);

@@ -273,37 +273,48 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         NinArrange arrange = getById(id);
         Integer weekly = arrange.getWeekly();
         Long teacherId = arrange.getTeacherId();
+        Integer must = arrange.getMust();
 
-        if (arrange.getMust().equals(CourseTypeEnum.REQUIRED_COURSE.getCode())) {
-            //时间相同的排课记录
-            List<NinArrange> list = list(new LambdaQueryWrapper<NinArrange>()
-                    .eq(NinArrange::getWeek, week)
-                    .eq(NinArrange::getPitchNum, pitchNum)
-                    .eq(NinArrange::getMust, arrange.getMust()));
-            if (!list.isEmpty()) {
-                //排课记录对应的教学班id
-                Set<Long> teachClassIdList = list.stream().map(NinArrange::getTeachClassId).collect(Collectors.toSet());
-                teachClassIdList.add(arrange.getTeachClassId());//加上要修改的排课记录对应的教学班id
+        //时间相同的排课记录
+        List<NinArrange> list = list(new LambdaQueryWrapper<NinArrange>()
+                .eq(NinArrange::getWeek, week)
+                .eq(NinArrange::getPitchNum, pitchNum)
+                .eq(NinArrange::getMust, must));
 
-                List<NinTeachClass> teachClassList = ninTeachClassMapper.selectList(new LambdaQueryWrapper<NinTeachClass>()
-                        .in(NinTeachClass::getTeachClassId, teachClassIdList));
-                //教学班-》班级列表
-                Map<Long, List<Long>> teachClassMap = teachClassList.stream()
-                        .collect(Collectors.toMap(NinTeachClass::getTeachClassId,i -> Collections.singletonList(i.getClassId()), (v1, v2) -> {v1.addAll(v2);return v1;}));
+        //教学班-》班级列表
+        Map<Long, List<Long>> teachClassMap = null;
+        //要修改排课记录对应的班级id列表
+        List<Long> classIdList = null;
 
-                //要修改排课记录对应的班级id列表
-                List<Long> classIdList = teachClassMap.get(arrange.getTeachClassId());
-                for (NinArrange ninArrange : list) {
-                    Integer weekly1 = ninArrange.getWeekly();
-                    if (weekly != 0 && weekly1 != 0 && !weekly.equals(weekly1)) {
-                        continue;
-                    }
-                    if (teacherId.equals(ninArrange.getTeacherId())) {
-                        throw new ServiceException(412, "教师冲突");
-                    }
-                    if (houseId.equals(ninArrange.getHouseId())) {
-                        throw new ServiceException(412, "教室冲突");
-                    }
+        if (must.equals(CourseTypeEnum.REQUIRED_COURSE.getCode())) {
+            //排课记录对应的教学班id
+            Set<Long> teachClassIdList = list.stream().map(NinArrange::getTeachClassId).collect(Collectors.toSet());
+            teachClassIdList.add(arrange.getTeachClassId());//加上要修改的排课记录对应的教学班id
+
+            List<NinTeachClass> teachClassList = ninTeachClassMapper.selectList(new LambdaQueryWrapper<NinTeachClass>()
+                    .in(NinTeachClass::getTeachClassId, teachClassIdList));
+            //教学班-》班级列表
+            teachClassMap = teachClassList.stream()
+                    .collect(Collectors.toMap(NinTeachClass::getTeachClassId,i -> Collections.singletonList(i.getClassId()), (v1, v2) -> {v1.addAll(v2);return v1;}));
+            //要修改排课记录对应的班级id列表
+            classIdList = teachClassMap.get(arrange.getTeachClassId());
+        }
+
+        if (!list.isEmpty()) {
+            for (NinArrange ninArrange : list) {
+                Integer weekly1 = ninArrange.getWeekly();
+                if (weekly != 0 && weekly1 != 0 && !weekly.equals(weekly1)) {
+                    continue;
+                }
+                if (null != teacherId && null != ninArrange.getTeacherId() && teacherId.equals(ninArrange.getTeacherId())) {
+                    throw new ServiceException(412, "教师冲突");
+                }
+                if (null != houseId && null != ninArrange.getHouseId() && houseId.equals(ninArrange.getHouseId())) {
+                    throw new ServiceException(412, "教室冲突");
+                }
+
+                //必修判断教学班,选修不会有班级冲突
+                if (null != teachClassMap) {
                     List<Long> classIds = teachClassMap.get(ninArrange.getTeachClassId());
                     if (!Collections.disjoint(classIds, classIdList)) {
                         throw new ServiceException(412, "班级冲突");
@@ -311,6 +322,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 }
             }
         }
+        arrange.setDelFlag(0);
         arrange.setHouseId(houseId);
         arrange.setWeek(week);
         arrange.setPitchNum(pitchNum);
