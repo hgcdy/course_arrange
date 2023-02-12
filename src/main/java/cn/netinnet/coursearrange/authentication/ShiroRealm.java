@@ -71,6 +71,11 @@ public class ShiroRealm extends AuthorizingRealm {
             throw new IncorrectCredentialsException("---获取认证的用户信息为空---");
         }
 
+        String redisToken = RedisUtil.getString(String.format(CacheConstant.LOGIN_TOKEN, userInfo.getUserId()));
+        if (!token.equals(redisToken)) {
+            throw new ServiceException(-1, "在异地登录");
+        }
+
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(userInfo, token, getName());
 
         return info;

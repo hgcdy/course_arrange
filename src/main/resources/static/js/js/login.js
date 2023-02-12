@@ -1,6 +1,13 @@
 require(['../config'], function () {
     require(['jquery', 'util', 'bootstrapBundle'], function ($, util) {
 
+        if(top.location != location){
+            util.hint("您的账号在异地登录，请重新登录");
+            window.setTimeout(function () {
+                top.location.href= location.href;
+            }, 500);
+        }
+
         //回车触发登录
         $("html").keydown(function (event) {
             if (event.keyCode == 13) {
