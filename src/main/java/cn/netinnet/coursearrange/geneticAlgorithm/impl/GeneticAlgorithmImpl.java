@@ -17,20 +17,20 @@ import java.util.stream.Collectors;
 public class GeneticAlgorithmImpl implements GeneticAlgorithm {
 
     private List<Chromosome> population = new ArrayList<Chromosome>();
-    private int popSize = 100;//种群数量
-    private int maxIterNum = 500;//最大迭代次数
-    private double mutationRate = 0.03;//基因变异的概率
+    private final int popSize = 100;//种群数量
+    private final int maxIterNum = 500;//最大迭代次数
+    private final double mutationRate = 0.03;//基因变异的概率
 
-    private int generation = 1;//当前遗传到第几代
+    private int generation;//当前遗传到第几代
 
     private double bestScore;//最好得分
     private double worstScore;//最坏得分
     private double totalScore;//总得分
     private double averageScore;//平均得分
 
-    private Double historyBestScore = null;//历史最高得分
-    private int num;
-    private Chromosome bestChromosome;//历史最好种群
+    private Double historyBestScore = null;//历史最优个体得分
+    private int num;//历史最优个体所处代数
+    private Chromosome bestChromosome;//历史最优个体
 
     @Autowired
     private ArrangeService arrangeService;
@@ -39,16 +39,31 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
     @Override
     public List<TaskRecord> start() {
         //初始化种群
-        generation = 1;
+        clearData();
         init();
         while (generation < maxIterNum) {
             generation++;
             //种群遗传
             evolve();
         }
-        return bestChromosome.getTaskRecordList();
+        List<TaskRecord> taskRecordList = bestChromosome.getTaskRecordList();
+        clearData();
+        return taskRecordList;
     }
 
+
+    //清除数据，或者说初始化数据
+    private void clearData() {
+        generation = 1;
+        bestScore = 0;
+        worstScore = 0;
+        totalScore = 0;
+        averageScore = 0;
+        historyBestScore = null;
+        num = 0;
+        bestChromosome = null;
+        arrangeService.clearData();
+    }
 
 
     /**
@@ -271,8 +286,8 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         }
 
         //如果存在硬冲突
-        if (count > 5) {
-            score = score * 0.000001;
+        if (count > 10) {
+            score = score * Math.pow(0.1, 10);
         } else {
             score = score * Math.pow(0.1, count);
         }

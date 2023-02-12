@@ -440,6 +440,13 @@ public class ArrangeServiceImpl implements ArrangeService {
     }
 
 
+    @Override
+    public void clearData() {
+        houseTypeNinHouseListMap = null;
+        teaTaskList = null;
+        electiveTaskRecordList = null;
+    }
+
 
     @Override
     public void mutation(List<TaskRecord> taskRecordList) {
