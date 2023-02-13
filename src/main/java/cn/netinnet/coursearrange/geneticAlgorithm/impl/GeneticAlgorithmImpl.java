@@ -5,6 +5,7 @@ import cn.netinnet.coursearrange.geneticAlgorithm.domain.Chromosome;
 import cn.netinnet.coursearrange.geneticAlgorithm.domain.TaskRecord;
 import cn.netinnet.coursearrange.geneticAlgorithm.domain.TeaTask;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Scope("prototype")
 public class GeneticAlgorithmImpl implements GeneticAlgorithm {
 
     private List<Chromosome> population = new ArrayList<Chromosome>();
@@ -39,7 +41,6 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
     @Override
     public List<TaskRecord> start() {
         //初始化种群
-        clearData();
         init();
         while (generation < maxIterNum) {
             generation++;
@@ -47,22 +48,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             evolve();
         }
         List<TaskRecord> taskRecordList = bestChromosome.getTaskRecordList();
-        clearData();
         return taskRecordList;
-    }
-
-
-    //清除数据，或者说初始化数据
-    private void clearData() {
-        generation = 1;
-        bestScore = 0;
-        worstScore = 0;
-        totalScore = 0;
-        averageScore = 0;
-        historyBestScore = null;
-        num = 0;
-        bestChromosome = null;
-        arrangeService.clearData();
     }
 
 

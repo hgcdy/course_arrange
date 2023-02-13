@@ -111,6 +111,8 @@ require(['../config'], function () {
 
                         //学院修改
                         $(".chunk-card-body:first .alter_1").click(function () {
+                            unoptAll($(this).parent().parent(), 1);
+
                             var oldCollege = $(this).attr("data-college");
                             var $college = $("<tr><td><label for='college'>学院名称:</label></td><td><input type='text' id='college' value=" + oldCollege + "></td></tr>");
                             util.popup([$college], ["college"], function (record) {
@@ -205,6 +207,8 @@ require(['../config'], function () {
 
                             //专业课程查询
                             $(".chunk-card-body:eq(1) .query").click(function () {
+                                unoptAll($(this).parent().parent(), 1);
+
                                 var $chunk = $(".chunk-card-body:last");
                                 $chunk.empty();
                                 var parent2 = $(this).parent().parent();
@@ -270,6 +274,8 @@ require(['../config'], function () {
 
                             //专业修改
                             $(".chunk-card-body:eq(1) .alter").click(function () {
+                                unoptAll($(this).parent().parent(), 1);
+
                                 var $2 = $(this);
                                 var careerName = $2.attr("data-career");
                                 var parent1 = $2.parent().parent();
@@ -411,7 +417,7 @@ require(['../config'], function () {
         //选中
         function opt(obj, sign) {
             if (sign === 0) {
-                unoptAll(obj);
+                unoptAll(obj, sign);
             }
             $(obj).css("border", "2px solid #1dc072").attr("data-opt", 1).click(function () {
                 unopt($(this), sign);
@@ -426,12 +432,11 @@ require(['../config'], function () {
         }
 
         //全部取消
-        function unoptAll(obj) {
+        function unoptAll(obj, sign) {
             $(obj).parent().children().css("border", "2px solid #dddddd").attr("data-opt", null).click(function () {
-                opt($(this), 0);
+                opt($(this), sign);
             })
         }
-
 
     })
 })

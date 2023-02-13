@@ -15,9 +15,6 @@ public interface ArrangeService {
     //冲突解决
     boolean solveClash(List<TaskRecord> taskRecordList, TaskRecord taskRecord);
 
-    //清除数据
-    void clearData();
-
     void mutation(List<TaskRecord> taskRecordList);
     void genetic(List<TaskRecord> taskRecordList1, List<TaskRecord> taskRecordList2);
 
