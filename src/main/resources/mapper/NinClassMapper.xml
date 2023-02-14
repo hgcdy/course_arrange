@@ -55,26 +55,6 @@
     </select>
 
 
-<!--    //todo 暂时保留-->
-    <!-- 班级课程数量+1 -->
-    <update id="addBatchCourseNum">
-        UPDATE nin_class
-        SET course_num = course_num + 1
-        WHERE
-        <foreach  collection="list" index="index" item="item"  separator="OR">
-            id = #{item}
-        </foreach>
-    </update>
-
-<!--     班级课程数量-1 -->
-    <update id="subBatchCourseNum">
-        UPDATE nin_class
-        SET course_num = course_num - 1
-        WHERE
-        <foreach collection="list" index="index" item="item"  separator="OR">
-            id = #{item}
-        </foreach>
-    </update>
 
 <!--     班级人数+1 -->
     <update id="addPeopleNum">
