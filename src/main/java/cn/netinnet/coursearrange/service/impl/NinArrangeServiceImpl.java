@@ -24,6 +24,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +50,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@Scope("prototype")
 public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArrange> implements INinArrangeService {
 
 
@@ -72,12 +73,14 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     private NinTeachClassMapper ninTeachClassMapper;
     @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
-    @Autowired
-    private GeneticAlgorithm geneticAlgorithm;
+//    @Autowired
+//    private GeneticAlgorithm geneticAlgorithm;
     @Autowired
     private INinTeachClassService ninTeachClassService;
     @Autowired
     private NinMessageMapper ninMessageMapper;
+    @Autowired
+    private ApplicationContext applicationContext;
 
 
     @Override
@@ -99,8 +102,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             throw new ServiceException(412, "排课前请先关闭教师选课通道");
         }
 
-
         //遗传算法获取较优解
+        GeneticAlgorithm geneticAlgorithm = (GeneticAlgorithm) applicationContext.getBean("geneticAlgorithmImpl");
         List<TaskRecord> taskRecordList = geneticAlgorithm.start();
 
         Map<Long, NinCourse> courseIdCourseListMap = ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>().eq(NinCourse::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode())).stream().collect(Collectors.toMap(NinCourse::getId, Function.identity()));

@@ -493,4 +493,11 @@ public class ArrangeServiceImpl implements ArrangeService {
             taskRecord2.setPitchNum(pitchNum1);
         }
     }
+
+    @Override
+    public void clearData() {
+        houseTypeNinHouseListMap = null;
+        teaTaskList = null;
+        electiveTaskRecordList = null;
+    }
 }

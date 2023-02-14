@@ -20,7 +20,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
 
     private List<Chromosome> population = new ArrayList<Chromosome>();
     private final int popSize = 100;//种群数量
-    private final int maxIterNum = 500;//最大迭代次数
+    private final int maxIterNum = 200;//最大迭代次数
     private final double mutationRate = 0.03;//基因变异的概率
 
     private int generation;//当前遗传到第几代
@@ -37,7 +37,6 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
     @Autowired
     private ArrangeService arrangeService;
 
-
     @Override
     public List<TaskRecord> start() {
         //初始化种群
@@ -48,6 +47,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             evolve();
         }
         List<TaskRecord> taskRecordList = bestChromosome.getTaskRecordList();
+        arrangeService.clearData();
         return taskRecordList;
     }
 
