@@ -1,6 +1,5 @@
 package cn.netinnet.coursearrange.controller;
 
-
 import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
 import cn.netinnet.coursearrange.domain.UserInfo;
@@ -17,8 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * <p>
@@ -43,19 +40,13 @@ public class NinArrangeController {
         return new ModelAndView("view/arrangeView");
     }
 
-    Lock lock = new ReentrantLock();
 
     /**
      * 自动排课
      */
     @GetMapping("/nin-arrange/arrange")
     public ResultModel arrange() {
-        try {
-            lock.lock();
-            ninArrangeService.arrange();
-        } finally {
-            lock.unlock();
-        }
+        ninArrangeService.arrange();
         return ResultModel.ok();
     }
 

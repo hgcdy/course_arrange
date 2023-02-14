@@ -13,6 +13,7 @@ import cn.netinnet.coursearrange.util.IDUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -20,6 +21,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Scope("prototype")
 public class ArrangeServiceImpl implements ArrangeService {
     @Autowired
     private NinArrangeMapper ninArrangeMapper;
@@ -36,10 +38,10 @@ public class ArrangeServiceImpl implements ArrangeService {
     @Autowired
     private NinCareerCourseMapper ninCareerCourseMapper;
 
-    private static Map<Integer, List<NinHouse>> houseTypeNinHouseListMap;
+    private Map<Integer, List<NinHouse>> houseTypeNinHouseListMap;
 
-    private static List<TeaTask> teaTaskList;
-    private static List<TaskRecord> electiveTaskRecordList;
+    private List<TeaTask> teaTaskList;
+    private List<TaskRecord> electiveTaskRecordList;
 
     //生成一个解
     @Override

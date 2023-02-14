@@ -73,12 +73,11 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     private NinTeachClassMapper ninTeachClassMapper;
     @Autowired
     private NinStudentCourseMapper ninStudentCourseMapper;
-//    @Autowired
-//    private GeneticAlgorithm geneticAlgorithm;
     @Autowired
     private INinTeachClassService ninTeachClassService;
     @Autowired
     private NinMessageMapper ninMessageMapper;
+
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -102,8 +101,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             throw new ServiceException(412, "排课前请先关闭教师选课通道");
         }
 
-        //遗传算法获取较优解
+        //动态创建Bean
         GeneticAlgorithm geneticAlgorithm = (GeneticAlgorithm) applicationContext.getBean("geneticAlgorithmImpl");
+        //遗传算法获取较优解
         List<TaskRecord> taskRecordList = geneticAlgorithm.start();
 
         Map<Long, NinCourse> courseIdCourseListMap = ninCourseMapper.selectList(new LambdaQueryWrapper<NinCourse>().eq(NinCourse::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode())).stream().collect(Collectors.toMap(NinCourse::getId, Function.identity()));

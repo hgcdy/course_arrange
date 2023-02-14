@@ -47,7 +47,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             evolve();
         }
         List<TaskRecord> taskRecordList = bestChromosome.getTaskRecordList();
-        arrangeService.clearData();
+//        arrangeService.clearData();
         return taskRecordList;
     }
 
