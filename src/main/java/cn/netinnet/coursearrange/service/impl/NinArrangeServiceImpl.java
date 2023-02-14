@@ -285,7 +285,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 .eq(NinArrange::getMust, must));
 
         //教学班-》班级列表
-        Map<Long, List<Long>> teachClassMap = null;
+        Map<Long, List<Long>> teachClassMap = new HashMap<>();
         //要修改排课记录对应的班级id列表
         List<Long> classIdList = null;
 
@@ -297,9 +297,18 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             List<NinTeachClass> teachClassList = ninTeachClassMapper.selectList(new LambdaQueryWrapper<NinTeachClass>()
                     .in(NinTeachClass::getTeachClassId, teachClassIdList));
             //教学班-》班级列表
-            teachClassMap = teachClassList.stream()
-                    .collect(Collectors.toMap(NinTeachClass::getTeachClassId,i -> Collections.singletonList(i.getClassId()), (v1, v2) -> {v1.addAll(v2);return v1;}));
-            //要修改排课记录对应的班级id列表
+            for (NinTeachClass ninTeachClass : teachClassList) {
+                Long teachClassId = ninTeachClass.getTeachClassId();
+                Long classId = ninTeachClass.getClassId();
+                if (null != teachClassMap.get(teachClassId)) {
+                    teachClassMap.get(teachClassId).add(classId);
+                } else {
+                    teachClassMap.put(teachClassId, new ArrayList<Long>(){{
+                        add(classId);
+                    }});
+                }
+            }
+           //要修改排课记录对应的班级id列表
             classIdList = teachClassMap.get(arrange.getTeachClassId());
         }
 
@@ -317,7 +326,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 }
 
                 //必修判断教学班,选修不会有班级冲突
-                if (null != teachClassMap) {
+                if (!teachClassMap.isEmpty()) {
                     List<Long> classIds = teachClassMap.get(ninArrange.getTeachClassId());
                     if (!Collections.disjoint(classIds, classIdList)) {
                         throw new ServiceException(412, "班级冲突");

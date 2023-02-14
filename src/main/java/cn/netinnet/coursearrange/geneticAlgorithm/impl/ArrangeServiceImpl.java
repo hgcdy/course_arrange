@@ -39,22 +39,23 @@ public class ArrangeServiceImpl implements ArrangeService {
     private NinCareerCourseMapper ninCareerCourseMapper;
 
     private Map<Integer, List<NinHouse>> houseTypeNinHouseListMap;
-
     private List<TeaTask> teaTaskList;
     private List<TaskRecord> electiveTaskRecordList;
 
     //生成一个解
     @Override
     public Chromosome generateChromosome() {
-        //生成教学任务(课程班级教师)(只生成一次)
-        generateTeaTask();
+        if (null == teaTaskList) {
+            //生成教学任务(课程班级教师)(只生成一次)
+            generateTeaTask();
+            selectTeacher();
+        }
         //教学任务安排教室
         List<TaskRecord> taskRecords = selectHouse();
         //随机安排时间
         List<TaskRecord> recordList = generateTime(taskRecords);
-        if (null == recordList) {
-            return null;
-        }
+        //打乱排序
+        Collections.shuffle(recordList);
         //获取数据库中选修课数据(只生成一次)
         List<TaskRecord> electiveTaskList = getElectiveTaskList();
         recordList.addAll(electiveTaskList);
@@ -68,9 +69,6 @@ public class ArrangeServiceImpl implements ArrangeService {
 
     //生成教学任务(班级 + 课程 + 教师)
     public void generateTeaTask() {
-        if (null != teaTaskList) {
-            return;
-        }
 
         //专业表
         List<NinCareer> ninCareerList = ninCareerMapper.selectList(new QueryWrapper<>());
@@ -177,7 +175,6 @@ public class ArrangeServiceImpl implements ArrangeService {
             }
         }
         teaTaskList = taskList;
-        selectTeacher();
     }
 
     //选择教师
