@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>课程自动排课系统</title>
+    <title>自动排课系统</title>
     <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{css/index.css}" rel="stylesheet">
     <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/index},defer=true"></script>
@@ -17,7 +17,7 @@
         <div class="container-fluid">
             <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                 <a href="javaScript:void(0)" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-                    <h3>课程自动排课系统</h3>
+                    <h3>自动排课系统</h3>
                 </a>
                 <div class="text-end" style="position: absolute;right: 0">
                     <button type="button" class="btn btn-outline-light me-5">logout</button>
@@ -46,9 +46,9 @@
         <ul class="list-unstyled ps-0">
             <li class="mb-1">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small" id="notAdmin" >
-                    <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-student-course">选课</a></li>
+                    <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-student-course">课程选择</a></li>
                     <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-arrange/courseForm">课程表</a></li>
-                    <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-message">用户</a></li>
+                    <li><a href="javaScript:void(0)" class="link-dark rounded" data-html="nin-message">个人中心</a></li>
                 </ul>
             </li>
         </ul>
