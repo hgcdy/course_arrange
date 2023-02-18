@@ -20,7 +20,7 @@ require(['../config'], function () {
             }
         }
 
-        util.openSocket();
+
 
         var url;
         if (type !== "class") {

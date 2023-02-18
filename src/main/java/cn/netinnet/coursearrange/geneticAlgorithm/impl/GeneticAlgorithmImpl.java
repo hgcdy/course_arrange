@@ -29,6 +29,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
     private double worstScore;//最坏得分
     private double totalScore;//总得分
     private double averageScore;//平均得分
+    private int invariantCount;
 
     private Double historyBestScore = null;//历史最优个体得分
     private int num;//历史最优个体所处代数
@@ -45,10 +46,11 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
             generation++;
             //种群遗传
             evolve();
+            if (invariantCount == 20) {
+                break;
+            }
         }
-        List<TaskRecord> taskRecordList = bestChromosome.getTaskRecordList();
-//        arrangeService.clearData();
-        return taskRecordList;
+        return bestChromosome.getTaskRecordList();
     }
 
 
@@ -147,6 +149,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
                     historyBestScore = chro.getScore();
                     num = generation;
                     bestChromosome = chro;
+                    invariantCount = 0;
                 }
             }
             if (chro.getScore() < worstScore) { //设置最坏基因值
@@ -157,6 +160,7 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         averageScore = totalScore / popSize;
         //因为精度问题导致的平均值大于最好值，将平均值设置成最好值
         averageScore = averageScore > bestScore ? bestScore : averageScore;
+        invariantCount++;
     }
 
     /**
@@ -272,11 +276,11 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         }
 
         //如果存在硬冲突
-        if (count > 10) {
-            score = score * Math.pow(0.1, 10);
-        } else {
-            score = score * Math.pow(0.1, count);
-        }
+
+        int i = count / 10;
+        int ii = count % 10;
+        score = score * Math.pow(0.1, i) * (1 - 0.1 * ii);
+
         chro.setScore(score);
     }
 

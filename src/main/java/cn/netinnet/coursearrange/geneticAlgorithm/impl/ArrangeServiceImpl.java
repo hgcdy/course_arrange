@@ -493,10 +493,4 @@ public class ArrangeServiceImpl implements ArrangeService {
         }
     }
 
-    @Override
-    public void clearData() {
-        houseTypeNinHouseListMap = null;
-        teaTaskList = null;
-        electiveTaskRecordList = null;
-    }
 }

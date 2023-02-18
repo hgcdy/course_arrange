@@ -28,15 +28,18 @@ public class SettingTask extends QuartzJobBean{
         NinSetting ninSetting = (NinSetting) dataMap.get("data1");
         LocalDateTime closeTime = ninSetting.getCloseTime();
         LocalDateTime nowTime = LocalDateTime.now();
+        String state;
         if (nowTime.isAfter(closeTime)) {
             ninSetting.setOpenState(2);
+            state = "选课结束";
         } else {
             ninSetting.setOpenState(1);
             ninSettingService.addTimer(Collections.singletonList(ninSetting));
+            state = "选课开始";
         }
         ninSettingService.updateById(ninSetting);
-        int code = ninSetting.getUserType().equals(UserTypeEnum.STUDENT.getName()) ? 1 : 2;
 
-        WebSocketServer.sendBatchInfo("课程【" + ninSetting.getCourseName() + "】状态发生变化，请手动刷新", null, code);
+        int code = ninSetting.getUserType().equals(UserTypeEnum.STUDENT.getName()) ? 1 : 2;
+        WebSocketServer.sendBatchInfo("课程【" + ninSetting.getCourseName() + "】" + state, null, code);
     }
 }

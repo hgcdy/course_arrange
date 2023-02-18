@@ -18,6 +18,4 @@ public interface ArrangeService {
     void mutation(List<TaskRecord> taskRecordList);
     void genetic(List<TaskRecord> taskRecordList1, List<TaskRecord> taskRecordList2);
 
-    //数据清除
-    void clearData();
 }
