@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>课程自动排课系统</title>
+    <title>自动排课系统</title>
     <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{css/login.css}" rel="stylesheet">
     <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/login},defer=true"></script>
@@ -16,8 +16,11 @@
 <div id="hint">
 </div>
 
+
 <main class="form-signin">
+    <p style="font-size: 50px;top: 10%;position: absolute;">自动排课系统</p>
     <form>
+
         <!--        <img class="mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">-->
         <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
@@ -38,7 +41,7 @@
             <input type="radio" id="student" name="identity" value="student">
             <label for="student">学生</label>
         </div>
-        <button class="w-100 btn btn-lg btn-primary" type="button">Sign in</button>
+        <button class="w-100 btn btn-lg btn-primary" type="button">登录</button>
         <p class="mt-5 mb-3 text-muted">&copy; 2022–2023</p>
     </form>
 </main>

@@ -14,7 +14,7 @@ public class CourseArrangeApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CourseArrangeApplication.class, args);
-        LOGGER.info("-----课程自动排课系统启动完成-----");
+        LOGGER.info("-----自动排课系统启动完成-----");
     }
 
 }

@@ -87,7 +87,7 @@ logging:
 #项目配置
 project:
   projectCode: course_arrange
-  projectName: 课程自动排课系统
+  projectName: 自动排课系统
   shiro:
     #免认证端口
     anonUrl: /,/login,/login/**,/logout,/druid,/wsserver,/static/**
