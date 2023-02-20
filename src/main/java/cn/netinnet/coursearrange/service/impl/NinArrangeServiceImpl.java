@@ -334,7 +334,9 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 }
             }
         }
-        arrange.setDelFlag(0);
+        if (arrange.getDelFlag() != -2) {
+            arrange.setDelFlag(0);
+        }
         arrange.setHouseId(houseId);
         arrange.setWeek(week);
         arrange.setPitchNum(pitchNum);

@@ -32,7 +32,11 @@ public class NinCareerCourseServiceImpl extends ServiceImpl<NinCareerCourseMappe
 
     @Override
     public List<Map<String, Object>> getSelectList(Long careerId) {
-        return ninCareerCourseMapper.getSelectList(careerId);
+        List<Map<String, Object>> selectList = ninCareerCourseMapper.getSelectList(careerId);
+        selectList.forEach(i -> {
+            i.put("id", i.get("id").toString());
+        });
+        return selectList;
     }
 
     @Override

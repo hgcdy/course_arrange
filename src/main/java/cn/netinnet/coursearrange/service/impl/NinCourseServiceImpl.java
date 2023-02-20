@@ -192,6 +192,8 @@ public class NinCourseServiceImpl extends ServiceImpl<NinCourseMapper, NinCourse
             Long classId = arrange.getClassId();
             //删除选修班级
             ninClassMapper.deleteById(classId);
+            //排课记录删除
+            ninArrangeMapper.deleteById(arrange.getId());
 
         } else {
 
