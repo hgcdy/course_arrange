@@ -3,6 +3,7 @@ package cn.netinnet.coursearrange.service.impl;
 import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
+import cn.netinnet.coursearrange.constant.CacheConstant;
 import cn.netinnet.coursearrange.entity.*;
 import cn.netinnet.coursearrange.enums.*;
 import cn.netinnet.coursearrange.exception.ServiceException;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
+import javax.rmi.CORBA.Util;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -77,6 +79,10 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     private INinTeachClassService ninTeachClassService;
     @Autowired
     private NinMessageMapper ninMessageMapper;
+    @Autowired
+    private NinCareerCourseMapper ninCareerCourseMapper;
+    @Autowired
+    private NinCareerMapper ninCareerMapper;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -180,6 +186,8 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         ninArrangeMapper.delete(new LambdaQueryWrapper<NinArrange>().ne(NinArrange::getCareerId, 0));
         //删除教学班表
         ninTeachClassMapper.delete(new QueryWrapper<>());
+        //删除可视化数据分析的缓存
+        RedisUtil.del(CacheConstant.VISUAL_DATA);
     }
 
     @Override
@@ -660,6 +668,221 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         arrange.setPeopleNum(classIds.size() * ApplicationConstant.CLASS_PEOPLE_NUM);
         arrange.setMust(courseId != -1 ? ninCourseMapper.selectById(courseId).getMust() : 1);
         return ninArrangeMapper.insert(arrange);
+    }
+
+    @Override
+    public JSONArray getVisualData() {
+        String json = RedisUtil.get(CacheConstant.VISUAL_DATA);
+        JSONArray result;
+        if (null == json) {
+            result = new JSONArray();
+            NinArrange arrange = this.getOne(new LambdaQueryWrapper<NinArrange>()
+                    .eq(NinArrange::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode()), false);
+            if (null == arrange) {
+                throw new ServiceException(412, "请在排课后再查询");
+            }
+
+            List<NinArrange> list = this.list();
+            Double[] weekArr = new Double[]{0d,0d,0d,0d,0d,0d,0d};
+            Double[] dayArr = new Double[]{0d, 0d, 0d};
+            Map<Long, Double> teaCourseNumMap = new HashMap<>();
+            for (NinArrange ninArrange : list) {
+                Integer weekly = ninArrange.getWeekly();
+                if (null == weekly) {
+                    continue;
+                }
+                Integer week = ninArrange.getWeek();
+                Integer pitchNum = ninArrange.getPitchNum();
+                Long teacherId = ninArrange.getTeacherId();
+
+                double count = 1;
+                if (weekly != 0) {
+                    count = 0.5;
+                }
+
+                //计算一周内每天的课程数
+                weekArr[week - 1] = weekArr[week - 1] + count;
+                //计算一周内上午下午的课程
+                switch (pitchNum) {
+                    case 1:
+                    case 2:
+                        dayArr[0] = dayArr[0] + count;
+                        break;
+                    case 3:
+                    case 4:
+                        dayArr[1] = dayArr[1] + count;
+                        break;
+                    case 5:
+                        dayArr[2] = dayArr[2] +count;
+                        break;
+                }
+
+                //计算一周内教师课程数
+                Double courseNum = teaCourseNumMap.get(teacherId);
+                if (null == courseNum) {
+                    teaCourseNumMap.put(teacherId, count);
+                } else {
+                    teaCourseNumMap.put(teacherId, courseNum + count);
+                }
+            }
+
+
+            //星期课程数量处理 饼图
+            JSONArray jsonArray1 = new JSONArray();
+            for (int i = 0; i < 7; i++) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("value", weekArr[i]);
+                jsonObject.put("name", CnUtil.cnWeek(i + 1));
+                jsonArray1.add(jsonObject);
+            }
+
+
+            //一天内课程数量数据处理 饼图
+            JSONArray jsonArray2 = new JSONArray();
+            String[] dayStrArr = {"上午", "下午", "晚上"};
+            for (int i = 0; i < 3; i++) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("value", dayArr[i]);
+                jsonObject.put("name", dayStrArr[i]);
+                jsonArray2.add(jsonObject);
+            }
+
+            //教师处理
+            List<NinTeacher> ninTeachers = ninTeacherMapper.selectList(new LambdaQueryWrapper<NinTeacher>().select(NinTeacher::getId, NinTeacher::getTeacherName));
+            Map<Long, String> teaNameMap = ninTeachers.stream().collect(Collectors.toMap(NinTeacher::getId, NinTeacher::getTeacherName));
+            JSONArray jsonArray3 = new JSONArray();//教师列表
+            JSONArray jsonArray4 = new JSONArray();//上课次数数列表
+            for (Map.Entry<Long, Double> map : teaCourseNumMap.entrySet()) {
+                Long id = map.getKey();
+                Double value = map.getValue();
+                jsonArray3.add(teaNameMap.get(id));
+                jsonArray4.add(value);
+            }
+            List<Double> teaCourseNumList = teaCourseNumMap.values().stream().collect(Collectors.toList());
+            Double[] teaCourseNumArr = new Double[teaCourseNumList.size()];
+            teaCourseNumList.toArray(teaCourseNumArr);
+
+            List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper.selectList(new LambdaQueryWrapper<NinCareerCourse>().select(NinCareerCourse::getCareerId));
+            Map<Long, Long> careerNumMap = ninCareerCourses.stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId, Collectors.counting()));
+            List<NinCareer> ninCareers = ninCareerMapper.selectList(new LambdaQueryWrapper<NinCareer>().select(NinCareer::getId, NinCareer::getCareerName));
+            Map<Long, String> careerNameMap = ninCareers.stream().collect(Collectors.toMap(NinCareer::getId, NinCareer::getCareerName));
+            JSONArray jsonArray5 = new JSONArray();//专业列表
+            JSONArray jsonArray6 = new JSONArray();//课程数列表
+            for (Map.Entry<Long, Long> map : careerNumMap.entrySet()) {
+                Long id = map.getKey();
+                Long value = map.getValue();
+                jsonArray5.add(careerNameMap.get(id));
+                jsonArray6.add(value);
+            }
+            List<Double> careerNumList = careerNumMap.values().stream().map(Long::doubleValue).collect(Collectors.toList());
+            Double[] careerNumNumArr = new Double[careerNumList.size()];
+            careerNumList.toArray(careerNumNumArr);
+
+
+            String weekMax = "", weekMin = "", dayMax = "", dayMin = "", teaMax = "", teaMin = "", carMax = "", carMin = "";
+            double teaNumMax = 0, teaNumMin = 0, carNumMax = 0, carNumMin = 0;
+            String str = "在一周的时间内，按星期来说，该课程安排上课数量最多的是%s，最少的是%s；" +
+                    "如果按一天的时间段来说，%s的课最多，%s的课最少；" +
+                    "%s老师的平均单周上课次数最多，达到%.1f节（单周上课算0.5节），%s老师最少，仅有%.1f节；" +
+                    "%s专业选择的课程数最多，达到了%.0f门，%s最少，只有%.0f门。";
+
+            List<Integer> weekArrMax = max(weekArr);
+            for (Integer integer : weekArrMax) {
+                weekMax = weekMax + CnUtil.cnWeek(integer + 1) + "、";
+            }
+            weekMax = weekMax.substring(0, weekMax.length() - 1);
+
+            List<Integer> weekArrMin = min(weekArr);
+            for (Integer integer : weekArrMin) {
+                weekMin = weekMin + CnUtil.cnWeek(integer + 1) + "、";
+            }
+            weekMin = weekMin.substring(0, weekMin.length() - 1);
+
+            List<Integer> dayArrMax = max(dayArr);
+            for (Integer integer : dayArrMax) {
+                dayMax = dayMax + dayStrArr[integer] + "、";
+            }
+            dayMax = dayMax.substring(0, dayMax.length() - 1);
+
+            List<Integer> dayArrMin = min(dayArr);
+            for (Integer integer : dayArrMin) {
+                dayMin = dayMin + dayStrArr[integer] + "、";
+            }
+            dayMin = dayMin.substring(0, dayMin.length() - 1);
+
+            List<Integer> teaArrMax = max(teaCourseNumArr);
+            for (Integer integer : teaArrMax) {
+                teaMax = teaMax + jsonArray3.get(integer) + "、";
+                teaNumMax = teaCourseNumList.get(integer);
+            }
+            teaMax = teaMax.substring(0, teaMax.length() - 1);
+
+            List<Integer> teaArrMin = min(teaCourseNumArr);
+            for (Integer integer : teaArrMin) {
+                teaMin = teaMin + jsonArray3.get(integer) + "、";
+                teaNumMin = teaCourseNumList.get(integer);
+            }
+            teaMin = teaMin.substring(0, teaMin.length() - 1);
+
+
+            List<Integer> carArrMax = max(careerNumNumArr);
+            for (Integer integer : carArrMax) {
+                carMax = carMax + jsonArray5.get(integer) + "、";
+                carNumMax = careerNumList.get(integer);
+            }
+            carMax = carMax.substring(0, carMax.length() - 1);
+
+            List<Integer> carArrMin = min(careerNumNumArr);
+            for (Integer integer : carArrMin) {
+                carMin = carMin + jsonArray5.get(integer) + "、";
+                carNumMin = careerNumList.get(integer);
+            }
+            carMin = carMin.substring(0, carMin.length() - 1);
+
+
+            result.add(jsonArray1.toJSONString());
+            result.add(jsonArray2.toJSONString());
+            result.add(jsonArray3.toJSONString());
+            result.add(jsonArray4.toJSONString());
+            result.add(jsonArray5.toJSONString());
+            result.add(jsonArray6.toJSONString());
+            result.add(String.format(str, weekMax, weekMin, dayMax, dayMin, teaMax, teaNumMax, teaMin, teaNumMin, carMax, carNumMax, carMin, carNumMin));
+
+            RedisUtil.set(CacheConstant.VISUAL_DATA, result.toJSONString());
+        } else {
+            result = JSONArray.parseArray(json);
+        }
+        return result;
+    }
+
+
+    public List<Integer> max(Double[] arr) {
+        List<Integer> results = new ArrayList<>();
+        double max = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] > max) {
+                max = arr[i];
+                results = new ArrayList<>();
+                results.add(i);
+            } else if (arr[i] == max){
+                results.add(i);
+            }
+        }
+        return results;
+    }
+    public List<Integer> min(Double[] arr) {
+        List<Integer> results = new ArrayList<>();
+        double min = arr[0];
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] < min) {
+                min = arr[i];
+                results = new ArrayList<>();
+                results.add(i);
+            } else if (arr[i] == min){
+                results.add(i);
+            }
+        }
+        return results;
     }
 }
 

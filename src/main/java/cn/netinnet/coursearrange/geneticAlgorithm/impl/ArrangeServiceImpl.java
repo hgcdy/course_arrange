@@ -438,7 +438,7 @@ public class ArrangeServiceImpl implements ArrangeService {
         return ints;
     }
 
-
+    //突变
     @Override
     public void mutation(List<TaskRecord> taskRecordList) {
         int len = taskRecordList.size() - getElectiveTaskList().size();
@@ -464,6 +464,7 @@ public class ArrangeServiceImpl implements ArrangeService {
         }
     }
 
+    //遗传
     @Override
     public void genetic(List<TaskRecord> taskRecordList1, List<TaskRecord> taskRecordList2) {
         int len = taskRecordList1.size() - getElectiveTaskList().size();

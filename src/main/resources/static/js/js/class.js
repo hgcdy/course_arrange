@@ -231,7 +231,7 @@ require(['../config'], function () {
                 success: function (data) {
                     if (data.code == 200) {
                         for (let key in data.data) {
-                            if (key == "补课") {
+                            if (key == "教室申请") {
                                 continue;
                             }
                             var value = data.data[key];

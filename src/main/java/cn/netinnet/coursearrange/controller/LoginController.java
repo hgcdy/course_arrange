@@ -18,7 +18,6 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
-
     //跳转登录页面
     @GetMapping("/login")
     public ModelAndView gotoLogin() {
@@ -67,8 +66,11 @@ public class LoginController {
         return loginService.alterPassword(oldPassword, newPassword);
     }
 
+    //token刷新
     @GetMapping("refreshToken")
     public ResultModel refreshToken(HttpServletRequest request) {
         return ResultModel.ok(loginService.refreshToken(request));
     }
+
+
 }

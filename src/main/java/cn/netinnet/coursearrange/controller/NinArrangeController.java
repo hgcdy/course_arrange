@@ -7,6 +7,8 @@ import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
 import cn.netinnet.coursearrange.util.UserUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
+import java.util.List;
 
 /**
  * <p>
@@ -168,5 +171,19 @@ public class NinArrangeController {
     @RequiresRoles(value = {"admin", "teacher", "student"}, logical = Logical.OR)
     public ModelAndView gotoClassCourse() {
         return new ModelAndView("view/selectCourseView");
+    }
+
+    //跳转可视化课程页面
+    @GetMapping("visual")
+    @RequiresRoles(value = {"admin"}, logical = Logical.OR)
+    public ModelAndView gotoVisual() {
+        return new ModelAndView("view/visualView");
+    }
+
+    //跳转可视化课程页面
+    @GetMapping("visualData")
+    @RequiresRoles(value = {"admin"}, logical = Logical.OR)
+    public ResultModel getVisualData() {
+        return ResultModel.ok(ninArrangeService.getVisualData());
     }
 }

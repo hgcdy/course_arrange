@@ -92,6 +92,9 @@ public class NinClassServiceImpl extends ServiceImpl<NinClassMapper, NinClass> i
         if (count > 0) {
             throw new ServiceException(412, "重名");
         }
+        Long careerId = ninClass.getCareerId();
+        Integer integer = ninCareerCourseMapper.selectCount(new LambdaQueryWrapper<NinCareerCourse>().eq(NinCareerCourse::getCareerId, careerId));
+        ninClass.setCourseNum(integer);
         ninCareerMapper.addClassNum(ninClass.getCareerId());
         return save(ninClass);
     }
