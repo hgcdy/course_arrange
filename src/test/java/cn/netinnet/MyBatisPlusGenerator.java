@@ -11,10 +11,12 @@ import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -22,16 +24,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 @AutoConfigureMockMvc
 public class MyBatisPlusGenerator {
 
-    public static void main(String[] args) {
+    @Test
+    public void XXX() {
         //1. 全局配置
         GlobalConfig config = new GlobalConfig();
         // 是否支持AR模式
         config.setActiveRecord(true)
                 // 作者
-                .setAuthor("liuyc")
+                .setAuthor("wangjs")
                 // 生成路径，最好使用绝对路径
                 //TODO  TODO  TODO  TODO
-                .setOutputDir("F:\\mybatisplusResult")
+                .setOutputDir("D:\\mybatisplusResult")
                 // 文件覆盖
                 .setFileOverride(true)
                 // 主键策略
@@ -59,7 +62,7 @@ public class MyBatisPlusGenerator {
         dsConfig.setDbType(DbType.MYSQL)
                 .setDriverName("com.mysql.cj.jdbc.Driver")
                 //TODO  TODO  TODO  TODO
-                .setUrl("jdbc:mysql://172.16.39.28:3306/nin_ec_live?useSSL=false")
+                .setUrl("jdbc:mysql://172.16.39.28:3306/nin_financial_decision?useSSL=false")
                 .setUsername("dp1_mysql_zhsx")
                 .setPassword("Zhsx.123");
 
@@ -79,14 +82,14 @@ public class MyBatisPlusGenerator {
 
                 // 生成的表, 支持多表一起生成，以数组形式填写
                 //TODO  TODO  TODO  TODO 两个方式，直接写，或者使用命令行输入
-                .setInclude("com_code_info")
-                .setTablePrefix("com_", "ec_");
+                .setInclude(fun())
+                .setTablePrefix("ifd_");
 
         //.setInclude(scanner("表名，多个英文逗号分割").split(","));
 
         //4. 包名策略配置
         PackageConfig pkConfig = new PackageConfig();
-        pkConfig.setParent("cn.netinnet.live.admin")
+        pkConfig.setParent("cn.netinnet.decision")
                 .setMapper("mapper")
                 .setService("service")
                 .setController("controller")
@@ -123,4 +126,10 @@ public class MyBatisPlusGenerator {
 //        }
 //        throw new MybatisPlusException("请输入正确的" + tip + "！");
 //    }
+
+
+    public static String[] fun() {
+        String str = "ifd_stu_approval``ifd_stu_bank_receipt``ifd_stu_company_info``ifd_stu_invoice``ifd_stu_invoice_detail``ifd_stu_material``ifd_stu_material_check``ifd_stu_material_in``ifd_stu_material_inout_apply``ifd_stu_material_log``ifd_stu_material_out``ifd_stu_material_out_detail``ifd_stu_material_sale_apply``ifd_stu_material_sale_apply_detail``ifd_stu_message``ifd_stu_property``ifd_stu_property_log``ifd_stu_pur_contract``ifd_stu_pur_plan``ifd_stu_sale_plan``ifd_stu_todo_task``ifd_stu_trade_operation";
+        return str.split("``");
+    }
 }

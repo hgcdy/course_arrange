@@ -42,14 +42,17 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
     public List<TaskRecord> start() {
         //初始化种群
         init();
+        //generation 当前代数，maxIterNum 迭代次数
         while (generation < maxIterNum) {
             generation++;
             //种群遗传
             evolve();
+            //最高得分连续20代没有变化，提前结束迭代
             if (invariantCount == 20) {
                 break;
             }
         }
+        //返回历史最优解
         return bestChromosome.getTaskRecordList();
     }
 
@@ -73,16 +76,21 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
      */
     private void init() {
         int count = 0;
+        //初始化种群
         population = new ArrayList<Chromosome>();
+        //生成popSize个个体，组成种群
         while (count < popSize) {
+            //生成一个个体，即一个可行解
             Chromosome chromosome = arrangeService.generateChromosome();
             if (null == chromosome) {
                 continue;
             }
+            //计算适应度得分
             setChromosomeScore(chromosome);
             count++;
             population.add(chromosome);
         }
+        //计算种群适应度
         caculteScore();
         print();
     }
@@ -92,10 +100,12 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
      */
     private void evolve() {
         List<Chromosome> childPopulation = new ArrayList<Chromosome>();
-        //生成下一代种群
+        //生成下一代种群，直至新种群达到设置的种群个体数量
         while (childPopulation.size() < popSize) {
+            //使用轮盘赌选择得到两个个体
             Chromosome p1 = getParentChromosome();
             Chromosome p2 = getParentChromosome();
+            //由选出的两个个体遗传生成新的个体
             List<Chromosome> children = genetic(p1, p2);
             if (children != null) {
                 childPopulation.addAll(children);
@@ -171,42 +181,57 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
         if (chro == null) {
             return;
         }
-        /**
-         * 没有冲突
-         * 教师班级方差最小
-         * 课程在同一天
-         */
-
 
         double score = 0;
+        //用户id -》[周一课程数，周二课程数...]
         Map<Long, int[]> idNumMap = new HashMap();
 
         List<TaskRecord> taskRecordList = chro.getTaskRecordList();
         int count = taskRecordList.size();//冲突个数
-        //Map<周次, Map<节数, 记录列表>>
-        Map<Integer, Map<Integer, List<TaskRecord>>> map = taskRecordList.stream().filter(i -> null != i.getWeek() && null != i.getPitchNum())
-                .collect(Collectors.groupingBy(TaskRecord::getWeek, Collectors.groupingBy(TaskRecord::getPitchNum)));
+        score = count;
 
-        for (Map.Entry<Integer, Map<Integer, List<TaskRecord>>> map1: map.entrySet()) {
+        //课程时间均匀分布
+        //Map<星期, 记录列表>>
+        Map<Integer, List<TaskRecord>> map = taskRecordList.stream().filter(i -> null != i.getWeek() && null != i.getPitchNum())
+                .collect(Collectors.groupingBy(TaskRecord::getWeek));
+        for (Map.Entry<Integer, List<TaskRecord>> map1: map.entrySet()) {
             Integer week = map1.getKey();
-            Map<Integer, List<TaskRecord>> value = map1.getValue();
+            List<TaskRecord> taskRecordsList = map1.getValue();
+            Map<Integer, List<TaskRecord>> map2 = taskRecordsList.stream().collect(Collectors.groupingBy(TaskRecord::getPitchNum));
 
-            for (Map.Entry<Integer, List<TaskRecord>> map2 : value.entrySet()) {
-                Integer pitchNum = map2.getKey();
-                List<TaskRecord> recordList = map2.getValue();
-
-                count--;
+            for (Map.Entry<Integer, List<TaskRecord>> map3 : map2.entrySet()) {
+                Integer pitchNum = map3.getKey();
+                List<TaskRecord> recordList = map3.getValue();
 
                 int len = recordList.size();
                 for (int i = 0; i < len; i++) {
-                    TaskRecord taskRecord = recordList.get(i);
+                    //计算硬冲突数
+                    count--;
 
+                    TaskRecord taskRecord = recordList.get(i);
                     TeaTask teaTask = taskRecord.getTeaTask();
+
+                    //教室座位数
+                    Integer seat = taskRecord.getSeat();
+                    //人数
+                    int peopleNum = teaTask.getPeopleNum();
+                    if (null != seat && seat != 0 && peopleNum != 0 ) {
+                        if (peopleNum / seat < 0.6) {
+                            //教室座位使用率小于90%扣一分
+                            score -= 1;
+                        }
+                        if (peopleNum / seat > 0.9) {
+                            //教室座位使用率小于90%加一分
+                            score += 1;
+                        }
+
+                    }
+
 
                     List<Long> longs = new ArrayList<>();
                     longs.add(teaTask.getTeacherId());
                     longs.addAll(teaTask.getClassIdList());
-
+                    //计算教师、学生每天的课程数
                     for (Long id : longs) {
                         if (null == idNumMap.get(id)) {
                             int[] ints = new int[5];
@@ -218,12 +243,37 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
                     }
                 }
             }
+
+            //<教师id, <课程id, 记录列表>>
+            Map<Long, Map<Long, List<TaskRecord>>> map4 = taskRecordsList.stream()
+                    .collect(Collectors.groupingBy(i -> i.getTeaTask().getTeacherId(),
+                            Collectors.groupingBy(j -> j.getTeaTask().getCourseId())));
+            //一个教师，同一课程，不同班级，在一天内上课
+            for (Map<Long, List<TaskRecord>> map5: map4.values()) {
+                for (List<TaskRecord> list: map5.values()) {
+                    int size = list.size();
+                    if (size == 1) {
+                        continue;
+                    }
+                    for (int i = 0; i < size; i++) {
+                        for (int j = i; j < size; j++) {
+                            TaskRecord taskRecord1 = list.get(i);
+                            TaskRecord taskRecord2 = list.get(j);
+                            if (taskRecord1.getTeaTask().equals(taskRecord2.getTeaTask())) {
+                                continue;
+                            }
+                            score += 2;
+                        }
+                    }
+                }
+            }
         }
-        score = idNumMap.size() * 2;
+        //计算教师、学生课程数平方差
         for (Map.Entry<Long, int[]> map1 : idNumMap.entrySet()) {
             score -= computeVariance(map1.getValue());
         }
 
+        //一天上两次相同的课...
         //Map<教学任务, 记录列表>
         Map<TeaTask, List<TaskRecord>> taskListMap = taskRecordList.stream().collect(Collectors.groupingBy(TaskRecord::getTeaTask));
         for (Map.Entry<TeaTask, List<TaskRecord>> map1 : taskListMap.entrySet()) {
@@ -256,30 +306,31 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
                             //12,23,34,45
                             if (Math.abs(pitchNum1 - pitchNum2) == 1 && (sum == 3 || sum == 7)) {
                                 //同在上午或同在下午
-                                score -= 5;
-                            } else {
                                 score -= 3;
+                            } else {
+                                score -= 2;
                             }
                             break;
                         case 1:
                             //不变
                             break;
                         case 2:
-                            score += 1;
+                        case 3:
+                            score +=1;
                             break;
-                        default:
-                            score += 2;
                     }
                 }
             }
 
         }
 
-        //如果存在硬冲突
+        //
 
-        int i = count / 10;
-        int ii = count % 10;
-        score = score * Math.pow(0.1, i) * (1 - 0.1 * ii);
+        //如果存在硬冲突
+        score = score - count * 20;
+        if (score < 0) {
+            score = 0;
+        }
 
         chro.setScore(score);
     }
@@ -289,10 +340,14 @@ public class GeneticAlgorithmImpl implements GeneticAlgorithm {
      */
     private void mutation() {
         for (Chromosome chro : population) {
-            if (Math.random() < mutationRate) { //发生基因突变
+            //如果小于基因突变概率，则进行基因突变
+            if (Math.random() < mutationRate) {
+                //基因突变
                 arrangeService.mutation(chro.getTaskRecordList());
+                //校验并解决硬冲突
                 arrangeService.verifyClashSolve(chro.getTaskRecordList());
             }
+            //计算适应度得分
             setChromosomeScore(chro);
         }
     }
