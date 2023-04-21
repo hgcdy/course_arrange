@@ -180,7 +180,7 @@ public class NinArrangeController {
         return new ModelAndView("view/visualView");
     }
 
-    //跳转可视化课程页面
+    //可视化课程页面数据
     @GetMapping("visualData")
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel getVisualData() {

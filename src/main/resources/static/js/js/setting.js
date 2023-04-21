@@ -11,7 +11,7 @@ require(['../config'], function () {
         const STR = ["courseName", "state", "openTime", "closeTime"];
         var timer = null;
         query();
-        util.navPath("/设置/开放选课");
+        util.navPath("/设置/选课时间设置");
 
         //状态下拉框
         $("#dropupStateTypeButton").next("ul").find("a").click(function () {

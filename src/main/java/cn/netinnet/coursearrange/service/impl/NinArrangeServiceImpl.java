@@ -679,10 +679,10 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             NinArrange arrange = this.getOne(new LambdaQueryWrapper<NinArrange>()
                     .eq(NinArrange::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode()), false);
             if (null == arrange) {
-                throw new ServiceException(412, "请在排课后再查询");
+                throw new ServiceException(412, "数据出错！请在排课后再次尝试");
             }
 
-            List<NinArrange> list = this.list();
+            List<NinArrange> list = this.list(new LambdaQueryWrapper<NinArrange>().ne(NinArrange::getCareerId, -1));
             Double[] weekArr = new Double[]{0d,0d,0d,0d,0d,0d,0d};
             Double[] dayArr = new Double[]{0d, 0d, 0d};
             Map<Long, Double> teaCourseNumMap = new HashMap<>();

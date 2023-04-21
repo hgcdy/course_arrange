@@ -10,7 +10,7 @@ require(['../config'], function () {
         var page = 1;
         var totalPage = null;
 
-        util.navPath("/设置/用户信息");
+        util.navPath("/设置/个人中心");
         getUserInfo();
         getMsgList();
         var role = util.getCache("role");

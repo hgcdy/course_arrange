@@ -125,7 +125,11 @@ require(['../config'], function () {
                     myChart4.setOption(option4);
 
                     $("#visual5").text(visualData7);
+                } else {
+                    $("body").text("暂无数据").css("font-size", "30px");
+                    util.hint(data.msg);
                 }
+
             }
         })
 
