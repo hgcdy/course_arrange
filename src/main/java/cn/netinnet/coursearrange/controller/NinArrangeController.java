@@ -2,10 +2,12 @@ package cn.netinnet.coursearrange.controller;
 
 import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
+import cn.netinnet.coursearrange.constant.CacheConstant;
 import cn.netinnet.coursearrange.domain.UserInfo;
 import cn.netinnet.coursearrange.enums.UserTypeEnum;
 import cn.netinnet.coursearrange.model.ResultModel;
 import cn.netinnet.coursearrange.service.INinArrangeService;
+import cn.netinnet.coursearrange.util.RedisUtil;
 import cn.netinnet.coursearrange.util.UserUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -185,5 +187,12 @@ public class NinArrangeController {
     @RequiresRoles(value = {"admin"}, logical = Logical.OR)
     public ResultModel getVisualData() {
         return ResultModel.ok(ninArrangeService.getVisualData());
+    }
+
+    @GetMapping("delVisualData")
+    @RequiresRoles(value = {"admin"}, logical = Logical.OR)
+    public ResultModel delVisualData() {
+        RedisUtil.del(CacheConstant.VISUAL_DATA);
+        return ResultModel.ok();
     }
 }

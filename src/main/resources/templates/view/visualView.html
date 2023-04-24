@@ -3,18 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>title</title>
+    <link th:href="@{bootstrap/css/bootstrap.min.css}" rel="stylesheet">
     <script th:src="@{js/require.js}" th:attr="data-main=@{js/js/visual.js},defer=true"></script>
+    <link th:href="@{css/visual.css}" rel="stylesheet">
     <script th:inline="javascript">
 
     </script>
 </head>
 <body>
 
-<div id="visual1" style="width: 40%;height:50%;position: absolute;"></div>
-<div id="visual2" style="width: 30%;height:30%;position: absolute;left: 40%;top: 20%"></div>
-<div id="visual3" style="width: 75%;height:50%;position: absolute;bottom: 0;"></div>
-<div id="visual4" style="width: 28%;height:80%;position: absolute;right: 2%;top: 20%;"></div>
-<div id="visual5" style="width: 60%;height:17%;position: absolute;left: 35%;top: 2%;font-size: 20px;text-indent: 2em;"></div>
+<div id="title" style="border: none;">
+    <p>数 据 统 计 分 析</p>
+    <button type="button" class="btn btn-secondary">刷新</button>
+</div>
+
+
+<div class="click" id="visual1" data-count=3></div>
+<div class="click" id="visual2" data-count=2></div>
+<div class="click" id="visual3" data-count=1></div>
+<div id="visual4" data-count=0></div>
+<div class="click" id="visual5" data-count=6></div>
+<div class="click" id="visual6" data-count=5></div>
+<div class="click" id="visual7" data-count=4></div>
+<div id="text" style="border: none;"></div>
 
 </body>
 </html>

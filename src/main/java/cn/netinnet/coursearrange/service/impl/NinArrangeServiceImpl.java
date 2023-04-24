@@ -2,6 +2,7 @@ package cn.netinnet.coursearrange.service.impl;
 
 import cn.netinnet.coursearrange.bo.ArrangeBo;
 import cn.netinnet.coursearrange.bo.HouseApplyBo;
+import cn.netinnet.coursearrange.bo.VisualBo;
 import cn.netinnet.coursearrange.constant.ApplicationConstant;
 import cn.netinnet.coursearrange.constant.CacheConstant;
 import cn.netinnet.coursearrange.entity.*;
@@ -673,9 +674,12 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     @Override
     public JSONArray getVisualData() {
         String json = RedisUtil.get(CacheConstant.VISUAL_DATA);
+        //结果集
         JSONArray result;
         if (null == json) {
             result = new JSONArray();
+            //分析文本结果集
+            JSONArray resultText = new JSONArray();
             NinArrange arrange = this.getOne(new LambdaQueryWrapper<NinArrange>()
                     .eq(NinArrange::getMust, CourseTypeEnum.REQUIRED_COURSE.getCode()), false);
             if (null == arrange) {
@@ -683,9 +687,35 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
             }
 
             List<NinArrange> list = this.list(new LambdaQueryWrapper<NinArrange>().ne(NinArrange::getCareerId, -1));
+
+
+            /**
+             * 初始化
+             */
+            //1星期饼图
             Double[] weekArr = new Double[]{0d,0d,0d,0d,0d,0d,0d};
+            //2早中晚饼图
             Double[] dayArr = new Double[]{0d, 0d, 0d};
-            Map<Long, Double> teaCourseNumMap = new HashMap<>();
+            //7热力图
+            Double[][] heatArr = new Double[7][5];
+            for (int i = 0; i < 7; i++) {
+                for (int j = 0; j < 5; j++) {
+                    heatArr[i][j] = 0d;
+                }
+            }
+            //3教师-授课次数
+            Map<Long, Double> teaNumMap = new HashMap<>();
+            //6教室-使用次数
+            Map<Long, Double> houseNumMap = new HashMap<>();
+            //4专业-课程数量柱形图
+            Map<Long, Double> careerNumMap = new HashMap<>();
+            //5课程-上课班级漏斗图
+            Map<Long, Double> courseNumMap = new HashMap<>();
+
+
+            /**
+             * 数据获取
+             */
             for (NinArrange ninArrange : list) {
                 Integer weekly = ninArrange.getWeekly();
                 if (null == weekly) {
@@ -694,6 +724,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                 Integer week = ninArrange.getWeek();
                 Integer pitchNum = ninArrange.getPitchNum();
                 Long teacherId = ninArrange.getTeacherId();
+                Long houseId = ninArrange.getHouseId();
 
                 double count = 1;
                 if (weekly != 0) {
@@ -716,138 +747,162 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
                         dayArr[2] = dayArr[2] +count;
                         break;
                 }
+                //计算热力图数据
+                heatArr[week - 1][pitchNum - 1] = heatArr[week - 1][pitchNum - 1] + count;
 
                 //计算一周内教师课程数
-                Double courseNum = teaCourseNumMap.get(teacherId);
-                if (null == courseNum) {
-                    teaCourseNumMap.put(teacherId, count);
+                Double teaNum = teaNumMap.get(teacherId);
+                if (null == teaNum) {
+                    teaNumMap.put(teacherId, count);
                 } else {
-                    teaCourseNumMap.put(teacherId, courseNum + count);
+                    teaNumMap.put(teacherId, teaNum + count);
+                }
+
+                //计算一周内教室使用次数
+                Double houseNum = houseNumMap.get(houseId);
+                if (null == houseNum) {
+                    houseNumMap.put(houseId, count);
+                } else {
+                    houseNumMap.put(houseId, houseNum + count);
+                }
+            }
+            List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper.selectList(new LambdaQueryWrapper<NinCareerCourse>().select(NinCareerCourse::getCareerId, NinCareerCourse::getCourseId));
+            List<NinCareer> ninCareers = ninCareerMapper.selectList(new LambdaQueryWrapper<NinCareer>().select(NinCareer::getId, NinCareer::getCareerName, NinCareer::getClassNum));
+            //id-》班级数量
+            Map<Long, Integer> careerClassNumMap = ninCareers.stream().collect(Collectors.toMap(NinCareer::getId, NinCareer::getClassNum));
+            for (NinCareerCourse ncc : ninCareerCourses) {
+                Long careerId = ncc.getCareerId();
+                Long courseId = ncc.getCourseId();
+                Double carNum = careerNumMap.get(careerId);
+                if (null == carNum) {
+                    careerNumMap.put(careerId, 1d);
+                } else {
+                    careerNumMap.put(careerId, carNum + 1);
+                }
+
+                Double couNum = courseNumMap.get(courseId);
+                if (null == couNum) {
+                    courseNumMap.put(courseId, careerClassNumMap.get(careerId).doubleValue());
+                } else {
+                    courseNumMap.put(courseId, couNum + careerClassNumMap.get(careerId));
                 }
             }
 
+            /**
+             * 数据处理
+             */
+            List<VisualBo> visualBoList1 = new ArrayList<>(),
+                           visualBoList2 = new ArrayList<>(),
+                           visualBoList3 = new ArrayList<>(),
+                           visualBoList4 = new ArrayList<>(),
+                           visualBoList5 = new ArrayList<>(),
+                           visualBoList6 = new ArrayList<>(),
+                           visualBoList7 = new ArrayList<>();
 
-            //星期课程数量处理 饼图
-            JSONArray jsonArray1 = new JSONArray();
             for (int i = 0; i < 7; i++) {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("value", weekArr[i]);
-                jsonObject.put("name", CnUtil.cnWeek(i + 1));
-                jsonArray1.add(jsonObject);
+                VisualBo visualBo = new VisualBo();
+                visualBo.setName(CnUtil.cnWeek(i + 1));
+                visualBo.setNum(weekArr[i]);
+                visualBoList1.add(visualBo);
             }
 
-
-            //一天内课程数量数据处理 饼图
-            JSONArray jsonArray2 = new JSONArray();
-            String[] dayStrArr = {"上午", "下午", "晚上"};
+            String[] dayStr = new String[]{"早上", "下午", "晚上"};
             for (int i = 0; i < 3; i++) {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("value", dayArr[i]);
-                jsonObject.put("name", dayStrArr[i]);
-                jsonArray2.add(jsonObject);
+                VisualBo visualBo = new VisualBo();
+                visualBo.setName(dayStr[i]);
+                visualBo.setNum(dayArr[i]);
+                visualBoList2.add(visualBo);
             }
 
-            //教师处理
             List<NinTeacher> ninTeachers = ninTeacherMapper.selectList(new LambdaQueryWrapper<NinTeacher>().select(NinTeacher::getId, NinTeacher::getTeacherName));
             Map<Long, String> teaNameMap = ninTeachers.stream().collect(Collectors.toMap(NinTeacher::getId, NinTeacher::getTeacherName));
-            JSONArray jsonArray3 = new JSONArray();//教师列表
-            JSONArray jsonArray4 = new JSONArray();//上课次数数列表
-            for (Map.Entry<Long, Double> map : teaCourseNumMap.entrySet()) {
-                Long id = map.getKey();
-                Double value = map.getValue();
-                jsonArray3.add(teaNameMap.get(id));
-                jsonArray4.add(value);
+            for (Map.Entry<Long, Double> map1 : teaNumMap.entrySet()) {
+                VisualBo visualBo = new VisualBo();
+                visualBo.setId(map1.getKey());
+                visualBo.setName(teaNameMap.get(map1.getKey()));
+                visualBo.setNum(map1.getValue());
+                visualBoList3.add(visualBo);
             }
-            List<Double> teaCourseNumList = teaCourseNumMap.values().stream().collect(Collectors.toList());
-            Double[] teaCourseNumArr = new Double[teaCourseNumList.size()];
-            teaCourseNumList.toArray(teaCourseNumArr);
 
-            List<NinCareerCourse> ninCareerCourses = ninCareerCourseMapper.selectList(new LambdaQueryWrapper<NinCareerCourse>().select(NinCareerCourse::getCareerId));
-            Map<Long, Long> careerNumMap = ninCareerCourses.stream().collect(Collectors.groupingBy(NinCareerCourse::getCareerId, Collectors.counting()));
-            List<NinCareer> ninCareers = ninCareerMapper.selectList(new LambdaQueryWrapper<NinCareer>().select(NinCareer::getId, NinCareer::getCareerName));
+            //id-》专业名称
             Map<Long, String> careerNameMap = ninCareers.stream().collect(Collectors.toMap(NinCareer::getId, NinCareer::getCareerName));
-            JSONArray jsonArray5 = new JSONArray();//专业列表
-            JSONArray jsonArray6 = new JSONArray();//课程数列表
-            for (Map.Entry<Long, Long> map : careerNumMap.entrySet()) {
-                Long id = map.getKey();
-                Long value = map.getValue();
-                jsonArray5.add(careerNameMap.get(id));
-                jsonArray6.add(value);
+            for (Map.Entry<Long, Double> map1 : careerNumMap.entrySet()) {
+                VisualBo visualBo = new VisualBo();
+                visualBo.setId(map1.getKey());
+                visualBo.setName(careerNameMap.get(map1.getKey()));
+                visualBo.setNum(map1.getValue());
+                visualBoList4.add(visualBo);
             }
-            List<Double> careerNumList = careerNumMap.values().stream().map(Long::doubleValue).collect(Collectors.toList());
-            Double[] careerNumNumArr = new Double[careerNumList.size()];
-            careerNumList.toArray(careerNumNumArr);
 
-
-            String weekMax = "", weekMin = "", dayMax = "", dayMin = "", teaMax = "", teaMin = "", carMax = "", carMin = "";
-            double teaNumMax = 0, teaNumMin = 0, carNumMax = 0, carNumMin = 0;
-            String str = "在一周的时间内，按星期来说，该课程安排上课数量最多的是%s，最少的是%s；" +
-                    "如果按一天的时间段来说，%s的课最多，%s的课最少；" +
-                    "%s老师的平均单周上课次数最多，达到%.1f节（单周上课算0.5节），%s老师最少，仅有%.1f节；" +
-                    "%s专业选择的课程数最多，达到了%.0f门，%s最少，只有%.0f门。";
-
-            List<Integer> weekArrMax = max(weekArr);
-            for (Integer integer : weekArrMax) {
-                weekMax = weekMax + CnUtil.cnWeek(integer + 1) + "、";
+            List<NinCourse> courseList = ninCourseMapper.selectList(new LambdaQueryWrapper<>());
+            //id -》 课程名称
+            Map<Long, String> courseNameMap = courseList.stream().collect(Collectors.toMap(NinCourse::getId, NinCourse::getCourseName));
+            for (Map.Entry<Long, Double> map1 : courseNumMap.entrySet()) {
+                VisualBo visualBo = new VisualBo();
+                visualBo.setId(map1.getKey());
+                visualBo.setName(courseNameMap.get(map1.getKey()));
+                visualBo.setNum(map1.getValue());
+                visualBoList5.add(visualBo);
             }
-            weekMax = weekMax.substring(0, weekMax.length() - 1);
 
-            List<Integer> weekArrMin = min(weekArr);
-            for (Integer integer : weekArrMin) {
-                weekMin = weekMin + CnUtil.cnWeek(integer + 1) + "、";
+            List<NinHouse> houseList = ninHouseService.list();
+            //id -》教室名称
+            Map<Long, String> houseNameMap = houseList.stream().collect(Collectors.toMap(NinHouse::getId, NinHouse::getHouseName));
+            for (Map.Entry<Long, Double> map1 : houseNumMap.entrySet()) {
+                VisualBo visualBo = new VisualBo();
+                visualBo.setId(map1.getKey());
+                visualBo.setName(houseNameMap.get(map1.getKey()));
+                visualBo.setNum(map1.getValue());
+                visualBoList6.add(visualBo);
             }
-            weekMin = weekMin.substring(0, weekMin.length() - 1);
-
-            List<Integer> dayArrMax = max(dayArr);
-            for (Integer integer : dayArrMax) {
-                dayMax = dayMax + dayStrArr[integer] + "、";
-            }
-            dayMax = dayMax.substring(0, dayMax.length() - 1);
-
-            List<Integer> dayArrMin = min(dayArr);
-            for (Integer integer : dayArrMin) {
-                dayMin = dayMin + dayStrArr[integer] + "、";
-            }
-            dayMin = dayMin.substring(0, dayMin.length() - 1);
-
-            List<Integer> teaArrMax = max(teaCourseNumArr);
-            for (Integer integer : teaArrMax) {
-                teaMax = teaMax + jsonArray3.get(integer) + "、";
-                teaNumMax = teaCourseNumList.get(integer);
-            }
-            teaMax = teaMax.substring(0, teaMax.length() - 1);
-
-            List<Integer> teaArrMin = min(teaCourseNumArr);
-            for (Integer integer : teaArrMin) {
-                teaMin = teaMin + jsonArray3.get(integer) + "、";
-                teaNumMin = teaCourseNumList.get(integer);
-            }
-            teaMin = teaMin.substring(0, teaMin.length() - 1);
 
 
-            List<Integer> carArrMax = max(careerNumNumArr);
-            for (Integer integer : carArrMax) {
-                carMax = carMax + jsonArray5.get(integer) + "、";
-                carNumMax = careerNumList.get(integer);
-            }
-            carMax = carMax.substring(0, carMax.length() - 1);
+            /**
+             * 数据再处理
+             */
+            //1
+            result.add(pie(visualBoList1));
+            Map<String, List<VisualBo>> map1 = visualExtremum(visualBoList1);
+            String str1 = "在一周的时间里，[" + turnText(map1.get("max")) + "]的课程最多，[" + turnText(map1.get("min")) + "]的课程最少";
+            resultText.add(str1);
 
-            List<Integer> carArrMin = min(careerNumNumArr);
-            for (Integer integer : carArrMin) {
-                carMin = carMin + jsonArray5.get(integer) + "、";
-                carNumMin = careerNumList.get(integer);
-            }
-            carMin = carMin.substring(0, carMin.length() - 1);
+            //2
+            result.add(pie(visualBoList2));
+            Map<String, List<VisualBo>> map2 = visualExtremum(visualBoList2);
+            String str2 = "课程大多集中在[" + turnText(map2.get("max")) + "]，[" + turnText(map2.get("min")) + "]的课程最少";
+            resultText.add(str2);
 
+            //3
+            result.add(histogram(visualBoList3));
+            Map<String, List<VisualBo>> map3 = visualExtremum(visualBoList3);
+            String str3 = "[" + turnText(map3.get("max")) + "]单周平均上课次数最多，达到了" + map3.get("max").get(0).getNum().intValue() + "次，[" + turnText(map3.get("min")) + "]单周平均上课次数最少，仅有" + map3.get("min").get(0).getNum().intValue() + "次";
+            resultText.add(str3);
 
-            result.add(jsonArray1.toJSONString());
-            result.add(jsonArray2.toJSONString());
-            result.add(jsonArray3.toJSONString());
-            result.add(jsonArray4.toJSONString());
-            result.add(jsonArray5.toJSONString());
-            result.add(jsonArray6.toJSONString());
-            result.add(String.format(str, weekMax, weekMin, dayMax, dayMin, teaMax, teaNumMax, teaMin, teaNumMin, carMax, carNumMax, carMin, carNumMin));
+            //4
+            result.add(histogram(visualBoList4));
+            Map<String, List<VisualBo>> map4 = visualExtremum(visualBoList4);
+            String str4 = "专业[" + turnText(map4.get("max")) + "]选择的课程数量最多，达到了" + map4.get("max").get(0).getNum().intValue() + "门，[" + turnText(map4.get("min")) + "]选择的课程数量最少，仅有" + map4.get("min").get(0).getNum().intValue() + "门";
+            resultText.add(str4);
 
+            //5
+            List<VisualBo> sort = sort(visualBoList5);
+            result.add(funnelPlot(sort));
+            Map<String, List<VisualBo>> map5 = visualExtremum(visualBoList5);
+            String str5 = "需要学习课程[" + turnText(map5.get("max")) + "]的班级数量最多，共有" + map5.get("max").get(0).getNum().intValue() + "个班级，课程[" + turnText(map5.get("min")) + "]的上课班级数量最少，仅有" + map5.get("min").get(0).getNum().intValue() + "个";
+            resultText.add(str5);
+
+            //6
+            result.add(histogram(visualBoList6));
+            Map<String, List<VisualBo>> map6 = visualExtremum(visualBoList6);
+            String str6 = "教室[" + turnText(map6.get("max")) + "]使用的次数最多，平均一周使用了" + map6.get("max").get(0).getNum() + "次（单周上课计0.5），教室[" + turnText(map6.get("min")) + "]使用的次数最少，平均一周仅有" + map6.get("min").get(0).getNum() + "次";
+            resultText.add(str6);
+
+            //7
+            result.add(thermodynamicChart(heatArr));
+            String str7 = "热力图不知道讲啥";
+            resultText.add(str7);
+
+            result.add(resultText);
             RedisUtil.set(CacheConstant.VISUAL_DATA, result.toJSONString());
         } else {
             result = JSONArray.parseArray(json);
@@ -856,33 +911,116 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     }
 
 
-    public List<Integer> max(Double[] arr) {
-        List<Integer> results = new ArrayList<>();
-        double max = 0;
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] > max) {
-                max = arr[i];
-                results = new ArrayList<>();
-                results.add(i);
-            } else if (arr[i] == max){
-                results.add(i);
+    //获取极值列表
+    public Map<String, List<VisualBo>> visualExtremum(List<VisualBo> visualBoList) {
+        Double max = 0d, min = visualBoList.get(0).getNum();
+        List<VisualBo> maxList = new ArrayList<>(), minList = new ArrayList<>();
+
+        for (VisualBo bo : visualBoList) {
+            if (bo.getNum() > max) {
+                max = bo.getNum();
+                maxList = new ArrayList<>();
+                maxList.add(bo);
+            } else if (bo.getNum().equals(max)) {
+                maxList.add(bo);
+            }
+            if (bo.getNum() < min) {
+                min = bo.getNum();
+                minList = new ArrayList<>();
+                minList.add(bo);
+            } else if (bo.getNum().equals(min)) {
+                minList.add(bo);
             }
         }
-        return results;
+
+        HashMap<String, List<VisualBo>> result = new HashMap<>();
+        result.put("max", maxList);
+        result.put("min", minList);
+        return result;
     }
-    public List<Integer> min(Double[] arr) {
-        List<Integer> results = new ArrayList<>();
-        double min = arr[0];
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] < min) {
-                min = arr[i];
-                results = new ArrayList<>();
-                results.add(i);
-            } else if (arr[i] == min){
-                results.add(i);
+    //列表名称转字符串
+    public String turnText(List<VisualBo> visualBoList) {
+        List<String> collect = visualBoList.stream().map(VisualBo::getName).collect(Collectors.toList());
+        return StringUtils.join(collect.toArray(), "，");
+    }
+    //排序
+    public List<VisualBo> sort(List<VisualBo> visualBoList) {
+        int len = visualBoList.size();
+        if (len == 0) {
+            return new ArrayList<VisualBo>();
+        }
+        VisualBo visualBo = visualBoList.get(0);
+        List<VisualBo> bos1 = new ArrayList<>(), bos2 = new ArrayList<>();
+        Double num = visualBo.getNum();
+        for (int i = 1; i < len; i++) {
+            if (visualBoList.get(i).getNum() > num) {
+                bos1.add(visualBoList.get(i));
+            } else {
+                bos2.add(visualBoList.get(i));
             }
         }
-        return results;
+        List<VisualBo> sort1 = sort(bos1);
+        List<VisualBo> sort2 = sort(bos2);
+        sort1.add(visualBo);
+        sort1.addAll(sort2);
+        return sort1;
     }
+    //饼图处理
+    public String pie(List<VisualBo> visualBoList) {
+        JSONArray jsonArray = new JSONArray();
+        for (VisualBo bo : visualBoList) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("value", bo.getNum());
+            jsonObject.put("name", bo.getName());
+            jsonArray.add(jsonObject);
+        }
+        return jsonArray.toJSONString();
+    }
+    //柱形图处理
+    public String histogram(List<VisualBo> visualBoList) {
+        JSONArray jsonArray = new JSONArray();
+        JSONArray jsonArray1 = new JSONArray();
+        JSONArray jsonArray2 = new JSONArray();
+        for (VisualBo bo : visualBoList) {
+            jsonArray1.add(bo.getName());
+            jsonArray2.add(bo.getNum());
+        }
+        jsonArray.add(jsonArray1);
+        jsonArray.add(jsonArray2);
+        return jsonArray.toJSONString();
+    }
+    //漏斗图处理
+    public String funnelPlot(List<VisualBo> visualBoList) {
+        JSONArray jsonArray = new JSONArray();
+        JSONArray jsonArray1 = new JSONArray();
+        JSONArray jsonArray2 = new JSONArray();
+        for (VisualBo bo : visualBoList) {
+            jsonArray1.add(bo.getName());
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("value", bo.getNum());
+            jsonObject.put("name", bo.getName());
+            jsonArray2.add(jsonObject);
+        }
+        jsonArray.add(jsonArray1);
+        jsonArray.add(jsonArray2);
+        return jsonArray.toJSONString();
+    }
+    //热力图处理
+    public String thermodynamicChart(Double[][] heatArr) {
+        JSONArray jsonArray = new JSONArray();
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 5; j++) {
+                JSONArray jsonArray1 = new JSONArray();
+                jsonArray1.add(i);
+                jsonArray1.add(j);
+                jsonArray1.add(heatArr[i][j]);
+                jsonArray.add(jsonArray1);
+            }
+        }
+        return jsonArray.toJSONString();
+    }
+
+
 }
 
