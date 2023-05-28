@@ -17,6 +17,7 @@ require(['../config'], function () {
                 type: "get",
                 success: function (data) {
                     util.hint(data.msg);
+                    query();
                 }
             })
         })
@@ -81,7 +82,10 @@ require(['../config'], function () {
             // 指定图表的配置项和数据
             var option = {
                 title: {
-                    text: '单周内每天上课次数占比'
+                    text: '星期上课次数占比'
+                },
+                tooltip: {
+                    trigger: 'item'
                 },
                 series: [
                     {
@@ -102,7 +106,10 @@ require(['../config'], function () {
             // 指定图表的配置项和数据
             var option = {
                 title: {
-                    text: '平均一天内时间段上课次数占比'
+                    text: '平均一天内时间段占比'
+                },
+                tooltip: {
+                    trigger: 'item'
                 },
                 series: [
                     {
@@ -122,11 +129,11 @@ require(['../config'], function () {
             // 指定图表的配置项和数据
             var option = {
                 title: {
-                    text: '教师-单周平均上课次数柱形图'
+                    text: '教师-平均单周上课次数柱形图'
                 },
                 tooltip: {},
                 legend: {
-                    data: ['单周平均上课次数']
+                    data: ['平均单周上课次数']
                 },
                 xAxis: {
                     data: parse[0]
@@ -134,7 +141,7 @@ require(['../config'], function () {
                 yAxis: {},
                 series: [
                     {
-                        name: '单周平均上课次数',
+                        name: '平均单周上课次数',
                         type: 'bar',
                         data: parse[1]
                     }
@@ -257,7 +264,7 @@ require(['../config'], function () {
             var option = {
                 title: [
                     {
-                        text: '教室-单周平均使用次数极坐标柱形图'
+                        text: '教室-平均单周使用次数极坐标柱形图'
                     }
                 ],
                 polar: {

@@ -12,9 +12,7 @@ import cn.netinnet.coursearrange.geneticAlgorithm.GeneticAlgorithm;
 import cn.netinnet.coursearrange.geneticAlgorithm.domain.TaskRecord;
 import cn.netinnet.coursearrange.mapper.*;
 import cn.netinnet.coursearrange.model.ResultModel;
-import cn.netinnet.coursearrange.service.INinArrangeService;
-import cn.netinnet.coursearrange.service.INinHouseService;
-import cn.netinnet.coursearrange.service.INinTeachClassService;
+import cn.netinnet.coursearrange.service.*;
 import cn.netinnet.coursearrange.util.*;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -28,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,9 +83,26 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
     private NinCareerCourseMapper ninCareerCourseMapper;
     @Autowired
     private NinCareerMapper ninCareerMapper;
-
     @Autowired
     private ApplicationContext applicationContext;
+
+
+    @Autowired
+    private INinTeacherService ninTeacherService;
+    @Lazy
+    @Autowired
+    private INinClassService ninClassService;
+    @Autowired
+    private INinStudentService ninStudentService;
+    @Lazy
+    @Autowired
+    private INinTeacherCourseService ninTeacherCourseService;
+    @Lazy
+    @Autowired
+    private INinCourseService ninCourseService;
+    @Lazy
+    @Autowired
+    private INinCareerCourseService ninCareerCourseService;
 
 
     @Override
@@ -190,6 +206,7 @@ public class NinArrangeServiceImpl extends ServiceImpl<NinArrangeMapper, NinArra
         //删除可视化数据分析的缓存
         RedisUtil.del(CacheConstant.VISUAL_DATA);
     }
+
 
     @Override
     public Map<String, Object> getPageSelectList(ArrangeBo bo, Integer page, Integer size) {
